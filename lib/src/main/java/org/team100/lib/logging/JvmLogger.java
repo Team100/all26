@@ -27,7 +27,7 @@ public class JvmLogger  {
     }
 
     public void logGarbageCollectors() {
-        if (!Logging.instance().getLevel().admit(Level.TRACE)) {
+        if (!Logging.instance().isAllowed(Level.TRACE)) {
             // don't do any work if we're not going to log it.
             return;
         }
@@ -44,7 +44,7 @@ public class JvmLogger  {
     }
 
     public void logMemoryPools() {
-        if (!Logging.instance().getLevel().admit(Level.TRACE)) {
+        if (!Logging.instance().isAllowed(Level.TRACE)) {
             // don't do any work if we're not going to log it.
             return;
         }

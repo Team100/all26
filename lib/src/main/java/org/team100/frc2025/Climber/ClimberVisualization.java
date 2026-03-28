@@ -36,7 +36,7 @@ public class ClimberVisualization implements Runnable {
 
     @Override
     public void run() {
-        if (Logging.instance().getLevel().admit(Level.TRACE)) {
+        if (Logging.instance().isAllowed(Level.TRACE)) {
             m_arm.setAngle(Math.toDegrees(m_climber.angle()));
             m_wheels.setColor(m_intake.isIn()
                     ? new Color8Bit(Color.kRed)

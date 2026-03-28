@@ -2,6 +2,8 @@ package org.team100.lib.framework;
 
 import java.util.ConcurrentModificationException;
 
+import org.team100.lib.logging.Logging;
+
 import edu.wpi.first.hal.DriverStationJNI;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
@@ -318,6 +320,11 @@ public abstract class IterativeRobotBase100 extends RobotBase {
             m_calledDsConnected = true;
             driverStationConnected();
         }
+
+        // Refresh the log level every cycle so dashboard changes take effect
+        // immediately during practice. During competition the FMS latch makes
+        // this a cheap no-op (no SendableChooser lock acquired).
+        Logging.instance().refreshLogLevel();
 
         // If mode changed, call mode exit and entry functions
         if (m_lastMode != mode) {

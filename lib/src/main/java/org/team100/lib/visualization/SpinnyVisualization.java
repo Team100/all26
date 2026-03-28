@@ -41,7 +41,7 @@ public class SpinnyVisualization implements Runnable {
     @Override
     public void run() {
         angle += m_scale * m_source.getAsDouble();
-        if (Logging.instance().getLevel().admit(Level.TRACE)) {
+        if (Logging.instance().isAllowed(Level.TRACE)) {
             m_arm.setAngle(angle);
         }
     }

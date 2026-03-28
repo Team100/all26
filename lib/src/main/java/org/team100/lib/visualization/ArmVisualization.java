@@ -35,7 +35,7 @@ public class ArmVisualization implements Runnable {
 
     @Override
     public void run() {
-        if (Logging.instance().getLevel().admit(Level.TRACE)) {
+        if (Logging.instance().isAllowed(Level.TRACE)) {
             m_arm.setAngle(Math.toDegrees(m_source.getAsDouble() + m_offsetRad));
         }
     }

@@ -5,6 +5,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.team100.lib.geometry.AccelerationSE2;
@@ -58,17 +59,17 @@ import edu.wpi.first.math.trajectory.Trajectory.State;
  * Don't use slashes in names, it confuses Glass.
  */
 public class LoggerFactory {
-    private final Supplier<Level> m_level;
+    private final Predicate<Level> m_allow;
     private final String m_root;
     private final PrimitiveLogger m_pLogger;
 
     public LoggerFactory(
-            Supplier<Level> level,
+            Predicate<Level> allow,
             String root,
             PrimitiveLogger primitiveLogger) {
         if (root.startsWith("/"))
             throw new IllegalArgumentException("don't lead with a slash");
-        m_level = level;
+        m_allow = allow;
         m_root = root;
         m_pLogger = primitiveLogger;
     }
@@ -80,7 +81,7 @@ public class LoggerFactory {
      * Each child level is separated by slashes, to make a tree in glass.
      */
     public LoggerFactory name(String stem) {
-        return new LoggerFactory(m_level, root(stem), m_pLogger);
+        return new LoggerFactory(m_allow, root(stem), m_pLogger);
     }
 
     /**
@@ -109,12 +110,7 @@ public class LoggerFactory {
     //////////////////////////////////////////////////////
 
     private boolean allow(Level level) {
-        Level allowed = m_level.get();
-        if (allowed == Level.COMP && level == Level.COMP) {
-            // comp mode allows COMP level regardless of enablement.
-            return true;
-        }
-        return allowed.admit(level);
+        return m_allow.test(level);
     }
 
     /////////////////////////////////////////////////////
