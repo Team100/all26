@@ -1,5 +1,9 @@
-name: Lib Unit Tests
+# This is a basic workflow to build robot code.
 
+name: Shooter Test Spin Unit Tests
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the main branch.
 on:
   workflow_dispatch:
   push:
@@ -16,7 +20,7 @@ jobs:
     timeout-minutes: 10 
     defaults:
       run:
-        working-directory: ./lib
+        working-directory: ./studies/ShooterTestSpin
 
     # This grabs the WPILib docker container
     container: wpilib/systemcore-cross-ubuntu:2026-24.04-py314
