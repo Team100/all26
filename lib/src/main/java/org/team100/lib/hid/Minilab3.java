@@ -1,6 +1,6 @@
 package org.team100.lib.hid;
 
-import org.wpilib.driverstation.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID;
 
 /**
  * Direct mapping of the MiniLab 3 MIDI interface.

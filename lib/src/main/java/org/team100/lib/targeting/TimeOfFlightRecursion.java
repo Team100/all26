@@ -9,8 +9,8 @@ import org.team100.lib.state.ModelSE2;
 import org.team100.lib.targeting.TimeOfFlightRecursion.Looper.LoopSolution;
 import org.team100.lib.util.StrUtil;
 
-import org.wpilib.math.util.MathUtil;
-import org.wpilib.math.geometry.Translation2d;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * Time-of-flight recursion, as described by @oblarg is an iterative approach

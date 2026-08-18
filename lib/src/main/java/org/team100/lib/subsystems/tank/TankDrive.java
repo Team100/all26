@@ -5,21 +5,22 @@ import org.team100.lib.dynamics.differential.DifferentialDriveEffort;
 import org.team100.lib.geometry.se2.ChassisAcceleration;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.ChassisVelocitiesLogger;
+import org.team100.lib.logging.LoggerFactory.ChassisSpeedsLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.visualization.VizUtil;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.SubsystemBase;
-import org.wpilib.drive.DifferentialDrive;
-import org.wpilib.drive.DifferentialDrive.WheelVelocities;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Twist2d;
-import org.wpilib.math.kinematics.ChassisVelocities;
-import org.wpilib.math.kinematics.DifferentialDriveKinematics;
-import org.wpilib.math.kinematics.DifferentialDriveWheelPositions;
-import org.wpilib.math.kinematics.DifferentialDriveWheelVelocities;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelPositions;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Tank drive that uses two linear mechanisms and provides a pose estimate using
@@ -34,7 +35,7 @@ public class TankDrive extends SubsystemBase {
     private final LinearMechanism m_right;
     private final DifferentialDriveKinematics m_kinematics;
 
-    private final ChassisVelocitiesLogger m_logChassisVelocities;
+    private final ChassisSpeedsLogger m_logChassisSpeeds;
     private final DoubleLogger m_logLeft;
     private final DoubleLogger m_logRight;
 
@@ -51,7 +52,7 @@ public class TankDrive extends SubsystemBase {
             LinearMechanism right) {
         LoggerFactory log = parent.type(this);
         m_dynamics = dynamics;
-        m_logChassisVelocities = log.ChassisVelocitiesLogger(Level.TRACE, "chassis speeds");
+        m_logChassisSpeeds = log.chassisSpeedsLogger(Level.TRACE, "chassis speeds");
         m_logLeft = log.doubleLogger(Level.TRACE, "left");
         m_logRight = log.doubleLogger(Level.TRACE, "right");
         m_log_field_robot = fieldLogger.doubleArrayLogger(Level.COMP, "robot");
@@ -66,7 +67,7 @@ public class TankDrive extends SubsystemBase {
 
     /** Use arcade drive to set duty cycle directly. */
     public void setDutyCycle(double translationSpeed, double rotSpeed) {
-        WheelVelocities s = DifferentialDrive.arcadeDriveIK(
+        WheelSpeeds s = DifferentialDrive.arcadeDriveIK(
                 translationSpeed, rotSpeed, false);
         m_left.setDutyCycle(s.left);
         m_right.setDutyCycle(s.right);
@@ -79,26 +80,26 @@ public class TankDrive extends SubsystemBase {
      * 
      * Ignores lateral acceleration.
      */
-    public void setVelocity(ChassisVelocities speed, ChassisAcceleration accel) {
-        DifferentialDriveWheelVelocities wheelSpeeds = m_kinematics.toWheelVelocities(speed);
-        double left = wheelSpeeds.left;
-        double right = wheelSpeeds.right;
+    public void setVelocity(ChassisSpeeds speed, ChassisAcceleration accel) {
+        DifferentialDriveWheelSpeeds wheelSpeeds = m_kinematics.toWheelSpeeds(speed);
+        double left = wheelSpeeds.leftMetersPerSecond;
+        double right = wheelSpeeds.rightMetersPerSecond;
 
         DifferentialDriveEffort effort = m_dynamics.effort(accel);
         m_left.setVelocity(left, effort.F1());
         m_right.setVelocity(right, effort.F2());
 
-        m_logChassisVelocities.log(() -> speed);
+        m_logChassisSpeeds.log(() -> speed);
         m_logLeft.log(() -> left);
         m_logRight.log(() -> right);
     }
 
     /** For manual driving, to derive a feasible setpoint */
-    public ChassisVelocities desaturate(double translationM_S, double rotationRad_S) {
-        ChassisVelocities speed = new ChassisVelocities(translationM_S, 0, rotationRad_S);
-        DifferentialDriveWheelVelocities ws = m_kinematics.toWheelVelocities(speed);
-        ws = ws.desaturate(m_maxSpeedM_S);
-        ChassisVelocities actual = m_kinematics.toChassisVelocities(ws);
+    public ChassisSpeeds desaturate(double translationM_S, double rotationRad_S) {
+        ChassisSpeeds speed = new ChassisSpeeds(translationM_S, 0, rotationRad_S);
+        DifferentialDriveWheelSpeeds ws = m_kinematics.toWheelSpeeds(speed);
+        ws.desaturate(m_maxSpeedM_S);
+        ChassisSpeeds actual = m_kinematics.toChassisSpeeds(ws);
         return actual;
     }
 
@@ -128,7 +129,7 @@ public class TankDrive extends SubsystemBase {
             double velM_S, double omegaRad_S,
             double accelM_S2, double alphaRad_S2) {
         return run(() -> {
-            ChassisVelocities speed = new ChassisVelocities(velM_S, 0, omegaRad_S);
+            ChassisSpeeds speed = new ChassisSpeeds(velM_S, 0, omegaRad_S);
             ChassisAcceleration accel = new ChassisAcceleration(accelM_S2, 0, alphaRad_S2);
             setVelocity(speed, accel);
         }).withName("drive with velocity");
@@ -139,7 +140,7 @@ public class TankDrive extends SubsystemBase {
         // of the drive wheel axis, not the center of the robot, unless the drive wheels
         // happen to be in the center.
         Twist2d twist = twist();
-        m_pose = m_pose.plus(twist.exp());
+        m_pose = m_pose.exp(twist);
     }
 
     private Twist2d twist() {

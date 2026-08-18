@@ -1,6 +1,6 @@
 package org.team100.frc2026.auton;
 
-import static org.wpilib.command2.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 
 import java.util.List;
 import java.util.function.Function;
@@ -8,8 +8,9 @@ import java.util.function.Function;
 import org.team100.frc2026.robot.Machinery;
 import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.trajectory.se2.TrajectorySE2;
-import org.wpilib.command2.Command;
-import org.wpilib.math.geometry.Pose2d;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /** An auton that does nothing at all. */
 public class JustShoot implements AnnotatedCommand {

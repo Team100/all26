@@ -6,14 +6,15 @@ import java.util.function.DoubleUnaryOperator;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.Metrics;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Quaternion;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Translation3d;
-import org.wpilib.math.geometry.Twist3d;
-import org.wpilib.math.linalg.VecBuilder;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.numbers.N3;
+
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Quaternion;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Twist3d;
+import edu.wpi.first.math.numbers.N3;
 
 public class TernarySearchTest {
     private static final boolean DEBUG = false;
@@ -77,7 +78,7 @@ public class TernarySearchTest {
         Vector<N3> axis = VecBuilder.fill(0, 0, 1);
         DoubleUnaryOperator f = (x) -> {
             Pose3d sample = new Pose3d(new Translation3d(1, 1, 1), new Rotation3d(axis, x));
-            Twist3d t = sample.minus(desired).log();
+            Twist3d t = desired.log(sample);
             return Metrics.l2Norm(t);
         };
         TernarySearch s = new TernarySearch(f, 1e-12, 100);
@@ -92,7 +93,7 @@ public class TernarySearchTest {
         Vector<N3> axis = VecBuilder.fill(0, 0, 1);
         DoubleUnaryOperator f = (x) -> {
             Pose3d sample = new Pose3d(new Translation3d(1, 1, 1), new Rotation3d(axis, x));
-            Twist3d t = sample.minus(desired).log();
+            Twist3d t = desired.log(sample);
             return Metrics.l2Norm(t);
         };
         TernarySearch s = new TernarySearch(f, 1e-3, 100);

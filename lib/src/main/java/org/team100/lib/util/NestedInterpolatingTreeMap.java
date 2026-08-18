@@ -2,9 +2,9 @@ package org.team100.lib.util;
 
 import java.util.TreeMap;
 
-import org.wpilib.math.interpolation.InterpolatingTreeMap;
-import org.wpilib.math.interpolation.Interpolator;
-import org.wpilib.math.interpolation.InverseInterpolator;
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.math.interpolation.Interpolator;
+import edu.wpi.first.math.interpolation.InverseInterpolator;
 
 /**
  * A two-dimensional interpolating map, using a map of maps and repeated

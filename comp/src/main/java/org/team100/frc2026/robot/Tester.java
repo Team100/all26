@@ -1,17 +1,16 @@
 package org.team100.frc2026.robot;
 
-import static org.wpilib.command2.Commands.parallel;
-import static org.wpilib.command2.Commands.print;
-import static org.wpilib.command2.Commands.runOnce;
-import static org.wpilib.command2.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.print;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 import org.team100.lib.util.Banner;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.Commands;
-import org.wpilib.driverstation.Alert;
-import org.wpilib.driverstation.Alert.Level;
 
-
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 
 public class Tester {
 
@@ -21,7 +20,7 @@ public class Tester {
 
     public Tester(Machinery machinery) {
         m_machinery = machinery;
-        m_alert = new Alert(text("test"), Level.LOW);
+        m_alert = new Alert(text("test"), AlertType.kInfo);
         m_alert.set(false);
     }
 

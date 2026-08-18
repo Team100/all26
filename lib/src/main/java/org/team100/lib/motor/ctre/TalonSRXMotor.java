@@ -1,6 +1,8 @@
 package org.team100.lib.motor.ctre;
 
+import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
+import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
@@ -8,24 +10,22 @@ import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 import org.team100.lib.util.CanId;
 
-// import com.ctre.phoenix.motorcontrol.ControlMode;
-// import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 /**
  * Any motor connected to the Talon SRX controller.
  * 
  * As implemented here, this controller does not support sensing.
- * 
- * TODO: implement this for 2027
  */
 public class TalonSRXMotor implements BareMotor {
     private static final double FF_DUTY_RAD_S = 0.0016;
 
-    // private final LoggerFactory m_log;
-    // private final TalonSRX m_motor;
-    // private final DoubleLogger m_log_supply;
-    // private final DoubleLogger m_log_stator;
-    // private final DoubleLogger m_log_duty;
+    private final LoggerFactory m_log;
+    private final TalonSRX m_motor;
+    private final DoubleLogger m_log_supply;
+    private final DoubleLogger m_log_stator;
+    private final DoubleLogger m_log_duty;
 
     public TalonSRXMotor(
             LoggerFactory parent,
@@ -35,32 +35,32 @@ public class TalonSRXMotor implements BareMotor {
             NeutralMode100 neutral,
             double supplyLimit) {
         currentLog.register(this);
-        // m_motor = new TalonSRX(canID.id);
-        // switch (neutral) {
-        //     case COAST -> m_motor.setNeutralMode(
-        //             com.ctre.phoenix.motorcontrol.NeutralMode.Coast);
-        //     case BRAKE -> m_motor.setNeutralMode(
-        //             com.ctre.phoenix.motorcontrol.NeutralMode.Brake);
-        // }
-        // switch (phase) {
-        //     case FORWARD -> m_motor.setInverted(false);
-        //     case REVERSE -> m_motor.setInverted(true);
-        // }
+        m_motor = new TalonSRX(canID.id);
+        switch (neutral) {
+            case COAST -> m_motor.setNeutralMode(
+                    com.ctre.phoenix.motorcontrol.NeutralMode.Coast);
+            case BRAKE -> m_motor.setNeutralMode(
+                    com.ctre.phoenix.motorcontrol.NeutralMode.Brake);
+        }
+        switch (phase) {
+            case FORWARD -> m_motor.setInverted(false);
+            case REVERSE -> m_motor.setInverted(true);
+        }
         // don't use the "peak" current limit feature at all
-        // m_motor.configPeakCurrentLimit(0);
+        m_motor.configPeakCurrentLimit(0);
         // the supply limit is really an input power limit; the available torque thus
         // varies with RPM.
-        // m_motor.configContinuousCurrentLimit((int) supplyLimit);
-        // m_motor.enableCurrentLimit(true);
-        // m_log = parent.type(this);
-        // m_log_supply = m_log.doubleLogger(Level.TRACE, "supply current (A)");
-        // m_log_stator = m_log.doubleLogger(Level.TRACE, "stator current (A)");
-        // m_log_duty = m_log.doubleLogger(Level.TRACE, "duty cycle");
+        m_motor.configContinuousCurrentLimit((int) supplyLimit);
+        m_motor.enableCurrentLimit(true);
+        m_log = parent.type(this);
+        m_log_supply = m_log.doubleLogger(Level.TRACE, "supply current (A)");
+        m_log_stator = m_log.doubleLogger(Level.TRACE, "stator current (A)");
+        m_log_duty = m_log.doubleLogger(Level.TRACE, "duty cycle");
     }
 
     @Override
     public void setDutyCycle(double output) {
-        // m_motor.set(ControlMode.PercentOutput, output);
+        m_motor.set(ControlMode.PercentOutput, output);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class TalonSRXMotor implements BareMotor {
 
     @Override
     public void stop() {
-        // m_motor.neutralOutput();
+        m_motor.neutralOutput();
     }
 
     @Override
@@ -111,21 +111,19 @@ public class TalonSRXMotor implements BareMotor {
 
     @Override
     public void periodic() {
-        // m_log_supply.log(m_motor::getSupplyCurrent);
-        // m_log_stator.log(m_motor::getStatorCurrent);
-        // m_log_duty.log(m_motor::getMotorOutputPercent);
+        m_log_supply.log(m_motor::getSupplyCurrent);
+        m_log_stator.log(m_motor::getStatorCurrent);
+        m_log_duty.log(m_motor::getMotorOutputPercent);
     }
 
     @Override
     public double getCurrent() {
-        // return m_motor.getStatorCurrent();
-        return 0;
+        return m_motor.getStatorCurrent();
     }
 
     @Override
     public double getSupplyCurrent() {
-        // return m_motor.getSupplyCurrent();
-        return 0;
+        return m_motor.getSupplyCurrent();
     }
 
     // unsupported methods

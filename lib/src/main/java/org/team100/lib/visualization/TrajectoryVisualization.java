@@ -7,8 +7,8 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.trajectory.se2.TrajectorySE2;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.trajectory.Trajectory;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.trajectory.Trajectory;
 
 public class TrajectoryVisualization {
     private final DoubleArrayLogger m_log_trajectory;

@@ -5,9 +5,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.framework.TimedRobot100;
-import org.wpilib.hardware.hal.HAL;
-import org.wpilib.simulation.DriverStationSim;
-import org.wpilib.simulation.SimHooks;
+
+import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.simulation.DriverStationSim;
+import edu.wpi.first.wpilibj.simulation.SimHooks;
 
 /**
  * Sets up FPGA time stepping for unit tests.

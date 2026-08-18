@@ -2,16 +2,16 @@ package org.team100.lib.geometry.se2;
 
 import org.team100.lib.geometry.GeometryUtil;
 
-import org.wpilib.math.linalg.VecBuilder;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.math.kinematics.ChassisVelocities;
-import org.wpilib.math.numbers.N3;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.numbers.N3;
 
 /**
  * Acceleration in SE2 in the robot reference frame,
- * analogous to ChassisVelocities.
+ * analogous to ChassisSpeeds.
  */
 public record ChassisAcceleration(double x, double y, double theta) {
     public static ChassisAcceleration ZERO = new ChassisAcceleration(0, 0, 0);
@@ -20,8 +20,8 @@ public record ChassisAcceleration(double x, double y, double theta) {
      * Correctly includes centrifugal acceleration.
      */
     public static ChassisAcceleration diff(
-            ChassisVelocities v0,
-            ChassisVelocities v1,
+            ChassisSpeeds v0,
+            ChassisSpeeds v1,
             double dtSec) {
         Vector<N3> vv0 = GeometryUtil.toVec(v0);
         Vector<N3> vv1 = GeometryUtil.toVec(v1);

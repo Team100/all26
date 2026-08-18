@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import org.wpilib.math.interpolation.Interpolator;
-import org.wpilib.math.interpolation.InverseInterpolator;
+import edu.wpi.first.math.interpolation.Interpolator;
+import edu.wpi.first.math.interpolation.InverseInterpolator;
 
 public class NestedInterpolatingTreeMapTest {
     private static final double DELTA = 0.001;

@@ -5,13 +5,13 @@ import java.util.function.DoubleFunction;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.localization.Blip;
 
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Transform3d;
-import org.wpilib.math.geometry.Translation3d;
-import org.wpilib.networktables.NetworkTableInstance;
-import org.wpilib.networktables.PubSubOption;
-import org.wpilib.networktables.StructArrayPublisher;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.PubSubOption;
+import edu.wpi.first.networktables.StructArrayPublisher;
 
 /**
  * Uses a function to supply ground-truth values for a time in the somewhat
@@ -33,9 +33,9 @@ public class SimulatedCamera implements Runnable {
         m_inst = NetworkTableInstance.create();
         // This is a client just like the camera is a client.
         m_inst.setServer("localhost");
-        m_inst.startClient("SimulatedCamera");
+        m_inst.startClient4("SimulatedCamera");
         m_pub = m_inst.getStructArrayTopic("vision/0/blips", Blip.struct)
-                .publish(PubSubOption.KEEP_DUPLICATES);
+                .publish(PubSubOption.keepDuplicates(true));
     }
 
     @Override

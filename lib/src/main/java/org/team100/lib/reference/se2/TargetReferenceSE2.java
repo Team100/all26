@@ -13,7 +13,7 @@ import org.team100.lib.state.ModelSE2;
 import org.team100.lib.targeting.Solution;
 import org.team100.lib.targeting.Solver;
 
-import org.wpilib.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /** Use a delegate for cartesian reference, and a target for rotation. */
 public class TargetReferenceSE2 implements ReferenceSE2 {

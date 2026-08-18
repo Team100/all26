@@ -8,7 +8,8 @@ import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.subsystems.rrr.RRRArm;
 import org.team100.lib.util.StrUtil;
-import org.wpilib.math.geometry.Pose2d;
+
+import edu.wpi.first.math.geometry.Pose2d;
 
 /**
  * Move the arm to the goal, endlessly.
@@ -53,8 +54,7 @@ public class MoveWithProfile extends MoveAndHold {
         // l1 norm treats all joints the same
         // RRRConfig.distance weighs the root higher
         // TODO: which is better?
-        // double distance =
-        // Metrics.l1Norm(m_start.toVector().minus(m_configGoal.toVector()));
+        // double distance = Metrics.l1Norm(m_start.toVector().minus(m_configGoal.toVector()));
         double distance = m_start.distance(m_configGoal);
         if (m_configGoal == null)
             throw new IllegalArgumentException(

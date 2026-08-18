@@ -3,8 +3,9 @@ package org.team100.lib.sensor.position.absolute.wpi;
 import java.util.function.DoubleFunction;
 
 import org.team100.lib.coherence.Takt;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.simulation.DutyCycleSim;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.simulation.DutyCycleSim;
 
 /**
  * Uses a function to supply ground-truth values for a time in the

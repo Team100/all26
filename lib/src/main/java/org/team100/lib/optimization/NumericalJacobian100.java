@@ -3,10 +3,10 @@ package org.team100.lib.optimization;
 import java.util.function.DoubleUnaryOperator;
 import java.util.function.Function;
 
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.util.Nat;
-import org.wpilib.math.util.Num;
-import org.wpilib.math.linalg.Vector;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.Num;
+import edu.wpi.first.math.Vector;
 
 /**
  * Similar to the WPI version but using vectors instead of matrices.

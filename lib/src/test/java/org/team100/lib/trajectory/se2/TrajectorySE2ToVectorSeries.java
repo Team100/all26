@@ -7,7 +7,7 @@ import org.jfree.data.xy.XYSeries;
 import org.team100.lib.geometry.se2.WaypointSE2;
 import org.team100.lib.state.ControlSE2;
 
-import org.wpilib.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public class TrajectorySE2ToVectorSeries {
     private static final boolean DEBUG = false;

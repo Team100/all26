@@ -5,15 +5,14 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.util.RoboRioChannel;
 
-import org.wpilib.hardware.discrete.PWM;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.SubsystemBase;
+import edu.wpi.first.wpilibj.PWM;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Indexer using continuous-rotation servo or PWM controller.
  */
 public class PWMIndexer extends SubsystemBase implements ShooterIndexer {
-    @SuppressWarnings("unused")
     private final PWM m_pwm;
     private final DoubleLogger m_log_dutyCycle;
 
@@ -55,8 +54,7 @@ public class PWMIndexer extends SubsystemBase implements ShooterIndexer {
     }
 
     private void set(double dutyCycle) {
-        // TODO: fix for 2027
-        // m_pwm.setThrottle(dutyCycle);
+        m_pwm.setSpeed(dutyCycle);
         m_log_dutyCycle.log(() -> dutyCycle);
     }
 }

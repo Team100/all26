@@ -5,13 +5,13 @@ import java.util.Optional;
 
 import org.team100.lib.subsystems.swerve.kinodynamics.struct.SwerveModulePosition100Struct;
 
-import org.wpilib.math.util.MathUtil;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.interpolation.Interpolatable;
-import org.wpilib.util.struct.StructSerializable;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.interpolation.Interpolatable;
+import edu.wpi.first.util.struct.StructSerializable;
 
 /**
- * This is a copy of {@link org.wpilib.math.kinematics.SwerveModulePosition}
+ * This is a copy of {@link edu.wpi.first.math.kinematics.SwerveModulePosition}
  * but with optional rotation, working around the incorrect behavior of
  * Rotation2d(0, 0).
  * 
@@ -114,7 +114,7 @@ public class SwerveModulePosition100
 
     @Override
     public SwerveModulePosition100 interpolate(SwerveModulePosition100 endValue, double t) {
-        double distLerp = MathUtil.lerp(m_distanceMeters, endValue.m_distanceMeters, t);
+        double distLerp = MathUtil.interpolate(m_distanceMeters, endValue.m_distanceMeters, t);
         if (m_unwrappedAngle.isEmpty() && endValue.m_unwrappedAngle.isEmpty()) {
             // No angle information at all == no idea where we are, just return zero.
             return new SwerveModulePosition100(0.0, Optional.empty());

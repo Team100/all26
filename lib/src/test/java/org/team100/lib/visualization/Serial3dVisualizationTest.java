@@ -5,9 +5,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.util.Color;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.wpilibj.util.Color;
 
 public class Serial3dVisualizationTest {
     private static final boolean DEBUG = false;
@@ -28,7 +29,7 @@ public class Serial3dVisualizationTest {
                 new Pose3d(-1, -1, -1, Rotation3d.kZero),
                 new Pose3d(1, -1, -1, Rotation3d.kZero));
         MatOfPoint2f points = foo.project(
-                cameraPose, tList, Color.ALICE_BLUE)
+            cameraPose, tList, Color.kAliceBlue)
                 .getFirst();
         List<Point> pointList = points.toList();
         if (DEBUG)

@@ -2,11 +2,11 @@ package org.team100.lib.geometry.lynx_arm;
 
 import java.util.OptionalDouble;
 
-import org.wpilib.math.linalg.VecBuilder;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Transform3d;
-import org.wpilib.math.numbers.N5;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N5;
 
 /**
  * Each joint is relative to its parent link, in radians.

@@ -24,8 +24,8 @@ import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.util.CanId;
 
-import org.wpilib.command2.Command;
-import org.wpilib.command2.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Shooter hood must be at the minimum position at startup.

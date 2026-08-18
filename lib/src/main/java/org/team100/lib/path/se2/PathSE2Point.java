@@ -6,8 +6,8 @@ import org.team100.lib.path.PathUtil;
 import org.team100.lib.util.Math100;
 import org.team100.lib.util.StrUtil;
 
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.numbers.N2;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.numbers.N2;
 
 /**
  * Represents a point on a path in SE(2) (plane with rotation).

@@ -8,10 +8,10 @@ import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VariableR1;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Twist2d;
-import org.wpilib.math.interpolation.Interpolator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.interpolation.Interpolator;
 
 /**
  * Use a separate interpolator class since it has some state (the kinematics).
@@ -52,7 +52,7 @@ public class SwerveStateInterpolator implements Interpolator<SwerveState> {
         SwerveModuleDeltas delta = SwerveModuleDeltas.modulePositionDelta(
                 startValue.positions(), wheelLerp);
         Twist2d twist = m_kinematics.forward(delta);
-        Pose2d pose = startValue.state().pose().plus(twist.exp());
+        Pose2d pose = startValue.state().pose().exp(twist);
 
         // These lerps are wrong but maybe close enough
         VelocitySE2 startVelocity = startValue.state().velocity();

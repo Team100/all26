@@ -14,8 +14,8 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleState100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
 
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.command2.Command;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * The input dtheta is exactly the module angle.

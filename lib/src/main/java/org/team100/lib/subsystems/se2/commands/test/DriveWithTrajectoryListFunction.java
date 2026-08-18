@@ -13,7 +13,7 @@ import org.team100.lib.subsystems.se2.commands.helper.VelocityReferenceControlle
 import org.team100.lib.trajectory.se2.TrajectorySE2;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
-import org.wpilib.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose2d;
 
 /**
  * Follow a list of trajectories created at initialization time, given the pose

@@ -2,8 +2,8 @@ package org.team100.lib.subsystems.shooter;
 
 import java.util.function.Supplier;
 
-import org.wpilib.math.util.MathUtil;
-import org.wpilib.command2.Command;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj2.command.Command;
 
 public class PivotDefault extends Command {
     private static final double SCALE = 0.1;

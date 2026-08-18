@@ -1,7 +1,7 @@
 package org.team100.lib.hid;
 
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.driverstation.Gamepad;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.XboxController;
 
 /**
  * This is a Microsoft Xbox controller, Logitech F310, or similar.
@@ -12,10 +12,10 @@ import org.wpilib.driverstation.Gamepad;
  * Do not use stick buttons, they are prone to stray clicks
  */
 public class DriverXboxControl {
-    private final Gamepad m_controller;
+    private final XboxController m_controller;
 
     public DriverXboxControl(int port) {
-        m_controller = new Gamepad(port);
+        m_controller = new XboxController(port);
     }
 
     /**
@@ -51,9 +51,7 @@ public class DriverXboxControl {
     }
 
     public Rotation2d pov() {
-        // TODO: fix for 2027
-        return Rotation2d.kZero;
-        // return ControlUtil.pov(m_controller::getPOV);
+        return ControlUtil.pov(m_controller::getPOV);
     }
 
     /** POV switch pressed on the top */
@@ -104,22 +102,22 @@ public class DriverXboxControl {
 
     /** Button 1 */
     public boolean a() {
-        return m_controller.getSouthFaceButton();
+        return m_controller.getAButton();
     }
 
     /** Button 2 */
     public boolean b() {
-        return m_controller.getEastFaceButton();
+        return m_controller.getBButton();
     }
 
     /** Button 3 */
     public boolean x() {
-        return m_controller.getWestFaceButton();
+        return m_controller.getXButton();
     }
 
     /** Button 4 */
     public boolean y() {
-        return m_controller.getNorthFaceButton();
+        return m_controller.getYButton();
     }
 
     /** Axis 1 */

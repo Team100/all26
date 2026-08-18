@@ -1,11 +1,11 @@
 package org.team100.frc2026;
-import org.wpilib.framework.RobotBase;
+import edu.wpi.first.wpilibj.RobotBase;
 
 public final class Main {
     private Main() {
     }
 
     public static void main(String... args) {
-        RobotBase.startRobot(Robot.class);
+        RobotBase.startRobot(Robot::new);
     }
 }

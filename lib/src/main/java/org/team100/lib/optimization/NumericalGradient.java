@@ -2,9 +2,9 @@ package org.team100.lib.optimization;
 
 import java.util.function.Function;
 
-import org.wpilib.math.util.Nat;
-import org.wpilib.math.util.Num;
-import org.wpilib.math.linalg.Vector;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.Num;
+import edu.wpi.first.math.Vector;
 
 /**
  * Gradient is scalar Jacobian. This is cribbed from WPI's

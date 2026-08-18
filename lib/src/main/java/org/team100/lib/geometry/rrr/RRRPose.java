@@ -1,6 +1,6 @@
 package org.team100.lib.geometry.rrr;
 
-import org.wpilib.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose2d;
 
 /**
  * Workspace pose of each joint. p4 is the tool center point.

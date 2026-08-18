@@ -4,10 +4,10 @@ import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.math.kinematics.ChassisVelocities;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 /**
  * Describes the state of rigid body transformations in two dimensions, the
@@ -110,8 +110,8 @@ public class ControlSE2 {
     }
 
     /** Robot-relative speeds */
-    public ChassisVelocities ChassisVelocities() {
-        return SwerveKinodynamics.toInstantaneousChassisVelocities(velocity(), rotation());
+    public ChassisSpeeds chassisSpeeds() {
+        return SwerveKinodynamics.toInstantaneousChassisSpeeds(velocity(), rotation());
     }
 
     public AccelerationSE2 acceleration() {

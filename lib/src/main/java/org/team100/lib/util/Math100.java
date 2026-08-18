@@ -3,10 +3,10 @@ package org.team100.lib.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.wpilib.math.util.MathUtil;
-import org.wpilib.math.util.Num;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.geometry.Rotation2d;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Num;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * Various math utilities.

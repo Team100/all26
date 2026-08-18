@@ -15,16 +15,17 @@ import org.team100.lib.geometry.se2.LieSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.kinematics.Poe;
 import org.team100.lib.util.StrUtil;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.math.geometry.Twist2d;
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.numbers.N2;
-import org.wpilib.math.numbers.N3;
-import org.wpilib.math.util.MathUtil;
-import org.wpilib.math.util.Nat;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.numbers.N3;
 
 /**
  * Using the PoE method, with SE2 poses, not just
@@ -112,7 +113,7 @@ public class RRKinematicsPoE {
                         .plus(J.times(qddot.toVector())));
     }
 
-    //////////////////////////////////////////
+    ///////////////////////////////////////////
     //
     // Inverses are copied from RRKinematics.
 
@@ -198,7 +199,7 @@ public class RRKinematicsPoE {
                                 Jdot.times(Jinv.times(xdot.toVector())))));
     }
 
-    //////////////////////////////////////////////////
+    ///////////////////////////////////////////////////
 
     /**
      * End-effector Jacobian.

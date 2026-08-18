@@ -17,13 +17,13 @@ import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Transform3d;
-import org.wpilib.math.geometry.Translation3d;
-import org.wpilib.driverstation.Alliance;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 class AprilTagRobotLocalizerPerformanceTest {
     private static final double DELTA = 0.01;
@@ -48,7 +48,7 @@ class AprilTagRobotLocalizerPerformanceTest {
         };
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater, () -> Optional.of(Alliance.RED));
+                logger, fieldLogger, layout, history, visionUpdater, () -> Optional.of(Alliance.Red));
 
         // camera sees the tag straight ahead in the center of the frame,
         // but rotated pi/4 to the left. this is ignored anyway.
@@ -58,7 +58,7 @@ class AprilTagRobotLocalizerPerformanceTest {
                         new Rotation3d(0, -Math.PI / 4, 0)));
 
         // verify tag 7 location
-        Pose3d tagPose = layout.getTagPose(Alliance.RED, 7).get();
+        Pose3d tagPose = layout.getTagPose(Alliance.Red, 7).get();
         assertEquals(16.5791, tagPose.getX(), DELTA);
         assertEquals(2.663, tagPose.getY(), DELTA);
         assertEquals(1.451, tagPose.getZ(), DELTA);

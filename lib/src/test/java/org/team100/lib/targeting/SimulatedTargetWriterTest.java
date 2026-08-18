@@ -12,8 +12,8 @@ import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.testing.Timeless;
 
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.networktables.NetworkTableInstance;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 /** Timeless because the clock is used to decide to ignore (stale) input. */
 public class SimulatedTargetWriterTest implements Timeless {

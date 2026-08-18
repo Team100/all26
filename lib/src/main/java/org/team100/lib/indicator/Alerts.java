@@ -3,9 +3,8 @@ package org.team100.lib.indicator;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.wpilib.driverstation.Alert;
-
-
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 
 /**
  * A container for alerts put up on the dashboard, and a condition that can be
@@ -18,7 +17,7 @@ public class Alerts {
         m_alerts = new ArrayList<>();
     }
 
-    public Alert add(String text, Alert.Level type) {
+    public Alert add(String text, AlertType type) {
         Alert alert = new Alert(text, type);
         m_alerts.add(alert);
         return alert;

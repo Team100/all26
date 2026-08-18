@@ -5,11 +5,11 @@ import java.util.List;
 import org.team100.lib.kinematics.urdf.URDFJoint.JointType;
 import org.team100.lib.kinematics.urdf.URDFJoint.Limit;
 
-import org.wpilib.math.util.Nat;
-import org.wpilib.math.linalg.VecBuilder;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.numbers.N5;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.numbers.N5;
 
 /**
  * An example of using the URDF model to describe the Lynxmotion arm.

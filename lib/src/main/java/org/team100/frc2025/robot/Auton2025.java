@@ -1,10 +1,10 @@
 package org.team100.frc2025.robot;
 
-import static org.wpilib.command2.Commands.parallel;
-import static org.wpilib.command2.Commands.print;
-import static org.wpilib.command2.Commands.runOnce;
-import static org.wpilib.command2.Commands.sequence;
-import static org.wpilib.command2.Commands.waitUntil;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.print;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static org.team100.frc2025.field.FieldConstants2025.ReefPoint.C;
 import static org.team100.frc2025.field.FieldConstants2025.ReefPoint.D;
 import static org.team100.frc2025.field.FieldConstants2025.ReefPoint.F;
@@ -26,7 +26,7 @@ import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.subsystems.se2.commands.DriveToPoseWithProfile;
 import org.team100.lib.subsystems.se2.commands.DriveWithTrajectoryFunction;
 
-import org.wpilib.command2.Command;
+import edu.wpi.first.wpilibj2.command.Command;
 
 public class Auton2025 {
     private static final boolean AUTON_FIXED = false;

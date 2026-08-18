@@ -20,10 +20,10 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkLimitSwitch;
-import com.revrobotics.spark.SparkLowLevel.ControlType;
 
 /**
  * Base class for REV motors.
@@ -134,12 +134,11 @@ public abstract class CANSparkMotor implements BareMotor {
         m_revLimitSwitch = m_motor.getReverseLimitSwitch();
 
         // CACHES
-        // TODO: fix for 2027
-        m_position = Cache.ofDouble(() -> m_encoder.getPosition().get() * 2 * Math.PI);
-        m_velocity = Cache.ofDouble(() -> m_encoder.getVelocity().get() * 2 * Math.PI / 60);
-        m_statorCurrent = Cache.ofDouble(() -> m_motor.getOutputCurrent().get());
-        m_supplyVoltage = Cache.ofDouble(() -> m_motor.getBusVoltage().get());
-        m_output = Cache.ofDouble(() -> m_motor.getAppliedOutput().get());
+        m_position = Cache.ofDouble(() -> m_encoder.getPosition() * 2 * Math.PI);
+        m_velocity = Cache.ofDouble(() -> m_encoder.getVelocity() * 2 * Math.PI / 60);
+        m_statorCurrent = Cache.ofDouble(m_motor::getOutputCurrent);
+        m_supplyVoltage = Cache.ofDouble(m_motor::getBusVoltage);
+        m_output = Cache.ofDouble(m_motor::getAppliedOutput);
 
         // LOGGERS
         m_log_desired_position = m_log.doubleLogger(Level.DEBUG, "desired position (rad)");
@@ -158,7 +157,7 @@ public abstract class CANSparkMotor implements BareMotor {
 
     @Override
     public void setDutyCycle(double output) {
-        m_motor.setThrottle(output);
+        m_motor.set(output);
         m_log_output.log(() -> output);
     }
 
@@ -169,11 +168,11 @@ public abstract class CANSparkMotor implements BareMotor {
     }
 
     public boolean getForwardLimitSwitch() {
-        return m_forLimitSwitch.isPressed().get();
+        return m_forLimitSwitch.isPressed();
     }
 
     public boolean getReverseLimitSwitch() {
-        return m_revLimitSwitch.isPressed().get();
+        return m_revLimitSwitch.isPressed();
     }
 
     @Override
@@ -304,7 +303,7 @@ public abstract class CANSparkMotor implements BareMotor {
     public void play(double freq) {
     }
 
-    ////////////////////////////////////////////
+    /////////////////////////////////////////////
 
     private void log() {
         m_log_position.log(m_position);

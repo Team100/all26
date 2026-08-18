@@ -21,9 +21,9 @@ import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.se2.TrajectorySE2Point;
 
-import org.wpilib.math.linalg.VecBuilder;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 class FullStateControllerSE2Test implements Timeless {
     private static final double DELTA = 0.001;

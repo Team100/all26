@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDelta;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
 
-import org.wpilib.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public class SwerveModuleDeltaTest {
     private static final double DELTA = 0.001;

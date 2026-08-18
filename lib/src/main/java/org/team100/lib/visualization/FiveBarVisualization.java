@@ -7,13 +7,13 @@ import java.util.function.Supplier;
 import org.team100.lib.kinematics.five_bar.JointPositions;
 import org.team100.lib.kinematics.five_bar.Point;
 import org.team100.lib.kinematics.five_bar.Scenario;
-import org.wpilib.smartdashboard.Mechanism2d;
-import org.wpilib.smartdashboard.MechanismLigament2d;
-import org.wpilib.smartdashboard.MechanismRoot2d;
-import org.wpilib.smartdashboard.SmartDashboard;
-import org.wpilib.util.Color;
-import org.wpilib.util.Color8Bit;
 
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 
 /**
  * Uses the Mechanism2d widget to visualize the five-bar.
@@ -38,7 +38,7 @@ public class FiveBarVisualization {
     private static final boolean DEBUG = false;
 
     private static final double WIDTH = 10;
-    private static final Color8Bit ORANGE = new Color8Bit(Color.ORANGE_RED);
+    private static final Color8Bit ORANGE = new Color8Bit(Color.kOrangeRed);
     private final double SCALE;
     private final Supplier<Optional<JointPositions>> m_q;
     private final Mechanism2d m_view;

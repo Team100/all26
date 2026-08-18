@@ -15,16 +15,17 @@ import org.team100.lib.geometry.six_dof.SphericalWristPose;
 import org.team100.lib.kinematics.rr.RRKinematics;
 import org.team100.lib.kinematics.rrr_so3.SphericalWristKinematics;
 import org.team100.lib.util.StrUtil;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Transform3d;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.math.geometry.Translation3d;
-import org.wpilib.math.linalg.VecBuilder;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.numbers.N3;
-import org.wpilib.math.util.MathUtil;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N3;
 
 /**
  * Kinematics of six-DOF all-revolute arm with spherical wrist, e.g. PUMA,
@@ -177,7 +178,7 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
         return null;
     }
 
-    /////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////
 
     /**
      * Swing joint. Wrist origin must be in the swing plane. One or two solutions.

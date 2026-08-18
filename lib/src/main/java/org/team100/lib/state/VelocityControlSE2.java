@@ -3,10 +3,12 @@ package org.team100.lib.state;
 import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.hid.Velocity;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.numbers.N3;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.numbers.N3;
 
 /**
  * For velocity control in SE2, where position is not
@@ -101,8 +103,8 @@ public class VelocityControlSE2 {
      */
     public static VelocityControlSE2 scale(Velocity v, double maxSpeed, double maxRot) {
         return new VelocityControlSE2(
-                maxSpeed * Math.clamp(v.x(), -1, 1),
-                maxSpeed * Math.clamp(v.y(), -1, 1),
-                maxRot * Math.clamp(v.theta(), -1, 1));
+                maxSpeed * MathUtil.clamp(v.x(), -1, 1),
+                maxSpeed * MathUtil.clamp(v.y(), -1, 1),
+                maxRot * MathUtil.clamp(v.theta(), -1, 1));
     }
 }

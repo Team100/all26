@@ -30,11 +30,11 @@ import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.visualization.VizUtil;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.kinematics.ChassisVelocities;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.SubsystemBase;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsystemSE2, Music {
     // DEBUG produces a LOT of output. Only enable it while you're looking.
@@ -96,19 +96,19 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
         // is there noise here?
         m_log_rotation_evolution.log(
                 () -> nextTheta.minus(currentState.rotation()).getRadians());
-        ChassisVelocities nextSpeed = SwerveKinodynamics.toInstantaneousChassisVelocities(
+        ChassisSpeeds nextSpeed = SwerveKinodynamics.toInstantaneousChassisSpeeds(
                 nextV.velocity(), nextTheta);
         ChassisAcceleration nextAccel = ChassisAcceleration.fromFieldRelative(
                 nextV.acceleration(), nextTheta);
-        m_swerveLocal.setChassisVelocities(nextSpeed, nextAccel);
+        m_swerveLocal.setChassisSpeeds(nextSpeed, nextAccel);
         m_log_input.log(() -> nextV);
     }
 
     /**
      * Drive in robot-relative coordinates.
      */
-    public void setChassisVelocities(ChassisVelocities speeds, ChassisAcceleration accel) {
-        m_swerveLocal.setChassisVelocities(speeds, accel);
+    public void setChassisSpeeds(ChassisSpeeds speeds, ChassisAcceleration accel) {
+        m_swerveLocal.setChassisSpeeds(speeds, accel);
     }
 
     /**
@@ -190,8 +190,8 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
     }
 
     /** Return cached speeds. */
-    public ChassisVelocities getChassisVelocities() {
-        return m_stateCache.get().ChassisVelocities();
+    public ChassisSpeeds getChassisSpeeds() {
+        return m_stateCache.get().chassisSpeeds();
     }
 
     @Override
@@ -225,8 +225,8 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
      * Never ends.
      */
     public Command rightwardSlow() {
-        return run(() -> setChassisVelocities(
-                new ChassisVelocities(0, -1.0, 0), ChassisAcceleration.ZERO))
+        return run(() -> setChassisSpeeds(
+                new ChassisSpeeds(0, -1.0, 0), ChassisAcceleration.ZERO))
                 .withName("Drive Right Slow");
     }
 
@@ -235,8 +235,8 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
      * Never ends.
      */
     public Command spinLeft() {
-        return run(() -> setChassisVelocities(
-                new ChassisVelocities(0, 0, 1.0), ChassisAcceleration.ZERO))
+        return run(() -> setChassisSpeeds(
+                new ChassisSpeeds(0, 0, 1.0), ChassisAcceleration.ZERO))
                 .withName("Drive Spin Left");
     }
 

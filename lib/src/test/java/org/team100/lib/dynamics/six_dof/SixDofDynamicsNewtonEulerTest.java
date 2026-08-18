@@ -5,7 +5,8 @@ import org.team100.lib.geometry.six_dof.SixDofAcceleration;
 import org.team100.lib.geometry.six_dof.SixDofConfig;
 import org.team100.lib.geometry.six_dof.SixDofVelocity;
 import org.team100.lib.testing.TestUtil;
-import org.wpilib.math.linalg.VecBuilder;
+
+import edu.wpi.first.math.VecBuilder;
 
 public class SixDofDynamicsNewtonEulerTest {
     @Test
@@ -20,7 +21,7 @@ public class SixDofDynamicsNewtonEulerTest {
         TestUtil.verify(VecBuilder.fill(0, 0, 0, 0, 0, 0), t.toVector());
     }
 
-    @Test
+        @Test
     void test0a() {
         SixDofDynamicsNewtonEuler d = new SixDofDynamicsNewtonEuler(
                 0.25, 0.75, 0.75, 0.15, 1, 1, 1, 1);

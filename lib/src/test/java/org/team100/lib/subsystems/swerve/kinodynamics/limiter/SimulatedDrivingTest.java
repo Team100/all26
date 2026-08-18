@@ -35,11 +35,12 @@ import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VariableR1;
-import org.wpilib.driverstation.MatchState;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Twist2d;
-import org.wpilib.math.kinematics.ChassisVelocities;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class SimulatedDrivingTest implements Timeless {
     private static final boolean DEBUG = false;
@@ -80,7 +81,7 @@ public class SimulatedDrivingTest implements Timeless {
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater,MatchState::getAlliance);
+                logger, fieldLogger, layout, history, visionUpdater,DriverStation::getAlliance);
 
         FreshSwerveEstimate estimate = new FreshSwerveEstimate(
                 localizer::update, odometryUpdater::update, history);
@@ -97,8 +98,8 @@ public class SimulatedDrivingTest implements Timeless {
     void testSteps() {
         VelocitySE2 input = new VelocitySE2(2, 0, 3.5);
         Rotation2d theta = new Rotation2d();
-        ChassisVelocities targetChassisVelocities = SwerveKinodynamics.toInstantaneousChassisVelocities(input, theta);
-        SwerveModuleStates states = swerveKinodynamics.toSwerveModuleStates(targetChassisVelocities);
+        ChassisSpeeds targetChassisSpeeds = SwerveKinodynamics.toInstantaneousChassisSpeeds(input, theta);
+        SwerveModuleStates states = swerveKinodynamics.toSwerveModuleStates(targetChassisSpeeds);
 
         // mmmm the angles start as zero? does this matter? no?
         SwerveModulePositions startPositions = new SwerveModulePositions(
@@ -134,13 +135,13 @@ public class SimulatedDrivingTest implements Timeless {
         Twist2d twist = swerveKinodynamics.getKinematics().forward(modulePositionDelta);
 
         Pose2d deltaPose = GeometryUtil.sexp(twist);
-        ChassisVelocities continuousSpeeds = new ChassisVelocities(
+        ChassisSpeeds continuousSpeeds = new ChassisSpeeds(
                 deltaPose.getX(),
                 deltaPose.getY(),
                 deltaPose.getRotation().getRadians()).div(dt);
 
         // to pass, this requires the "veering correction" to be zero.
-        assertEquals(0, continuousSpeeds.vy, 1e-12);
+        assertEquals(0, continuousSpeeds.vyMetersPerSecond, 1e-12);
     }
 
     @Test

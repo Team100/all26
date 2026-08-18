@@ -4,10 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.testing.TestUtil;
-import org.wpilib.math.linalg.MatBuilder;
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.numbers.N2;
-import org.wpilib.math.util.Nat;
+
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.numbers.N2;
 
 public class LieSO2Test {
 

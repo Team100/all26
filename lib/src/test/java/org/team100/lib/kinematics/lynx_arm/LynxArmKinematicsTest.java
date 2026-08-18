@@ -7,8 +7,8 @@ import org.team100.lib.geometry.lynx_arm.LynxArmConfig;
 import org.team100.lib.testing.TestUtil;
 import org.team100.lib.util.StrUtil;
 
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 
 public class LynxArmKinematicsTest {
     private static final boolean DEBUG = false;

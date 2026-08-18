@@ -11,16 +11,15 @@ import org.team100.lib.geometry.lynx_arm.LynxArmConfig;
 import org.team100.lib.geometry.lynx_arm.LynxArmPose;
 import org.team100.lib.testing.TestUtil;
 import org.team100.lib.util.StrUtil;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.math.geometry.Translation3d;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.numbers.N3;
-import org.wpilib.math.util.MathUtil;
 
-
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N3;
 
 public class AnalyticLynxArmKinematicsTest {
     private static final boolean DEBUG = false;
@@ -55,7 +54,7 @@ public class AnalyticLynxArmKinematicsTest {
         }
         // the difference in joint poses here produces a pure pitch
         // which does not match my intuition (that the joint axis would be rotated)
-        Rotation3d r = p.p3().getRotation().rotateBy(p.p2().getRotation().inverse());
+        Rotation3d r = p.p3().getRotation().minus(p.p2().getRotation());
         if (DEBUG)
             System.out.printf("r %s\n", StrUtil.rotStr(r));
         Translation3d t = new Translation3d(1, 0, 0);
@@ -115,7 +114,7 @@ public class AnalyticLynxArmKinematicsTest {
         if (DEBUG)
             System.out.printf("swing angle rad %f\n", swingAngle.getRadians());
         Rotation3d swing3d = new Rotation3d(swingAngle);
-        Rotation3d swingRelative3d = endRotation.rotateBy(swing3d.inverse());
+        Rotation3d swingRelative3d = endRotation.minus(swing3d);
         if (DEBUG)
             System.out.printf("swing relative %s\n", swingRelative3d);
 

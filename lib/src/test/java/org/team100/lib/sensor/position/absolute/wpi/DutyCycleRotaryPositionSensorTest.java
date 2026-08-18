@@ -9,8 +9,9 @@ import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.util.RoboRioChannel;
-import org.wpilib.math.util.MathUtil;
-import org.wpilib.simulation.DutyCycleSim;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.simulation.DutyCycleSim;
 
 /** Uses DutyCycleSim. */
 public class DutyCycleRotaryPositionSensorTest {

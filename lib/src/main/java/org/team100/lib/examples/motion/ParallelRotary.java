@@ -1,10 +1,10 @@
 package org.team100.lib.examples.motion;
 
-import static org.wpilib.command2.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 
 import org.team100.lib.logging.LoggerFactory;
 
-import org.wpilib.command2.Command;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * Illustrates two subsystems that need to act at the same time, until they're

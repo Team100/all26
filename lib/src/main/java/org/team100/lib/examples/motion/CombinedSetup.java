@@ -4,7 +4,7 @@ import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 
-import org.wpilib.command2.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class CombinedSetup {
     public CombinedSetup(

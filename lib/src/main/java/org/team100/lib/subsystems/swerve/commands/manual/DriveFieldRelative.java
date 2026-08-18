@@ -19,7 +19,7 @@ import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
 
-import org.wpilib.command2.Command;
+import edu.wpi.first.wpilibj2.command.Command;
 
 public class DriveFieldRelative extends Command {
     /**

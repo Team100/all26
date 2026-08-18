@@ -4,7 +4,7 @@ import static org.team100.lib.hid.ControlUtil.clamp;
 import static org.team100.lib.hid.ControlUtil.deadband;
 import static org.team100.lib.hid.ControlUtil.expo;
 
-import org.wpilib.driverstation.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID;
 
 /**
  * The RealFlight USB controller is a basic RC-style control that comes with the

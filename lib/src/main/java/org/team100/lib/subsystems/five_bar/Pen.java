@@ -1,8 +1,8 @@
 package org.team100.lib.subsystems.five_bar;
 
-import org.team100.lib.framework.Servo;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.SubsystemBase;
+import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * The pen is mounted on the end of the linkage, so it could be considered part

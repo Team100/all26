@@ -7,10 +7,10 @@ import org.team100.lib.path.se2.PathSE2Entry;
 import org.team100.lib.path.se2.PathSE2Parameter;
 import org.team100.lib.path.se2.PathSE2Point;
 
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.numbers.N2;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.numbers.N2;
 
 /**
  * A path defined as an offset from a spline.

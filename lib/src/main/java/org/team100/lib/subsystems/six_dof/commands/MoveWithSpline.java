@@ -10,9 +10,10 @@ import org.team100.lib.reference.rn.PositionReferenceControllerRn;
 import org.team100.lib.reference.rn.SplineReferenceRn;
 import org.team100.lib.spline.rn.SplineRn;
 import org.team100.lib.subsystems.six_dof.SixDofArm;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.numbers.N6;
-import org.wpilib.math.util.Nat;
+
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.numbers.N6;
 
 /** Generate a spline in R6 joint space, and follow it. */
 public class MoveWithSpline extends MoveAndHold {

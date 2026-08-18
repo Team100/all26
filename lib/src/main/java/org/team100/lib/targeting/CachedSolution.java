@@ -14,7 +14,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.state.ModelSE2;
 
-import org.wpilib.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * Using (moving) robot state and (fixed) target position, this maintains a

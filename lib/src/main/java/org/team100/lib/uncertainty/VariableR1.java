@@ -1,6 +1,6 @@
 package org.team100.lib.uncertainty;
 
-import org.wpilib.math.util.MathUtil;
+import edu.wpi.first.math.MathUtil;
 
 /** Uncertain variable in one dimension. */
 public class VariableR1 {
@@ -34,8 +34,8 @@ public class VariableR1 {
      */
     public VariableR1 interpolate(VariableR1 other, double t) {
         return VariableR1.fromVariance(
-                MathUtil.lerp(mean, other.mean, t),
-                MathUtil.lerp(variance, other.variance, t));
+                MathUtil.interpolate(mean, other.mean, t),
+                MathUtil.interpolate(variance, other.variance, t));
     }
 
     /**

@@ -3,9 +3,9 @@ package org.team100.lib.profile.r1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 
-import org.wpilib.math.trajectory.ExponentialProfile;
-import org.wpilib.math.trajectory.ExponentialProfile.Constraints;
-import org.wpilib.math.trajectory.ExponentialProfile.State;
+import edu.wpi.first.math.trajectory.ExponentialProfile;
+import edu.wpi.first.math.trajectory.ExponentialProfile.Constraints;
+import edu.wpi.first.math.trajectory.ExponentialProfile.State;
 
 public class WPIExponentialProfileR1 implements ProfileR1 {
     private final Constraints m_constraints;

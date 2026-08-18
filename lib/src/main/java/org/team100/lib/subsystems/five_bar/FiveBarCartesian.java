@@ -26,9 +26,9 @@ import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.subsystems.five_bar.commands.Move;
 import org.team100.lib.util.CanId;
 
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.SubsystemBase;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Cartesian control using inverse kinematics, and without profiling.

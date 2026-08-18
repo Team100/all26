@@ -1,6 +1,6 @@
 package org.team100.lib.sensor.gyro;
 
-import org.wpilib.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * Three-axis gyro, NWU.

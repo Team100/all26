@@ -23,7 +23,7 @@ Study builds:
 * [![CI](https://github.com/Team100/all26/actions/workflows/lynxmotion_arm_trainer.yml/badge.svg)](https://github.com/Team100/all26/actions/workflows/lynxmotion_arm_trainer.yml)
 * [![CI](https://github.com/Team100/all26/actions/workflows/new-encoder.yml/badge.svg)](https://github.com/Team100/all26/actions/workflows/new-encoder.yml)
 * [![CI](https://github.com/Team100/all26/actions/workflows/rrr.yml/badge.svg)](https://github.com/Team100/all26/actions/workflows/rrr.yml)
-* [![CI](https://github.com/Team100/all26/actions/workflows/serializerTest.yml/badge.svg)](https://github.com/Team100/all26/actions/workflows/serializerTest.yml)
+* [![CI](https://github.com/Team100/all26/actions/workflows/serialiserTest.yml/badge.svg)](https://github.com/Team100/all26/actions/workflows/serialiserTest.yml)
 * [![CI](https://github.com/Team100/all26/actions/workflows/six_dof.yml/badge.svg)](https://github.com/Team100/all26/actions/workflows/six_dof.yml)
 
 

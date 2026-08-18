@@ -3,8 +3,8 @@ package org.team100.lib.motor.servo;
 import org.team100.lib.util.AffineFunction;
 import org.team100.lib.util.Clamp;
 
-import org.team100.lib.framework.Servo;
-import org.wpilib.math.util.MathUtil;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Servo;
 
 /**
  * A calibratable servo, using an affine transfer function.

@@ -3,7 +3,7 @@ package org.team100.frc2025.field;
 import org.junit.jupiter.api.Test;
 import org.team100.frc2025.field.FieldConstants2025.ReefPoint;
 
-import org.wpilib.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * Check the positions of the scoring points.

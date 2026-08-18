@@ -1,8 +1,8 @@
 package org.team100.frc2025.CommandGroups.ScoreSmart;
 
-import static org.wpilib.command2.Commands.parallel;
-import static org.wpilib.command2.Commands.sequence;
-import static org.wpilib.command2.Commands.waitUntil;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
 import java.util.function.Supplier;
 
@@ -15,8 +15,8 @@ import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.subsystems.se2.commands.DriveToPoseWithProfile;
 import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.command2.Command;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.Command;
 
 public class ScoreL4SmartBack {
     public static Command get(

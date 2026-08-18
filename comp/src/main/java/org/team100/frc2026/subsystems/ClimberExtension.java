@@ -20,8 +20,8 @@ import org.team100.lib.servo.LinearPositionServo;
 import org.team100.lib.servo.OutboardLinearPositionServo;
 import org.team100.lib.util.CanId;
 
-import org.wpilib.command2.Command;
-import org.wpilib.command2.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimberExtension extends SubsystemBase {
     public static final double WHEEL_DIAMETER_M = 0.001275;

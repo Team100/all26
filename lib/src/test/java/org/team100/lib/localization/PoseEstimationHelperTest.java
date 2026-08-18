@@ -6,14 +6,15 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
-import org.wpilib.driverstation.Alliance;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Transform3d;
-import org.wpilib.math.geometry.Translation3d;
-import org.wpilib.system.Filesystem;
-import org.wpilib.vision.apriltag.AprilTagFieldLayout;
-import org.wpilib.vision.apriltag.AprilTagFieldLayout.OriginPosition;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Filesystem;
 
 class PoseEstimationHelperTest {
     private static final boolean DEBUG = false;
@@ -469,7 +470,7 @@ class PoseEstimationHelperTest {
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
                 "2025-reefscape.json");
 
-        Pose3d tagInFieldCoords = layout.getTagPose(Alliance.BLUE, 7).get();
+        Pose3d tagInFieldCoords = layout.getTagPose(Alliance.Blue, 7).get();
 
         Pose3d cameraInField = PoseEstimationHelper.cameraInField(tagInFieldCoords, tagInCamera);
 

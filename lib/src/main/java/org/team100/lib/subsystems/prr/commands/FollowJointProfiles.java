@@ -10,7 +10,7 @@ import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.subsystems.prr.SubsystemPRR;
 
-import org.wpilib.math.util.MathUtil;
+import edu.wpi.first.math.MathUtil;
 
 /**
  * Follow three uncoordinated profiles in configuration space.

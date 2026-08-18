@@ -11,9 +11,9 @@ import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.testing.Timeless;
 
-import org.wpilib.math.interpolation.InterpolatingDoubleTreeMap;
-import org.wpilib.math.interpolation.InterpolatingTreeMap;
-import org.wpilib.math.interpolation.InverseInterpolator;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.math.interpolation.InverseInterpolator;
 
 /**
  * see

@@ -6,8 +6,8 @@ import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveUtil;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleState100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
 
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.kinematics.ChassisVelocities;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 /**
  * Linear velocity limit based on spatial yaw rate and drive wheel speed limit.
@@ -53,7 +53,7 @@ public class SwerveDriveDynamicsConstraint implements TimingConstraint {
 
         // this is a "spatial speed," direction and rad/m
         // which is like moving 1 m/s.
-        ChassisVelocities chassis_speeds = new ChassisVelocities(vx, vy, vtheta);
+        ChassisSpeeds chassis_speeds = new ChassisSpeeds(vx, vy, vtheta);
 
         SwerveModuleStates module_states = m_limits.toSwerveModuleStates(chassis_speeds);
         double max_vel = Double.POSITIVE_INFINITY;

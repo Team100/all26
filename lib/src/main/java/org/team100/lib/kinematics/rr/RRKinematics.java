@@ -9,12 +9,13 @@ import org.team100.lib.geometry.rr.RRConfig;
 import org.team100.lib.geometry.rr.RRPosition;
 import org.team100.lib.geometry.rr.RRVelocity;
 import org.team100.lib.util.StrUtil;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.math.linalg.MatBuilder;
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.numbers.N2;
-import org.wpilib.math.util.MathUtil;
-import org.wpilib.math.util.Nat;
+
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N2;
 
 /**
  * Planar serial RR arm kinematics: two revolute joints and two links.
@@ -92,8 +93,7 @@ public class RRKinematics {
      * https://docs.google.com/document/d/1B6vGPtBtnDSOpfzwHBflI8-nn98W9QvmrX78bon8Ajw
      * 
      * For the default, use the previous value, or null if you have no idea (and in
-     * that case, catch the exception that may occur). If l1 and l2 are not the
-     * same,
+     * that case, catch the exception that may occur).  If l1 and l2 are not the same,
      * the singularity is impossible, so you can safely pass null.
      * 
      * @param x         tool point position
@@ -178,7 +178,7 @@ public class RRKinematics {
                                 Jdot.times(Jinv.times(xdot.toVector())))));
     }
 
-    ///////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
 
     /**
      * End-effector Jacobian.

@@ -14,17 +14,18 @@ import org.team100.lib.geometry.six_dof.SixDofPose;
 import org.team100.lib.geometry.six_dof.SixDofVelocity;
 import org.team100.lib.kinematics.Poe;
 import org.team100.lib.testing.TestUtil;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Translation3d;
-import org.wpilib.math.geometry.Twist3d;
-import org.wpilib.math.linalg.MatBuilder;
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.linalg.VecBuilder;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.numbers.N3;
-import org.wpilib.math.numbers.N6;
-import org.wpilib.math.util.Nat;
+
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Twist3d;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.numbers.N6;
 
 public class SixDofKinematicsPoETest {
     /**

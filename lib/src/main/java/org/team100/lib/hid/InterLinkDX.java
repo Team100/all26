@@ -5,7 +5,7 @@ import static org.team100.lib.hid.ControlUtil.deadband;
 import static org.team100.lib.hid.ControlUtil.expo;
 import static org.team100.lib.hid.ControlUtil.scale;
 
-import org.wpilib.driverstation.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID;
 
 /**
  * The Spektrum InterLinkDX controller is an RC-style control with a USB

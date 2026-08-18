@@ -7,9 +7,9 @@ import org.team100.lib.hid.Velocity;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.subsystems.se2.PositionSubsystemSE2;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.command2.Command;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * Use the operator control to "fly" a positional planar subsystem around in

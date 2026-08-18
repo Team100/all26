@@ -2,6 +2,8 @@ package org.team100.lib.optimization;
 
 import java.util.function.DoubleUnaryOperator;
 
+import edu.wpi.first.math.MathUtil;
+
 /**
  * 1d specialization that avoids vectors.
  */
@@ -60,7 +62,7 @@ public class NewtonsMethod1d {
      * Limit: dx = clamp(dx) using a fixed limit.
      */
     private double clamp(double dx) {
-        return Math.clamp(dx, -m_dxLimit, m_dxLimit);
+        return MathUtil.clamp(dx, -m_dxLimit, m_dxLimit);
     }
 
     /**
@@ -75,7 +77,7 @@ public class NewtonsMethod1d {
      * Clamp the guess to the limits.
      */
     private double limit(double x) {
-        return Math.clamp(x, m_xMin, m_xMax);
+        return MathUtil.clamp(x, m_xMin, m_xMax);
     }
 
 }

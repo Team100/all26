@@ -35,6 +35,6 @@ public class Takt {
      * A few consumers want the actual time; don't use this unless you really do.
      */
     public static double actual() {
-        return org.wpilib.system.Timer.getMonotonicTimestamp();
+        return edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
     }
 }

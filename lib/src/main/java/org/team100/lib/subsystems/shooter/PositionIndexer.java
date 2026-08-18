@@ -5,8 +5,8 @@ import org.team100.lib.reference.r1.SetpointsR1;
 import org.team100.lib.servo.LinearPositionServo;
 import org.team100.lib.state.ControlR1;
 
-import org.wpilib.command2.Command;
-import org.wpilib.command2.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Indexer using position control.

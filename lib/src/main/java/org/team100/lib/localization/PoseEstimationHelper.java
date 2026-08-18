@@ -1,8 +1,8 @@
 package org.team100.lib.localization;
 
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 
 /**
  * Static methods used to interpret camera input.
@@ -50,7 +50,7 @@ public class PoseEstimationHelper {
     static Rotation3d tagRotationInCamera(
             Rotation3d tagRotationInField,
             Rotation3d cameraRotationInField) {
-        return tagRotationInField.rotateBy(cameraRotationInField.inverse());
+        return tagRotationInField.rotateBy(cameraRotationInField.unaryMinus());
     }
 
     /**

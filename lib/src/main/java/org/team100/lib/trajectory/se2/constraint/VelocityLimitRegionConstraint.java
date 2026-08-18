@@ -2,8 +2,8 @@ package org.team100.lib.trajectory.se2.constraint;
 
 import org.team100.lib.path.se2.PathSE2Point;
 
-import org.wpilib.math.geometry.Rectangle2d;
-import org.wpilib.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * A constant velocity limit within a rectangle; no limit outside.

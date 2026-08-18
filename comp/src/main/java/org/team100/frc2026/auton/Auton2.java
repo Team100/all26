@@ -1,8 +1,8 @@
 package org.team100.frc2026.auton;
 
-import static org.wpilib.command2.Commands.parallel;
-import static org.wpilib.command2.Commands.sequence;
-import static org.wpilib.command2.Commands.waitSeconds;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +23,9 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
-import org.wpilib.command2.Command;
-import org.wpilib.math.geometry.Pose2d;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example of a simple sequence */
 public class Auton2 implements AnnotatedCommand {

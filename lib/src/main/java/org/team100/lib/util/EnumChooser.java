@@ -2,8 +2,8 @@ package org.team100.lib.util;
 
 import java.util.EnumSet;
 
-import org.wpilib.smartdashboard.SendableChooser;
-import org.wpilib.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class EnumChooser<T extends Enum<T>> {
 

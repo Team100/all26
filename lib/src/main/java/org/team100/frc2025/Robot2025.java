@@ -9,16 +9,17 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.Identity;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
-import org.team100.lib.framework.SerialNumber;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.logging.RobotLog;
 import org.team100.lib.util.Banner;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.CommandScheduler;
-import org.wpilib.networktables.NetworkTableInstance;
-import org.wpilib.smartdashboard.SmartDashboard;
-import org.wpilib.system.RobotController;
-import org.wpilib.system.WPILibVersion;
+
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.WPILibVersion;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot2025 extends TimedRobot100 {
 
@@ -37,10 +38,10 @@ public class Robot2025 extends TimedRobot100 {
         // CanBridge.runTCP();
 
         System.out.printf("WPILib Version: %s\n", WPILibVersion.Version);
-        System.out.printf("RoboRIO serial number: %s\n", SerialNumber.get());
+        System.out.printf("RoboRIO serial number: %s\n", RobotController.getSerialNumber());
         System.out.printf("Identity: %s\n", Identity.instance.name());
-        // RobotController.setBrownoutVoltage(5.5);
-        // DriverStation.silenceJoystickConnectionWarning(true);
+        RobotController.setBrownoutVoltage(5.5);
+        DriverStation.silenceJoystickConnectionWarning(true);
         Experiments.instance.show();
 
         // Log what the scheduler is doing. Use "withName()".
@@ -72,7 +73,7 @@ public class Robot2025 extends TimedRobot100 {
         }
     }
 
-    /////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
     //
     // INITIALIZERS, DO NOT CHANGE THESE
     //
@@ -97,7 +98,7 @@ public class Robot2025 extends TimedRobot100 {
         m_allAutons.close();
     }
 
-    //////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
     //
     // LEAVE ALL THESE EMPTY
     //

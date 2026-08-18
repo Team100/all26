@@ -6,11 +6,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
-import org.wpilib.driverstation.Alliance;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.system.Filesystem;
-import org.wpilib.vision.apriltag.AprilTagFieldLayout;
-import org.wpilib.vision.apriltag.AprilTagFieldLayout.OriginPosition;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Filesystem;
 
 /**
  * Remind myself what's in the JSON file.
@@ -27,7 +28,7 @@ class TagTest {
          * from the blue perspective, tag 7 has small x
          * and large y, and oriented at pi theta.
          */
-        Pose3d tag7Pose = layout.getTagPose(Alliance.BLUE, 7).get();
+        Pose3d tag7Pose = layout.getTagPose(Alliance.Blue, 7).get();
         assertEquals(13.89, tag7Pose.getTranslation().getX(), DELTA);
         assertEquals(4.026, tag7Pose.getTranslation().getY(), DELTA);
         assertEquals(0.308, tag7Pose.getTranslation().getZ(), DELTA);
@@ -46,7 +47,7 @@ class TagTest {
          * from the red perspective, tag 7 has large x
          * and small y, and oriented at zero theta.
          */
-        Pose3d tag7Pose = layout.getTagPose(Alliance.RED, 7).get();
+        Pose3d tag7Pose = layout.getTagPose(Alliance.Red, 7).get();
         assertEquals(3.657, tag7Pose.getTranslation().getX(), DELTA);
         assertEquals(4.026, tag7Pose.getTranslation().getY(), DELTA); // close to right side
         assertEquals(0.308, tag7Pose.getTranslation().getZ(), DELTA); // 1.5m up (as above)

@@ -5,7 +5,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.util.RoboRioChannel;
 
-import org.wpilib.hardware.discrete.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 /** Represents the state of a RoboRIO digital input. */
 public class RoboRioSwitch {

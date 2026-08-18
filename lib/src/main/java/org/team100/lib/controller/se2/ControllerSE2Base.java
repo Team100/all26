@@ -14,7 +14,7 @@ import org.team100.lib.state.ControlSE2;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.state.VelocityControlSE2;
 
-import org.wpilib.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * Base class for SE(2) controllers.

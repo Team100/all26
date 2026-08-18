@@ -13,8 +13,8 @@ import org.team100.lib.subsystems.mecanum.MecanumDrive100;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
 import org.team100.lib.util.EnumChooser;
 
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.command2.Command;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * Map manual velocity input to the Mecanum drive, using some sort of input

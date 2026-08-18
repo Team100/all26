@@ -7,8 +7,8 @@ import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.se2.DirectionSE2;
 import org.team100.lib.path.PathUtil;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Twist2d;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Twist2d;
 
 /**
  * Represents a 2d holonomic path, i.e. with heading independent from course.

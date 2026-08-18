@@ -14,6 +14,8 @@ import org.team100.lib.reference.r1.SetpointsR1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 
+import edu.wpi.first.math.MathUtil;
+
 /**
  * Position control using duty cycle feature of linear mechanism
  */
@@ -136,7 +138,7 @@ public class OnboardLinearDutyCyclePositionServo implements LinearPositionServo 
 
         final double u_FF = m_kV * m_setpoint.v() + m_kT * t.f();
         final double u_FB = m_feedback.calculate(measurement, setpoints.current().model());
-        final double u_TOTAL = Math.clamp(u_FF + u_FB, -1.0, 1.0);
+        final double u_TOTAL = MathUtil.clamp(u_FF + u_FB, -1.0, 1.0);
 
         m_mechanism.setDutyCycle(u_TOTAL);
 

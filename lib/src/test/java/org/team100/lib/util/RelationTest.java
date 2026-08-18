@@ -7,7 +7,7 @@ import java.util.function.DoubleFunction;
 
 import org.junit.jupiter.api.Test;
 
-import org.wpilib.math.util.MathUtil;
+import edu.wpi.first.math.MathUtil;
 
 public class RelationTest {
     private static final double DELTA = 1e-12;
@@ -15,8 +15,8 @@ public class RelationTest {
     public  record Tuple(double x, double y) {
         public static Tuple interpolate(Tuple a, Tuple b, double t) {
             return new Tuple(
-                    MathUtil.lerp(a.x, b.x, t),
-                    MathUtil.lerp(a.y, b.y, t));
+                    MathUtil.interpolate(a.x, b.x, t),
+                    MathUtil.interpolate(a.y, b.y, t));
         }
     }
 

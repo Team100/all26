@@ -16,8 +16,6 @@ public class GyroFactory {
             SwerveKinodynamics kinodynamics,
             SwerveModuleCollection collection) {
         switch (Identity.instance) {
-            case SYSTEMCORE:
-                return new SystemcoreGyro(parent);
             case SWERVE_ONE:
             case COMP_BOT:
             case BETA_BOT:

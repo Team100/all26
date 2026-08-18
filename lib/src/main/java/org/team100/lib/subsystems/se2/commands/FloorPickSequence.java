@@ -1,6 +1,6 @@
 package org.team100.lib.subsystems.se2.commands;
 
-import static org.wpilib.command2.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -11,9 +11,9 @@ import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.targeting.Targets;
 
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.command2.Command;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * Use a sequence of commands to drive nearby a target with the intake facing

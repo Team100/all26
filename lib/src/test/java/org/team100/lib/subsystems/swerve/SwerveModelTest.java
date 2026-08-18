@@ -9,11 +9,11 @@ import org.team100.lib.geometry.se2.WaypointSE2;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.state.ModelSE2;
 
-import org.wpilib.math.linalg.VecBuilder;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.math.kinematics.ChassisVelocities;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 class ModelSE2Test {
     private static final double DELTA = 0.001;
@@ -87,24 +87,24 @@ class ModelSE2Test {
     }
 
     @Test
-    void testChassisVelocities0() {
+    void testChassisSpeeds0() {
         ModelSE2 state = new ModelSE2(
                 new Pose2d(new Translation2d(0, 0), Rotation2d.kPi),
                 new VelocitySE2(1, 0, 0));
-        ChassisVelocities speeds = state.ChassisVelocities();
-        assertEquals(-1, speeds.vx, DELTA);
-        assertEquals(0, speeds.vy, DELTA);
-        assertEquals(0, speeds.omega, DELTA);
+        ChassisSpeeds speeds = state.chassisSpeeds();
+        assertEquals(-1, speeds.vxMetersPerSecond, DELTA);
+        assertEquals(0, speeds.vyMetersPerSecond, DELTA);
+        assertEquals(0, speeds.omegaRadiansPerSecond, DELTA);
     }
 
     @Test
-    void testChassisVelocities1() {
+    void testChassisSpeeds1() {
         ModelSE2 state = new ModelSE2(
                 new Pose2d(new Translation2d(0, 0), Rotation2d.kCCW_Pi_2),
                 new VelocitySE2(1, 0, 1));
-        ChassisVelocities speeds = state.ChassisVelocities();
-        assertEquals(0, speeds.vx, DELTA);
-        assertEquals(-1, speeds.vy, DELTA);
-        assertEquals(1, speeds.omega, DELTA);
+        ChassisSpeeds speeds = state.chassisSpeeds();
+        assertEquals(0, speeds.vxMetersPerSecond, DELTA);
+        assertEquals(-1, speeds.vyMetersPerSecond, DELTA);
+        assertEquals(1, speeds.omegaRadiansPerSecond, DELTA);
     }
 }

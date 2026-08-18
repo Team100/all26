@@ -1,12 +1,13 @@
 package org.team100.frc2025.robot;
 
-import static org.wpilib.command2.Commands.parallel;
-import static org.wpilib.command2.Commands.print;
-import static org.wpilib.command2.Commands.runOnce;
-import static org.wpilib.command2.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.print;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
-import org.wpilib.command2.Command;
-import org.wpilib.driverstation.Alert;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /** Run pre- and post-match test sequences automatically. */
 public class Tester2025 {
@@ -16,7 +17,7 @@ public class Tester2025 {
 
     public Tester2025(Machinery2025 machinery) {
         m_machinery = machinery;
-        m_alert = new Alert(text("waiting"), Alert.Level.LOW);
+        m_alert = new Alert(text("waiting"), AlertType.kInfo);
         m_alert.set(true);
     }
 

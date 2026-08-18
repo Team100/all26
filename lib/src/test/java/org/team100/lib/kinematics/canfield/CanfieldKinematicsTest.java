@@ -3,8 +3,9 @@ package org.team100.lib.kinematics.canfield;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.canfield.CanfieldConfig;
 import org.team100.lib.testing.TestUtil;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation3d;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 
 public class CanfieldKinematicsTest {
     @Test

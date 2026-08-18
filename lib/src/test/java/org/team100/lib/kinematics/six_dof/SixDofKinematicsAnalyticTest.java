@@ -9,9 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.six_dof.SixDofConfig;
 import org.team100.lib.geometry.six_dof.SixDofPose;
 import org.team100.lib.testing.TestUtil;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Translation2d;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 public class SixDofKinematicsAnalyticTest {
     @Test
@@ -55,7 +56,7 @@ public class SixDofKinematicsAnalyticTest {
     void testInverse1() {
         // This is the wrist singularity and the elbow singularity
         SixDofKinematics k = new SixDofKinematicsAnalytic(0.25, 0.75, 0.75, 0.15);
-        // tool (x) points at global +x
+        // tool (x) points at global +x 
         Pose3d p = new Pose3d(1.65, 0, 0.25,
                 new Rotation3d(0, 0, 0));
         List<SixDofConfig> q = k.inverse(p, null, 1.0);
@@ -70,7 +71,7 @@ public class SixDofKinematicsAnalyticTest {
         SixDofKinematics k = new SixDofKinematicsAnalytic(0.25, 0.75, 0.75, 0.15);
         // tool (x) points at global -z
         Pose3d p = new Pose3d(0.5, 0, 0.5,
-                new Rotation3d(0, Math.PI / 2, 0));
+                new Rotation3d(0, Math.PI/2, 0));
         List<SixDofConfig> q = k.inverse(p, null, null);
         assertEquals(8, q.size());
         TestUtil.verify(new SixDofConfig(0, 1.804, -2.259, 0, -1.116, 0), q.get(0));

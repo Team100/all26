@@ -1,16 +1,16 @@
 package org.team100.lib.geometry;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Transform3d;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.math.geometry.Translation3d;
-import org.wpilib.math.geometry.Twist2d;
-import org.wpilib.math.geometry.Twist3d;
-import org.wpilib.math.kinematics.ChassisVelocities;
-import org.wpilib.math.linalg.VecBuilder;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.numbers.N6;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.geometry.Twist3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.numbers.N6;
 
 /**
  * Various distance metrics and norms.
@@ -64,7 +64,7 @@ public class Metrics {
      * SE(2) as R2xS1.
      */
     public static double projectedDistance(Pose2d a, Pose2d b) {
-        return translationalNorm(b.minus(a).log());
+        return translationalNorm(a.log(b));
     }
 
     /**
@@ -80,8 +80,8 @@ public class Metrics {
     }
 
     /** The magnitude of the translational velocity. */
-    public static double translationalNorm(ChassisVelocities a) {
-        return Math.hypot(a.vx, a.vy);
+    public static double translationalNorm(ChassisSpeeds a) {
+        return Math.hypot(a.vxMetersPerSecond, a.vyMetersPerSecond);
     }
 
     public static double l1Norm(Vector<?> v) {

@@ -22,9 +22,10 @@ import org.team100.lib.subsystems.rrr.commands.MoveWithSpline;
 import org.team100.lib.subsystems.rrr.commands.MoveWithTrajectorySE2;
 import org.team100.lib.subsystems.se2.PositionSubsystemSE2;
 import org.team100.lib.util.StrUtil;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.SubsystemBase;
-import org.wpilib.math.geometry.Pose2d;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Planar RRR arm, for training.

@@ -6,15 +6,16 @@ import org.team100.lib.geometry.rr.RRAcceleration;
 import org.team100.lib.geometry.rr.RRConfig;
 import org.team100.lib.geometry.rr.RRVelocity;
 import org.team100.lib.util.ModernRobotics;
-import org.wpilib.math.linalg.MatBuilder;
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.linalg.VecBuilder;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.numbers.N2;
-import org.wpilib.math.numbers.N3;
-import org.wpilib.math.numbers.N4;
-import org.wpilib.math.numbers.N6;
-import org.wpilib.math.util.Nat;
+
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.numbers.N4;
+import edu.wpi.first.math.numbers.N6;
 
 /**
  * Use Modern Robotics Newton Euler method for the RR case.

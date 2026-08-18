@@ -6,27 +6,28 @@ import org.team100.lib.geometry.se2.DirectionSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.geometry.se2.WaypointSE2;
 import org.team100.lib.state.VelocityControlSE2;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Quaternion;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Transform2d;
-import org.wpilib.math.geometry.Transform3d;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.math.geometry.Translation3d;
-import org.wpilib.math.geometry.Twist2d;
-import org.wpilib.math.geometry.Twist3d;
-import org.wpilib.math.kinematics.ChassisVelocities;
-import org.wpilib.math.linalg.MatBuilder;
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.linalg.VecBuilder;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.numbers.N2;
-import org.wpilib.math.numbers.N3;
-import org.wpilib.math.numbers.N6;
-import org.wpilib.math.util.MathUtil;
-import org.wpilib.math.util.Nat;
+
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Quaternion;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.geometry.Twist3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.numbers.N6;
 
 /**
  * Lots of utility functions.
@@ -73,7 +74,7 @@ public class GeometryUtil {
     }
 
     /** Return a projected onto the direction of b, retaining the omega of a */
-    public static ChassisVelocities project(ChassisVelocities a, ChassisVelocities b) {
+    public static ChassisSpeeds project(ChassisSpeeds a, ChassisSpeeds b) {
         double norm = Metrics.translationalNorm(b);
         if (norm < 1e-9) {
             // there's no target course, bail out
@@ -83,14 +84,14 @@ public class GeometryUtil {
         if (DEBUG) {
             System.out.printf("project() scale %.8f\n", scale);
         }
-        return new ChassisVelocities(
-                b.vx * scale,
-                b.vy * scale,
-                a.omega);
+        return new ChassisSpeeds(
+                b.vxMetersPerSecond * scale,
+                b.vyMetersPerSecond * scale,
+                a.omegaRadiansPerSecond);
     }
 
-    public static double dot(ChassisVelocities a, ChassisVelocities b) {
-        return a.vx * b.vx + a.vy * b.vy;
+    public static double dot(ChassisSpeeds a, ChassisSpeeds b) {
+        return a.vxMetersPerSecond * b.vxMetersPerSecond + a.vyMetersPerSecond * b.vyMetersPerSecond;
     }
 
     public static double dot(Translation2d a, Translation2d b) {
@@ -105,12 +106,12 @@ public class GeometryUtil {
         return a.getX() * b.getX() + a.getY() * b.getY() + a.getZ() * b.getZ();
     }
 
-    public static Twist2d discretize(ChassisVelocities continuous, double dt) {
-        ChassisVelocities speeds = continuous.discretize(dt);
+    public static Twist2d discretize(ChassisSpeeds continuous, double dt) {
+        ChassisSpeeds speeds = ChassisSpeeds.discretize(continuous, dt);
         return new Twist2d(
-                speeds.vx * dt,
-                speeds.vy * dt,
-                speeds.omega * dt);
+                speeds.vxMetersPerSecond * dt,
+                speeds.vyMetersPerSecond * dt,
+                speeds.omegaRadiansPerSecond * dt);
     }
 
     public static Twist2d scale(Twist2d t, double s) {
@@ -123,12 +124,12 @@ public class GeometryUtil {
 
     /** Exponential at zero of the twist, scaled by q. */
     public static Pose2d exp(Twist2d t, double q) {
-        return Pose2d.kZero.plus(scale(t, q).exp());
+        return Pose2d.kZero.exp(scale(t, q));
     }
 
     /** Exponential at zero of the twist, scaled by q. */
     public static Pose3d exp(Twist3d t, double q) {
-        return Pose3d.kZero.plus(scale(t, q).exp());
+        return Pose3d.kZero.exp(scale(t, q));
     }
 
     /**
@@ -172,15 +173,15 @@ public class GeometryUtil {
     }
 
     public static Twist2d slog(final Pose2d p) {
-        return p.minus(Pose2d.kZero).log();
+        return Pose2d.kZero.log(p);
     }
 
     public static Twist3d slog(final Pose3d p) {
-        return p.minus(Pose3d.kZero).log();
+        return Pose3d.kZero.log(p);
     }
 
     public static Pose2d sexp(final Twist2d delta) {
-        return Pose2d.kZero.plus(delta.exp());
+        return Pose2d.kZero.exp(delta);
     }
 
     public static Pose2d fromRotation(final Rotation2d rotation) {
@@ -226,10 +227,10 @@ public class GeometryUtil {
                 || Math.abs(a.getRadians() - WrapRadians(b.getRadians() + Math.PI)) <= 1e-12;
     }
 
-    public static boolean near(ChassisVelocities a, ChassisVelocities b) {
-        return MathUtil.isNear(a.vx, b.vx, 1e-6)
-                && MathUtil.isNear(a.vy, b.vy, 1e-6)
-                && MathUtil.isNear(a.omega, b.omega, 1e-6);
+    public static boolean near(ChassisSpeeds a, ChassisSpeeds b) {
+        return MathUtil.isNear(a.vxMetersPerSecond, b.vxMetersPerSecond, 1e-6)
+                && MathUtil.isNear(a.vyMetersPerSecond, b.vyMetersPerSecond, 1e-6)
+                && MathUtil.isNear(a.omegaRadiansPerSecond, b.omegaRadiansPerSecond, 1e-6);
     }
 
     public static Rotation2d flip(Rotation2d a) {
@@ -261,9 +262,9 @@ public class GeometryUtil {
     /** Linear interpolation of each component */
     public static DirectionSE2 interpolate(DirectionSE2 a, DirectionSE2 b, double x) {
         return new DirectionSE2(
-                MathUtil.lerp(a.x, b.x, x),
-                MathUtil.lerp(a.y, b.y, x),
-                MathUtil.lerp(a.theta, b.theta, x));
+                MathUtil.interpolate(a.x, b.x, x),
+                MathUtil.interpolate(a.y, b.y, x),
+                MathUtil.interpolate(a.theta, b.theta, x));
     }
 
     /** straight-line interpolation of pose, linear interpolation of course */
@@ -274,48 +275,7 @@ public class GeometryUtil {
         return new WaypointSE2(
                 interpolate(a.pose(), b.pose(), x),
                 interpolate(a.course(), b.course(), x),
-                MathUtil.lerp(a.scale(), b.scale(), x));
-    }
-
-    /**
-     * Interpolate between a and b, treating each dimension separately. This will
-     * make straight lines, whereas the WPI Pose3d interpolator will make
-     * constant-twist curves.
-     */
-    public static Pose3d interpolate(Pose3d a, Pose3d b, double x) {
-        if (x <= 0.0) {
-            return a;
-        }
-        if (x >= 1.0) {
-            return b;
-        }
-        Translation3d aT = a.getTranslation();
-        Translation3d bT = b.getTranslation();
-        Rotation3d aR = a.getRotation();
-        Rotation3d bR = b.getRotation();
-        // each translation axis is interpolated separately
-        Translation3d lerpT = aT.interpolate(bT, x);
-        // Rotation3d lerpR = aR.interpolate(bR, x);
-        Rotation3d lerpR = interpolate(aR, bR, x);
-        return new Pose3d(lerpT, lerpR);
-    }
-
-    /**
-     * Interpolate between a and b, treating each dimension separately. This will
-     * make straight lines, whereas the WPI Rotation3d interpolator uses quaternion
-     * composition.
-     */
-    public static Rotation3d interpolate(Rotation3d a, Rotation3d b, double x) {
-        if (x <= 0.0) {
-            return a;
-        }
-        if (x >= 1.0) {
-            return b;
-        }
-        return new Rotation3d(
-                MathUtil.lerp(a.getX(), b.getX(), x),
-                MathUtil.lerp(a.getY(), b.getY(), x),
-                MathUtil.lerp(a.getZ(), b.getZ(), x));
+                MathUtil.interpolate(a.scale(), b.scale(), x));
     }
 
     public static Translation2d inverse(Translation2d a) {
@@ -323,9 +283,9 @@ public class GeometryUtil {
     }
 
     public static Twist2d interpolate(Twist2d a, Twist2d b, double x) {
-        return new Twist2d(MathUtil.lerp(a.dx, b.dx, x),
-                MathUtil.lerp(a.dy, b.dy, x),
-                MathUtil.lerp(a.dtheta, b.dtheta, x));
+        return new Twist2d(MathUtil.interpolate(a.dx, b.dx, x),
+                MathUtil.interpolate(a.dy, b.dy, x),
+                MathUtil.interpolate(a.dtheta, b.dtheta, x));
     }
 
     /** direction of the translational part of the twist */
@@ -338,18 +298,18 @@ public class GeometryUtil {
     }
 
     /** robot-relative course */
-    public static Optional<Rotation2d> getCourse(ChassisVelocities t) {
+    public static Optional<Rotation2d> getCourse(ChassisSpeeds t) {
         if (Metrics.translationalNorm(t) > 1e-12) {
-            return Optional.of(new Rotation2d(t.vx, t.vy));
+            return Optional.of(new Rotation2d(t.vxMetersPerSecond, t.vyMetersPerSecond));
         } else {
             return Optional.empty();
         }
     }
 
-    public static boolean isZero(ChassisVelocities x) {
-        return Math.abs(x.vx) < 1E-9
-                && Math.abs(x.vy) < 1E-9
-                && Math.abs(x.omega) < 1E-9;
+    public static boolean isZero(ChassisSpeeds x) {
+        return Math.abs(x.vxMetersPerSecond) < 1E-9
+                && Math.abs(x.vyMetersPerSecond) < 1E-9
+                && Math.abs(x.omegaRadiansPerSecond) < 1E-9;
     }
 
     /**
@@ -452,11 +412,11 @@ public class GeometryUtil {
         return VecBuilder.fill(t.getX(), t.getY(), 0);
     }
 
-    public static Vector<N3> toVec(ChassisVelocities s) {
+    public static Vector<N3> toVec(ChassisSpeeds s) {
         return VecBuilder.fill(
-                s.vx,
-                s.vy,
-                s.omega);
+                s.vxMetersPerSecond,
+                s.vyMetersPerSecond,
+                s.omegaRadiansPerSecond);
     }
 
     public static double cross(Vector<N2> a, Vector<N2> b) {

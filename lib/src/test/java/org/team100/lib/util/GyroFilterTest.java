@@ -1,8 +1,8 @@
 package org.team100.lib.util;
 
 import org.junit.jupiter.api.Test;
-import org.wpilib.math.filter.LinearFilter;
 
+import edu.wpi.first.math.filter.LinearFilter;
 
 /** Verify that high-pass filtering is a bad approach to bias correction. */
 class GyroFilterTest {

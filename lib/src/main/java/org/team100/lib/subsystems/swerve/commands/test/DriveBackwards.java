@@ -3,9 +3,9 @@ package org.team100.lib.subsystems.swerve.commands.test;
 import org.team100.lib.geometry.se2.ChassisAcceleration;
 import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.kinematics.ChassisVelocities;
-import org.wpilib.command2.Command;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * A bang-bang controller that stops after the robot moves the specified
@@ -14,7 +14,7 @@ import org.wpilib.command2.Command;
  * This is for testing odometry.
  */
 public class DriveBackwards extends Command {
-    private static final ChassisVelocities SPEED = new ChassisVelocities(-0.1, 0, 0);
+    private static final ChassisSpeeds SPEED = new ChassisSpeeds(-0.1, 0, 0);
 
     private final SwerveDriveSubsystem m_drive;
     private final double m_length;
@@ -34,7 +34,7 @@ public class DriveBackwards extends Command {
 
     @Override
     public void execute() {
-        m_drive.setChassisVelocities(SPEED, ChassisAcceleration.ZERO);
+        m_drive.setChassisSpeeds(SPEED, ChassisAcceleration.ZERO);
     }
 
     public boolean isDone() {

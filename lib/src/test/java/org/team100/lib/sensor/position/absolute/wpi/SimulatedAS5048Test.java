@@ -10,8 +10,8 @@ import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.util.RoboRioChannel;
 
-import org.wpilib.math.util.MathUtil;
-import org.wpilib.math.geometry.Rotation2d;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public class SimulatedAS5048Test implements Timeless {
     private static final LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());

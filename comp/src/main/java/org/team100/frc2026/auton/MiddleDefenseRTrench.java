@@ -1,7 +1,7 @@
 package org.team100.frc2026.auton;
 
-import static org.wpilib.command2.Commands.parallel;
-import static org.wpilib.command2.Commands.repeatingSequence;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +25,10 @@ import org.team100.lib.trajectory.se2.constraint.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
-import org.wpilib.command2.Command;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 
 public class MiddleDefenseRTrench implements AnnotatedCommand {
 

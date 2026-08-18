@@ -5,14 +5,14 @@ import java.util.EnumSet;
 import org.team100.lib.camera.Camera;
 import org.team100.lib.logging.LoggerFactory;
 
-import org.wpilib.networktables.MultiSubscriber;
-import org.wpilib.networktables.NetworkTableEvent;
-import org.wpilib.networktables.NetworkTableInstance;
-import org.wpilib.networktables.NetworkTableListenerPoller;
-import org.wpilib.networktables.NetworkTableValue;
-import org.wpilib.networktables.PubSubOption;
-import org.wpilib.networktables.ValueEventData;
-import org.wpilib.util.struct.StructBuffer;
+import edu.wpi.first.networktables.MultiSubscriber;
+import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableListenerPoller;
+import edu.wpi.first.networktables.NetworkTableValue;
+import edu.wpi.first.networktables.PubSubOption;
+import edu.wpi.first.networktables.ValueEventData;
+import edu.wpi.first.util.struct.StructBuffer;
 
 /**
  * Reads camera input from network tables, which is always a StructArray.
@@ -46,9 +46,9 @@ public abstract class CameraReader<T> {
                 new MultiSubscriber(
                         inst,
                         new String[] { ntRootName },
-                        PubSubOption.KEEP_DUPLICATES,
+                        PubSubOption.keepDuplicates(true),
                         PubSubOption.pollStorage(QUEUE_DEPTH)),
-                EnumSet.of(NetworkTableEvent.Kind.VALUE_ALL));
+                EnumSet.of(NetworkTableEvent.Kind.kValueAll));
         m_buf = buf;
     }
 

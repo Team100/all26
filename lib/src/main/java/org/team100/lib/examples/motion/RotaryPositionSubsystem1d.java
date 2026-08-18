@@ -28,8 +28,8 @@ import org.team100.lib.servo.OnboardAngularPositionServo;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
 
-import org.wpilib.command2.Command;
-import org.wpilib.command2.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Demonstrates how to assemble a one-dimensional subsystem with positional

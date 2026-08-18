@@ -1,6 +1,6 @@
 package org.team100.lib.sensor.position.absolute;
 
-import org.wpilib.math.util.MathUtil;
+import edu.wpi.first.math.MathUtil;
 
 /** Contains no logic. */
 public class MockRotaryPositionSensor implements RotaryPositionSensor {

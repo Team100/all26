@@ -6,8 +6,8 @@ import org.team100.lib.util.NamedChooser;
 
 import com.ctre.phoenix6.SignalLogger;
 
-import org.wpilib.smartdashboard.SendableChooser;
-import org.wpilib.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Logging singleton.

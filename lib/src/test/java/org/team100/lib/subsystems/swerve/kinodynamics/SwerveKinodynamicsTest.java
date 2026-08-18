@@ -8,8 +8,8 @@ import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
 import org.team100.lib.testing.Timeless;
 
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.kinematics.ChassisVelocities;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 class SwerveKinodynamicsTest implements Timeless {
     private static final double DELTA = 0.001;
@@ -20,10 +20,10 @@ class SwerveKinodynamicsTest implements Timeless {
         SwerveKinodynamics unlimited = SwerveKinodynamicsFactory.unlimited();
         VelocitySE2 v = new VelocitySE2(0, 0, 0);
         Rotation2d theta = new Rotation2d();
-        ChassisVelocities instantaneous = SwerveKinodynamics.toInstantaneousChassisVelocities(v, theta);
+        ChassisSpeeds instantaneous = SwerveKinodynamics.toInstantaneousChassisSpeeds(v, theta);
         SwerveModuleStates states = unlimited.toSwerveModuleStates(instantaneous, 0.02);
-        ChassisVelocities implied = unlimited.toChassisVelocitiesWithDiscretization(states, 0.02);
-        VelocitySE2 result = SwerveKinodynamics.fromInstantaneousChassisVelocities(implied, theta);
+        ChassisSpeeds implied = unlimited.toChassisSpeedsWithDiscretization(states, 0.02);
+        VelocitySE2 result = SwerveKinodynamics.fromInstantaneousChassisSpeeds(implied, theta);
         assertEquals(0, result.x(), DELTA);
         assertEquals(0, result.y(), DELTA);
         assertEquals(0, result.theta(), DELTA);
@@ -35,10 +35,10 @@ class SwerveKinodynamicsTest implements Timeless {
         SwerveKinodynamics unlimited = SwerveKinodynamicsFactory.unlimited();
         VelocitySE2 v = new VelocitySE2(5, 0, 25);
         Rotation2d theta = new Rotation2d();
-        ChassisVelocities instantaneous = SwerveKinodynamics.toInstantaneousChassisVelocities(v, theta);
+        ChassisSpeeds instantaneous = SwerveKinodynamics.toInstantaneousChassisSpeeds(v, theta);
         SwerveModuleStates states = unlimited.toSwerveModuleStates(instantaneous, 0.02);
-        ChassisVelocities implied = unlimited.toChassisVelocitiesWithDiscretization(states, 0.02);
-        VelocitySE2 result = SwerveKinodynamics.fromInstantaneousChassisVelocities(implied, theta);
+        ChassisSpeeds implied = unlimited.toChassisSpeedsWithDiscretization(states, 0.02);
+        VelocitySE2 result = SwerveKinodynamics.fromInstantaneousChassisSpeeds(implied, theta);
         assertEquals(5, result.x(), DELTA);
         assertEquals(0, result.y(), DELTA);
         assertEquals(25, result.theta(), DELTA);
@@ -166,7 +166,7 @@ class SwerveKinodynamicsTest implements Timeless {
 
         {
             // with no translation the wheel speed is ok
-            ChassisVelocities s = new ChassisVelocities(0, 0, -9.38);
+            ChassisSpeeds s = new ChassisSpeeds(0, 0, -9.38);
             // now discretizes.
             SwerveModuleStates ms = limits.toSwerveModuleStates(s);
             assertEquals(3.316, ms.frontLeft().speed(), DELTA);
@@ -176,7 +176,7 @@ class SwerveKinodynamicsTest implements Timeless {
         }
         {
             // with an extra ~2m/s, it's too fast
-            ChassisVelocities s = new ChassisVelocities(0.13, -1.95, -9.38);
+            ChassisSpeeds s = new ChassisSpeeds(0.13, -1.95, -9.38);
             SwerveModuleStates ms = limits.toSwerveModuleStates(s);
             // we no longer desaturate at this level: use the setpoint generator if you want
             // that.
@@ -185,11 +185,11 @@ class SwerveKinodynamicsTest implements Timeless {
             assertEquals(2.689, ms.rearLeft().speed(), DELTA);
             assertEquals(2.074, ms.rearRight().speed(), DELTA);
 
-            ChassisVelocities i = limits.toChassisVelocitiesWithDiscretization(ms, 0.02);
+            ChassisSpeeds i = limits.toChassisSpeedsWithDiscretization(ms, 0.02);
             // we get back what we put in
-            assertEquals(0.13, i.vx, DELTA);
-            assertEquals(-1.95, i.vy, DELTA);
-            assertEquals(-9.38, i.omega, DELTA);
+            assertEquals(0.13, i.vxMetersPerSecond, DELTA);
+            assertEquals(-1.95, i.vyMetersPerSecond, DELTA);
+            assertEquals(-9.38, i.omegaRadiansPerSecond, DELTA);
         }
 
     }
@@ -201,21 +201,21 @@ class SwerveKinodynamicsTest implements Timeless {
         // though this is definitely not true in general
         {
             // pure rotation involves no discretization effect
-            ChassisVelocities speeds = new ChassisVelocities(0, 0, 1);
+            ChassisSpeeds speeds = new ChassisSpeeds(0, 0, 1);
             SwerveModuleStates states = l.toSwerveModuleStates(speeds, 0.02);
-            ChassisVelocities impliedSpeeds = l.toChassisVelocitiesWithDiscretization(states, 0.02);
-            assertEquals(0, impliedSpeeds.vx, DELTA);
-            assertEquals(0, impliedSpeeds.vy, DELTA);
-            assertEquals(1, impliedSpeeds.omega, DELTA);
+            ChassisSpeeds impliedSpeeds = l.toChassisSpeedsWithDiscretization(states, 0.02);
+            assertEquals(0, impliedSpeeds.vxMetersPerSecond, DELTA);
+            assertEquals(0, impliedSpeeds.vyMetersPerSecond, DELTA);
+            assertEquals(1, impliedSpeeds.omegaRadiansPerSecond, DELTA);
         }
         {
             // pure translation involves no discretization effect
-            ChassisVelocities speeds = new ChassisVelocities(1, 0, 0);
+            ChassisSpeeds speeds = new ChassisSpeeds(1, 0, 0);
             SwerveModuleStates states = l.toSwerveModuleStates(speeds, 0.02);
-            ChassisVelocities impliedSpeeds = l.toChassisVelocitiesWithDiscretization(states, 0.02);
-            assertEquals(1, impliedSpeeds.vx, DELTA);
-            assertEquals(0, impliedSpeeds.vy, DELTA);
-            assertEquals(0, impliedSpeeds.omega, DELTA);
+            ChassisSpeeds impliedSpeeds = l.toChassisSpeedsWithDiscretization(states, 0.02);
+            assertEquals(1, impliedSpeeds.vxMetersPerSecond, DELTA);
+            assertEquals(0, impliedSpeeds.vyMetersPerSecond, DELTA);
+            assertEquals(0, impliedSpeeds.omegaRadiansPerSecond, DELTA);
         }
     }
 
@@ -226,57 +226,57 @@ class SwerveKinodynamicsTest implements Timeless {
         // though this is definitely not true in general
         {
             // holonomic does have discretization effect
-            ChassisVelocities speeds = new ChassisVelocities(1, 0, 1);
+            ChassisSpeeds speeds = new ChassisSpeeds(1, 0, 1);
             SwerveModuleStates states = l.toSwerveModuleStates(speeds, 0.02);
-            ChassisVelocities impliedSpeeds = l.toChassisVelocitiesWithDiscretization(states, 0.02);
-            assertEquals(1, impliedSpeeds.vx, DELTA);
-            assertEquals(0, impliedSpeeds.vy, DELTA);
-            assertEquals(1, impliedSpeeds.omega, DELTA);
+            ChassisSpeeds impliedSpeeds = l.toChassisSpeedsWithDiscretization(states, 0.02);
+            assertEquals(1, impliedSpeeds.vxMetersPerSecond, DELTA);
+            assertEquals(0, impliedSpeeds.vyMetersPerSecond, DELTA);
+            assertEquals(1, impliedSpeeds.omegaRadiansPerSecond, DELTA);
 
             // invert the discretization to extract the original speeds
-            ChassisVelocities correctedImplied = l.toChassisVelocitiesWithDiscretization(states, 0.02);
-            assertEquals(0.999, correctedImplied.vx, DELTA);
-            assertEquals(0, correctedImplied.vy, DELTA);
-            assertEquals(1, correctedImplied.omega, DELTA);
+            ChassisSpeeds correctedImplied = l.toChassisSpeedsWithDiscretization(states, 0.02);
+            assertEquals(0.999, correctedImplied.vxMetersPerSecond, DELTA);
+            assertEquals(0, correctedImplied.vyMetersPerSecond, DELTA);
+            assertEquals(1, correctedImplied.omegaRadiansPerSecond, DELTA);
         }
         {
             // more spinning => bigger effect
-            ChassisVelocities speeds = new ChassisVelocities(1, 0, 3);
+            ChassisSpeeds speeds = new ChassisSpeeds(1, 0, 3);
             SwerveModuleStates states = l.toSwerveModuleStates(speeds, 0.02);
-            ChassisVelocities impliedSpeeds = l.toChassisVelocitiesWithDiscretization(states, 0.02);
-            assertEquals(1, impliedSpeeds.vx, DELTA);
-            assertEquals(0, impliedSpeeds.vy, DELTA);
-            assertEquals(3, impliedSpeeds.omega, DELTA);
+            ChassisSpeeds impliedSpeeds = l.toChassisSpeedsWithDiscretization(states, 0.02);
+            assertEquals(1, impliedSpeeds.vxMetersPerSecond, DELTA);
+            assertEquals(0, impliedSpeeds.vyMetersPerSecond, DELTA);
+            assertEquals(3, impliedSpeeds.omegaRadiansPerSecond, DELTA);
 
             // invert the discretization to extract the original speeds.
-            ChassisVelocities correctedImplied = l.toChassisVelocitiesWithDiscretization(states, 0.02);
-            assertEquals(1, correctedImplied.vx, DELTA);
-            assertEquals(0, correctedImplied.vy, DELTA);
-            assertEquals(3, correctedImplied.omega, DELTA);
+            ChassisSpeeds correctedImplied = l.toChassisSpeedsWithDiscretization(states, 0.02);
+            assertEquals(1, correctedImplied.vxMetersPerSecond, DELTA);
+            assertEquals(0, correctedImplied.vyMetersPerSecond, DELTA);
+            assertEquals(3, correctedImplied.omegaRadiansPerSecond, DELTA);
         }
         {
             // longer time interval => bigger effect
-            ChassisVelocities speeds = new ChassisVelocities(1, 0, 3);
+            ChassisSpeeds speeds = new ChassisSpeeds(1, 0, 3);
             SwerveModuleStates states = l.toSwerveModuleStates(speeds, 0.2);
-            ChassisVelocities impliedSpeeds = l.toChassisVelocitiesWithDiscretization(states, 0.2);
-            assertEquals(1, impliedSpeeds.vx, DELTA);
-            assertEquals(0, impliedSpeeds.vy, DELTA);
-            assertEquals(3, impliedSpeeds.omega, DELTA);
+            ChassisSpeeds impliedSpeeds = l.toChassisSpeedsWithDiscretization(states, 0.2);
+            assertEquals(1, impliedSpeeds.vxMetersPerSecond, DELTA);
+            assertEquals(0, impliedSpeeds.vyMetersPerSecond, DELTA);
+            assertEquals(3, impliedSpeeds.omegaRadiansPerSecond, DELTA);
 
             // invert the discretization to extract the original speeds.
-            ChassisVelocities correctedImplied = l.toChassisVelocitiesWithDiscretization(states, 0.2);
-            assertEquals(1, correctedImplied.vx, DELTA);
-            assertEquals(0, correctedImplied.vy, DELTA);
-            assertEquals(3, correctedImplied.omega, DELTA);
+            ChassisSpeeds correctedImplied = l.toChassisSpeedsWithDiscretization(states, 0.2);
+            assertEquals(1, correctedImplied.vxMetersPerSecond, DELTA);
+            assertEquals(0, correctedImplied.vyMetersPerSecond, DELTA);
+            assertEquals(3, correctedImplied.omegaRadiansPerSecond, DELTA);
         }
         {
             // longer time interval => bigger effect
-            ChassisVelocities speeds = new ChassisVelocities(1, 0, 3);
+            ChassisSpeeds speeds = new ChassisSpeeds(1, 0, 3);
             SwerveModuleStates states = l.toSwerveModuleStates(speeds, 0.2);
-            ChassisVelocities correctedImplied = l.toChassisVelocitiesWithDiscretization(states, 0.2);
-            assertEquals(1, correctedImplied.vx, DELTA);
-            assertEquals(0, correctedImplied.vy, DELTA);
-            assertEquals(3, correctedImplied.omega, DELTA);
+            ChassisSpeeds correctedImplied = l.toChassisSpeedsWithDiscretization(states, 0.2);
+            assertEquals(1, correctedImplied.vxMetersPerSecond, DELTA);
+            assertEquals(0, correctedImplied.vyMetersPerSecond, DELTA);
+            assertEquals(3, correctedImplied.omegaRadiansPerSecond, DELTA);
         }
     }
 

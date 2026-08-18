@@ -1,12 +1,13 @@
 package org.team100.lib.geometry.se2;
 
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.linalg.VecBuilder;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.numbers.N1;
-import org.wpilib.math.numbers.N3;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 
 /**
  * The second derivative of Pose2d with respect to time.
@@ -69,7 +70,7 @@ public record AccelerationSE2(double x, double y, double theta) {
         if (norm > 1e-3 && norm > maxAccel) {
             ratio = maxAccel / norm;
         }
-        return new AccelerationSE2(ratio * x, ratio * y, Math.clamp(theta, -maxAlpha, maxAlpha));
+        return new AccelerationSE2(ratio * x, ratio * y, MathUtil.clamp(theta, -maxAlpha, maxAlpha));
     }
 
     public static AccelerationSE2 fromVector(Vector<N3> v) {

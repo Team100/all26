@@ -29,9 +29,8 @@ public class Neo550CANSparkMotor extends CANSparkMotor {
             PIDConstants pid,
             int averageDepth,
             int measurementPeriod) {
-        // TODO: fix for 2027
         super(parent, currentLog,
-                new SparkMax(0, canId.id, MotorType.kBrushless),
+                new SparkMax(canId.id, MotorType.kBrushless),
                 neutral, motorPhase, limit, friction, pid,
                 0, averageDepth, measurementPeriod, false);
     }

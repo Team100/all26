@@ -6,9 +6,9 @@ import org.team100.lib.geometry.se2.WaypointSE2;
 import org.team100.lib.trajectory.se2.TrajectorySE2;
 import org.team100.lib.trajectory.se2.TrajectorySE2Entry;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.trajectory.Trajectory;
-import org.wpilib.math.trajectory.Trajectory.State;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.Trajectory.State;
 
 public class VizUtil {
 
@@ -36,7 +36,7 @@ public class VizUtil {
         double[] arr = new double[m_trajectory.getStates().size() * 3];
         int ndx = 0;
         for (State p : m_trajectory.getStates()) {
-            Pose2d pose = p.pose;
+            Pose2d pose = p.poseMeters;
             arr[ndx + 0] = pose.getTranslation().getX();
             arr[ndx + 1] = pose.getTranslation().getY();
             arr[ndx + 2] = pose.getRotation().getDegrees();

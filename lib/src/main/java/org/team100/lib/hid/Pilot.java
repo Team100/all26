@@ -4,8 +4,8 @@ import static org.team100.lib.hid.ControlUtil.clamp;
 import static org.team100.lib.hid.ControlUtil.deadband;
 import static org.team100.lib.hid.ControlUtil.expo;
 
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.driverstation.GenericHID;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.GenericHID;
 
 /**
  * The RC joystick thing joel made.

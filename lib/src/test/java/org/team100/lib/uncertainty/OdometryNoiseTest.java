@@ -4,9 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.DeltaSE2;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Twist2d;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 
 public class OdometryNoiseTest {
     private static final double DELTA = 0.001;
@@ -58,10 +59,10 @@ public class OdometryNoiseTest {
         // the right thing.
         Pose2d state = new Pose2d();
         Pose2d measurement = new Pose2d(1, 0, new Rotation2d(1));
-        Twist2d twist = measurement.minus(state).log();
+        Twist2d twist = state.log(measurement);
         double scale = 0.5;
         Twist2d scaledTwist = new Twist2d(scale * twist.dx, scale * twist.dy, scale * twist.dtheta);
-        Pose2d result = state.plus(scaledTwist.exp());
+        Pose2d result = state.exp(scaledTwist);
         // I would expect the scaling to affect each dimension separately, but that's
         // not what happens.
         assertEquals(0.5000, result.getX(), DELTA);

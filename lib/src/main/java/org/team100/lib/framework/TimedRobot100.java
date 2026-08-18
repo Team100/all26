@@ -1,99 +1,172 @@
 package org.team100.lib.framework;
 
-import static org.wpilib.units.Units.Seconds;
+import java.util.PriorityQueue;
 
-import org.wpilib.driverstation.internal.DriverStationBackend;
-import org.wpilib.hardware.hal.HAL;
-import org.wpilib.hardware.hal.NotifierJNI;
-import org.wpilib.internal.PeriodicPriorityQueue;
-import org.wpilib.system.RobotController;
-import org.wpilib.units.measure.Frequency;
-import org.wpilib.units.measure.Time;
+import org.team100.lib.coherence.Takt;
+import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LoggerFactory;
+import org.team100.lib.logging.LoggerFactory.DoubleLogger;
+import org.team100.lib.logging.Logging;
 
+import edu.wpi.first.hal.DriverStationJNI;
+import edu.wpi.first.hal.FRCNetComm.tInstances;
+import edu.wpi.first.hal.FRCNetComm.tResourceType;
+import edu.wpi.first.hal.HAL;
+import edu.wpi.first.hal.NotifierJNI;
+
+/**
+ * Copy of {@link edu.wpi.first.wpilibj.TimedRobot} in an effort to improve
+ * instrumentation.
+ */
+// public class TimedRobot100 extends IterativeRobotBase100 {
 public class TimedRobot100 extends IterativeRobotBase100 {
-    public static final double LOOP_PERIOD_S = 0.02;
+
+    static class Callback implements Comparable<Callback> {
+        public Runnable func;
+        public double period;
+        public double expirationTime;
+        public DoubleLogger logger;
+
+        /**
+         * Construct a callback container.
+         *
+         * @param func             The callback to run.
+         * @param startTimeSeconds The common starting point for all callback scheduling
+         *                         in seconds.
+         * @param periodSeconds    The period at which to run the callback in seconds.
+         * @param offsetSeconds    The offset from the common starting time in seconds.
+         * @param name             for logging
+         */
+        Callback(LoggerFactory logger, Runnable func, double startTimeSeconds, double periodSeconds,
+                double offsetSeconds, String name) {
+            this.func = func;
+            this.period = periodSeconds;
+            this.expirationTime = startTimeSeconds
+                    + offsetSeconds
+                    + Math.floor((Takt.actual() - startTimeSeconds) / this.period)
+                            * this.period
+                    + this.period;
+            this.logger = logger.doubleLogger(Level.COMP, "duration (s)/" + name);
+        }
+
+        public void run() {
+
+            double startWaitingS = Takt.actual();
+            func.run();
+            double endWaitingS = Takt.actual();
+            double durationS = endWaitingS - startWaitingS;
+            this.logger.log(() -> durationS);
+
+        }
+
+        @Override
+        public boolean equals(Object rhs) {
+            if (rhs instanceof Callback) {
+                return Double.compare(expirationTime, ((Callback) rhs).expirationTime) == 0;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Double.hashCode(expirationTime);
+        }
+
+        @Override
+        public int compareTo(Callback rhs) {
+            // Elements with sooner expiration times are sorted as lesser. The head of
+            // Java's PriorityQueue is the least element.
+            return Double.compare(expirationTime, rhs.expirationTime);
+        }
+    }
 
     /**
-     * TimedRobot implements the IterativeRobotBase robot program framework.
-     *
-     * <p>
-     * The TimedRobot class is intended to be subclassed by a user creating a robot
-     * program.
-     *
-     * <p>
-     * periodic() functions from the base class are called on an interval by a
-     * Notifier instance.
+     * Fixed loop period.
+     * All uses of dt should refer to TimedRobot100.LOOP_PERIOD_S.
      */
+    public static final double LOOP_PERIOD_S = 0.02;
 
-    /** Default loop period. */
-    public static final double DEFAULT_PERIOD = 0.02;
+    /** An exception to the no-member rule. */
+    protected final LoggerFactory m_robotLogger;
 
     // The C pointer to the notifier object. We don't use it directly, it is
     // just passed to the JNI bindings.
-    private final int m_notifier = NotifierJNI.createNotifier();
+    private final int m_notifier = NotifierJNI.initializeNotifier();
 
-    private final long m_startTimeUs;
+    private double m_startTime;
 
-    private final PeriodicPriorityQueue m_callbackQueue = new PeriodicPriorityQueue();
+    private final PriorityQueue<Callback> m_callbacks = new PriorityQueue<>();
 
-    /** Constructor for TimedRobot. */
-          protected TimedRobot100() {
-            this(DEFAULT_PERIOD);
-          }
+    private final DoubleLogger m_log_slack;
 
-    /**
-           * Constructor for TimedRobot.
-           *
-           * @param period The period of the robot loop function.
-           */
-          @SuppressWarnings("this-escape")
-          protected TimedRobot100(double period) {
-            super(period);
-            m_startTimeUs = RobotController.getMonotonicTime();
-            addPeriodic(this::loopFunc, period);
-            NotifierJNI.setNotifierName(m_notifier, "TimedRobot");
-        
-            HAL.reportUsage("Framework", "TimedRobot");
-          }
-
-    /**
-           * Constructor for TimedRobot.
-           *
-           * @param period The period of the robot loop function.
-           */
-          protected TimedRobot100(Time period) {
-            this(period.in(Seconds));
-          }
-
-    /**
-           * Constructor for TimedRobot.
-           *
-           * @param frequency The frequency of the robot loop function.
-           */
-          protected TimedRobot100(Frequency frequency) {
-            this(frequency.asPeriod());
-          }
+    protected TimedRobot100() {
+        super(LOOP_PERIOD_S);
+        m_robotLogger = Logging.instance().rootLogger.type(this);
+        m_log_slack = m_robotLogger.doubleLogger(Level.COMP, "slack time (s)");
+        m_startTime = Takt.actual();
+        addPeriodic(this::loopFunc, TimedRobot100.LOOP_PERIOD_S, "main loop");
+        NotifierJNI.setNotifierName(m_notifier, "TimedRobot");
+        HAL.report(tResourceType.kResourceType_Framework, tInstances.kFramework_Timed);
+    }
 
     @Override
     public void close() {
-        NotifierJNI.destroyNotifier(m_notifier);
+        NotifierJNI.stopNotifier(m_notifier);
+        NotifierJNI.cleanNotifier(m_notifier);
     }
 
     /** Provide an alternate "main loop" via startCompetition(). */
     @Override
     public void startCompetition() {
+        robotInit();
+
         if (isSimulation()) {
             simulationInit();
         }
 
         // Tell the DS that the robot is ready to be enabled
         System.out.println("********** Robot program startup complete **********");
-        DriverStationBackend.observeUserProgramStarting();
+        DriverStationJNI.observeUserProgramStarting();
 
         // Loop forever, calling the appropriate mode-dependent function
         while (true) {
-            if (!m_callbackQueue.runCallbacks(m_notifier)) {
+            // We don't have to check there's an element in the queue first because
+            // there's always at least one (the constructor adds one). It's reenqueued
+            // at the end of the loop.
+            Callback callback = m_callbacks.poll();
+
+            NotifierJNI.updateNotifierAlarm(m_notifier, (long) (callback.expirationTime * 1e6));
+
+            // how long do we spend waiting?
+            double startWaitingS = Takt.actual();
+            long curTime = NotifierJNI.waitForNotifierAlarm(m_notifier);
+            if (curTime == 0) {
+                // someone called StopNotifier
                 break;
+            }
+            double endWaitingS = Takt.actual();
+            double slackS = endWaitingS - startWaitingS;
+            // this is the main loop slack, don't let it go to zero!
+            if (Logging.instance().getLevel().admit(Level.TRACE) && slackS < 0.001) {
+                System.out.printf("WARNING: Slack time %f is too low!\n", slackS);
+            }
+            m_log_slack.log(() -> slackS);
+
+            callback.run();
+
+            callback.expirationTime += callback.period;
+            m_callbacks.add(callback);
+
+            // Process all other callbacks that are ready to run
+            // note when we're falling behind, we stay in this inner loop,
+            // perhaps never touching the outer loop.
+            while ((long) (m_callbacks.peek().expirationTime * 1e6) <= curTime) {
+                callback = m_callbacks.poll();
+
+                callback.run();
+
+                callback.expirationTime += callback.period;
+                m_callbacks.add(callback);
             }
         }
     }
@@ -101,22 +174,7 @@ public class TimedRobot100 extends IterativeRobotBase100 {
     /** Ends the main loop in startCompetition(). */
     @Override
     public void endCompetition() {
-        NotifierJNI.destroyNotifier(m_notifier);
-    }
-
-    /**
-     * Return the system clock time in microseconds for the start of the current
-     * periodic loop. This
-     * is in the same time base as Timer.getMonotonicTimestamp(), but is stable
-     * through a loop. It is
-     * updated at the beginning of every periodic callback (including the normal
-     * periodic loop).
-     *
-     * @return Robot running time in microseconds, as of the start of the current
-     *         periodic function.
-     */
-    public long getLoopStartTime() {
-        return m_callbackQueue.getLoopStartTime();
+        NotifierJNI.stopNotifier(m_notifier);
     }
 
     /**
@@ -127,11 +185,11 @@ public class TimedRobot100 extends IterativeRobotBase100 {
      * run
      * synchronously. Interactions between them are thread-safe.
      *
-     * @param callback The callback to run.
-     * @param period   The period at which to run the callback in seconds.
+     * @param callback      The callback to run.
+     * @param periodSeconds The period at which to run the callback in seconds.
      */
-    public final void addPeriodic(Runnable callback, double period) {
-        addPeriodic(callback, period, period);
+    public void addPeriodic(Runnable callback, double periodSeconds, String name) {
+        m_callbacks.add(new Callback(m_robotLogger, callback, m_startTime, periodSeconds, 0.0, name));
     }
 
     /**
@@ -142,14 +200,14 @@ public class TimedRobot100 extends IterativeRobotBase100 {
      * run
      * synchronously. Interactions between them are thread-safe.
      *
-     * @param callback The callback to run.
-     * @param period   The period at which to run the callback in seconds.
-     * @param offset   The offset from the common starting time in seconds. This is
-     *                 useful for
-     *                 scheduling a callback in a different timeslot relative to
-     *                 TimedRobot.
+     * @param callback      The callback to run.
+     * @param periodSeconds The period at which to run the callback in seconds.
+     * @param offsetSeconds The offset from the common starting time in seconds.
+     *                      This is useful for
+     *                      scheduling a callback in a different timeslot relative
+     *                      to TimedRobot.
      */
-    public final void addPeriodic(Runnable callback, double period, double offset) {
-        m_callbackQueue.add(callback, m_startTimeUs, period, offset);
+    public void addPeriodic(Runnable callback, double periodSeconds, double offsetSeconds, String name) {
+        m_callbacks.add(new Callback(m_robotLogger, callback, m_startTime, periodSeconds, offsetSeconds, name));
     }
 }

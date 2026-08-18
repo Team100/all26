@@ -3,13 +3,14 @@ package org.team100.lib.geometry.se2;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.testing.TestUtil;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Twist2d;
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.numbers.N1;
-import org.wpilib.math.numbers.N3;
+
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 
 public class AdjointSE2Test {
     @Test

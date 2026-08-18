@@ -1,9 +1,9 @@
 package org.team100.lib.geometry.so2;
 
-import org.wpilib.math.linalg.MatBuilder;
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.numbers.N2;
-import org.wpilib.math.util.Nat;
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.numbers.N2;
 
 /**
  * See https://arxiv.org/pdf/1812.01537

@@ -11,7 +11,7 @@ import org.team100.lib.subsystems.swerve.kinodynamics.struct.SwerveModulePositio
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDelta;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
 
-import org.wpilib.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 class SwerveModulePosition100Test {
     private static final double DELTA = 0.001;

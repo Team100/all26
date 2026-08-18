@@ -9,8 +9,9 @@ import org.team100.lib.spline.rn.SplineRn;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.util.StrUtil;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.util.Num;
+
+import edu.wpi.first.math.Num;
+import edu.wpi.first.math.Vector;
 
 /** Produces references based on an N-dimensional spline. */
 public class SplineReferenceRn<N extends Num> implements ReferenceRn {

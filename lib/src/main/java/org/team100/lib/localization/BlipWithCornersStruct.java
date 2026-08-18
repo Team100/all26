@@ -2,8 +2,8 @@ package org.team100.lib.localization;
 
 import java.nio.ByteBuffer;
 
-import org.wpilib.math.geometry.Transform3d;
-import org.wpilib.util.struct.Struct;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.util.struct.Struct;
 
 public class BlipWithCornersStruct implements Struct<BlipWithCorners> {
 
@@ -19,11 +19,11 @@ public class BlipWithCornersStruct implements Struct<BlipWithCorners> {
 
     @Override
     public int getSize() {
-        return INT64_SIZE + INT32_SIZE
-                + FLOAT_SIZE + FLOAT_SIZE
-                + FLOAT_SIZE + FLOAT_SIZE
-                + FLOAT_SIZE + FLOAT_SIZE
-                + FLOAT_SIZE + FLOAT_SIZE
+        return kSizeInt64 + kSizeInt32
+                + kSizeFloat + kSizeFloat
+                + kSizeFloat + kSizeFloat
+                + kSizeFloat + kSizeFloat
+                + kSizeFloat + kSizeFloat
                 + Transform3d.struct.getSize();
     }
 

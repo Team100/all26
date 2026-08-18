@@ -58,6 +58,6 @@
     "edu.wpi.first.math.**.struct.*",
   ],
   "java.dependency.enableDependencyCheckup": false,
-  "workbench.preferredDarkColorTheme": "Light Modern",
+  "workbench.preferredDarkColorTheme": "Default Light Modern",
   "editor.minimap.enabled": false
 }

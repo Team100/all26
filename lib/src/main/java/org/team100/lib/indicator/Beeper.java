@@ -1,13 +1,13 @@
 package org.team100.lib.indicator;
 
-import static org.wpilib.command2.Commands.parallel;
-import static org.wpilib.command2.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 import java.util.Arrays;
 
 import org.team100.lib.music.Music;
 
-import org.wpilib.command2.Command;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * Plays warnings using the CTRE music feature.

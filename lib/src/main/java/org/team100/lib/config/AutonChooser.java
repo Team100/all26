@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 
 import org.team100.lib.util.NamedChooser;
 
-import org.wpilib.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutonChooser {
 

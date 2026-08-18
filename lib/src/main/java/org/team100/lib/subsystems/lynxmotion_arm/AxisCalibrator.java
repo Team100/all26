@@ -1,8 +1,8 @@
 package org.team100.lib.subsystems.lynxmotion_arm;
 
-import org.team100.lib.framework.Servo;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.SubsystemBase;
+import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Move one axis at a time. Moves from 0.0 to 1.0 in steps of 0.1.

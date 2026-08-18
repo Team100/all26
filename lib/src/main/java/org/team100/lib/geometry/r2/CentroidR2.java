@@ -3,7 +3,7 @@ package org.team100.lib.geometry.r2;
 import java.util.Collection;
 import java.util.function.Function;
 
-import org.wpilib.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /** Yields the centroid of the translations. */
 public class CentroidR2 implements Function<Collection<Translation2d>, Translation2d> {

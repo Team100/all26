@@ -29,7 +29,7 @@
         "editor.suggest.showSnippets": false,
         "files.autoSave": "afterDelay",
         "java.completion.favoriteStaticMembers": [
-            "org.wpilib.command2.Commands.*",
+            "edu.wpi.first.wpilibj2.command.Commands.*",
             "org.junit.jupiter.api.Assertions.*",
         ],
         "java.completion.filteredTypes": [

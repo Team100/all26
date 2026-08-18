@@ -5,12 +5,13 @@ import java.util.function.Function;
 
 import org.ejml.data.SingularMatrixException;
 import org.team100.lib.util.StrUtil;
-import org.wpilib.math.jni.EigenJNI;
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.util.MathUtil;
-import org.wpilib.math.util.Nat;
-import org.wpilib.math.util.Num;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.Num;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.jni.EigenJNI;
 
 /**
  * Newton's method finds a zero of a multivariate function.
@@ -273,7 +274,7 @@ public class NewtonsMethod<X extends Num, Y extends Num> {
                 if (DEBUG > 1)
                     System.out.printf("clamp %d\n", i);
             }
-            double clampedDxI = Math.clamp(dxI, -dxLim, dxLim);
+            double clampedDxI = MathUtil.clamp(dxI, -dxLim, dxLim);
             // System.out.printf("clamp %d %15.10f %15.10f\n", i, dxI, clampedDxI);
             dx.set(i, 0, clampedDxI);
         }
@@ -288,7 +289,7 @@ public class NewtonsMethod<X extends Num, Y extends Num> {
             double xi = x.get(i);
             double xMin = m_xMin.get(i);
             double xMax = m_xMax.get(i);
-            xi = Math.clamp(xi, xMin, xMax);
+            xi = MathUtil.clamp(xi, xMin, xMax);
             x.set(i, 0, xi);
         }
     }

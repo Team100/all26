@@ -3,10 +3,16 @@ package org.team100.lib.dynamics.rrr;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import org.team100.lib.dynamics.rr.RRDynamicsNewtonEuler;
+import org.team100.lib.dynamics.rr.RREffort;
+import org.team100.lib.geometry.rr.RRAcceleration;
+import org.team100.lib.geometry.rr.RRConfig;
+import org.team100.lib.geometry.rr.RRVelocity;
 import org.team100.lib.geometry.rrr.RRRAcceleration;
 import org.team100.lib.geometry.rrr.RRRConfig;
 import org.team100.lib.geometry.rrr.RRRVelocity;
-import org.wpilib.math.linalg.VecBuilder;
+
+import edu.wpi.first.math.VecBuilder;
 
 public class RRRDynamicsNewtonEulerTest {
     private static final double DELTA = 1e-3;

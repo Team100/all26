@@ -3,7 +3,7 @@ package org.team100.frc2026.util;
 import java.util.Optional;
 import java.util.OptionalDouble;
 
-import org.wpilib.driverstation.Alliance;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * Describes the "shifts" in the 2026 game, and which one is "active" based on

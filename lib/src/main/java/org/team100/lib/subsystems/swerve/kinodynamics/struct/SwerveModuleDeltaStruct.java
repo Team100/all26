@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDelta;
 import org.team100.lib.util.OptionalRotation2d;
 
-import org.wpilib.util.struct.Struct;
+import edu.wpi.first.util.struct.Struct;
 
 public class SwerveModuleDeltaStruct implements Struct<SwerveModuleDelta> {
     @Override
@@ -20,7 +20,7 @@ public class SwerveModuleDeltaStruct implements Struct<SwerveModuleDelta> {
 
     @Override
     public int getSize() {
-        return DOUBLE_SIZE + OptionalRotation2d.struct.getSize();
+        return kSizeDouble + OptionalRotation2d.struct.getSize();
     }
 
     @Override

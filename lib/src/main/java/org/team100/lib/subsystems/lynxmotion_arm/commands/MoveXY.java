@@ -7,9 +7,9 @@ import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.subsystems.lynxmotion_arm.LynxArm;
 
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.system.Timer;
-import org.wpilib.command2.Command;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /** Move in the XY plane only. */
 public class MoveXY extends Command {

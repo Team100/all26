@@ -11,7 +11,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.trajectory.se2.TrajectorySE2;
 
-import org.wpilib.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose2d;
 
 /**
  * Shows positions and trajectories.

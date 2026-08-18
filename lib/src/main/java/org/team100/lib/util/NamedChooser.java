@@ -3,8 +3,8 @@ package org.team100.lib.util;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.wpilib.smartdashboard.SendableChooser;
-import org.wpilib.util.sendable.SendableRegistry;
+import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 /**
  * Makes it easier to set the name of a SendableChooser.

@@ -5,9 +5,9 @@ import java.util.function.Function;
 
 import org.team100.lib.trajectory.se2.TrajectorySE2;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.driverstation.Alliance;
-import org.wpilib.command2.Command;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /** Legacy implementation */
 public class AnnotatedCommandImpl implements AnnotatedCommand {

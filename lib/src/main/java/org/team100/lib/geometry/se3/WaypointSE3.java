@@ -1,6 +1,6 @@
 package org.team100.lib.geometry.se3;
 
-import org.wpilib.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Pose3d;
 
 /**
  * For constructing 3d splines, paths, and trajectories.

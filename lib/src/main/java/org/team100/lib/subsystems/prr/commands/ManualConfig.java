@@ -8,7 +8,7 @@ import org.team100.lib.geometry.prr.PRRVelocity;
 import org.team100.lib.hid.Velocity;
 import org.team100.lib.subsystems.prr.SubsystemPRR;
 
-import org.wpilib.command2.Command;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /** Use the operator control to "fly" the arm around in config space. */
 public class ManualConfig extends Command {

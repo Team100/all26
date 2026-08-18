@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.wpilib.math.interpolation.Interpolator;
+import edu.wpi.first.math.interpolation.Interpolator;
 
 /**
  * Uses an Interpolator to provide interpolated sampling with a history limit.

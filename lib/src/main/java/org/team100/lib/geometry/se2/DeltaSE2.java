@@ -1,8 +1,9 @@
 package org.team100.lib.geometry.se2;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Translation2d;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * This is just a container for the difference between two poses.
@@ -58,10 +59,10 @@ public class DeltaSE2 {
     public DeltaSE2 limit(double cartesian, double rotation) {
         return new DeltaSE2(
                 new Translation2d(
-                        Math.clamp(m_translation.getX(), -cartesian, cartesian),
-                        Math.clamp(m_translation.getY(), -cartesian, cartesian)),
+                        MathUtil.clamp(m_translation.getX(), -cartesian, cartesian),
+                        MathUtil.clamp(m_translation.getY(), -cartesian, cartesian)),
                 new Rotation2d(
-                        Math.clamp(m_rotation.getRadians(), -rotation, rotation)));
+                        MathUtil.clamp(m_rotation.getRadians(), -rotation, rotation)));
     }
 
     public DeltaSE2 times(double scalar) {

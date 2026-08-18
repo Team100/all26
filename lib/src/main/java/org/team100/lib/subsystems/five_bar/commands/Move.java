@@ -13,8 +13,8 @@ import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.subsystems.five_bar.FiveBarCartesian;
 
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.command2.Command;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * Move in a straight line via interpolation.

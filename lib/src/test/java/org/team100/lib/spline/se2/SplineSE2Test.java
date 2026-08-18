@@ -30,11 +30,11 @@ import org.team100.lib.util.ChartUtil;
 import org.team100.lib.util.Math100;
 import org.team100.lib.util.StrUtil;
 
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.math.numbers.N2;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N2;
 
 class SplineSE2Test implements Timeless {
     private static final boolean DEBUG = false;

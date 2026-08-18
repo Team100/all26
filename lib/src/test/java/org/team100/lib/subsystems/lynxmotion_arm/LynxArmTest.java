@@ -11,15 +11,14 @@ import org.team100.lib.kinematics.lynx_arm.NumericLynxArmKinematics;
 import org.team100.lib.testing.TestUtil;
 import org.team100.lib.util.StrUtil;
 
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 
-// TODO: fix for 2027
 public class LynxArmTest {
     private static final boolean DEBUG = false;
 
-    // @Test
+    @Test
     void testTwist() {
         // for dimensions, see
         // https://wiki.lynxmotion.com/info/wiki/lynxmotion/download/ses-v1/ses-v1-robots/ses-v1-arms/al5d/WebHome/PLTW-AL5D-Guide-11.pdf
@@ -50,7 +49,7 @@ public class LynxArmTest {
         }
     }
 
-    // @Test
+    @Test
     void testRoundTrip() {
         // for dimensions, see
         // https://wiki.lynxmotion.com/info/wiki/lynxmotion/download/ses-v1/ses-v1-robots/ses-v1-arms/al5d/WebHome/PLTW-AL5D-Guide-11.pdf
@@ -73,7 +72,7 @@ public class LynxArmTest {
         }
     }
 
-    // @Test
+    @Test
     void testRoundTripb() {
         // for dimensions, see
         // https://wiki.lynxmotion.com/info/wiki/lynxmotion/download/ses-v1/ses-v1-robots/ses-v1-arms/al5d/WebHome/PLTW-AL5D-Guide-11.pdf
@@ -96,7 +95,7 @@ public class LynxArmTest {
         }
     }
 
-    // @Test
+    @Test
     void testRoundTrip2() {
         // for dimensions, see
         // https://wiki.lynxmotion.com/info/wiki/lynxmotion/download/ses-v1/ses-v1-robots/ses-v1-arms/al5d/WebHome/PLTW-AL5D-Guide-11.pdf
@@ -130,7 +129,7 @@ public class LynxArmTest {
         TestUtil.verify(q, 0.00, -1.936, 1.505, 1.217, 0.00);
     }
 
-    // @Test
+    @Test
     void testHome2() {
         final LynxArmKinematics kinematics = new NumericLynxArmKinematics();
         try (LynxArm m_arm = new LynxArm(kinematics)) {
@@ -139,7 +138,7 @@ public class LynxArmTest {
         }
     }
 
-    // @Test
+    @Test
     void testHome3() {
         // analytic kinematics
         final Pose3d HOME = new Pose3d(0.2, 0, 0.2, new Rotation3d(0, Math.PI / 4, 0));
@@ -150,7 +149,7 @@ public class LynxArmTest {
         TestUtil.verify(q, 0.00, -1.936, 1.505, 1.217, 0.00);
     }
 
-    // @Test
+    @Test
     void testHome4() {
         final LynxArmKinematics kinematics = AnalyticLynxArmKinematics.real();
         try (LynxArm m_arm = new LynxArm(kinematics)) {
@@ -159,7 +158,7 @@ public class LynxArmTest {
         }
     }
 
-    // @Test
+    @Test
     void testRoundTrip2b() {
         // for dimensions, see
         // https://wiki.lynxmotion.com/info/wiki/lynxmotion/download/ses-v1/ses-v1-robots/ses-v1-arms/al5d/WebHome/PLTW-AL5D-Guide-11.pdf

@@ -13,10 +13,10 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Entry;
 import org.team100.lib.trajectory.se2.TrajectorySE2Point;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
-import org.wpilib.math.controller.LTVUnicycleController;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.kinematics.ChassisVelocities;
-import org.wpilib.command2.Command;
+import edu.wpi.first.math.controller.LTVUnicycleController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * Follows a trajectory with the WPI LTVUnicycleController, which combines
@@ -77,7 +77,7 @@ public class FixedTrajectory extends Command {
         // -vx to fix +x. Includes the feedforward velocities.
         // It might be more correct to include the change in controller output in the
         // acceleration term.
-        ChassisVelocities speeds = m_controller.calculate(
+        ChassisSpeeds speeds = m_controller.calculate(
                 currentPose, poseReference, velocityReference, omegaReference);
         // accel feedforward
         AccelerationSE2 fieldRelativeAccel = nextControl.acceleration();

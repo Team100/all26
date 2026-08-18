@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import org.team100.frc2025.CalgamesArm.CalgamesMech;
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
 
-import org.wpilib.command2.Command;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /** Intake algae and hold it forever. */
 public class AlgaeExit {

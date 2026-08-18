@@ -10,8 +10,9 @@ import org.team100.lib.geometry.six_dof.SixDofConfig;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation3d;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 
 public class SixDofArmTest {
     LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());

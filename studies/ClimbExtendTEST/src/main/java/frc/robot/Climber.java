@@ -5,6 +5,7 @@ import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.r.RDynamics;
+import org.team100.lib.dynamics.r.RDynamicsAnalytic;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.RotaryMechanism;
@@ -41,7 +42,7 @@ public class Climber extends SubsystemBase {
         LoggerFactory log2 = log.name("motor2");
         ProfileR1 profile = new TrapezoidProfileR1(3, 5, 0.05);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
-        RDynamics dyn = new RDynamics(0, 0, 0);
+        RDynamics dyn = new RDynamicsAnalytic(0, 0, 0, 0);
         double gearRatio = 28;
         double initialPosition = 0;
 
@@ -77,7 +78,7 @@ public class Climber extends SubsystemBase {
                 RotaryMechanism climberMech2 = new RotaryMechanism(
                         log2, m_motor2, encoder2, initialPosition, gearRatio,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_servo2 = new OutboardAngularPositionServo(log2, climberMech2, dyn,  ref);
+                m_servo2 = new OutboardAngularPositionServo(log2, climberMech2, dyn, ref);
             }
 
             default -> {

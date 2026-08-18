@@ -1,7 +1,7 @@
 package org.team100.frc2025.CalgamesArm;
 
-import static org.wpilib.command2.Commands.select;
-import static org.wpilib.command2.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.select;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 import java.util.List;
 import java.util.Map;
@@ -58,10 +58,10 @@ import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
 import org.team100.lib.util.StrUtil;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.SubsystemBase;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class CalgamesMech extends SubsystemBase implements Music, PositionSubsystemSE2, SubsystemPRR {
     private static final boolean DEBUG = false;

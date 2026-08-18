@@ -8,7 +8,7 @@ import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.ModelR1Logger;
 import org.team100.lib.state.ModelR1;
 
-import org.wpilib.math.util.MathUtil;
+import edu.wpi.first.math.MathUtil;
 
 /**
  * Patterned after FullStateDriveController.

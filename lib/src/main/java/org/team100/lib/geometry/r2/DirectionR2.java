@@ -1,6 +1,6 @@
 package org.team100.lib.geometry.r2;
 
-import org.wpilib.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * Represents a direction in a 2d plane as a unit vector in R2.

@@ -3,9 +3,9 @@ package org.team100.frc2026.field;
 import java.util.Optional;
 import java.util.OptionalDouble;
 
-import org.wpilib.math.geometry.Rectangle2d;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Rectangle2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 
 /**
  * These measurements are from Onshape.

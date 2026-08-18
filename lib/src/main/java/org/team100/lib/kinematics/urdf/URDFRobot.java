@@ -8,12 +8,13 @@ import java.util.function.Function;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.optimization.CoordinateDescent;
 import org.team100.lib.optimization.NewtonsMethod;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Transform3d;
-import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.numbers.N6;
-import org.wpilib.math.util.Nat;
-import org.wpilib.math.util.Num;
+
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.Num;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N6;
 
 /**
  * This is a partial implementation of the URDF object model.
@@ -47,7 +48,6 @@ import org.wpilib.math.util.Num;
  */
 @SuppressWarnings("unused")
 public class URDFRobot<Q extends Num> {
-
     public enum Solver {
         NEWTON, CD
     };
@@ -193,7 +193,6 @@ public class URDFRobot<Q extends Num> {
         }
         URDFJoint joint = getJoint(jointName);
         Transform3d t = joint.transform(qMap.get(jointName));
-
         if (DEBUG > 1) {
             System.out.printf("transform %s\n", t);
         }

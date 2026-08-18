@@ -1,9 +1,9 @@
 package org.team100.frc2025.robot;
 
-import static org.wpilib.command2.Commands.parallel;
-import static org.wpilib.command2.Commands.runOnce;
-import static org.wpilib.command2.Commands.sequence;
-import static org.wpilib.command2.Commands.waitUntil;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
 import java.util.List;
 
@@ -20,11 +20,11 @@ import org.team100.lib.subsystems.se2.commands.DriveToTranslationFacingWithProfi
 import org.team100.lib.subsystems.se2.commands.DriveWithTrajectoryFunction;
 import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.ParallelRaceGroup;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 
 public class LolipopAuto {
     private static final double HEED_RADIUS_M = 3;

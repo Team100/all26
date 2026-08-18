@@ -16,7 +16,7 @@ import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
 import org.team100.lib.testing.Timeless;
 
-import org.wpilib.math.kinematics.ChassisVelocities;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 class SimulatedHeadingTest implements Timeless {
     private static final boolean DEBUG = false;
@@ -45,7 +45,7 @@ class SimulatedHeadingTest implements Timeless {
         assertEquals(0, p.rearLeft().distanceMeters(), DELTA);
         assertEquals(0, p.rearRight().distanceMeters(), DELTA);
         SimulatedGyro h = new SimulatedGyro(logger, l, c, 0);
-        ChassisVelocities speeds = new ChassisVelocities(1, 0, 0);
+        ChassisSpeeds speeds = new ChassisSpeeds(1, 0, 0);
         // includes discretization
         SwerveModuleStates states = l.toSwerveModuleStates(speeds);
         c.reset();
@@ -70,7 +70,7 @@ class SimulatedHeadingTest implements Timeless {
         SwerveModuleCollection c = SwerveModuleCollection.get(
                 logger, currentLog, new CurrentLimit(10, 20), new CurrentLimit(10, 20), l);
         SimulatedGyro h = new SimulatedGyro(logger, l, c, 0);
-        ChassisVelocities speeds = new ChassisVelocities(0, 0, 1);
+        ChassisSpeeds speeds = new ChassisSpeeds(0, 0, 1);
         // includes discretization
         SwerveModuleStates states = l.toSwerveModuleStates(speeds);
 
@@ -98,7 +98,7 @@ class SimulatedHeadingTest implements Timeless {
     void testHolonomic() {
         SwerveKinodynamics l = SwerveKinodynamicsFactory.forRealisticTest();
 
-        ChassisVelocities speeds = new ChassisVelocities(1, 0, 1);
+        ChassisSpeeds speeds = new ChassisSpeeds(1, 0, 1);
         // includes discretization
         SwerveModuleStates states = l.toSwerveModuleStates(speeds);
         // these are discretized so not symmetrical

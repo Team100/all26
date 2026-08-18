@@ -14,22 +14,23 @@ import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.MatOfPoint3f;
 import org.opencv.core.Point;
 import org.opencv.core.Point3;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Transform3d;
-import org.wpilib.math.geometry.Translation3d;
-import org.wpilib.math.linalg.MatBuilder;
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.numbers.N3;
-import org.wpilib.math.util.Nat;
-import org.wpilib.math.util.Pair;
-import org.wpilib.smartdashboard.Mechanism2d;
-import org.wpilib.smartdashboard.MechanismLigament2d;
-import org.wpilib.smartdashboard.MechanismRoot2d;
-import org.wpilib.smartdashboard.SmartDashboard;
-import org.wpilib.util.Color;
-import org.wpilib.util.Color8Bit;
-import org.wpilib.vision.camera.OpenCvLoader;
+
+import edu.wpi.first.cscore.OpenCvLoader;
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 
 /** Visualize any serial chain in 3d. */
 public class Serial3dVisualization {
@@ -74,7 +75,7 @@ public class Serial3dVisualization {
         m_root = m_view.getRoot("root", 100, 100);
 
         // base angle is zero (pointing right)
-        m_base = new MechanismLigament2d("link", 0, 0, 0, new Color8Bit(Color.BLACK));
+        m_base = new MechanismLigament2d("link", 0, 0, 0, new Color8Bit(Color.kBlack));
         m_root.append(m_base);
 
         m_cameraRange = 1;
@@ -96,7 +97,7 @@ public class Serial3dVisualization {
         Pose3d m_cameraPose = getCameraPose();
 
         List<Pose3d> pList = m_arm.get();
-        paint(m_base, "actual_arm", m_cameraPose, pList, Color.ORANGE_RED);
+        paint(m_base, "actual_arm", m_cameraPose, pList, Color.kOrangeRed);
 
         List<Pose3d> tList3 = List.of(
                 new Pose3d(0, 0, 0, Rotation3d.kZero),
@@ -105,7 +106,7 @@ public class Serial3dVisualization {
                 new Pose3d(0.5, -0.5, 0, Rotation3d.kZero),
                 new Pose3d(0, -0.5, 0, Rotation3d.kZero),
                 new Pose3d(0, 0, 0, Rotation3d.kZero));
-        paint(m_base, "tabletop", m_cameraPose, tList3, Color.GRAY);
+        paint(m_base, "tabletop", m_cameraPose, tList3, Color.kGray);
     }
 
     Pose3d getCameraPose() {
@@ -161,7 +162,7 @@ public class Serial3dVisualization {
                         length,
                         Math.toDegrees(relativeAngle),
                         LINE_WIDTH,
-                        i == 0 ? new Color8Bit(Color.BLACK) : new Color8Bit(c));
+                        i == 0 ? new Color8Bit(Color.kBlack) : new Color8Bit(c));
                 base.append(link);
                 base = link;
                 ligaments.put(fullname, link);
@@ -238,9 +239,9 @@ public class Serial3dVisualization {
             pList.add(point(t));
             cList.add(link);
             // Show the basis vectors
-            basis(pList, cList, t, R, new Translation3d(1, 0, 0), Color.RED);
-            basis(pList, cList, t, R, new Translation3d(0, 1, 0), Color.GREEN);
-            basis(pList, cList, t, R, new Translation3d(0, 0, 1), Color.BLUE);
+            basis(pList, cList, t, R, new Translation3d(1, 0, 0), Color.kRed);
+            basis(pList, cList, t, R, new Translation3d(0, 1, 0), Color.kGreen);
+            basis(pList, cList, t, R, new Translation3d(0, 0, 1), Color.kBlue);
         }
         return new Pair<>(new MatOfPoint3f(pList.toArray(new Point3[0])), cList);
     }

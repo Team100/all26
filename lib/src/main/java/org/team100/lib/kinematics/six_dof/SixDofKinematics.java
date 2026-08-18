@@ -8,7 +8,8 @@ import org.team100.lib.geometry.six_dof.SixDofAcceleration;
 import org.team100.lib.geometry.six_dof.SixDofConfig;
 import org.team100.lib.geometry.six_dof.SixDofPose;
 import org.team100.lib.geometry.six_dof.SixDofVelocity;
-import org.wpilib.math.geometry.Pose3d;
+
+import edu.wpi.first.math.geometry.Pose3d;
 
 public interface SixDofKinematics {
 

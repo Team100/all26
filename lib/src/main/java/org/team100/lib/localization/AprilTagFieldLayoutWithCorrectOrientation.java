@@ -6,14 +6,14 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.wpilib.driverstation.Alliance;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Transform3d;
-import org.wpilib.math.geometry.Translation3d;
-import org.wpilib.system.Filesystem;
-import org.wpilib.vision.apriltag.AprilTagFieldLayout;
-import org.wpilib.vision.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Filesystem;
 
 /**
  * The WPILib JSON tag file, and the wrapper, AprilTagFieldLayout, define tag
@@ -76,8 +76,8 @@ public class AprilTagFieldLayoutWithCorrectOrientation {
         AprilTagFieldLayout redLayout = new AprilTagFieldLayout(path);
         redLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
 
-        layouts.put(Alliance.RED, redLayout);
-        layouts.put(Alliance.BLUE, blueLayout);
+        layouts.put(Alliance.Red, redLayout);
+        layouts.put(Alliance.Blue, blueLayout);
     }
 
     /**

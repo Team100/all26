@@ -3,18 +3,18 @@ package org.team100.lib.logging.primitive;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.wpilib.networktables.BooleanPublisher;
-import org.wpilib.networktables.BooleanTopic;
-import org.wpilib.networktables.DoubleArrayPublisher;
-import org.wpilib.networktables.DoubleArrayTopic;
-import org.wpilib.networktables.DoublePublisher;
-import org.wpilib.networktables.DoubleTopic;
-import org.wpilib.networktables.IntegerPublisher;
-import org.wpilib.networktables.IntegerTopic;
-import org.wpilib.networktables.NetworkTableInstance;
-import org.wpilib.networktables.StringPublisher;
-import org.wpilib.networktables.StringTopic;
-import org.wpilib.system.DataLogManager;
+import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.BooleanTopic;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.DoubleArrayTopic;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.DoubleTopic;
+import edu.wpi.first.networktables.IntegerPublisher;
+import edu.wpi.first.networktables.IntegerTopic;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringPublisher;
+import edu.wpi.first.networktables.StringTopic;
+import edu.wpi.first.wpilibj.DataLogManager;
 
 /**
  * This is a sort of back-up option for logging directly to a local network

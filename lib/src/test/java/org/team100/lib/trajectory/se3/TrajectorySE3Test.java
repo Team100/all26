@@ -13,8 +13,8 @@ import org.team100.lib.trajectory.se3.constraint.ConstantConstraintSE3;
 import org.team100.lib.trajectory.se3.constraint.TimingConstraintSE3;
 import org.team100.lib.util.ChartUtil3d;
 
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 
 public class TrajectorySE3Test implements Timeless {
     private static final double DELTA = 0.001;

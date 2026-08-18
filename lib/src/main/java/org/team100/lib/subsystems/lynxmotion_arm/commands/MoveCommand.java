@@ -9,9 +9,10 @@ import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.subsystems.lynxmotion_arm.LynxArm;
 import org.team100.lib.util.StrUtil;
-import org.wpilib.command2.Command;
-import org.wpilib.math.geometry.Pose3d;
-import org.wpilib.math.geometry.Rotation3d;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * Moves the arm in a straight line by interpolating the start and end
@@ -75,9 +76,9 @@ public class MoveCommand extends Command {
                     StrUtil.poseStr(m_goal), StrUtil.poseStr(setpoint), StrUtil.poseStr(measurement));
         }
         double togo = setpoint.getTranslation().getDistance(m_goal.getTranslation());
-        Rotation3d rotTogo = setpoint.getRotation().rotateBy(m_goal.getRotation().inverse());
+        Rotation3d rotTogo = setpoint.getRotation().minus(m_goal.getRotation());
         double angleTogo = rotTogo.getAngle();
-        Rotation3d rotTogo2 = measurement.getRotation().rotateBy(m_goal.getRotation().inverse());
+        Rotation3d rotTogo2 = measurement.getRotation().minus(m_goal.getRotation());
         double angleTogo2 = rotTogo2.getAngle();
         if (DEBUG)
             System.out.printf("to go %f angle %f measured %f \n", togo, angleTogo,
