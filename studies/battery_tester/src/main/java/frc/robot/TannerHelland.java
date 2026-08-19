@@ -1,7 +1,7 @@
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.util.Color8Bit;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.util.Color8Bit;
 
 /**
  * Blackbody RGB color.
@@ -29,16 +29,16 @@ public class TannerHelland {
             return 255;
         if (ck <= 19)
             return 0;
-        return MathUtil.clamp(
+        return Math.clamp(
                 (int) (138.5177312231 * Math.log(ck - 10) - 305.0447927307), 0, 255);
     }
 
     /** @param ck centiKelvin */
     private static int green(double ck) {
         if (ck <= 66)
-            return MathUtil.clamp(
+            return Math.clamp(
                     (int) (99.4708025861 * Math.log(ck) - 161.1195681661), 0, 255);
-        return MathUtil.clamp(
+        return Math.clamp(
                 (int) (288.1221695283 * (Math.pow(ck - 60, -0.0755148492))), 0, 255);
     }
 
@@ -46,7 +46,7 @@ public class TannerHelland {
     private static int red(double ck) {
         if (ck <= 66)
             return 255;
-        return MathUtil.clamp(
+        return Math.clamp(
                 (int) (329.698727446 * (Math.pow(ck - 60, -0.1332047592))), 0, 255);
     }
 }

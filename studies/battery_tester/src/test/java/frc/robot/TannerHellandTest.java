@@ -3,8 +3,7 @@ package frc.robot;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-
-import edu.wpi.first.wpilibj.util.Color8Bit;
+import org.wpilib.util.Color8Bit;
 
 public class TannerHellandTest {
     @Test

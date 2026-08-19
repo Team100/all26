@@ -1,7 +1,6 @@
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import org.wpilib.math.interpolation.InterpolatingDoubleTreeMap;
 
 /**
  * Battery model including charge state.
@@ -77,7 +76,7 @@ public class StatefulBattery extends BatteryBase {
 
     @Override
     double SOC() {
-        return MathUtil.clamp(c / c0, 0, 1);
+        return Math.clamp(c / c0, 0, 1);
     }
 
     @Override
