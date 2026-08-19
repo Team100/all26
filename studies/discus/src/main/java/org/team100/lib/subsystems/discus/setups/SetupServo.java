@@ -5,9 +5,8 @@ import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.subsystems.discus.DiscusServo;
 import org.team100.lib.visualization.ArmVisualization;
-
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.wpilib.command2.button.Trigger;
+import org.wpilib.driverstation.Gamepad;
 
 public class SetupServo implements Runnable {
     private static final double OFFSET = Math.PI / 2;
@@ -19,7 +18,7 @@ public class SetupServo implements Runnable {
         final Logging logging = Logging.instance();
         final LoggerFactory logger = logging.rootLogger;
         TotalCurrentLog currentLog = new TotalCurrentLog(logger);
-        XboxController controller = new XboxController(0);
+        Gamepad controller = new Gamepad(0);
 
         m_discus = new DiscusServo(logger, currentLog);
         m_viz = new ArmVisualization(m_discus::getPosition, "discus", 0);
@@ -30,12 +29,12 @@ public class SetupServo implements Runnable {
         // retain them.
         // new Trigger(controller::getAButton).whileTrue(m_discus.home());
         // new Trigger(controller::getBButton).onTrue(m_discus.zero());
-        new Trigger(controller::getXButton).whileTrue(m_discus.position(() -> 8));
-        new Trigger(controller::getYButton).whileTrue(m_discus.position(() -> -8));
+        new Trigger(controller::getWestFaceButton).whileTrue(m_discus.position(() -> 8));
+        new Trigger(controller::getNorthFaceButton).whileTrue(m_discus.position(() -> -8));
         new Trigger(controller::getRightBumperButton).whileTrue(m_discus.position(() -> 12));
         new Trigger(controller::getLeftBumperButton).whileTrue(m_discus.position(() -> -12));
-        new Trigger(controller::getAButton).whileTrue(m_discus.position(() -> 20));
-        new Trigger(controller::getBButton).whileTrue(m_discus.position(() -> -20));
+        new Trigger(controller::getSouthFaceButton).whileTrue(m_discus.position(() -> 20));
+        new Trigger(controller::getEastFaceButton).whileTrue(m_discus.position(() -> -20));
     }
 
     @Override
