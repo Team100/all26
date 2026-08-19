@@ -18,15 +18,13 @@ import org.team100.lib.util.Banner;
 import org.team100.lib.util.RoboRioChannel;
 import org.team100.lib.visualization.Ball;
 import org.team100.lib.visualization.BallFactory;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.command2.button.Trigger;
+import org.wpilib.framework.TimedRobot;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.util.Color;
 
 public class Robot extends TimedRobot {
     private static final boolean BALL_2D = false;
@@ -81,8 +79,6 @@ public class Robot extends TimedRobot {
         new Trigger(m_controller::b).whileTrue(m_ball.shoot());
 
         m_turret.setDefaultCommand(m_turret.stop());
-
-        DriverStation.silenceJoystickConnectionWarning(true);
     }
 
     private Color indicatorState() {
@@ -90,23 +86,23 @@ public class Robot extends TimedRobot {
             if (m_turret.solved()) {
                 if (m_turret.onTarget()) {
                     // ready to fire
-                    return Color.kGreen;
+                    return Color.GREEN;
                 } else {
                     if (m_turret.validSetpoint()) {
                         // solved, valid, but not on target yet
-                        return Color.kYellow;
+                        return Color.YELLOW;
                     } else {
                         // setpoint is inaccessible
-                        return Color.kOrange;
+                        return Color.ORANGE;
                     }
                 }
             } else {
                 // no solution
-                return Color.kRed;
+                return Color.RED;
             }
         } else {
             // idle
-            return Color.kLavender;
+            return Color.LAVENDER;
         }
     }
 
