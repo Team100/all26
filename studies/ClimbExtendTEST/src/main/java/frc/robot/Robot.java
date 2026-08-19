@@ -13,15 +13,13 @@ import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.util.Banner;
-
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.WPILibVersion;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.framework.TimedRobot;
+import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.smartdashboard.SendableChooser;
+import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.system.RobotController;
+import org.wpilib.system.WPILibVersion;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -45,9 +43,6 @@ public class Robot extends TimedRobot {
   public Robot() {
     Banner.printBanner();
 
-    // We want the CommandScheduler, not LiveWindow.
-    enableLiveWindowInTest(false);
-
     // This is for setting up LaserCAN devices.
     // CanBridge.runTCP();
 
@@ -55,7 +50,6 @@ public class Robot extends TimedRobot {
     System.out.printf("RoboRIO serial number: %s\n", RobotController.getSerialNumber());
     System.out.printf("Identity: %s\n", Identity.instance.name());
     RobotController.setBrownoutVoltage(5.5);
-    DriverStation.silenceJoystickConnectionWarning(true);
     Experiments.instance.show();
 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
@@ -154,16 +148,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-  }
-
-  /** This function is called once when test mode is enabled. */
-  @Override
-  public void testInit() {
-  }
-
-  /** This function is called periodically during test mode. */
-  @Override
-  public void testPeriodic() {
   }
 
   /** This function is called once when the robot is first started up. */

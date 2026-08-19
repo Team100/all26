@@ -30,14 +30,13 @@ import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VariableR1;
 import org.team100.lib.visualization.RobotPoseVisualization;
 import org.team100.lib.visualization.TrajectoryVisualization;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.Commands;
+import org.wpilib.driverstation.MatchState;
+import org.wpilib.framework.RobotBase;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Twist2d;
+import org.wpilib.system.RobotController;
 
 /**
  * This should contain all the hardware of the robot: all the subsystems etc
@@ -134,7 +133,7 @@ public class Machinery {
                 layout,
                 history,
                 visionUpdater,
-                DriverStation::getAlliance);
+                MatchState::getAlliance);
 
         ////////////////////////////////////////////////////////////
         //

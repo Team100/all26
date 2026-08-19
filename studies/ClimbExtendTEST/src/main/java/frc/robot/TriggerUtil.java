@@ -2,8 +2,8 @@ package frc.robot;
 
 import java.util.function.BooleanSupplier;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.button.Trigger;
 
 public class TriggerUtil {
     public static Trigger whileTrue(BooleanSupplier condition, Command command) {
