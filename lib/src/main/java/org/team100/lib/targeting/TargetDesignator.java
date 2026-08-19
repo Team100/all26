@@ -6,9 +6,9 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.Commands;
 
 /**
  * A Simulated target designator that can choose one of two targets.

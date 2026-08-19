@@ -2,8 +2,8 @@ package org.team100.lib.localization;
 
 import java.nio.ByteBuffer;
 
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.util.struct.Struct;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.util.struct.Struct;
 
 public class BlipStruct implements Struct<Blip> {
 
@@ -19,7 +19,7 @@ public class BlipStruct implements Struct<Blip> {
 
     @Override
     public int getSize() {
-        return kSizeInt64 + kSizeInt32 + Transform3d.struct.getSize();
+        return INT64_SIZE + INT32_SIZE + Transform3d.struct.getSize();
     }
 
     @Override

@@ -11,9 +11,8 @@ import org.team100.lib.geometry.pr.PRVelocity;
 import org.team100.lib.geometry.r2.AccelerationR2;
 import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.testing.TestUtil;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.util.MathUtil;
 
 public class PRKinematicsTest {
     private static final double DELTA = 0.001;

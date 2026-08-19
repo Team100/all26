@@ -6,7 +6,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.state.ModelR1;
 
-import edu.wpi.first.math.controller.PIDController;
+import org.wpilib.math.controller.PIDController;
 
 /**
  * Feedback using the WPI PID controller class.

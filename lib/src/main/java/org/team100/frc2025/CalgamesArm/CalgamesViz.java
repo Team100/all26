@@ -3,11 +3,11 @@ package org.team100.frc2025.CalgamesArm;
 
 import org.team100.lib.geometry.prr.PRRConfig;
 
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.smartdashboard.Mechanism2d;
+import org.wpilib.smartdashboard.MechanismLigament2d;
+import org.wpilib.smartdashboard.MechanismRoot2d;
+import org.wpilib.smartdashboard.SmartDashboard;
 
 public class CalgamesViz implements Runnable {
     private static final double SCALE = 100;

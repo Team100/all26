@@ -12,8 +12,6 @@ import org.team100.lib.logging.Logging;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
 
-import edu.wpi.first.wpilibj.RobotState;
-
 /**
  * Control bindings for the Interlink DX. Also default commands.
  * 
@@ -110,9 +108,9 @@ public class InterlinkBinder {
         ///
         /// TEST
         ///
-        Tester tester = new Tester(m_machinery);
-        whileTrue(() -> (RobotState.isTest() && driver.reset() && driver.cancel()),
-                tester.prematch());
+        // Tester tester = new Tester(m_machinery);
+        // whileTrue(() -> (RobotState.isTest() && driver.reset() && driver.cancel()),
+        //         tester.prematch());
 
     }
 

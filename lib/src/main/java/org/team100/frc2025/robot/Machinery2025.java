@@ -36,10 +36,9 @@ import org.team100.lib.uncertainty.VariableR1;
 import org.team100.lib.util.CanId;
 import org.team100.lib.visualization.RobotPoseVisualization;
 import org.team100.lib.visualization.TrajectoryVisualization;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
+import org.wpilib.driverstation.MatchState;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 /**
  * This should contain all the hardware of the robot: all the subsystems etc
@@ -144,7 +143,7 @@ public class Machinery2025 {
                 layout,
                 history,
                 visionUpdater,
-                DriverStation::getAlliance);
+                MatchState::getAlliance);
         m_targets = new Targets(driveLog, fieldLogger, 0.2, history);
 
         ////////////////////////////////////////////////////////////

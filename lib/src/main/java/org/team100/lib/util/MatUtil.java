@@ -1,9 +1,9 @@
 package org.team100.lib.util;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.Num;
-import edu.wpi.first.math.Vector;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.util.Nat;
+import org.wpilib.math.util.Num;
 
 public class MatUtil {
     /** Return an NxN matrix with the given vector on the diagonal. */

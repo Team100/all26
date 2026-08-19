@@ -10,9 +10,10 @@ import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 import org.team100.lib.state.ModelR1;
+import org.wpilib.math.filter.LinearFilter;
+import org.wpilib.math.util.MathUtil;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.LinearFilter;
+
 
 /**
  * Uses a motor and gears to produce rotational output, e.g. an arm joint.

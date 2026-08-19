@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
-import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
-import edu.wpi.first.math.interpolation.Interpolator;
-import edu.wpi.first.math.interpolation.InverseInterpolator;
+import org.wpilib.math.interpolation.InterpolatingTreeMap;
+import org.wpilib.math.interpolation.Interpolator;
+import org.wpilib.math.interpolation.InverseInterpolator;
 
 public class InterpolatingMap100Test {
     private static final double DELTA = 1e-12;

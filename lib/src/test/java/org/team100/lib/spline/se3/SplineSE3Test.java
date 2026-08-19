@@ -10,11 +10,11 @@ import org.team100.lib.geometry.se3.WaypointSE3;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.util.ChartUtil3d;
 
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.numbers.N3;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.numbers.N3;
 
 public class SplineSE3Test implements Timeless {
     private static final boolean DEBUG = false;

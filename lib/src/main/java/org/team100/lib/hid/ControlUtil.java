@@ -3,8 +3,8 @@ package org.team100.lib.hid;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.math.geometry.Rotation2d;
 
 public class ControlUtil {
     /**
@@ -23,11 +23,11 @@ public class ControlUtil {
     }
 
     public static double clamp(double input, double clamp) {
-        return MathUtil.clamp(input, -clamp, clamp);
+        return Math.clamp(input, -clamp, clamp);
     }
 
     public static double clamp(double input, double low, double high) {
-        return MathUtil.clamp(input, low, high);
+        return Math.clamp(input, low, high);
     }
 
     public static double scale(double raw, double negScale, double center, double posScale) {

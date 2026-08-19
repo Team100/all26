@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.team100.lib.subsystems.swerve.kinodynamics.struct.SwerveModuleDeltaStruct;
 
-import edu.wpi.first.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 /**
  * For kinematics, the module delta is the dx and dy of each corner, i.e. it's a

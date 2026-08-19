@@ -30,10 +30,8 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
 import org.team100.lib.targeting.TargetUtil;
 import org.team100.lib.util.Math100;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
+import org.wpilib.math.geometry.Translation2d;
 
 /**
  * Manual cartesian control, with rotational control based on a target position.
@@ -167,7 +165,7 @@ public class DriveTargetLockWithProfile extends Command {
         double thetaFF = m_thetaSetpoint.v();
         m_log_thetaFF.log(() -> thetaFF);
 
-        double omega = MathUtil.clamp(
+        double omega = Math.clamp(
                 thetaFF + thetaFB,
                 -m_swerveKinodynamics.getMaxAngleSpeedRad_S(),
                 m_swerveKinodynamics.getMaxAngleSpeedRad_S());

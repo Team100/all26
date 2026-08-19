@@ -13,8 +13,8 @@ import org.team100.lib.state.ModelSE2;
 import org.team100.lib.targeting.TimeOfFlightRecursion.Looper;
 import org.team100.lib.targeting.TimeOfFlightRecursion.Looper.LoopSolution;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Translation2d;
 
 public class TimeOfFlightRecursionTest {
     private static final double DELTA = 0.001;

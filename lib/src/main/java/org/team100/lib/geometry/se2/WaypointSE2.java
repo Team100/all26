@@ -2,8 +2,8 @@ package org.team100.lib.geometry.se2;
 
 import org.team100.lib.util.Math100;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 /**
  * Pose and course in SE(2).

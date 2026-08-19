@@ -4,8 +4,8 @@ import static org.team100.lib.hid.ControlUtil.clamp;
 import static org.team100.lib.hid.ControlUtil.deadband;
 import static org.team100.lib.hid.ControlUtil.expo;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.GenericHID;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.driverstation.GenericHID;
 
 /**
  * VKB Joystick.
@@ -60,12 +60,14 @@ public class VKBJoystick {
     }
 
     public Rotation2d desiredRotation() {
+        // TODO: fix for 2027
+        return Rotation2d.kZero;
         // POV 2 is the center one
-        double desiredAngleDegrees = m_hid.getPOV(2);
-        if (desiredAngleDegrees < 0) {
-            return null;
-        }
-        return Rotation2d.fromDegrees(-1.0 * desiredAngleDegrees);
+        // double desiredAngleDegrees = m_hid.getPOV(2);
+        // if (desiredAngleDegrees < 0) {
+        //     return null;
+        // }
+        // return Rotation2d.fromDegrees(-1.0 * desiredAngleDegrees);
     }
 
     public boolean toReef() {

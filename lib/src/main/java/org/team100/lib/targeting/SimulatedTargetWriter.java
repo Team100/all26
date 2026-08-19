@@ -14,14 +14,13 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.state.ModelSE2;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.PubSubOption;
-import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.wpilibj.RobotBase;
+import org.wpilib.framework.RobotBase;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.networktables.PubSubOption;
+import org.wpilib.networktables.StructArrayPublisher;
 
 /**
  * Write simulated targets to Network Tables, so the Targets receiver can pick
@@ -60,15 +59,17 @@ public class SimulatedTargetWriter {
         // Use a separate instance so that the timestamps are written correctly.
         m_inst = NetworkTableInstance.create();
         m_inst.setServer("localhost");
-        m_inst.startClient4("tag_finder24");
+        m_inst.startClient("tag_finder24");
         for (Camera camera : m_cameras) {
             // name is "objectVision/{IDENTITY/targets"
             String name = "objectVision/" + camera.getSerial() + "/targets";
             m_publishers.put(
                     camera,
                     m_inst.getStructArrayTopic(
-                            name, Target.struct).publish(PubSubOption.keepDuplicates(true), PubSubOption.periodic(0.01),
-                                    PubSubOption.sendAll(true)));
+                            name, Target.struct).publish(
+                                    PubSubOption.KEEP_DUPLICATES,
+                                    PubSubOption.periodic(0.01),
+                                    PubSubOption.SEND_ALL));
         }
     }
 

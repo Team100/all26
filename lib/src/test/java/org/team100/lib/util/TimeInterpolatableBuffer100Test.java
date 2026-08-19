@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.interpolation.Interpolator;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.math.interpolation.Interpolator;
 
 class TimeInterpolatableBuffer100Test {
     private static final double DELTA = 0.001;
@@ -22,7 +22,7 @@ class TimeInterpolatableBuffer100Test {
 
         @Override
         public Item interpolate(Item a, Item b, double t) {
-            return new Item(MathUtil.interpolate(a.value, b.value, t));
+            return new Item(MathUtil.lerp(a.value, b.value, t));
         }
     }
 

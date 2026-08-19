@@ -1,7 +1,7 @@
 package org.team100.lib.dynamics.mecanum;
 
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.numbers.N4;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N4;
 
 /**
  * Wheel force required of the drive wheels, in Newtons.

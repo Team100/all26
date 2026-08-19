@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Twist2d;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Transform2d;
+import org.wpilib.math.geometry.Twist2d;
 
 class PoseTest {
 
@@ -45,12 +45,12 @@ class PoseTest {
         // twist is robot-relative
         Pose2d goal = new Pose2d(1, 1, new Rotation2d(1));
         Pose2d measurement = new Pose2d(2, 2, new Rotation2d(2));
-        Twist2d twist = measurement.log(goal);
+        Twist2d twist = goal.minus(measurement).log();
         assertEquals(-1.11, twist.dx, 0.01);
         assertEquals(0.97, twist.dy, 0.01);
         assertEquals(-1, twist.dtheta, 0.1);
         // apply to pure rotation to get field relative
-        Pose2d rotated = new Pose2d(0, 0, new Rotation2d(2)).exp(twist);
+        Pose2d rotated = new Pose2d(0, 0, new Rotation2d(2)).plus(twist.exp());
         assertEquals(-1, rotated.getX(), 0.01);
         assertEquals(-1, rotated.getY(), 0.01);
         assertEquals(1, rotated.getRotation().getRadians(), 0.01);

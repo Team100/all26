@@ -9,8 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.six_dof.SphericalWristConfig;
 import org.team100.lib.geometry.six_dof.SphericalWristPose;
 import org.team100.lib.testing.TestUtil;
-
-import edu.wpi.first.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Rotation3d;
 
 public class SphericalWristKinematicsTest {
 

@@ -1,7 +1,7 @@
 package org.team100.frc2026.auton;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
+import static org.wpilib.command2.Commands.parallel;
+import static org.wpilib.command2.Commands.repeatingSequence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +28,9 @@ import org.team100.lib.trajectory.se2.constraint.SwerveDriveDynamicsConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
 import org.team100.lib.trajectory.se2.constraint.YawRateConstraint;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 /** Full speed sweep, shoot-on-the-move, repeat */
 public class DoubleCircleAuton implements AnnotatedCommand {

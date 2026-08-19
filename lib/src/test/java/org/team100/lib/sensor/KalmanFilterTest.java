@@ -6,15 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
-
-import edu.wpi.first.math.MatBuilder;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.estimator.SteadyStateKalmanFilter;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.math.system.Discretization;
-import edu.wpi.first.math.system.LinearSystem;
+import org.wpilib.math.estimator.SteadyStateKalmanFilter;
+import org.wpilib.math.linalg.MatBuilder;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.numbers.N1;
+import org.wpilib.math.numbers.N2;
+import org.wpilib.math.system.Discretization;
+import org.wpilib.math.system.LinearSystem;
+import org.wpilib.math.util.Nat;
 
 // for experiments with kalman filter sensor fusion
 // gyro is fast and precise but integration yields drift
@@ -57,7 +56,8 @@ public class KalmanFilterTest {
         // stdevs we expect from observations; the gaussian below is 1
         Matrix<N1, N1> outputStdDevs = MatBuilder.fill(Nat.N1(), Nat.N1(), 1);
 
-        SteadyStateKalmanFilter<N2, N1, N1> kf = new SteadyStateKalmanFilter(Nat.N2(), Nat.N1(), ls, stateStdDevs, outputStdDevs, dtSec);
+        SteadyStateKalmanFilter<N2, N1, N1> kf = new SteadyStateKalmanFilter(Nat.N2(), Nat.N1(), ls, stateStdDevs,
+                outputStdDevs, dtSec);
         // set initial state = moving
         final double velocity = 1;
         double position = 0;
@@ -122,7 +122,8 @@ public class KalmanFilterTest {
         Matrix<N2, N1> stateStdDevs = MatBuilder.fill(Nat.N2(), Nat.N1(), 0.01, 0.01);
         Matrix<N2, N1> outputStdDevs = MatBuilder.fill(Nat.N2(), Nat.N1(), 1, 1);
 
-        SteadyStateKalmanFilter<N2, N1, N2> kf = new SteadyStateKalmanFilter(Nat.N2(), Nat.N2(), ls, stateStdDevs, outputStdDevs, dtSec);
+        SteadyStateKalmanFilter<N2, N1, N2> kf = new SteadyStateKalmanFilter(Nat.N2(), Nat.N2(), ls, stateStdDevs,
+                outputStdDevs, dtSec);
 
         final double velocity = 1;
         double position = 0;
@@ -185,7 +186,8 @@ public class KalmanFilterTest {
         final Matrix<N2, N1> outputStdDevs = MatBuilder.fill(Nat.N2(), Nat.N1(), 0.5, 0.01);
         final Matrix<N1, N1> controlInput = MatBuilder.fill(Nat.N1(), Nat.N1(), 0);
         final LinearSystem<N2, N1, N2> ls = new LinearSystem(A, B, C, D);
-        final SteadyStateKalmanFilter<N2, N1, N2> kf = new SteadyStateKalmanFilter(Nat.N2(), Nat.N2(), ls, stateStdDevs, outputStdDevs,
+        final SteadyStateKalmanFilter<N2, N1, N2> kf = new SteadyStateKalmanFilter(Nat.N2(), Nat.N2(), ls, stateStdDevs,
+                outputStdDevs,
                 dtSec);
         Matrix<N2, N2> K = kf.getK();
         assertArrayEquals(new double[] { 0.039, 0.011, 0, 0.828 }, K.getData(), 0.001);

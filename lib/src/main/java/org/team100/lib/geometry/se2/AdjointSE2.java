@@ -1,13 +1,12 @@
 package org.team100.lib.geometry.se2;
 
 import org.team100.lib.geometry.GeometryUtil;
-
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.math.numbers.N3;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.numbers.N2;
+import org.wpilib.math.numbers.N3;
+import org.wpilib.math.util.Nat;
 
 public class AdjointSE2 {
     /**

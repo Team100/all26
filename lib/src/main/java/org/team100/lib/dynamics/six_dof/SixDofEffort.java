@@ -1,8 +1,8 @@
 package org.team100.lib.dynamics.six_dof;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.numbers.N6;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N6;
 
 /** Torques for the Six DOF arm, Nm. */
 public record SixDofEffort(

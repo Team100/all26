@@ -22,10 +22,10 @@ import org.team100.lib.state.ModelSE2;
 import org.team100.lib.util.CoalescingCollection;
 import org.team100.lib.util.TrailingHistory;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.util.struct.StructBuffer;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.util.struct.StructBuffer;
 
 /**
  * Listen for updates from the object-detector camera and remember them for

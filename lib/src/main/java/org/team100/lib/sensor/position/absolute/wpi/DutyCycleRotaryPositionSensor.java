@@ -7,12 +7,9 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.logging.LoggerFactory.IntLogger;
 import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.util.RoboRioChannel;
-
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycle;
+import org.wpilib.hardware.rotation.DutyCycle;
 
 /**
  * Absolute rotary position sensor using duty cycle input.
@@ -26,8 +23,11 @@ import edu.wpi.first.wpilibj.DutyCycle;
  * RoboRIO, the duty cycle input produces garbage. So the Robot class should
  * sleep awhile.
  * 
- * Relies on Cache and Takt, so you must put Cache.refresh() and Takt.update() in
+ * Relies on Cache and Takt, so you must put Cache.refresh() and Takt.update()
+ * in
  * Robot.robotPeriodic().
+ * 
+ * TODO: fix for 2027
  */
 public abstract class DutyCycleRotaryPositionSensor extends RoboRioRotaryPositionSensor {
     /**
@@ -39,11 +39,11 @@ public abstract class DutyCycleRotaryPositionSensor extends RoboRioRotaryPositio
     private static final int FREQ_THRESHOLD = 500;
 
     private final int m_channel;
-    private final DigitalInput m_digitalInput;
+    // private final DigitalInput m_digitalInput;
     private final DutyCycle m_dutyCycle;
     private final DoubleSupplier m_duty;
     private final DoubleLogger m_log_duty;
-    private final IntLogger m_log_frequency;
+    // private final IntLogger m_log_frequency;
     private final BooleanLogger m_log_connected;
 
     protected DutyCycleRotaryPositionSensor(
@@ -54,11 +54,12 @@ public abstract class DutyCycleRotaryPositionSensor extends RoboRioRotaryPositio
         super(parent, inputOffset, drive);
         LoggerFactory log = parent.type(this);
         m_channel = channel.channel;
-        m_digitalInput = new DigitalInput(channel.channel);
-        m_dutyCycle = new DutyCycle(m_digitalInput);
+        // m_digitalInput = new DigitalInput(channel.channel);
+        // m_dutyCycle = new DutyCycle(m_digitalInput);
+        m_dutyCycle = new DutyCycle(channel.channel);
         m_duty = Cache.ofDouble(m_dutyCycle::getOutput);
         m_log_duty = log.doubleLogger(Level.COMP, "duty cycle");
-        m_log_frequency = log.intLogger(Level.TRACE, "frequency");
+        // m_log_frequency = log.intLogger(Level.TRACE, "frequency");
         m_log_connected = log.booleanLogger(Level.TRACE, "connected");
         log.intLogger(Level.COMP, "channel").log(() -> channel.channel);
     }
@@ -70,7 +71,7 @@ public abstract class DutyCycleRotaryPositionSensor extends RoboRioRotaryPositio
     @Override
     public void close() {
         m_dutyCycle.close();
-        m_digitalInput.close();
+        // m_digitalInput.close();
     }
 
     /**
@@ -99,8 +100,8 @@ public abstract class DutyCycleRotaryPositionSensor extends RoboRioRotaryPositio
     }
 
     private boolean isConnected() {
-        int frequency = m_dutyCycle.getFrequency();
-        m_log_frequency.log(() -> frequency);
+        double frequency = m_dutyCycle.getFrequency();
+        // m_log_frequency.log(() -> frequency);
         return frequency > FREQ_THRESHOLD;
     }
 

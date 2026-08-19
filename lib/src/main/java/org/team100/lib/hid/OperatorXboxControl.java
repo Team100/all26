@@ -1,6 +1,6 @@
 package org.team100.lib.hid;
 
-import edu.wpi.first.wpilibj.XboxController;
+import org.wpilib.driverstation.Gamepad;
 
 /**
  * This is a Microsoft Xbox controller, Logitech F310, or similar.
@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj.XboxController;
  * Do not use stick buttons, they are prone to stray clicks
  */
 public class OperatorXboxControl {
-    private final XboxController m_controller;
+    private final Gamepad m_controller;
 
     public OperatorXboxControl(int port) {
-        m_controller = new XboxController(port);
+        m_controller = new Gamepad(port);
     }
 
     public Velocity velocity() {

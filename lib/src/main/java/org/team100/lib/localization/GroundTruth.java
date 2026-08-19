@@ -11,9 +11,8 @@ import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VariableR1;
 import org.team100.lib.visualization.RobotPoseVisualization;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.RobotBase;
+import org.wpilib.framework.RobotBase;
+import org.wpilib.math.geometry.Pose2d;
 
 /**
  * Container for aspects of ground truth for simulation.

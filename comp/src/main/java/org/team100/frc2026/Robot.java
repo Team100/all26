@@ -10,6 +10,7 @@ import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.config.Identity;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
+import org.team100.lib.framework.SerialNumber;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
@@ -17,19 +18,16 @@ import org.team100.lib.logging.RobotLog;
 import org.team100.lib.network.Sync;
 import org.team100.lib.util.Banner;
 import org.team100.lib.visualization.AutonVisualization;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.driverstation.internal.DriverStationBackend;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.system.WPILibVersion;
 
+// import com.reduxrobotics.canand.CanandEventLoop;
 import com.revrobotics.util.StatusLogger;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.WPILibVersion;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-import com.reduxrobotics.canand.CanandEventLoop;
 
 /**
  * This is the main robot class, which wires up events from TimedRobot100.
@@ -45,7 +43,7 @@ public class Robot extends TimedRobot100 {
     public Robot() {
         Banner.printBanner();
 
-        CanandEventLoop.getInstance();
+        // CanandEventLoop.getInstance();
 
         // We want the CommandScheduler, not LiveWindow.
         enableLiveWindowInTest(false);
@@ -54,10 +52,10 @@ public class Robot extends TimedRobot100 {
         // CanBridge.runTCP();
         StatusLogger.disableAutoLogging();
         System.out.printf("WPILib Version: %s\n", WPILibVersion.Version);
-        System.out.printf("RoboRIO serial number: %s\n", RobotController.getSerialNumber());
+        System.out.printf("RoboRIO serial number: %s\n", SerialNumber.get());
         System.out.printf("Identity: %s\n", Identity.instance.name());
-        RobotController.setBrownoutVoltage(5.5);
-        DriverStation.silenceJoystickConnectionWarning(true);
+        // RobotController.setBrownoutVoltage(5.5);
+        DriverStationBackend.silenceJoystickConnectionWarning(true);
         Experiments.instance.show();
 
         // Log what the scheduler is doing. Use "withName()".
@@ -100,7 +98,7 @@ public class Robot extends TimedRobot100 {
         }
     }
 
-    //////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
     //
     // INITIALIZERS, DO NOT CHANGE THESE
     //
@@ -141,7 +139,7 @@ public class Robot extends TimedRobot100 {
         m_binder.close();
     }
 
-    //////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
     //
     // EXIT: CLEAN UP
     //
@@ -151,7 +149,7 @@ public class Robot extends TimedRobot100 {
         m_autoViz.clear();
     }
 
-    ///////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
     //
     // LEAVE ALL THESE EMPTY
     //

@@ -1,10 +1,10 @@
 package org.team100.frc2026.robot;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static org.team100.lib.util.TriggerUtil.onTrue;
 import static org.team100.lib.util.TriggerUtil.whileTrue;
+import static org.wpilib.command2.Commands.parallel;
+import static org.wpilib.command2.Commands.repeatingSequence;
+import static org.wpilib.command2.Commands.waitUntil;
 
 import org.team100.frc2026.auton.CenterFullSweepAuton;
 import org.team100.frc2026.auton.CenterHalfSweepAuton;
@@ -18,8 +18,6 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
-
-import edu.wpi.first.wpilibj.RobotState;
 
 /**
  * This is a version from pre-SVR testing
@@ -60,7 +58,6 @@ public class TestBinder {
                 m_machinery.m_intakeExtend.stop());
         m_machinery.m_shooter.setDefaultCommand(
                 m_machinery.m_shooter.stop());
-        
 
         ////////////////////////////////////////////////////
         ///
@@ -251,17 +248,16 @@ public class TestBinder {
         // };
 
         // whileTrue(driver::y,
-        //         repeatingSequence(
-        //                 m_machinery.m_intakeExtend.goToWobbleSlightlyInExtendedPosition().withTimeout(0.5),
-        //                 m_machinery.m_intakeExtend.goToWobbleSlightlyOutRetractedPosition().withTimeout(0.5)));
+        // repeatingSequence(
+        // m_machinery.m_intakeExtend.goToWobbleSlightlyInExtendedPosition().withTimeout(0.5),
+        // m_machinery.m_intakeExtend.goToWobbleSlightlyOutRetractedPosition().withTimeout(0.5)));
 
-        whileTrue(driver::povUp,(
-                m_machinery.m_shooter.tune()));
+        whileTrue(driver::povUp, (m_machinery.m_shooter.tune()));
 
-        Tester tester = new Tester(m_machinery);
-        onTrue(() -> RobotState.isTest(), tester.prompt());
-        whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
-                tester.prematch());
+        // Tester tester = new Tester(m_machinery);
+        // onTrue(() -> RobotState.isTest(), tester.prompt());
+        // whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
+        // tester.prematch());
     }
 
     /** Keeps tests from conflicting. */

@@ -3,11 +3,11 @@ package org.team100.lib.commands;
 import java.util.Map;
 import java.util.Optional;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.SelectCommand;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.PrintCommand;
+import org.wpilib.command2.SelectCommand;
+import org.wpilib.driverstation.Alliance;
+import org.wpilib.driverstation.MatchState;
 
 /**
  * Executes the red or blue command based on the current alliance.
@@ -31,13 +31,13 @@ public class AllianceCommand extends SelectCommand<AllianceCommand.Select> {
     }
 
     private static Select selector() {
-        Optional<Alliance> opt = DriverStation.getAlliance();
+        Optional<Alliance> opt = MatchState.getAlliance();
         if (opt.isEmpty())
             return Select.UNKNOWN;
         switch (opt.get()) {
-            case Red:
+            case RED:
                 return Select.RED;
-            case Blue:
+            case BLUE:
                 return Select.BLUE;
             default:
                 return Select.UNKNOWN;

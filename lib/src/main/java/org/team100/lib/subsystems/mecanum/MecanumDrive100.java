@@ -17,15 +17,15 @@ import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
-import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Twist2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.math.kinematics.MecanumDriveWheelPositions;
+import org.wpilib.math.kinematics.MecanumDriveWheelVelocities;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.SubsystemBase;
 
 /**
  * Mecanum drive with optional gyro.
@@ -103,16 +103,16 @@ public class MecanumDrive100 extends SubsystemBase implements VelocitySubsystemS
     @Override
     public void set(VelocityControlSE2 nextV) {
         Rotation2d yaw = getYaw();
-        ChassisSpeeds speed = SwerveKinodynamics.toInstantaneousChassisSpeeds(
+        ChassisVelocities speed = SwerveKinodynamics.toInstantaneousChassisVelocities(
                 nextV.velocity(), yaw);
-        MecanumDriveWheelSpeeds mSpeed = m_kinematics.toWheelSpeeds(speed);
+        MecanumDriveWheelVelocities mSpeed = m_kinematics.toWheelVelocities(speed);
         ChassisAcceleration accel = ChassisAcceleration.fromFieldRelative(
                 nextV.acceleration(), yaw);
         MecanumEffort effort = m_dynamics.effort(accel);
-        m_frontLeft.setVelocity(mSpeed.frontLeftMetersPerSecond, effort.fl());
-        m_frontRight.setVelocity(mSpeed.frontRightMetersPerSecond, effort.fr());
-        m_rearLeft.setVelocity(mSpeed.rearLeftMetersPerSecond, effort.rl());
-        m_rearRight.setVelocity(mSpeed.rearRightMetersPerSecond, effort.rr());
+        m_frontLeft.setVelocity(mSpeed.frontLeft, effort.fl());
+        m_frontRight.setVelocity(mSpeed.frontRight, effort.fr());
+        m_rearLeft.setVelocity(mSpeed.rearLeft, effort.rl());
+        m_rearRight.setVelocity(mSpeed.rearRight, effort.rr());
         m_log_input.log(() -> nextV);
     }
 
@@ -176,7 +176,7 @@ public class MecanumDrive100 extends SubsystemBase implements VelocitySubsystemS
 
     private void updatePose() {
         Twist2d twist = twist();
-        m_pose = m_pose.exp(twist);
+        m_pose = m_pose.plus(twist.exp());
     }
 
     private Twist2d twist() {

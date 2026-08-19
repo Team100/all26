@@ -9,12 +9,12 @@ import org.team100.lib.path.se2.PathSE2Parameter;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.spline.r1.SplineR1;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.numbers.N2;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.numbers.N2;
 
 /**
  * Spline in the SE(2) manifold, the space Pose2d lives in.

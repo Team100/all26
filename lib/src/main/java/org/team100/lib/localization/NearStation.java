@@ -1,7 +1,7 @@
 package org.team100.lib.localization;
 
 import java.util.function.Supplier;
-import edu.wpi.first.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Pose2d;
 
 public class NearStation {
     private final Supplier <Pose2d> m_drive;

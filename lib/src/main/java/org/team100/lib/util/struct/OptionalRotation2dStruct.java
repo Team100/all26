@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import org.team100.lib.util.OptionalRotation2d;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.util.struct.Struct;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.util.struct.Struct;
 
 public class OptionalRotation2dStruct implements Struct<OptionalRotation2d> {
     @Override
@@ -21,7 +21,7 @@ public class OptionalRotation2dStruct implements Struct<OptionalRotation2d> {
 
     @Override
     public int getSize() {
-        return kSizeBool + Rotation2d.struct.getSize();
+        return BOOL_SIZE + Rotation2d.struct.getSize();
     }
 
     @Override

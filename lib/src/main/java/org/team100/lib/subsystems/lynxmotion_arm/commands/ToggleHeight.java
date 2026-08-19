@@ -2,11 +2,11 @@ package org.team100.lib.subsystems.lynxmotion_arm.commands;
 
 import org.team100.lib.subsystems.lynxmotion_arm.LynxArm;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.system.Timer;
+import org.wpilib.command2.Command;
 
 /** If we're at zero, move to safe. If we're not at zero, move there. */
 public class ToggleHeight extends Command {
@@ -41,7 +41,7 @@ public class ToggleHeight extends Command {
     @Override
     public void execute() {
         double s = m_timer.get() / DURATION;
-        double z = MathUtil.interpolate(m_startPose.getZ(), m_goal, s);
+        double z = MathUtil.lerp(m_startPose.getZ(), m_goal, s);
         Pose3d newPose = new Pose3d(
                 new Translation3d(m_startPose.getX(), m_startPose.getY(), z),
                 m_startPose.getRotation());

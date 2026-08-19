@@ -4,8 +4,8 @@ import static org.team100.lib.hid.ControlUtil.clamp;
 import static org.team100.lib.hid.ControlUtil.deadband;
 import static org.team100.lib.hid.ControlUtil.expo;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.GenericHID;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.driverstation.GenericHID;
 
 /**
  * Experiment for driving swerve with the big joystick.
@@ -65,11 +65,13 @@ public abstract class JoystickControl {
     }
 
     public Rotation2d desiredRotation() {
-        double desiredAngleDegrees = m_controller.getPOV();
-        if (desiredAngleDegrees < 0) {
-            return null;
-        }
-        return Rotation2d.fromDegrees(-1.0 * desiredAngleDegrees);
+        // TODO: fix for 2027
+        return Rotation2d.kZero;
+        // double desiredAngleDegrees = m_controller.getPOV();
+        // if (desiredAngleDegrees < 0) {
+        //     return null;
+        // }
+        // return Rotation2d.fromDegrees(-1.0 * desiredAngleDegrees);
     }
 
     private boolean button(int button) {

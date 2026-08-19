@@ -1,10 +1,10 @@
 package org.team100.lib.geometry.pr;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N2;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N1;
+import org.wpilib.math.numbers.N2;
 
 /**
  * Joint velocities for the PR example

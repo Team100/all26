@@ -5,8 +5,7 @@ import java.util.function.Supplier;
 
 import org.team100.lib.geometry.six_dof.SixDofPose;
 import org.team100.lib.visualization.Serial3dVisualization;
-
-import edu.wpi.first.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Pose3d;
 
 /** Use the glass "mechanism" display to show the arm position in 3d. */
 public class SixDofVisualizer {

@@ -1,10 +1,10 @@
 package org.team100.lib.examples.motion;
 
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static org.wpilib.command2.Commands.sequence;
 
 import org.team100.lib.logging.LoggerFactory;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
 
 /**
  * This illustrates a short sequence, contained within a separate file, instead

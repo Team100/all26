@@ -1,10 +1,10 @@
 package org.team100.frc2026.robot;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static org.team100.lib.util.TriggerUtil.onTrue;
 import static org.team100.lib.util.TriggerUtil.whileTrue;
+import static org.wpilib.command2.Commands.parallel;
+import static org.wpilib.command2.Commands.sequence;
+import static org.wpilib.command2.Commands.waitUntil;
 
 import org.team100.lib.controller.r1.AzimuthController;
 import org.team100.lib.controller.r1.FeedbackR1;
@@ -37,7 +37,7 @@ public class Binder {
         ///
         /// CONTROLLER
         ///
-        //DriverXboxControl driver = new DriverXboxControl(0);
+        // DriverXboxControl driver = new DriverXboxControl(0);
         InterLinkDX driver = new InterLinkDX(0);
 
         ////////////////////////////////////////////////////
@@ -62,8 +62,8 @@ public class Binder {
         ///
         /// DISORIENT
         ///
-        /// Back: nudge the rotation towards zero.
-        /// Start: forget the current pose, listen to camera input.
+        /// Back: nudge the rotation towards zero. Start: forget the current pose, listen
+        /// to camera input.
 
         onTrue(driver::back, m_machinery.zeroRotation());
         onTrue(driver::start, m_machinery.disorient());
@@ -73,8 +73,6 @@ public class Binder {
         /// DEFENSE X POSITION
         ///
         whileTrue(driver::povDown, m_machinery.m_drive.defend());
-
- 
 
         whileTrue(driver::rightTrigger,
                 parallel(
@@ -118,10 +116,6 @@ public class Binder {
                         m_machinery.m_cachedSolution,
                         m_machinery.m_drive)
                         .withName("Target lock"));
-
-
- 
-
 
     }
 

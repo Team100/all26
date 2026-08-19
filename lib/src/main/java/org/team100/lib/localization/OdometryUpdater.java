@@ -24,9 +24,9 @@ import org.team100.lib.uncertainty.OdometryNoise;
 import org.team100.lib.uncertainty.VariableR1;
 import org.team100.lib.util.StrUtil;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Twist2d;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Twist2d;
 
 /**
  * Updates SwerveModelHistory with new odometry by selecting the most-recent
@@ -272,7 +272,7 @@ public class OdometryUpdater {
         twist = new Twist2d(twist.dx, twist.dy, fusedRotationMeasurement.mean());
 
         // The new pose is just the twist applied to the old pose.
-        Pose2d newPose = previousPose.exp(twist);
+        Pose2d newPose = previousPose.plus(twist.exp());
 
         // Compute a new velocity using backward finite difference.
         VelocitySE2 velocity = VelocitySE2.velocity(previousPose, newPose, dt);

@@ -6,11 +6,11 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N2;
+import org.wpilib.math.util.Nat;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N1;
+import org.wpilib.math.numbers.N2;
 
 public class GradientTest {
     /** Scalar function, f(x) = x. */

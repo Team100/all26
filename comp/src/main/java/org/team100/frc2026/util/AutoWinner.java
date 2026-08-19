@@ -2,8 +2,7 @@ package org.team100.frc2026.util;
 
 import java.util.Optional;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import org.wpilib.driverstation.Alliance;
 
 /**
  * The FMS tells us who won auto, so we can deduce whose shift it is.
@@ -17,16 +16,17 @@ public class AutoWinner {
      * is available.
      */
     public static Optional<Alliance> get() {
-        String msg = DriverStation.getGameSpecificMessage();
-        char msgChar = msg.length() > 0 ? msg.charAt(0) : ' ';
-        switch (msgChar) {
-            case 'B':
-                return Optional.of(Alliance.Blue);
-            case 'R':
-                return Optional.of(Alliance.Red);
-            default:
-                return Optional.empty();
-        }
+        return Optional.empty();
+        // String msg = MatchState.getGameSpecificMessage();
+        // char msgChar = msg.length() > 0 ? msg.charAt(0) : ' ';
+        // switch (msgChar) {
+        // case 'B':
+        // return Optional.of(Alliance.BLUE);
+        // case 'R':
+        // return Optional.of(Alliance.RED);
+        // default:
+        // return Optional.empty();
+        // }
     }
 
 }

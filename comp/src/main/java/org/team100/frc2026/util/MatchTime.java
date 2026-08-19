@@ -2,7 +2,8 @@ package org.team100.frc2026.util;
 
 import java.util.OptionalDouble;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import org.wpilib.framework.RobotBase;
+import org.wpilib.system.Timer;
 
 /**
  * Counts up from 0 to 160 seconds, or empty if match isn't running, or if
@@ -12,13 +13,13 @@ import edu.wpi.first.wpilibj.DriverStation;
  */
 public class MatchTime {
     public static OptionalDouble get() {
-        double matchTime = DriverStation.getMatchTime();
+        double matchTime = Timer.getMatchTime();
         if (matchTime < 0)
             return OptionalDouble.empty();
-        if (DriverStation.isAutonomous()) {
+        if (RobotBase.isAutonomous()) {
             return OptionalDouble.of(20 - matchTime);
         }
-        if (DriverStation.isTeleop()) {
+        if (RobotBase.isTeleop()) {
             return OptionalDouble.of(160 - matchTime);
         }
         return OptionalDouble.empty();

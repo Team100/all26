@@ -5,10 +5,10 @@ import java.util.function.DoubleSupplier;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.Logging;
 
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.wpilib.smartdashboard.Mechanism2d;
+import org.wpilib.smartdashboard.MechanismLigament2d;
+import org.wpilib.smartdashboard.MechanismRoot2d;
+import org.wpilib.smartdashboard.SmartDashboard;
 
 /** Visualization for any single rotary thing. */
 public class ArmVisualization implements Runnable {

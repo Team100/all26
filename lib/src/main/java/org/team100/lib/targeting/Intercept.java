@@ -11,8 +11,8 @@ import org.team100.lib.logging.LoggerFactory.VelocityR2Logger;
 import org.team100.lib.logging.LoggerFactory.Translation2dLogger;
 import org.team100.lib.util.Math100;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
 
 /**
  * See INTERCEPT.md for details.

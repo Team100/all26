@@ -4,16 +4,16 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.wpi.first.networktables.MultiSubscriber;
-import edu.wpi.first.networktables.NetworkTableEvent;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.NetworkTableListenerPoller;
-import edu.wpi.first.networktables.NetworkTableValue;
-import edu.wpi.first.networktables.PubSubOption;
-import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.networktables.ValueEventData;
-import edu.wpi.first.util.struct.StructBuffer;
-import edu.wpi.first.wpilibj.RobotController;
+import org.wpilib.networktables.MultiSubscriber;
+import org.wpilib.networktables.NetworkTableEvent;
+import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.networktables.NetworkTableListenerPoller;
+import org.wpilib.networktables.NetworkTableValue;
+import org.wpilib.networktables.PubSubOption;
+import org.wpilib.networktables.StructPublisher;
+import org.wpilib.networktables.ValueEventData;
+import org.wpilib.util.struct.StructBuffer;
+import org.wpilib.system.RobotController;
 
 /**
  * The server end of the Sync prototcol.
@@ -34,9 +34,9 @@ public class Sync implements Runnable {
                 new MultiSubscriber(
                         inst,
                         new String[] { "sync" },
-                        PubSubOption.keepDuplicates(true),
+                        PubSubOption.KEEP_DUPLICATES,
                         PubSubOption.pollStorage(QUEUE_DEPTH)),
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll));
+                EnumSet.of(NetworkTableEvent.Kind.VALUE_ALL));
         m_pubmap = new HashMap<>();
 
     }
@@ -77,7 +77,7 @@ public class Sync implements Runnable {
                 }
 
                 long org = request.org();
-                long now = RobotController.getFPGATime();
+                long now = RobotController.getMonotonicTime();
                 StructPublisher<SyncReply> p = m_pubmap.computeIfAbsent(
                         cameraId,
                         x -> inst.getStructTopic(

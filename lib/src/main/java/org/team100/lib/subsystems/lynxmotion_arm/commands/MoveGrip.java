@@ -2,10 +2,10 @@ package org.team100.lib.subsystems.lynxmotion_arm.commands;
 
 import org.team100.lib.subsystems.lynxmotion_arm.LynxArm;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.system.Timer;
+import org.wpilib.command2.Command;
 
 public class MoveGrip extends Command {
     private static final double DURATION = 0.5;
@@ -33,7 +33,7 @@ public class MoveGrip extends Command {
     @Override
     public void execute() {
         double s = m_timer.get() / DURATION;
-        double grip = MathUtil.interpolate(m_startGrip, m_goal, s);
+        double grip = MathUtil.lerp(m_startGrip, m_goal, s);
         m_arm.setGrip(grip);
         m_arm.setPosition(m_startPose);
     }

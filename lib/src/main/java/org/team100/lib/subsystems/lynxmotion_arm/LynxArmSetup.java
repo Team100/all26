@@ -4,18 +4,18 @@ import org.team100.lib.hid.ControlUtil;
 import org.team100.lib.kinematics.lynx_arm.AnalyticLynxArmKinematics;
 import org.team100.lib.kinematics.lynx_arm.LynxArmKinematics;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.driverstation.Gamepad;
+import org.wpilib.command2.Commands;
+import org.wpilib.command2.button.Trigger;
 
 /** Sets up the Lynxmotion arm with all axes. */
 public class LynxArmSetup implements Runnable {
     private final LynxArm m_arm;
     private final LynxArmVisualizer m_viz;
 
-    public LynxArmSetup(XboxController m_controller) {
+    public LynxArmSetup(Gamepad m_controller) {
         // for dimensions, see
         // https://wiki.lynxmotion.com/info/wiki/lynxmotion/download/ses-v1/ses-v1-robots/ses-v1-arms/al5d/WebHome/PLTW-AL5D-Guide-11.pdf
         // LynxArmKinematics kinematics = new AnalyticLynxArmKinematics(0.07, 0.146,
@@ -38,12 +38,12 @@ public class LynxArmSetup implements Runnable {
         // m_arm.moveTo(new Pose3d(0.15, -0.1, 0.1, new Rotation3d(0, Math.PI / 2,
         // 0))));
 
-        new Trigger(m_controller::getAButton).whileTrue(m_arm.toggleHeight());
+        new Trigger(m_controller::getSouthFaceButton).whileTrue(m_arm.toggleHeight());
         // open/close is left bumper
         new Trigger(m_controller::getLeftBumperButton).whileTrue(m_arm.toggleGrip());
 
         // this is one way to do it.
-        new Trigger(m_controller::getXButton).whileTrue(
+        new Trigger(m_controller::getWestFaceButton).whileTrue(
                 Commands.sequence(
                         m_arm.moveQuicklyUntilDone(new Pose3d(0.12, -0.15, 0.05, new Rotation3d(0, Math.PI / 2, 0))),
                         m_arm.moveQuicklyUntilDone(new Pose3d(0.12, -0.15, 0.0, new Rotation3d(0, Math.PI / 2, 0))),
@@ -59,7 +59,7 @@ public class LynxArmSetup implements Runnable {
                         m_arm.moveQuicklyUntilDone(new Pose3d(0.26, -0.15, 0.05, new Rotation3d(0, Math.PI / 2, 0)))));
 
         // another way to do it; note this doesn't control the roll axis the same way
-        new Trigger(m_controller::getYButton).whileTrue(
+        new Trigger(m_controller::getNorthFaceButton).whileTrue(
                 Commands.sequence(
                         m_arm.up(), m_arm.openGrip(),
                         m_arm.moveXY(0.12, -0.15),

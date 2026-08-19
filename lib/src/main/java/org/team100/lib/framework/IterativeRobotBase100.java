@@ -2,21 +2,19 @@ package org.team100.lib.framework;
 
 import java.util.ConcurrentModificationException;
 
-import edu.wpi.first.hal.DriverStationJNI;
-import edu.wpi.first.hal.FRCNetComm.tInstances;
-import edu.wpi.first.hal.FRCNetComm.tResourceType;
-import edu.wpi.first.hal.HAL;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DSControlWord;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.wpilib.driverstation.internal.DriverStationBackend;
+import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.hal.ControlWord;
+import org.wpilib.hardware.hal.DriverStationJNI;
+import org.wpilib.hardware.hal.HAL;
+import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.smartdashboard.SmartDashboard;
 
 /**
  * Copy of {@link edu.wpi.first.wpilibj.IterativeRobotBase} in an effort to
  * reduce log spam.
+ * 
+ * TODO: redo this from 2027
  */
 public abstract class IterativeRobotBase100 extends RobotBase {
     private enum Mode {
@@ -27,7 +25,7 @@ public abstract class IterativeRobotBase100 extends RobotBase {
         kTest
     }
 
-    private final DSControlWord m_word = new DSControlWord();
+    private final ControlWord m_word = new ControlWord();
     private Mode m_lastMode = Mode.kNone;
     private final double m_period;
     // private final Watchdog m_watchdog;
@@ -258,6 +256,7 @@ public abstract class IterativeRobotBase100 extends RobotBase {
         m_ntFlushEnabled = enabled;
     }
 
+    @SuppressWarnings("unused")
     private boolean m_reportedLw;
 
     /**
@@ -267,14 +266,16 @@ public abstract class IterativeRobotBase100 extends RobotBase {
      * @throws ConcurrentModificationException if this is called during test mode.
      */
     public void enableLiveWindowInTest(boolean testLW) {
-        if (isTestEnabled()) {
-            throw new ConcurrentModificationException("Can't configure test mode while in test mode!");
-        }
-        if (!m_reportedLw && testLW) {
-            HAL.report(tResourceType.kResourceType_SmartDashboard, tInstances.kSmartDashboard_LiveWindow);
-            m_reportedLw = true;
-        }
-        m_lwEnabledInTest = testLW;
+        // if (isTestEnabled()) {
+        // throw new ConcurrentModificationException("Can't configure test mode while in
+        // test mode!");
+        // }
+        // if (!m_reportedLw && testLW) {
+        // HAL.report(tResourceType.kResourceType_SmartDashboard,
+        // tInstances.kSmartDashboard_LiveWindow);
+        // m_reportedLw = true;
+        // }
+        // m_lwEnabledInTest = testLW;
     }
 
     /**
@@ -297,21 +298,22 @@ public abstract class IterativeRobotBase100 extends RobotBase {
 
     /** Loop function. */
     protected void loopFunc() {
-        DriverStation.refreshData();
+        DriverStationBackend.refreshData();
         // m_watchdog.reset();
 
-        m_word.refresh();
+        // m_word.refresh();
 
         // Get current mode
         Mode mode = Mode.kNone;
-        if (m_word.isDisabled()) {
-            mode = Mode.kDisabled;
-        } else if (m_word.isAutonomous()) {
+        if // (m_word.isDisabled()) {
+        // mode = Mode.kDisabled;
+        // } else if
+        (m_word.isAutonomous()) {
             mode = Mode.kAutonomous;
         } else if (m_word.isTeleop()) {
             mode = Mode.kTeleop;
-        } else if (m_word.isTest()) {
-            mode = Mode.kTest;
+            // } else if (m_word.isTest()) {
+            // mode = Mode.kTest;
         }
 
         if (!m_calledDsConnected && m_word.isDSAttached()) {
@@ -328,8 +330,8 @@ public abstract class IterativeRobotBase100 extends RobotBase {
                 case kTeleop -> teleopExit();
                 case kTest -> {
                     if (m_lwEnabledInTest) {
-                        LiveWindow.setEnabled(false);
-                        Shuffleboard.disableActuatorWidgets();
+                        // LiveWindow.setEnabled(false);
+                        // Shuffleboard.disableActuatorWidgets();
                     }
                     testExit();
                 }
@@ -354,8 +356,8 @@ public abstract class IterativeRobotBase100 extends RobotBase {
                 }
                 case kTest -> {
                     if (m_lwEnabledInTest) {
-                        LiveWindow.setEnabled(true);
-                        Shuffleboard.enableActuatorWidgets();
+                        // LiveWindow.setEnabled(true);
+                        // Shuffleboard.enableActuatorWidgets();
                     }
                     testInit();
                     // m_watchdog.addEpoch("testInit()");
@@ -369,24 +371,21 @@ public abstract class IterativeRobotBase100 extends RobotBase {
         }
 
         // Call the appropriate function depending upon the current robot mode
+        DriverStationJNI.observeUserProgram(m_word.getNative());
         switch (mode) {
             case kDisabled -> {
-                DriverStationJNI.observeUserProgramDisabled();
                 disabledPeriodic();
                 // m_watchdog.addEpoch("disabledPeriodic()");
             }
             case kAutonomous -> {
-                DriverStationJNI.observeUserProgramAutonomous();
                 autonomousPeriodic();
                 // m_watchdog.addEpoch("autonomousPeriodic()");
             }
             case kTeleop -> {
-                DriverStationJNI.observeUserProgramTeleop();
                 teleopPeriodic();
                 // m_watchdog.addEpoch("teleopPeriodic()");
             }
             case kTest -> {
-                DriverStationJNI.observeUserProgramTest();
                 testPeriodic();
                 // m_watchdog.addEpoch("testPeriodic()");
             }
@@ -400,9 +399,9 @@ public abstract class IterativeRobotBase100 extends RobotBase {
 
         SmartDashboard.updateValues();
         // m_watchdog.addEpoch("SmartDashboard.updateValues()");
-        LiveWindow.updateValues();
+        // LiveWindow.updateValues();
         // m_watchdog.addEpoch("LiveWindow.updateValues()");
-        Shuffleboard.update();
+        // Shuffleboard.update();
         // m_watchdog.addEpoch("Shuffleboard.update()");
 
         if (isSimulation()) {

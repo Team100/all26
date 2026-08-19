@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.team100.lib.hid.Minilab3Keys;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
 
 /** Maps one key to one player. */
 public class Polyphony extends Command {

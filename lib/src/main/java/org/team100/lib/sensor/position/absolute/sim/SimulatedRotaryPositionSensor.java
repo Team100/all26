@@ -7,7 +7,7 @@ import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 
-import edu.wpi.first.math.MathUtil;
+import org.wpilib.math.util.MathUtil;
 
 /**
  * Integrates encoder velocity to find position. It repeats the gear ratio

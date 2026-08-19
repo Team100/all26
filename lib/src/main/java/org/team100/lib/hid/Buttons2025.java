@@ -3,7 +3,7 @@ package org.team100.lib.hid;
 import org.team100.frc2025.field.FieldConstants2025.ReefPoint;
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
 
-import edu.wpi.first.wpilibj.GenericHID;
+import org.wpilib.driverstation.GenericHID;
 
 public class Buttons2025 {
     private final GenericHID m_controller;

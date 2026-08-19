@@ -12,10 +12,9 @@ import org.opencv.core.TermCriteria;
 import org.team100.lib.camera.Camera;
 import org.team100.lib.camera.Distortion;
 import org.team100.lib.camera.Intrinsic;
-
-import edu.wpi.first.apriltag.AprilTagPoseEstimator;
-import edu.wpi.first.cscore.OpenCvLoader;
-import edu.wpi.first.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.vision.apriltag.AprilTagPoseEstimator;
+import org.wpilib.vision.camera.OpenCvLoader;
 
 /**
  * Use the AprilTag corners to derive a pose estimate.

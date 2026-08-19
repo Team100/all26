@@ -4,9 +4,9 @@ import java.util.function.BooleanSupplier;
 
 import org.team100.lib.hid.Buttons2025;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.PrintCommand;
+import org.wpilib.command2.button.Trigger;
 
 public class Buttons2025Demo {
     Buttons2025 m_control;

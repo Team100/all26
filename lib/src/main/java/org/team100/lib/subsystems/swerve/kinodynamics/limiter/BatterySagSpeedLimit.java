@@ -7,7 +7,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import org.wpilib.math.interpolation.InterpolatingDoubleTreeMap;
 
 /**
  * Maximum speed scales linearly with applied voltage. We also want to avoid

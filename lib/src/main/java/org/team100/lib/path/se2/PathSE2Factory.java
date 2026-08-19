@@ -8,9 +8,9 @@ import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.se2.DirectionSE2;
 import org.team100.lib.spline.se2.ISplineSE2;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Twist2d;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Transform2d;
+import org.wpilib.math.geometry.Twist2d;
 
 public class PathSE2Factory {
     private static final boolean DEBUG = false;
@@ -104,11 +104,11 @@ public class PathSE2Factory {
         Pose2d p1 = spline.pose(s1);
 
         // twist from p0 to p1
-        Twist2d twist_full = p0.log(p1);
+        Twist2d twist_full = p1.minus(p0).log();
         // twist halfway from p0 to p1
         Twist2d twist_half = GeometryUtil.scale(twist_full, 0.5);
         // point halfway from p0 to p1
-        Pose2d phalf_predicted = p0.exp(twist_half);
+        Pose2d phalf_predicted = p0.plus(twist_half.exp());
         // difference between twist and sample
         Transform2d error = phalf_predicted.minus(phalf);
 

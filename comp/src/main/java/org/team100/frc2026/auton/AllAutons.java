@@ -8,8 +8,8 @@ import org.team100.lib.config.AutonChooser;
 import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
+import org.wpilib.command2.Command;
 
-import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * Populates the Auton chooser with all available autons.

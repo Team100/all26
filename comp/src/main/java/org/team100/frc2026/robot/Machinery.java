@@ -38,16 +38,15 @@ import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.uncertainty.VariableR1;
 import org.team100.lib.visualization.RobotPoseVisualization;
 import org.team100.lib.visualization.TrajectoryVisualization;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.Commands;
+import org.wpilib.driverstation.MatchState;
+import org.wpilib.framework.RobotBase;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Twist2d;
+import org.wpilib.system.RobotController;
 
 /**
  * This should contain all the hardware of the robot: all the subsystems etc
@@ -89,13 +88,13 @@ public class Machinery {
 
     public Machinery(TotalCurrentLog currentLog) {
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // POSE ESTIMATION
         //
@@ -135,7 +134,7 @@ public class Machinery {
         m_visionUpdater = new NudgingVisionUpdater(
                 driveLog, history, odometryUpdater);
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // CAMERA READERS
         //
@@ -146,9 +145,9 @@ public class Machinery {
                 layout,
                 history,
                 m_visionUpdater,
-                DriverStation::getAlliance);
+                MatchState::getAlliance);
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // DRIVETRAIN
         //
@@ -166,7 +165,7 @@ public class Machinery {
         m_robotViz = new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState().pose(), "robot");
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // TARGETING
         //
@@ -182,7 +181,7 @@ public class Machinery {
         m_cachedSolution = new CachedSolution(
                 fieldLogger, m_drive::getState, target, m_solver);
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // SUBSYSTEMS
         //
@@ -197,7 +196,7 @@ public class Machinery {
         ///
         m_groundTruth = new GroundTruth(fieldLogger, logger, m_swerveKinodynamics, m_modules, layout);
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // INDICATOR
         //
@@ -205,7 +204,7 @@ public class Machinery {
         // Beeper makes beeps to warn about testing.
         m_beeper = new Beeper(m_drive);
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // CONTROLLER
         //

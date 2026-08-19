@@ -1,11 +1,9 @@
 package org.team100.lib.subsystems.prr;
 
-
 import org.team100.lib.geometry.prr.PRRAcceleration;
 import org.team100.lib.geometry.prr.PRRConfig;
 import org.team100.lib.geometry.prr.PRRVelocity;
-
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import org.wpilib.command2.Subsystem;
 
 public interface SubsystemPRR extends Subsystem {
     /** Position, velocity, and acceleration. May compute dynamic forces too. */

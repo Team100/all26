@@ -11,7 +11,7 @@ import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.state.VelocityControlR1;
 
-import edu.wpi.first.math.MathUtil;
+import org.wpilib.math.util.MathUtil;
 
 public class VelocityProfileReferenceR1 implements VelocityReferenceR1 {
     private final DoubleLogger m_log_setpoint;

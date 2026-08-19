@@ -1,6 +1,6 @@
 package org.team100.frc2026.auton;
 
-import edu.wpi.first.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation2d;
 
 
 public class GraphAvoid {

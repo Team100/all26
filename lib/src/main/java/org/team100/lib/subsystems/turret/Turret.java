@@ -36,11 +36,11 @@ import org.team100.lib.targeting.Solution;
 import org.team100.lib.targeting.Solver;
 import org.team100.lib.targeting.TimeOfFlightRecursion;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.SubsystemBase;
 
 /**
  * Attempts to maintain aim. Demonstrates "spotting".

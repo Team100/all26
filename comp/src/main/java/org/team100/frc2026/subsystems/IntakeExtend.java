@@ -19,10 +19,9 @@ import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.util.CanId;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.SubsystemBase;
+import org.wpilib.math.util.MathUtil;
 
 /** Intake must be retracted at startup. */
 public class IntakeExtend extends SubsystemBase {

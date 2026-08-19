@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.DoubleCache;
-import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
@@ -17,7 +16,13 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.sensor.position.incremental.ctre.Talon6Encoder;
 import org.team100.lib.util.CanId;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.AngularVelocity;
+import org.wpilib.units.measure.Current;
+import org.wpilib.units.measure.Temperature;
+import org.wpilib.units.measure.Voltage;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
@@ -27,12 +32,6 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Temperature;
-import edu.wpi.first.units.measure.Voltage;
 
 /**
  * Superclass for TalonFX motors.
@@ -64,7 +63,7 @@ public abstract class Talon6Motor implements BareMotor {
     protected final DoubleCache m_statorCurrent;
     protected final DoubleCache m_temp;
 
-    /////////////////////////////////////
+    ////////////////////////////////////
     // CONTROL REQUESTS
     //
     // caching the control requests saves allocation
@@ -108,7 +107,7 @@ public abstract class Talon6Motor implements BareMotor {
             Friction friction,
             PIDConstants pid) {
         currentLog.register(this);
-        //////////////////////////////////////
+        /////////////////////////////////////
         //
         // CONTROL REQUESTS
         //
@@ -118,7 +117,7 @@ public abstract class Talon6Motor implements BareMotor {
         m_positionVoltage = new PositionVoltage(0);
         m_music = new MusicTone(0);
 
-        //////////////////////////////////////
+        /////////////////////////////////////
         // Update frequencies.
         // make control synchronous, i.e. "actuate immediately." See
         // https://github.com/Team254/FRC-2024-Public/blob/040f653744c9b18182be5f6bc51a7e505e346e59/src/main/java/com/team254/lib/ctre/swerve/SwerveModule.java#L210
@@ -128,7 +127,8 @@ public abstract class Talon6Motor implements BareMotor {
         m_positionVoltage.UpdateFreqHz = 0;
 
         m_log = parent.type(this);
-        m_motor = new TalonFX(canId.id);
+        // TODO: fix for 2027
+        m_motor = new TalonFX(canId.id, new CANBus());
         m_friction = friction;
 
         m_configurator = new PhoenixConfigurator(
@@ -167,7 +167,8 @@ public abstract class Talon6Motor implements BareMotor {
         // None of these need to refresh.
         // this latency compensation uses takt time rather than the real clock.
         m_position = Cache.ofDouble(() -> {
-            double latency = Utils.fpgaToCurrentTime(Takt.get()) - motorPositionRev.getTimestamp().getTime();
+            // TODO: this is wrong, it uses the *current* time rather than the takt.
+            double latency = Utils.getCurrentTimeSeconds() - motorPositionRev.getTimestamp().getTime();
             if (latency > 0.04) {
                 if (DEBUG)
                     System.out.printf("WARNING: stale position %s latency %f ", canId, latency);
@@ -380,7 +381,7 @@ public abstract class Talon6Motor implements BareMotor {
         log();
     }
 
-    /////////////////////////////////////////////
+    ////////////////////////////////////////////
 
     private void log() {
         m_log_position.log(m_position);

@@ -9,8 +9,6 @@ import org.team100.lib.logging.LoggerFactory.ModelR1Logger;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.util.Math100;
 
-import edu.wpi.first.math.MathUtil;
-
 /**
  * Controls omega to hit a moving target from a moving platform.
  * 
@@ -50,7 +48,7 @@ public class AzimuthController {
         m_log_thetaGoal.log(() -> thetaGoal);
         double thetaFB = getThetaFB(thetaMeasurement, thetaGoal);
         double thetaFF = getThetaFF(thetaGoal);
-        double omega = MathUtil.clamp(
+        double omega = Math.clamp(
                 thetaFF + thetaFB,
                 -m_maxOmega.getAsDouble(),
                 m_maxOmega.getAsDouble());

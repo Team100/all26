@@ -3,9 +3,9 @@ package org.team100.lib.subsystems.swerve.module.state;
 import java.util.Objects;
 import java.util.Optional;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.struct.SwerveModuleStateStruct;
-import edu.wpi.first.util.struct.StructSerializable;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.kinematics.struct.SwerveModuleVelocityStruct;
+import org.wpilib.util.struct.StructSerializable;
 
 /**
  * The state of one swerve module.
@@ -129,7 +129,7 @@ public class SwerveModuleState100 implements Comparable<SwerveModuleState100>, S
     }
 
     /** SwerveModuleState struct for serialization. */
-    public static final SwerveModuleStateStruct struct = new SwerveModuleStateStruct();
+    public static final SwerveModuleVelocityStruct struct = new SwerveModuleVelocityStruct();
 
     //////////////////////////////////
 

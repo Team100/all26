@@ -1,8 +1,8 @@
 package org.team100.lib.geometry.pprrr;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.numbers.N5;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N5;
 
 /**
  * Config for arm-on-swerve.

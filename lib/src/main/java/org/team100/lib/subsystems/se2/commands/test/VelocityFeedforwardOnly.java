@@ -8,7 +8,7 @@ import org.team100.lib.state.ModelSE2;
 import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 
-import edu.wpi.first.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Pose2d;
 
 /**
  * Use a profile with feedforward control only.

@@ -2,7 +2,7 @@ package org.team100.lib.trajectory.se2.constraint;
 
 import org.team100.lib.path.se2.PathSE2Point;
 
-import edu.wpi.first.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 /**
  * Mecanum drive has a diamond-shaped velocity envelope. If the x and y

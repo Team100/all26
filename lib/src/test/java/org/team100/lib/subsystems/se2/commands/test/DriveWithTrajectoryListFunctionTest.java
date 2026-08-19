@@ -26,8 +26,8 @@ import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.se2.examples.TrajectoryExamples;
 import org.team100.lib.visualization.TrajectoryVisualization;
+import org.wpilib.system.DataLogManager;
 
-import edu.wpi.first.wpilibj.DataLogManager;
 
 class DriveWithTrajectoryListFunctionTest implements Timeless {
 

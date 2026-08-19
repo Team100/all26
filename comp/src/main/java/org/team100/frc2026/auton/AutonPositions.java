@@ -1,7 +1,7 @@
 package org.team100.frc2026.auton;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 /**
  * Areas that might be useful for autons

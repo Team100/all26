@@ -8,25 +8,23 @@ import org.team100.lib.geometry.se2.ChassisAcceleration;
 import org.team100.lib.hid.Velocity;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.ChassisSpeedsLogger;
+import org.team100.lib.logging.LoggerFactory.ChassisVelocitiesLogger;
 import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
+import org.wpilib.math.kinematics.ChassisVelocities;
 
 /**
  * The twist components, x, y, and theta, are mapped directly to the
- * corresponding ChassisSpeeds components (and scaled).
+ * corresponding ChassisVelocities components (and scaled).
  */
 public class DriveChassisSpeed extends Command {
 
     private final Supplier<Velocity> m_twistSupplier;
     private final SwerveDriveSubsystem m_drive;
     private final SwerveKinodynamics m_swerveKinodynamics;
-    private final ChassisSpeedsLogger m_log_chassis_speeds;
-    private ChassisSpeeds m_speed;
+    private final ChassisVelocitiesLogger m_log_chassis_speeds;
+    private ChassisVelocities m_speed;
 
     public DriveChassisSpeed(
             LoggerFactory parent,
@@ -36,9 +34,9 @@ public class DriveChassisSpeed extends Command {
         LoggerFactory log = parent.type(this);
         m_twistSupplier = twistSupplier;
         m_drive = drive;
-        m_log_chassis_speeds = log.chassisSpeedsLogger(Level.TRACE, "chassis speeds");
+        m_log_chassis_speeds = log.ChassisVelocitiesLogger(Level.TRACE, "chassis speeds");
         m_swerveKinodynamics = swerveKinodynamics;
-        m_speed = new ChassisSpeeds();
+        m_speed = new ChassisVelocities();
         addRequirements(m_drive);
     }
 
@@ -47,14 +45,14 @@ public class DriveChassisSpeed extends Command {
         Velocity clipped = m_twistSupplier.get().clip(1.0);
         double maxSpeed = m_swerveKinodynamics.getMaxDriveVelocityM_S();
         double maxOmega = m_swerveKinodynamics.getMaxAngleSpeedRad_S();
-        ChassisSpeeds scaled = new ChassisSpeeds(
-                maxSpeed * MathUtil.clamp(clipped.x(), -1, 1),
-                maxSpeed * MathUtil.clamp(clipped.y(), -1, 1),
-                maxOmega * MathUtil.clamp(clipped.theta(), -1, 1));
+        ChassisVelocities scaled = new ChassisVelocities(
+                maxSpeed * Math.clamp(clipped.x(), -1, 1),
+                maxSpeed * Math.clamp(clipped.y(), -1, 1),
+                maxOmega * Math.clamp(clipped.theta(), -1, 1));
         m_log_chassis_speeds.log(() -> scaled);
         ChassisAcceleration accel = ChassisAcceleration.diff(
                 scaled, m_speed, TimedRobot100.LOOP_PERIOD_S);
         m_speed = scaled;
-        m_drive.setChassisSpeeds(scaled, accel);
+        m_drive.setChassisVelocities(scaled, accel);
     }
 }

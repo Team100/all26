@@ -7,8 +7,8 @@ import java.util.Set;
 
 import org.team100.lib.config.Identity;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.wpilib.smartdashboard.SendableChooser;
+import org.wpilib.smartdashboard.SmartDashboard;
 
 /**
  * Controls Experiment enablement.

@@ -13,12 +13,11 @@ import org.team100.lib.geometry.rr.RRConfig;
 import org.team100.lib.geometry.rr.RRPosition;
 import org.team100.lib.geometry.rr.RRVelocity;
 import org.team100.lib.testing.TestUtil;
-
-import edu.wpi.first.math.MatBuilder;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.numbers.N2;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.linalg.MatBuilder;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.numbers.N2;
+import org.wpilib.math.util.Nat;
 
 public class RRKinematicsTest {
 

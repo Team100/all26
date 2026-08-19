@@ -5,11 +5,11 @@ import java.nio.ByteBuffer;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
 import org.team100.lib.util.OptionalRotation2d;
 
-import edu.wpi.first.util.struct.Struct;
+import org.wpilib.util.struct.Struct;
 
 /**
  * This is a copy of
- * {@link edu.wpi.first.math.kinematics.struct.SwerveModulePositionStruct} but
+ * {@link org.wpilib.math.kinematics.struct.SwerveModulePositionStruct} but
  * with optional rotation, working around the incorrect behavior of
  * Rotation2d(0, 0). Because structs don't support optional values, it's a bit
  * more pain than you might expect.
@@ -28,7 +28,7 @@ public class SwerveModulePosition100Struct implements Struct<SwerveModulePositio
 
     @Override
     public int getSize() {
-        return kSizeDouble + OptionalRotation2d.struct.getSize();
+        return DOUBLE_SIZE + OptionalRotation2d.struct.getSize();
     }
 
     @Override

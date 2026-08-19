@@ -8,9 +8,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.util.RoboRioChannel;
-
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.RobotController;
+import org.wpilib.hardware.discrete.AnalogInput;
 
 /**
  * Absolute rotary position sensor using ratiometric analog input.
@@ -26,7 +24,7 @@ import edu.wpi.first.wpilibj.RobotController;
 public class AnalogRotaryPositionSensor extends RoboRioRotaryPositionSensor {
     private final AnalogInput m_input;
     private final DoubleSupplier m_voltage;
-    private final DoubleSupplier m_rail;
+    // private final DoubleSupplier m_rail;
     private final DoubleLogger m_log_voltage;
     private final DoubleLogger m_log_ratio;
 
@@ -39,7 +37,7 @@ public class AnalogRotaryPositionSensor extends RoboRioRotaryPositionSensor {
         LoggerFactory log = parent.type(this);
         m_input = new AnalogInput(channel.channel);
         m_voltage = Cache.ofDouble(m_input::getVoltage);
-        m_rail = Cache.ofDouble(RobotController::getVoltage5V);
+        // m_rail = Cache.ofDouble(RobotController::getVoltage5V);
         m_log_voltage = log.doubleLogger(Level.TRACE, "voltage");
         m_log_ratio = log.doubleLogger(Level.TRACE, "ratio");
         log.intLogger(Level.COMP, "channel").log(m_input::getChannel);
@@ -68,7 +66,9 @@ public class AnalogRotaryPositionSensor extends RoboRioRotaryPositionSensor {
     @Override
     protected double getRatio() {
         double voltage = m_voltage.getAsDouble();
-        double ratio = voltage / m_rail.getAsDouble();
+        // double ratio = voltage / m_rail.getAsDouble();
+        // TODO: fix for 2027
+        double ratio = voltage / 5;
         m_log_voltage.log(() -> voltage);
         m_log_ratio.log(() -> ratio);
         return ratio;

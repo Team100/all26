@@ -5,9 +5,9 @@ import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.util.Math100;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
-import edu.wpi.first.math.interpolation.InverseInterpolator;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.math.interpolation.InterpolatingTreeMap;
+import org.wpilib.math.interpolation.InverseInterpolator;
 
 /**
  * A simple profile with all the things we want from a motion profile for

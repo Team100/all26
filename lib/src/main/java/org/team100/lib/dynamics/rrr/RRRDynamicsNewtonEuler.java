@@ -6,15 +6,14 @@ import org.team100.lib.geometry.rrr.RRRAcceleration;
 import org.team100.lib.geometry.rrr.RRRConfig;
 import org.team100.lib.geometry.rrr.RRRVelocity;
 import org.team100.lib.util.ModernRobotics;
-
-import edu.wpi.first.math.MatBuilder;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.numbers.N4;
-import edu.wpi.first.math.numbers.N6;
+import org.wpilib.math.linalg.MatBuilder;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N3;
+import org.wpilib.math.numbers.N4;
+import org.wpilib.math.numbers.N6;
+import org.wpilib.math.util.Nat;
 
 public class RRRDynamicsNewtonEuler {
     // TODO: make g variable, to account for drive base acceleration.

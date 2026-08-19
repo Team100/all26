@@ -1,6 +1,6 @@
 package org.team100.lib.geometry.six_dof;
 
-import edu.wpi.first.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Pose3d;
 
 /**
  * Workspace pose of each joint. p7 is the tool center point.

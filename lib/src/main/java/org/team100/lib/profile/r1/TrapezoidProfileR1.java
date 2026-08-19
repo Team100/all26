@@ -3,7 +3,7 @@ package org.team100.lib.profile.r1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 
-import edu.wpi.first.math.MathUtil;
+import org.wpilib.math.util.MathUtil;
 
 /**
  * This uses the approach from LaValle 2023: between any two points in phase
@@ -212,7 +212,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
     private ModelR1 limitVelocity(final ModelR1 s) {
         return new ModelR1(
                 s.x(),
-                MathUtil.clamp(s.v(), -m_maxVelocity, m_maxVelocity));
+                Math.clamp(s.v(), -m_maxVelocity, m_maxVelocity));
     }
 
     private ControlR1 handleIplus(double dt, ControlR1 initial, ModelR1 goal, double timeToSwitch) {

@@ -7,7 +7,7 @@ import org.team100.lib.state.ControlSE2;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.state.ModelSE2;
 
-import edu.wpi.first.math.MathUtil;
+import org.wpilib.math.util.MathUtil;
 
 /**
  * Coordinates three axes so that their profiles complete at about the same

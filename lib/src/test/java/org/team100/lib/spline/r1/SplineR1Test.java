@@ -2,10 +2,10 @@ package org.team100.lib.spline.r1;
 
 import org.junit.jupiter.api.Test;
 
-import edu.wpi.first.math.MatBuilder;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.numbers.N6;
+import org.wpilib.math.linalg.MatBuilder;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.util.Nat;
+import org.wpilib.math.numbers.N6;
 
 /**
  * see

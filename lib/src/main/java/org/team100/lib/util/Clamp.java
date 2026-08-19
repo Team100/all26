@@ -1,7 +1,5 @@
 package org.team100.lib.util;
 
-import edu.wpi.first.math.MathUtil;
-
 public class Clamp {
     private final double min;
     private final double max;
@@ -12,7 +10,7 @@ public class Clamp {
     }
 
     public double f(double x) {
-        return MathUtil.clamp(x, min, max);
+        return Math.clamp(x, min, max);
     }
 
 }

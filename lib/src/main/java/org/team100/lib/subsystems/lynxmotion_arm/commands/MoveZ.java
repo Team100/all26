@@ -7,9 +7,9 @@ import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.subsystems.lynxmotion_arm.LynxArm;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.system.Timer;
+import org.wpilib.command2.Command;
 
 public class MoveZ extends Command {
     private final LynxArm m_arm;
@@ -50,7 +50,7 @@ public class MoveZ extends Command {
         m_setpoint = m_profile.calculate(TimedRobot100.LOOP_PERIOD_S, m_setpoint, m_profileGoal);
         ControlR1 c = m_setpoint;
         double s = c.x() / m_distance;
-        double setpoint = MathUtil.interpolate(m_start, m_goal, s);
+        double setpoint = MathUtil.lerp(m_start, m_goal, s);
 
         double distance = Math.abs(m_goal - setpoint);
         if (distance < 0.001) {

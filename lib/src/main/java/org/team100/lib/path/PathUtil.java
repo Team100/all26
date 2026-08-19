@@ -9,9 +9,9 @@ import org.team100.lib.spline.se3.SplineSE3;
 import org.team100.lib.util.Math100;
 import org.team100.lib.util.StrUtil;
 
-import edu.wpi.first.math.Num;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.numbers.N2;
+import org.wpilib.math.util.Num;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N2;
 
 /**
  * Utility functions for paths, i.e. parameterized curves.

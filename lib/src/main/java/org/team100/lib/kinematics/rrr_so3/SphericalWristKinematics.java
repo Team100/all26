@@ -5,22 +5,21 @@ import java.util.List;
 import org.team100.lib.geometry.six_dof.SphericalWristConfig;
 import org.team100.lib.geometry.six_dof.SphericalWristPose;
 import org.team100.lib.util.StrUtil;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.numbers.N3;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N3;
+import org.wpilib.math.util.MathUtil;
 
 /**
  * The RPR spherical wrist has three joints with intersecting axes.
  * 
- * Now the rotation axes are variable.  Previously they were all z, with variable
- * origins, which was confusing.  So at zero config:
+ * Now the rotation axes are variable. Previously they were all z, with variable
+ * origins, which was confusing. So at zero config:
  * 
  * * roll: rotates around x
  * * pitch: rotates around -y
@@ -109,7 +108,7 @@ public class SphericalWristKinematics {
         return List.of(s1, s2);
     }
 
-       /** Axis of joint 4 is x */
+    /** Axis of joint 4 is x */
     private Transform3d r4(double q4) {
         return R(1, 0, 0, q4);
     }

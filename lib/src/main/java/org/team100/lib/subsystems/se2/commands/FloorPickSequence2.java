@@ -1,6 +1,6 @@
 package org.team100.lib.subsystems.se2.commands;
 
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static org.wpilib.command2.Commands.sequence;
 
 import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.logging.LoggerFactory;
@@ -8,9 +8,9 @@ import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.targeting.Targets;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Transform2d;
+import org.wpilib.command2.Command;
 
 /**
  * Use a sequence of commands to drive nearby a target with the intake facing

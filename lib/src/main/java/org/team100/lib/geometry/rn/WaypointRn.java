@@ -1,9 +1,8 @@
 package org.team100.lib.geometry.rn;
 
 import org.team100.lib.util.StrUtil;
-
-import edu.wpi.first.math.Num;
-import edu.wpi.first.math.Vector;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.util.Num;
 
 /**
  * Note: velocity is used for the spline endpoint, it's not exactly

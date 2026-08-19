@@ -1,7 +1,7 @@
 package org.team100.lib.util;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.interpolation.Interpolator;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.interpolation.Interpolator;
 
 /**
  * For use with TimeInterpolatableBuffer (or something similar).

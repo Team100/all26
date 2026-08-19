@@ -19,10 +19,10 @@ import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
-import edu.wpi.first.math.controller.LTVUnicycleController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.math.controller.LTVUnicycleController;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.command2.Command;
 
 /** Given a goal pose, create a trajectory at initialization and follow it. */
 public class ToPoseWithTrajectory extends Command {
@@ -82,7 +82,7 @@ public class ToPoseWithTrajectory extends Command {
             // -vx to fix +x. Includes the feedforward velocities.
             // It might be more correct to include the change in controller output in the
             // acceleration term.
-            ChassisSpeeds speeds = m_controller.calculate(
+            ChassisVelocities speeds = m_controller.calculate(
                     currentPose, poseReference, velocityReference, omegaReference);
             // accel feedforward
             AccelerationSE2 fieldRelativeAccel = nextControl.acceleration();

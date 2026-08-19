@@ -6,9 +6,9 @@ import org.jfree.chart3d.data.xyz.XYZDataset;
 import org.jfree.chart3d.data.xyz.XYZSeriesCollection;
 import org.team100.lib.util.ChartUtil3d;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Translation3d;
 
 /**
  * There is no VectorSeries type in jfree for 3d data, so instead this creates

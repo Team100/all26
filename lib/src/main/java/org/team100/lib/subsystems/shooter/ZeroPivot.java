@@ -1,6 +1,6 @@
 package org.team100.lib.subsystems.shooter;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
 
 public class ZeroPivot extends Command {
 

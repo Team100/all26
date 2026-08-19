@@ -2,10 +2,9 @@ package org.team100.lib.spline.rn;
 
 import org.team100.lib.geometry.rn.WaypointRn;
 import org.team100.lib.spline.r1.SplineR1;
-
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.Num;
-import edu.wpi.first.math.Vector;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.util.Nat;
+import org.wpilib.math.util.Num;
 
 /**
  * An N-dimensional spline, made of N individual SplineR1's.

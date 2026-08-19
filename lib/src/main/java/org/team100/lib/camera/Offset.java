@@ -3,9 +3,9 @@ package org.team100.lib.camera;
 import java.util.EnumMap;
 import java.util.Map;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Translation3d;
 
 /**
  * For fixed cameras, the offset from the robot zero (center of the frame, on
@@ -42,15 +42,15 @@ public class Offset {
         offsets.put(Camera.SWERVE_RIGHT, new Offset(
                 new Transform3d(
                         new Translation3d(-0.261, -0.317, 0.217),
-                        new Rotation3d(-0.146, 0.195, -0.508).unaryMinus().plus(new Rotation3d(0, 0, -Math.PI / 2)))));
+                        new Rotation3d(-0.146, 0.195, -0.508).inverse().rotateBy(new Rotation3d(0, 0, -Math.PI / 2)))));
         offsets.put(Camera.SWERVE_LEFT, new Offset(
                 new Transform3d(
                         new Translation3d(-0.241, 0.297, 0.207),
-                        new Rotation3d(0.07, 0.147, 0.52).unaryMinus().plus(new Rotation3d(0, 0, Math.PI / 2)))));
+                        new Rotation3d(0.07, 0.147, 0.52).inverse().rotateBy(new Rotation3d(0, 0, Math.PI / 2)))));
         offsets.put(Camera.FUNNEL, new Offset(
                 new Transform3d(
                         new Translation3d(-0.034, -0.213, 0.902),
-                        new Rotation3d(0.07, 0.48, 0.20).unaryMinus().plus(new Rotation3d(0, 0, Math.PI)))));
+                        new Rotation3d(0.07, 0.48, 0.20).inverse().rotateBy(new Rotation3d(0, 0, Math.PI)))));
         offsets.put(Camera.CLIMB_LEFT, new Offset(
                 fromCalibration(new Transform3d(0.34, 1, 0.398, new Rotation3d(0, 0, Math.PI / 2)),
                         new Transform3d(0.84, -0.28, -0.19, new Rotation3d(0.005, 0.475, -0.042)))));
@@ -80,7 +80,7 @@ public class Offset {
         offsets.put(Camera.TEST6, new Offset(
                 new Transform3d(
                         new Translation3d(0.198, 0.284, 0.811),
-                        new Rotation3d(-0.043, -0.705, 0.254).unaryMinus())));
+                        new Rotation3d(-0.043, -0.705, 0.254).inverse())));
         offsets.put(Camera.TEST7, new Offset(
                 new Transform3d(
                         new Translation3d(1, 0, 1.368),

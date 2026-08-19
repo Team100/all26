@@ -7,8 +7,8 @@ import org.team100.lib.geometry.r2.StateR2;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.util.NamedChooser;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.wpilib.smartdashboard.SendableChooser;
+import org.wpilib.smartdashboard.SmartDashboard;
 
 /**
  * Provides a solver based on the dashboard widget.

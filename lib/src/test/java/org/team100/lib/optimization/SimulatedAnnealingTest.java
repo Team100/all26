@@ -7,8 +7,8 @@ import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 
 import org.junit.jupiter.api.Test;
+import org.wpilib.math.optimization.SimulatedAnnealing;
 
-import edu.wpi.first.math.optimization.SimulatedAnnealing;
 
 /**
  * Use the WPI SimulatedAnnealing class to do line search.

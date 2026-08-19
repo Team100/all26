@@ -1,9 +1,9 @@
 package org.team100.lib.geometry.lynx_arm;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import org.team100.lib.util.Math100;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Translation3d;
 
 /**
  * Workspace pose of each joint. The rotation is the rotation of the parent
@@ -50,8 +50,8 @@ public record LynxArmPose(
             return b;
         }
         return new Rotation3d(
-                MathUtil.interpolate(a.getX(), b.getX(), x),
-                MathUtil.interpolate(a.getY(), b.getY(), x),
-                MathUtil.interpolate(a.getZ(), b.getZ(), x));
+                Math100.interpolate(a.getX(), b.getX(), x),
+                Math100.interpolate(a.getY(), b.getY(), x),
+                Math100.interpolate(a.getZ(), b.getZ(), x));
     }
 }

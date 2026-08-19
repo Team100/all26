@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.ChassisAcceleration;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import org.wpilib.math.kinematics.ChassisVelocities;
 
 public class ChassisAccelerationTest {
     /**
@@ -14,8 +14,8 @@ public class ChassisAccelerationTest {
      */
     @Test
     void test0() {
-        ChassisSpeeds v0 = new ChassisSpeeds(1, 0, 1);
-        ChassisSpeeds v1 = new ChassisSpeeds(1, 0, 1);
+        ChassisVelocities v0 = new ChassisVelocities(1, 0, 1);
+        ChassisVelocities v1 = new ChassisVelocities(1, 0, 1);
         double dt = 0.02;
         ChassisAcceleration a = ChassisAcceleration.diff(v0, v1, dt);
         assertEquals(0, a.x(), 0.001);

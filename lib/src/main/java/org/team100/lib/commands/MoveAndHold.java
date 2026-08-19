@@ -1,6 +1,6 @@
 package org.team100.lib.commands;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
 
 /**
  * A command that executes a motion and then holds the ending position. The

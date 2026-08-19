@@ -1,12 +1,11 @@
 package org.team100.lib.subsystems.led;
 
 import org.team100.lib.subsystems.lynxmotion_arm.AxisCalibrator;
-
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.SubsystemBase;
+import org.wpilib.hardware.led.AddressableLED;
+import org.wpilib.hardware.led.AddressableLEDBuffer;
+import org.wpilib.util.Color;
 
 /**
  * Drives the LED strip attached to the Lynxmotion arm trainer, useful for
@@ -28,7 +27,7 @@ public class DemoLED extends SubsystemBase {
         m_led = new AddressableLED(9);
         m_buffer = new AddressableLEDBuffer(LENGTH);
         m_led.setLength(LENGTH);
-        m_led.start();
+        // m_led.start();
     }
 
     public Command sweep() {
@@ -42,9 +41,9 @@ public class DemoLED extends SubsystemBase {
     private void set(int x) {
         for (int i = 0; i < LENGTH; ++i) {
             if (i == x) {
-                m_buffer.setLED(i, Color.kOrangeRed);
+                m_buffer.setLED(i, Color.ORANGE_RED);
             } else {
-                m_buffer.setLED(i, Color.kBlack);
+                m_buffer.setLED(i, Color.BLACK);
             }
         }
         m_led.setData(m_buffer);

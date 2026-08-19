@@ -11,8 +11,8 @@ import org.team100.lib.geometry.se2.ChassisAcceleration;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
 
 class SwerveDriveSubsystemTest implements Timeless {
 
@@ -32,7 +32,7 @@ class SwerveDriveSubsystemTest implements Timeless {
         drive.periodic();
         verify(drive, 0, 0, 0);
 
-        drive.setChassisSpeeds(new ChassisSpeeds(1, 0, 0), ChassisAcceleration.ZERO);
+        drive.setChassisVelocities(new ChassisVelocities(1, 0, 0), ChassisAcceleration.ZERO);
 
         // actuation is reflected in measurement after time passes
         assertEquals(0, fixture.collection.states().frontLeft().speed());
@@ -47,14 +47,14 @@ class SwerveDriveSubsystemTest implements Timeless {
         // the acceleration limit is applied here
         verify(drive, 0.02, 1, 1.0);
 
-        drive.setChassisSpeeds(new ChassisSpeeds(1, 0, 0), ChassisAcceleration.ZERO);
+        drive.setChassisVelocities(new ChassisVelocities(1, 0, 0), ChassisAcceleration.ZERO);
 
         stepTime();
         drive.periodic();
 
         verify(drive, 0.039, 1, 1.0);
 
-        drive.setChassisSpeeds(new ChassisSpeeds(1, 0, 0), ChassisAcceleration.ZERO);
+        drive.setChassisVelocities(new ChassisVelocities(1, 0, 0), ChassisAcceleration.ZERO);
 
         stepTime();
         drive.periodic();
@@ -81,7 +81,7 @@ class SwerveDriveSubsystemTest implements Timeless {
         verify(drive, 0, 0, 0);
 
         // go 1 m/s in +x
-        drive.setChassisSpeeds(new ChassisSpeeds(1, 0, 0), ChassisAcceleration.ZERO);
+        drive.setChassisVelocities(new ChassisVelocities(1, 0, 0), ChassisAcceleration.ZERO);
 
         stepTime();
         drive.periodic();
@@ -92,7 +92,7 @@ class SwerveDriveSubsystemTest implements Timeless {
         // it took 0.02 s to go from 0 m/s to 1 m/s, so we accelerated 50 m/s/s.
         verify(drive, 0.02, 1.00, 50.0);
 
-        drive.setChassisSpeeds(new ChassisSpeeds(1, 0, 0), ChassisAcceleration.ZERO);
+        drive.setChassisVelocities(new ChassisVelocities(1, 0, 0), ChassisAcceleration.ZERO);
 
         stepTime();
         drive.periodic();
@@ -100,7 +100,7 @@ class SwerveDriveSubsystemTest implements Timeless {
         // we went a little further, no longer accelerating.
         verify(drive, 0.04, 1.00, 0.0);
 
-        drive.setChassisSpeeds(new ChassisSpeeds(1, 0, 0), ChassisAcceleration.ZERO);
+        drive.setChassisVelocities(new ChassisVelocities(1, 0, 0), ChassisAcceleration.ZERO);
 
         stepTime();
         drive.periodic();

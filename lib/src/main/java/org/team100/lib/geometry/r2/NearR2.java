@@ -2,7 +2,7 @@ package org.team100.lib.geometry.r2;
 
 import java.util.function.BiPredicate;
 
-import edu.wpi.first.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation2d;
 
 /** True if the two translations are near each other. */
 public class NearR2 implements BiPredicate<Translation2d, Translation2d> {

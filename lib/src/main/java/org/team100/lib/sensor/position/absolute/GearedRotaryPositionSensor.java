@@ -1,6 +1,6 @@
 package org.team100.lib.sensor.position.absolute;
 
-import edu.wpi.first.math.MathUtil;
+import org.wpilib.math.util.MathUtil;
 
 /**
  * Represents an encoder which is not 1:1 with the mechanism.

@@ -5,12 +5,10 @@ import java.util.List;
 
 import org.jfree.data.xy.VectorSeries;
 import org.jfree.data.xy.XYSeries;
-
-
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.numbers.N2;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N2;
 
 public class SplineSE2ToVectorSeries {
     private static final double POINTS = 50;

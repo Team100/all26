@@ -2,7 +2,7 @@ package org.team100.lib.sensor.position.absolute;
 
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 
-import edu.wpi.first.math.MathUtil;
+import org.wpilib.math.util.MathUtil;
 
 /**
  * Proxies an IncrementalBareEncoder to produce a RotaryPositionSensor, by

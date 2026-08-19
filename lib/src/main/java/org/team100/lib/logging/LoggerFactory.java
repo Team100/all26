@@ -33,15 +33,15 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Entry;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VariableR1;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory.State;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.geometry.Twist2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.math.trajectory.Trajectory.State;
 
 /**
  * This is the logger factory class.
@@ -557,31 +557,31 @@ public class LoggerFactory {
         return new Twist2dLogger(level, leaf);
     }
 
-    public class ChassisSpeedsLogger {
+    public class ChassisVelocitiesLogger {
         private final Level m_level;
         private final DoubleLogger m_vxLogger;
         private final DoubleLogger m_vyLogger;
         private final DoubleLogger m_omegaLogger;
 
-        ChassisSpeedsLogger(Level level, String leaf) {
+        ChassisVelocitiesLogger(Level level, String leaf) {
             m_level = level;
             m_vxLogger = doubleLogger(level, join(leaf, "vx m_s"));
             m_vyLogger = doubleLogger(level, join(leaf, "vy m_s"));
             m_omegaLogger = doubleLogger(level, join(leaf, "omega rad_s"));
         }
 
-        public void log(Supplier<ChassisSpeeds> vals) {
+        public void log(Supplier<ChassisVelocities> vals) {
             if (!allow(m_level))
                 return;
-            ChassisSpeeds val = vals.get();
-            m_vxLogger.log(() -> val.vxMetersPerSecond);
-            m_vyLogger.log(() -> val.vyMetersPerSecond);
-            m_omegaLogger.log(() -> val.omegaRadiansPerSecond);
+            ChassisVelocities val = vals.get();
+            m_vxLogger.log(() -> val.vx);
+            m_vyLogger.log(() -> val.vy);
+            m_omegaLogger.log(() -> val.omega);
         }
     }
 
-    public ChassisSpeedsLogger chassisSpeedsLogger(Level level, String leaf) {
-        return new ChassisSpeedsLogger(level, leaf);
+    public ChassisVelocitiesLogger ChassisVelocitiesLogger(Level level, String leaf) {
+        return new ChassisVelocitiesLogger(level, leaf);
     }
 
     public class GlobaDeltaSE2Logger {
@@ -949,10 +949,10 @@ public class LoggerFactory {
             if (!allow(m_level))
                 return;
             State val = vals.get();
-            m_poseLogger.log(() -> val.poseMeters);
-            m_curvatureLogger.log(() -> val.curvatureRadPerMeter);
-            m_velocityLogger.log(() -> val.velocityMetersPerSecond);
-            m_accelLogger.log(() -> val.accelerationMetersPerSecondSq);
+            m_poseLogger.log(() -> val.pose);
+            m_curvatureLogger.log(() -> val.curvature);
+            m_velocityLogger.log(() -> val.velocity);
+            m_accelLogger.log(() -> val.acceleration);
         }
     }
 

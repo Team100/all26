@@ -1,7 +1,7 @@
 package org.team100.frc2026.auton;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static org.wpilib.command2.Commands.parallel;
+import static org.wpilib.command2.Commands.sequence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +22,9 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 /** An example of a simple sequence */
 public class RightBumpAnnoyingAuton implements AnnotatedCommand {

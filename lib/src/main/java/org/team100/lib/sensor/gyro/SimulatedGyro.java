@@ -13,8 +13,8 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
 
 /**
  * A simulated gyro that uses drivetrain odometry.
@@ -73,9 +73,9 @@ public class SimulatedGyro implements Gyro {
             dt = 0;
         }
         SwerveModuleStates states = m_moduleCollection.states();
-        ChassisSpeeds speeds = m_kinodynamics.toChassisSpeedsWithDiscretization(states, 0.02);
+        ChassisVelocities speeds = m_kinodynamics.toChassisVelocitiesWithDiscretization(states, 0.02);
         double noiseRad_S = NOISE * m_rand.nextGaussian();
-        m_heading += (speeds.omegaRadiansPerSecond + m_driftRateRad_S + noiseRad_S) * dt;
+        m_heading += (speeds.omega + m_driftRateRad_S + noiseRad_S) * dt;
         return m_heading;
     }
 
@@ -96,8 +96,8 @@ public class SimulatedGyro implements Gyro {
     @Override
     public double getYawRateNWU() {
         SwerveModuleStates states = m_moduleCollection.states();
-        ChassisSpeeds speeds = m_kinodynamics.toChassisSpeedsWithDiscretization(states, 0.02);
-        double yawRateRad_S = speeds.omegaRadiansPerSecond;
+        ChassisVelocities speeds = m_kinodynamics.toChassisVelocitiesWithDiscretization(states, 0.02);
+        double yawRateRad_S = speeds.omega;
         m_log_yaw_rate.log(() -> yawRateRad_S);
         return yawRateRad_S;
     }

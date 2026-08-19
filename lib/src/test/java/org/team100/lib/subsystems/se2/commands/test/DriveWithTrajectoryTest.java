@@ -44,10 +44,9 @@ import org.team100.lib.trajectory.se2.examples.TrajectoryExamples;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VariableR1;
 import org.team100.lib.visualization.TrajectoryVisualization;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
+import org.wpilib.driverstation.MatchState;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 public class DriveWithTrajectoryTest implements Timeless {
 
@@ -194,7 +193,7 @@ public class DriveWithTrajectoryTest implements Timeless {
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater,DriverStation::getAlliance);
+                logger, fieldLogger, layout, history, visionUpdater,MatchState::getAlliance);
         FreshSwerveEstimate estimate = new FreshSwerveEstimate(
             localizer::update, odometryUpdater::update, history);
         SwerveLocal swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);

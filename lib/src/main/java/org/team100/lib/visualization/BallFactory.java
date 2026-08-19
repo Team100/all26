@@ -7,7 +7,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.targeting.Drag;
 
-import edu.wpi.first.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 public class BallFactory {
 

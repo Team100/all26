@@ -1,7 +1,7 @@
 package org.team100.lib.visualization;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.Commands;
 
 public interface Ball {
     /** Sets initial position and velocity. */

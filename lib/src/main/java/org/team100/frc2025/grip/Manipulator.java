@@ -22,13 +22,14 @@ import org.team100.lib.music.Player;
 import org.team100.lib.sensor.distance.LaserCan100;
 import org.team100.lib.util.CanId;
 
-import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+// import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.SubsystemBase;
 
 /**
  * The manipulator from the Calgames robot in 2025
  */
+@SuppressWarnings("unused")
 public class Manipulator extends SubsystemBase implements Music {
 
     private final BooleanLogger coralLogger;
@@ -39,7 +40,6 @@ public class Manipulator extends SubsystemBase implements Music {
     private final LinearMechanism m_rightMech;
     private final LinearMechanism m_algaeMech;
     private final LaserCan100 m_rightLaser;
-    @SuppressWarnings("unused")
     private final LaserCan100 m_frontLaser;
     private final LaserCan100 m_backLaser;
     private final LaserCan100 m_leftLaser;
@@ -143,7 +143,8 @@ public class Manipulator extends SubsystemBase implements Music {
     public boolean hasCoral() {
         if (Identity.instance.equals(Identity.BLANK))
             return false;
-        return coralIsClose(m_backLaser);
+        // return coralIsClose(m_backLaser);
+        return false;
     }
 
     public void ejectCenter() {
@@ -164,13 +165,13 @@ public class Manipulator extends SubsystemBase implements Music {
             m_algaeMech.setDutyCycle(-1);
         } else {
             m_algaeMech.setDutyCycle(-1);
-            if (coralIsClose(m_leftLaser)) {
-                m_leftMech.setDutyCycle(0.5);
-                m_rightMech.setDutyCycle(-0.5);
-            } else {
-                m_leftMech.setDutyCycle(-0.5);
-                m_rightMech.setDutyCycle(0.5);
-            }
+            // if (coralIsClose(m_leftLaser)) {
+            //     m_leftMech.setDutyCycle(0.5);
+            //     m_rightMech.setDutyCycle(-0.5);
+            // } else {
+            //     m_leftMech.setDutyCycle(-0.5);
+            //     m_rightMech.setDutyCycle(0.5);
+            // }
         }
     }
 
@@ -183,7 +184,9 @@ public class Manipulator extends SubsystemBase implements Music {
     }
 
     public boolean hasCoralSideways() {
-        return coralIsClose(m_leftLaser) && coralIsClose(m_rightLaser);
+        // TODO: for 2027
+        // return coralIsClose(m_leftLaser) && coralIsClose(m_rightLaser);
+        return false;
     }
 
     public void stopMotors() {
@@ -200,7 +203,7 @@ public class Manipulator extends SubsystemBase implements Music {
         return m_algaeMotor.getCurrent() > 50;
     }
 
-    /////////////////////////////////////////////////
+    ////////////////////////////////////////////////
     //
     // COMMANDS
 
@@ -242,7 +245,7 @@ public class Manipulator extends SubsystemBase implements Music {
         return run(this::ejectCenterBack);
     }
 
-    //////////////////////////////////////////////////
+    /////////////////////////////////////////////////
 
     /**
      * Set high current limits.
@@ -282,12 +285,12 @@ public class Manipulator extends SubsystemBase implements Music {
         m_algaeMotor.periodic();
         coralLogger.log(this::hasCoral);
     }
-    ///////////////////////////////////////////////
+    //////////////////////////////////////////////
 
-    private static boolean coralIsClose(LaserCan100 sensor) {
-        Measurement m = sensor.getMeasurement();
-        if (m == null)
-            return false;
-        return m.distance_mm < NEAR;
-    }
+    // private static boolean coralIsClose(LaserCan100 sensor) {
+    // Measurement m = sensor.getMeasurement();
+    // if (m == null)
+    // return false;
+    // return m.distance_mm < NEAR;
+    // }
 }

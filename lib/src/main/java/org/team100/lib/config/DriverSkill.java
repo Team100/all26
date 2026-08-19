@@ -2,8 +2,8 @@ package org.team100.lib.config;
 
 import org.team100.lib.util.NamedChooser;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.wpilib.smartdashboard.SendableChooser;
+import org.wpilib.smartdashboard.SmartDashboard;
 
 /**
  * Driver skill level is used to limit speed.  Advanced drivers get full

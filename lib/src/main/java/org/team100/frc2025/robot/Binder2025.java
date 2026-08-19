@@ -1,7 +1,7 @@
 package org.team100.frc2025.robot;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static org.wpilib.command2.Commands.parallel;
+import static org.wpilib.command2.Commands.sequence;
 
 import java.util.function.BooleanSupplier;
 
@@ -23,11 +23,9 @@ import org.team100.lib.subsystems.se2.commands.DriveWithTrajectoryFunction;
 import org.team100.lib.subsystems.se2.commands.FloorPickSequence2;
 import org.team100.lib.subsystems.se2.commands.ManualPosition;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
-
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.button.Trigger;
+import org.wpilib.system.RobotController;
 
 /**
  * Binds buttons to commands. Also creates default commands.
@@ -266,9 +264,9 @@ public class Binder2025 {
         //
         // TEST
         //
-        Tester2025 tester = new Tester2025(m_machinery);
-        whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
-                tester.prematch());
+        // Tester2025 tester = new Tester2025(m_machinery);
+        // whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
+        //         tester.prematch());
     }
 
     private static Trigger whileTrue(BooleanSupplier condition, Command command) {

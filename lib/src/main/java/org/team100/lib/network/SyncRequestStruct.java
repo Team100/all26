@@ -2,7 +2,7 @@ package org.team100.lib.network;
 
 import java.nio.ByteBuffer;
 
-import edu.wpi.first.util.struct.Struct;
+import org.wpilib.util.struct.Struct;
 
 public class SyncRequestStruct implements Struct<SyncRequest> {
 
@@ -18,7 +18,7 @@ public class SyncRequestStruct implements Struct<SyncRequest> {
 
     @Override
     public int getSize() {
-        return kSizeInt64;
+        return INT64_SIZE;
     }
 
     @Override

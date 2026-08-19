@@ -1,6 +1,6 @@
 package org.team100.lib.targeting;
 
-import edu.wpi.first.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Rotation3d;
 
 public class Target {
     private final long timestamp;

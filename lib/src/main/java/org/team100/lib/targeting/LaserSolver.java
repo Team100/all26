@@ -6,8 +6,8 @@ import java.util.function.DoubleFunction;
 import org.team100.lib.geometry.r2.StateR2;
 import org.team100.lib.state.ModelSE2;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
 
 /**
  * Solution for infinite muzzle velocity, for testing.

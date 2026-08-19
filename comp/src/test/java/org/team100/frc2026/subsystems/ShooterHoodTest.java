@@ -14,7 +14,7 @@ import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
 
 public class ShooterHoodTest implements Timeless2026 {
     private static final double DELTA = 0.001;

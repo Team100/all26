@@ -1,6 +1,6 @@
 package org.team100.lib.uncertainty;
 
-import edu.wpi.first.math.MathUtil;
+import org.wpilib.math.util.MathUtil;
 
 /**
  * Represents measurement and estimate uncertainty in the situation we actually
@@ -53,8 +53,8 @@ public class IsotropicNoiseSE2 {
 
     public IsotropicNoiseSE2 interpolate(IsotropicNoiseSE2 end, double t) {
         return new IsotropicNoiseSE2(
-                MathUtil.interpolate(m_cartesianVariance, end.m_cartesianVariance, t),
-                MathUtil.interpolate(m_rotationVariance, end.m_rotationVariance, t));
+                MathUtil.lerp(m_cartesianVariance, end.m_cartesianVariance, t),
+                MathUtil.lerp(m_rotationVariance, end.m_rotationVariance, t));
     }
 
     /** Standard Deviation, for testing only. */

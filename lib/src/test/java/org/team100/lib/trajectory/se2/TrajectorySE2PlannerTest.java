@@ -27,9 +27,9 @@ import org.team100.lib.trajectory.se2.constraint.YawRateConstraint;
 import org.team100.lib.trajectory.se2.examples.TrajectoryExamples;
 import org.team100.lib.util.ChartUtil;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
 
 class TrajectorySE2PlannerTest implements Timeless {
     private static final boolean DEBUG = false;
@@ -430,7 +430,7 @@ class TrajectorySE2PlannerTest implements Timeless {
             // ca = v^2*curvature
             DirectionSE2 course0 = p0.point().point().waypoint().course();
             DirectionSE2 course1 = p1.point().point().waypoint().course();
-            p1.point().point().waypoint().pose().log(p0.point().point().waypoint().pose());
+            p0.point().point().waypoint().pose().minus(p1.point().point().waypoint().pose()).log();
             double dcourse1 = Metrics.translationalNorm(course1.minus(course0));
             double dcourse = course1.toRotation().minus(course0.toRotation()).getRadians();
             double intrinsicCa = p0.point().velocity() * p0.point().velocity() * p0.point().point().k();

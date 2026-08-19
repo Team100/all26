@@ -1,6 +1,6 @@
 package org.team100.lib.hid;
 
-import edu.wpi.first.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 /**
  * This represents driver's velocity command, usually mapped to three axes in

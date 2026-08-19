@@ -2,8 +2,8 @@ package org.team100.lib.targeting;
 
 import java.nio.ByteBuffer;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.util.struct.Struct;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.util.struct.Struct;
 
 public class TargetStruct implements Struct<Target> {
 
@@ -19,7 +19,7 @@ public class TargetStruct implements Struct<Target> {
 
     @Override
     public int getSize() {
-        return kSizeInt64 + Rotation3d.struct.getSize();
+        return INT64_SIZE + Rotation3d.struct.getSize();
     }
 
     @Override

@@ -1,14 +1,13 @@
 package org.team100.lib.geometry.se3;
 
 import org.team100.lib.geometry.GeometryUtil;
-
-import edu.wpi.first.math.MatBuilder;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Twist3d;
-import edu.wpi.first.math.numbers.N4;
-import edu.wpi.first.math.numbers.N6;
+import org.wpilib.math.geometry.Twist3d;
+import org.wpilib.math.linalg.MatBuilder;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N4;
+import org.wpilib.math.numbers.N6;
+import org.wpilib.math.util.Nat;
 
 /**
  * See https://arxiv.org/pdf/1812.01537.

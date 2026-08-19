@@ -2,9 +2,9 @@ package org.team100.frc2025.field;
 
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
 
 /**
  * Positions on the field used as waypoints.

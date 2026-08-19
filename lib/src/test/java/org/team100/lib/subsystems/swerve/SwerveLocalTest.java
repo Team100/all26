@@ -10,7 +10,7 @@ import org.team100.lib.geometry.se2.ChassisAcceleration;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
 import org.team100.lib.testing.Timeless;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import org.wpilib.math.kinematics.ChassisVelocities;
 
 class SwerveLocalTest implements Timeless {
     private static final double DELTA = 0.001;
@@ -19,7 +19,7 @@ class SwerveLocalTest implements Timeless {
     void testSimple() throws IOException {
         Fixture fixture = new Fixture();
         SwerveLocal local = fixture.swerveLocal;
-        local.setChassisSpeeds(new ChassisSpeeds(), ChassisAcceleration.ZERO);
+        local.setChassisVelocities(new ChassisVelocities(), ChassisAcceleration.ZERO);
         local.stop();
         local.setRawModuleStates(
                 SwerveModuleStates.ZERO, SwerveEffort.ZERO);

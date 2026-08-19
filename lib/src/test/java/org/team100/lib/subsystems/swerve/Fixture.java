@@ -26,10 +26,9 @@ import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VariableR1;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
+import org.wpilib.driverstation.MatchState;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 /**
  * A real swerve subsystem populated with simulated motors and encoders,
@@ -84,7 +83,7 @@ public class Fixture {
         final AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater,DriverStation::getAlliance);
+                logger, fieldLogger, layout, history, visionUpdater,MatchState::getAlliance);
         estimate = new FreshSwerveEstimate(
                 localizer::update, odometryUpdater::update, history);
 

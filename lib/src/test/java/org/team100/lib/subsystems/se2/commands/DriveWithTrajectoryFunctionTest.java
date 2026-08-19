@@ -21,9 +21,9 @@ import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.YawRateConstraint;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.command2.Command;
 
 /**
  * Demonstrate DriveWithTrajectoryFunction.

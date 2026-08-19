@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import org.team100.frc2026.field.FieldConstants2026;
 import org.team100.lib.targeting.FiringParameters;
 
-import edu.wpi.first.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation2d;
 
 /**
  * Chooses where to aim, supplies parameters.

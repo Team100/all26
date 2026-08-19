@@ -2,8 +2,8 @@ package org.team100.lib.util;
 
 import java.util.TreeMap;
 
-import edu.wpi.first.math.interpolation.Interpolator;
-import edu.wpi.first.math.interpolation.InverseInterpolator;
+import org.wpilib.math.interpolation.Interpolator;
+import org.wpilib.math.interpolation.InverseInterpolator;
 
 /**
  * Like InterpolatingTreeMap, but returns null for off-the-edge samples.

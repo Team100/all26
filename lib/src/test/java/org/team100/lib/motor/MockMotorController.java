@@ -1,18 +1,18 @@
 package org.team100.lib.motor;
 
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import org.wpilib.hardware.motor.MotorController;
 
 public class MockMotorController implements MotorController {
     public double speed;
     public boolean inverted;
 
     @Override
-    public void set(double speed) {
+    public void setThrottle(double speed) {
         this.speed = speed;
     }
 
     @Override
-    public double get() {
+    public double getThrottle() {
         return speed;
     }
 
@@ -31,8 +31,8 @@ public class MockMotorController implements MotorController {
         //
     }
 
-    @Override
-    public void stopMotor() {
-        speed = 0;
-    }
+    // @Override
+    // public void stopMotor() {
+    //     speed = 0;
+    // }
 }

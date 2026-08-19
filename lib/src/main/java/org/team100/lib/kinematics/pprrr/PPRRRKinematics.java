@@ -9,13 +9,12 @@ import org.team100.lib.kinematics.urdf.URDFJoint.JointType;
 import org.team100.lib.kinematics.urdf.URDFJoint.Limit;
 import org.team100.lib.kinematics.urdf.URDFLink;
 import org.team100.lib.kinematics.urdf.URDFRobot;
-
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.numbers.N5;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N5;
+import org.wpilib.math.util.Nat;
 
 /**
  * 5 DOF mechanism: 3 drivetrain DOF (swerve), 2 arm DOF (like RR).

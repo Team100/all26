@@ -4,16 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
-
-import edu.wpi.first.math.geometry.Quaternion;
-import edu.wpi.first.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Quaternion;
+import org.wpilib.math.geometry.Rotation3d;
 
 public class Rotation3dTest {
     private static final boolean DEBUG = false;
 
     private Rotation3d lerp(Rotation3d a, Rotation3d b, double t) {
-        Quaternion dq = a.getQuaternion().log(b.getQuaternion());
-        return new Rotation3d(a.getQuaternion().exp(dq.times(t)));
+        Quaternion dq = b.getQuaternion().minus(a.getQuaternion()).log();
+        return new Rotation3d(a.getQuaternion().plus(dq.times(t).exp()));
     }
 
     @Test
@@ -36,10 +35,10 @@ public class Rotation3dTest {
     void testInterpolation2() {
         Rotation3d a = new Rotation3d(1, 0, 0);
         Rotation3d b = new Rotation3d(0, 1, 0);
-        Rotation3d d = b.minus(a);
+        Rotation3d d = b.rotateBy(a.inverse());
         // rotation is not commutative.
         // see https://github.com/wpilibsuite/allwpilib/issues/8523
-        assertNotEquals(b, a.plus(d));
+        assertNotEquals(b, a.rotateBy(d));
     }
 
     @Test
@@ -47,7 +46,7 @@ public class Rotation3dTest {
         Rotation3d a = new Rotation3d(1, 0, 0);
         Rotation3d b = new Rotation3d(0, 1, 0);
         Rotation3d d = new Rotation3d(-1, 1, 0);
-        assertEquals(b, a.plus(d));
+        assertEquals(b, a.rotateBy(d));
     }
 
     @Test

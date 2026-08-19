@@ -3,9 +3,9 @@ package org.team100.lib.profile.r1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import org.wpilib.math.trajectory.TrapezoidProfile;
+import org.wpilib.math.trajectory.TrapezoidProfile.Constraints;
+import org.wpilib.math.trajectory.TrapezoidProfile.State;
 
 /**
  * Wrap the WPI profile.

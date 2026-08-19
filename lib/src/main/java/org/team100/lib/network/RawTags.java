@@ -9,8 +9,8 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.util.struct.StructBuffer;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.util.struct.StructBuffer;
 
 /** Listen to raw tag input from the cameras, for testing. */
 public class RawTags extends CameraReader<Blip> {

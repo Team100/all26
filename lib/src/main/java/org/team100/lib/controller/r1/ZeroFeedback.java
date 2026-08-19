@@ -4,7 +4,7 @@ import java.util.function.DoubleUnaryOperator;
 
 import org.team100.lib.state.ModelR1;
 
-import edu.wpi.first.math.MathUtil;
+import org.wpilib.math.util.MathUtil;
 
 /**
  * Feedback that is always zero: this is for use with outboard servos, where

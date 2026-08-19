@@ -29,8 +29,8 @@ import org.team100.lib.servo.OnboardAngularPositionServo;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.SubsystemBase;
 
 public class Climber2025 extends SubsystemBase {
 

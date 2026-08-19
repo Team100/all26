@@ -24,7 +24,7 @@ import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
 import org.team100.lib.targeting.CachedSolution;
 import org.team100.lib.targeting.Solution;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
 
 /**
  * Manual cartesian control, with rotational control based on a target position.

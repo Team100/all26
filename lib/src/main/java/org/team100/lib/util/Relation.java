@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.function.DoubleFunction;
 import java.util.function.ToDoubleFunction;
 
-import edu.wpi.first.math.interpolation.Interpolator;
-import edu.wpi.first.math.interpolation.InverseInterpolator;
+import org.wpilib.math.interpolation.Interpolator;
+import org.wpilib.math.interpolation.InverseInterpolator;
 
 /** A relation is a set of double-valued tuples. */
 public class Relation<V> {

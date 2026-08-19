@@ -14,11 +14,11 @@ import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.testing.Timeless;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.networktables.StructArrayTopic;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.networktables.StructArrayPublisher;
+import org.wpilib.networktables.StructArrayTopic;
 
 /**
  * Timeless because the clock is used to decide to ignore (stale) input.
@@ -44,7 +44,7 @@ public class TargetsTest implements Timeless {
         // client instance
         NetworkTableInstance inst = NetworkTableInstance.create();
         inst.setServer("localhost");
-        inst.startClient4("tag_finder24");
+        inst.startClient("tag_finder24");
 
         // wait for the NT thread
         Thread.sleep(200);

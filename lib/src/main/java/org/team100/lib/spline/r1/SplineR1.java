@@ -1,13 +1,12 @@
 package org.team100.lib.spline.r1;
 
-import edu.wpi.first.math.MatBuilder;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N6;
+import org.wpilib.math.linalg.MatBuilder;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N1;
+import org.wpilib.math.numbers.N6;
+import org.wpilib.math.util.Nat;
 
 /**
  * One-dimensional quintic spline, representing five derivatives of position.
@@ -135,7 +134,7 @@ public class SplineR1 {
      * @return the point on the spline for that s value
      */
     public double getPosition(double s) {
-        s = MathUtil.clamp(s, 0, 1);
+        s = Math.clamp(s, 0, 1);
         return a * s * s * s * s * s + b * s * s * s * s + c * s * s * s + d * s * s + e * s + f;
     }
 
@@ -143,7 +142,7 @@ public class SplineR1 {
      * @return rate of change of position with respect to parameter, i.e. dq/ds
      */
     public double getVelocity(double s) {
-        s = MathUtil.clamp(s, 0, 1);
+        s = Math.clamp(s, 0, 1);
         return 5 * a * s * s * s * s + 4 * b * s * s * s + 3 * c * s * s + 2 * d * s + e;
     }
 
@@ -151,7 +150,7 @@ public class SplineR1 {
      * @return acceleration of position with respect to parameter, i.e. d^2q/ds^2
      */
     public double getAcceleration(double s) {
-        s = MathUtil.clamp(s, 0, 1);
+        s = Math.clamp(s, 0, 1);
         return 20 * a * s * s * s + 12 * b * s * s + 6 * c * s + 2 * d;
     }
 
@@ -159,7 +158,7 @@ public class SplineR1 {
      * @return jerk of position with respect to parameter, i.e. d^3q/ds^3.
      */
     public double getJerk(double s) {
-        s = MathUtil.clamp(s, 0, 1);
+        s = Math.clamp(s, 0, 1);
         return 60 * a * s * s + 24 * b * s + 6 * c;
     }
 
@@ -167,7 +166,7 @@ public class SplineR1 {
      * @return snap of position with respect to parameter, i.e. d^4q/ds^4.
      */
     public double getSnap(double s) {
-        s = MathUtil.clamp(s, 0, 1);
+        s = Math.clamp(s, 0, 1);
         return 120 * a * s + 24 * b;
     }
 

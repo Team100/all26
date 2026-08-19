@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Translation3d;
 
 /**
  * Figure out how to correct for pan and tilt
@@ -54,7 +54,7 @@ class PanTiltOffsetTest {
         // we use the camera rotation to fix up the camera input
         // note the order here.
         Rotation3d cameraRotationInField = cameraInRobot.getRotation()
-                .plus(robotRotationInFieldCoordsFromGyro);
+                .rotateBy(robotRotationInFieldCoordsFromGyro);
 
         // camera input; we ignore the rotation from the camera.
         Translation3d tagTranslationInCamera = new Translation3d(Math.sqrt(2), 0, 0);
@@ -109,7 +109,7 @@ class PanTiltOffsetTest {
         // we use the camera rotation to fix up the camera input
         // note the order here.
         Rotation3d cameraRotationInField = cameraInRobot.getRotation()
-                .plus(robotRotationInFieldCoordsFromGyro);
+                .rotateBy(robotRotationInFieldCoordsFromGyro);
 
         // camera input; we ignore the rotation from the camera.
         // because the camera happens to be pointing at the tag, the distance is simply
@@ -166,7 +166,7 @@ class PanTiltOffsetTest {
         // we use the camera rotation to fix up the camera input
         // note the order here.
         Rotation3d cameraRotationInField = cameraInRobot.getRotation()
-                .plus(robotRotationInFieldCoordsFromGyro);
+                .rotateBy(robotRotationInFieldCoordsFromGyro);
 
         // camera input; we ignore the rotation from the camera.
         // because of the pan, the translation is different.
@@ -224,7 +224,7 @@ class PanTiltOffsetTest {
         // we use the camera rotation to fix up the camera input
         // note the order here.
         Rotation3d cameraRotationInField = cameraInRobot.getRotation()
-                .plus(robotRotationInFieldCoordsFromGyro);
+                .rotateBy(robotRotationInFieldCoordsFromGyro);
 
         // camera input; we ignore the rotation from the camera.
         // because of the truck, the translation is different.
@@ -282,7 +282,7 @@ class PanTiltOffsetTest {
         // we use the camera rotation to fix up the camera input
         // note the order here.
         Rotation3d cameraRotationInFieldCoords = cameraInRobotCoords.getRotation()
-                .plus(robotRotationInFieldCoordsFromGyro);
+                .rotateBy(robotRotationInFieldCoordsFromGyro);
 
         // camera input; we ignore the rotation from the camera.
         // because of the truck, the translation is different.
@@ -340,7 +340,7 @@ class PanTiltOffsetTest {
         // we use the camera rotation to fix up the camera input
         // note the order here.
         Rotation3d cameraRotationInFieldCoords = cameraInRobotCoords.getRotation()
-                .plus(robotRotationInFieldCoordsFromGyro);
+                .rotateBy(robotRotationInFieldCoordsFromGyro);
 
         // do we still get the correct pan and tilt values from the combined rotation?
         // the "normal" order is Tate-Bryant so yaw then pitch then roll.
@@ -412,7 +412,7 @@ class PanTiltOffsetTest {
         // we use the camera rotation to fix up the camera input
         // note the order here.
         Rotation3d cameraRotationInFieldCoords = cameraInRobotCoords.getRotation()
-                .plus(robotRotationInFieldCoordsFromGyro);
+                .rotateBy(robotRotationInFieldCoordsFromGyro);
 
         // do we still get the correct pan and tilt values from the combined rotation?
         // the "normal" order is Tate-Bryant so yaw then pitch then roll.
@@ -483,7 +483,7 @@ class PanTiltOffsetTest {
         // we use the camera rotation to fix up the camera input
         // note the order here.
         Rotation3d cameraRotationInFieldCoords = cameraInRobotCoords.getRotation()
-                .plus(robotRotationInFieldCoordsFromGyro);
+                .rotateBy(robotRotationInFieldCoordsFromGyro);
 
         // do we still get the correct pan and tilt values from the combined rotation?
         // the "normal" order is Tate-Bryant so yaw then pitch then roll.
@@ -568,7 +568,7 @@ class PanTiltOffsetTest {
         // we use the camera rotation to fix up the camera input
         // note the order here.
         Rotation3d cameraRotationInFieldCoords = cameraInRobotCoords.getRotation()
-                .plus(robotRotationInFieldCoordsFromGyro);
+                .rotateBy(robotRotationInFieldCoordsFromGyro);
 
         // do we still get the correct pan and tilt values from the combined rotation?
         // the "normal" order is Tate-Bryant so yaw then pitch then roll.

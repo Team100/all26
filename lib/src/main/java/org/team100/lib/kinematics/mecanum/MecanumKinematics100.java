@@ -1,11 +1,11 @@
 package org.team100.lib.kinematics.mecanum;
 
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
-import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
-import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Twist2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.math.kinematics.MecanumDriveKinematics;
+import org.wpilib.math.kinematics.MecanumDriveWheelPositions;
+import org.wpilib.math.kinematics.MecanumDriveWheelVelocities;
 
 /**
  * Includes simple correction factors to account for wheel slip.
@@ -35,13 +35,13 @@ public class MecanumKinematics100 {
         m_ktheta = slip.ktheta;
     }
 
-    public MecanumDriveWheelSpeeds toWheelSpeeds(ChassisSpeeds actual) {
+    public MecanumDriveWheelVelocities toWheelVelocities(ChassisVelocities actual) {
         // Slipping wheels need to go faster than the actual speed.
-        ChassisSpeeds slipping = new ChassisSpeeds(
-                m_kx * actual.vxMetersPerSecond,
-                m_ky * actual.vyMetersPerSecond,
-                m_ktheta * actual.omegaRadiansPerSecond);
-        return m_kinematics.toWheelSpeeds(slipping);
+        ChassisVelocities slipping = new ChassisVelocities(
+                m_kx * actual.vx,
+                m_ky * actual.vy,
+                m_ktheta * actual.omega);
+        return m_kinematics.toWheelVelocities(slipping);
     }
 
     public Twist2d toTwist2d(MecanumDriveWheelPositions start, MecanumDriveWheelPositions end) {

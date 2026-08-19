@@ -18,10 +18,8 @@ import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
 import org.team100.lib.util.CanId;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.SubsystemBase;
 
 public class Feeder extends SubsystemBase {
     public static final CanId canID1 = new CanId(8);
@@ -149,7 +147,7 @@ public class Feeder extends SubsystemBase {
                 .withName("set velocity");
     }
 
-    ///////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
 
     private void reset() {
         m_servo1.reset();
@@ -169,7 +167,7 @@ public class Feeder extends SubsystemBase {
         double shooterSlowness = Math.max(0, meanError);
         // if we're 1 m/s slow, feed at 100%
         // if we're 2 m/s slow, feed at 0%
-        double feedFraction = MathUtil.clamp(2.0 - shooterSlowness, 0, 1);
+        double feedFraction = Math.clamp(2.0 - shooterSlowness, 0, 1);
         double feedSpeed = NORMAL_SPEED * feedFraction;
         setVelocityProfiled(feedSpeed);
     }

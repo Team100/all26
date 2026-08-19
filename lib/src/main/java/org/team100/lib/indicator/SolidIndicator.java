@@ -1,6 +1,6 @@
 package org.team100.lib.indicator;
 
-import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
+import static org.wpilib.command2.Commands.repeatingSequence;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,13 +8,12 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import org.team100.lib.util.RoboRioChannel;
-
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.SubsystemBase;
+import org.wpilib.command2.button.Trigger;
+import org.wpilib.hardware.led.AddressableLED;
+import org.wpilib.hardware.led.AddressableLEDBuffer;
+import org.wpilib.util.Color;
 
 /**
  * An LED indicator that is all the same color.
@@ -57,7 +56,7 @@ public class SolidIndicator extends SubsystemBase {
         m_length = length;
         m_buffers = new HashMap<>();
         m_led.setLength(length);
-        m_led.start();
+        // m_led.start();
     }
 
     /**
@@ -90,7 +89,7 @@ public class SolidIndicator extends SubsystemBase {
     private Command blink(Color color) {
         return repeatingSequence(
                 once(color),
-                once(Color.kBlack));
+                once(Color.BLACK));
     }
 
     private Command once(Color color) {

@@ -4,8 +4,8 @@ import java.util.Optional;
 
 import org.team100.lib.util.struct.OptionalRotation2dStruct;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.util.struct.StructSerializable;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.util.struct.StructSerializable;
 
 /** This is to work around the lack of "missing value" in Structs. */
 public class OptionalRotation2d implements StructSerializable {

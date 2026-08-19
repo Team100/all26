@@ -12,22 +12,22 @@ import org.team100.lib.geometry.lynx_arm.LynxArmConfig;
 import org.team100.lib.kinematics.urdf.URDFAL5D;
 import org.team100.lib.util.StrUtil;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.geometry.Twist3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.numbers.N5;
-import edu.wpi.first.math.numbers.N6;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.util.Nat;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform2d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.geometry.Twist3d;
+import org.wpilib.math.numbers.N1;
+import org.wpilib.math.numbers.N2;
+import org.wpilib.math.numbers.N3;
+import org.wpilib.math.numbers.N5;
+import org.wpilib.math.numbers.N6;
 
 public class NewtonsMethodTest {
     private static final boolean DEBUG = false;
@@ -307,7 +307,7 @@ public class NewtonsMethodTest {
                 Math.sin(q.get(0)) + Math.sin(q.get(0) + q.get(1)),
                 new Rotation2d(q.get(0) + q.get(1)));
 
-        Function<Vector<N2>, Vector<N3>> err = q -> GeometryUtil.toVec(XXd.log(fwd.apply(q)));
+        Function<Vector<N2>, Vector<N3>> err = q -> GeometryUtil.toVec(fwd.apply(q).minus(XXd).log());
 
         // initial joint angles
         Vector<N2> q0 = VecBuilder.fill(0, Math.PI / 2);
@@ -442,7 +442,7 @@ public class NewtonsMethodTest {
                 Math.cos(q.get(0)) + Math.cos(q.get(0) + q.get(1)),
                 Math.sin(q.get(0)) + Math.sin(q.get(0) + q.get(1)),
                 new Rotation2d(q.get(0) + q.get(1)));
-        Function<Vector<N2>, Vector<N3>> err = q -> GeometryUtil.toVec(XXd.log(fwd.apply(q)));
+        Function<Vector<N2>, Vector<N3>> err = q -> GeometryUtil.toVec(fwd.apply(q).minus(XXd).log());
         Vector<N2> q0 = VecBuilder.fill(0, Math.PI / 2);
         Vector<N2> minQ = VecBuilder.fill(-Math.PI, -Math.PI);
         Vector<N2> maxQ = VecBuilder.fill(Math.PI, Math.PI);
@@ -468,7 +468,7 @@ public class NewtonsMethodTest {
                 Math.cos(q.get(0)) + Math.cos(q.get(0) + q.get(1)),
                 Math.sin(q.get(0)) + Math.sin(q.get(0) + q.get(1)),
                 new Rotation2d(q.get(0) + q.get(1)));
-        Function<Vector<N2>, Vector<N3>> err = q -> GeometryUtil.toVec(XXd.log(fwd.apply(q)));
+        Function<Vector<N2>, Vector<N3>> err = q -> GeometryUtil.toVec(fwd.apply(q).minus(XXd).log());
         Vector<N2> q0 = VecBuilder.fill(0, Math.PI / 2);
         Vector<N2> minQ = VecBuilder.fill(-Math.PI, -Math.PI);
         Vector<N2> maxQ = VecBuilder.fill(Math.PI, Math.PI);
@@ -497,7 +497,7 @@ public class NewtonsMethodTest {
                 .transformBy(new Transform2d(l0, 0, Rotation2d.kZero))
                 .transformBy(new Transform2d(0, 0, new Rotation2d(q.get(1))))
                 .transformBy(new Transform2d(l1, 0, Rotation2d.kZero));
-        Function<Vector<N2>, Vector<N3>> err = q -> GeometryUtil.toVec(XXd.log(fwd.apply(q)));
+        Function<Vector<N2>, Vector<N3>> err = q -> GeometryUtil.toVec(fwd.apply(q).minus(XXd).log());
 
         // initial joint angles
         Vector<N2> q0 = VecBuilder.fill(0, Math.PI / 2);
@@ -557,7 +557,7 @@ public class NewtonsMethodTest {
                 Math.sin(q.get(0)) + Math.sin(q.get(0) + q.get(1)),
                 new Rotation2d(q.get(0) + q.get(1)));
 
-        Function<Vector<N2>, Vector<N3>> err = q -> GeometryUtil.toVec(XXd.log(fwd.apply(q)));
+        Function<Vector<N2>, Vector<N3>> err = q -> GeometryUtil.toVec(fwd.apply(q).minus(XXd).log());
 
         // initial joint angles
         Vector<N2> q0 = VecBuilder.fill(0, Math.PI / 2);
@@ -712,7 +712,7 @@ public class NewtonsMethodTest {
         Function<Vector<N5>, Vector<N6>> err = q -> {
             Pose3d estimate = fwd.apply(q);
             // System.out.printf("estimate %s\n", StrUtil.poseStr(estimate));
-            Twist3d twist = goal.log(estimate);
+            Twist3d twist = estimate.minus(goal).log();
             // System.out.printf("twist %s\n", StrUtil.twistStr(twist));
             return GeometryUtil.toVec(twist);
         };

@@ -3,7 +3,7 @@ package org.team100.lib.util;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import org.wpilib.driverstation.MatchState;
 
 /**
  * Depending on the alliance, return the red option, or the blue option, or
@@ -23,10 +23,10 @@ public class AllianceSelector<T> implements Supplier<Optional<T>> {
 
     @Override
     public Optional<T> get() {
-        return DriverStation.getAlliance().map(
+        return MatchState.getAlliance().map(
                 x -> switch (x) {
-                    case Red -> m_red;
-                    case Blue -> m_blue;
+                    case RED -> m_red;
+                    case BLUE -> m_blue;
                 });
     }
 

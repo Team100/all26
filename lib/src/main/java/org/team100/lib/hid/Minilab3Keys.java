@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.team100.lib.music.Note;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
+import org.wpilib.driverstation.GenericHID;
 
 /**
  * Direct mapping of the MiniLab 3 "keys" MIDI interface, which uses both white
@@ -49,7 +47,9 @@ public class Minilab3Keys {
     }
 
     public List<Note> notes() {
-        int buttons = DriverStation.getStickButtons(m_controller.getPort());
+        // int buttons = DriverStation.getStickButtons(m_controller.getPort());
+        // TODO: fix for 2027
+        int buttons = 32;
         List<Note> notes = new ArrayList<>();
         for (int i = 0; i < 25; ++i) {
             int x = buttons & (1 << i);

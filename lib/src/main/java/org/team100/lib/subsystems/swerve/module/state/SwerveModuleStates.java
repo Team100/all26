@@ -2,7 +2,7 @@ package org.team100.lib.subsystems.swerve.module.state;
 
 import java.util.Optional;
 
-import edu.wpi.first.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 /**
  * Container for swerve module states.

@@ -1,7 +1,7 @@
 package org.team100.frc2025.field;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 /**
  * Joel eyeballed these on 10/23/25.

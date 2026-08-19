@@ -6,8 +6,8 @@ import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 import org.team100.lib.sensor.position.incremental.sim.SimulatedBareEncoder;
+import org.wpilib.hardware.motor.MotorController;
 
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 
 /** Wrapoer for RoboRIO-connected PWM speed control */
 public class BareMotorController100 implements BareMotor {
@@ -33,7 +33,7 @@ public class BareMotorController100 implements BareMotor {
 
     @Override
     public void setDutyCycle(double output) {
-        m_motor.set(output);
+        m_motor.setThrottle(output);
         m_log_duty.log(() -> output);
     }
 
@@ -48,7 +48,7 @@ public class BareMotorController100 implements BareMotor {
     @Override
     public void setVelocity(double motorRad_S, double torqueNm) {
         final double motorDutyCycle = motorRad_S * velocityFFDutyCycle_Rad_S;
-        m_motor.set(motorDutyCycle);
+        m_motor.setThrottle(motorDutyCycle);
         m_log_duty.log(() -> motorDutyCycle);
     }
 
@@ -81,7 +81,8 @@ public class BareMotorController100 implements BareMotor {
 
     @Override
     public void stop() {
-        m_motor.stopMotor();
+        // m_motor.stopMotor();
+        m_motor.setThrottle(0);
     }
 
     @Override
@@ -122,7 +123,7 @@ public class BareMotorController100 implements BareMotor {
 
     @Override
     public void periodic() {
-        m_log_reported.log(m_motor::get);
+        m_log_reported.log(m_motor::getThrottle);
     }
 
     @Override

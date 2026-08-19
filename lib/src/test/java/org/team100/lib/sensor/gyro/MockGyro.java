@@ -1,6 +1,6 @@
 package org.team100.lib.sensor.gyro;
 
-import edu.wpi.first.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 public class MockGyro implements Gyro {
     public Rotation2d rotation = Rotation2d.kZero;

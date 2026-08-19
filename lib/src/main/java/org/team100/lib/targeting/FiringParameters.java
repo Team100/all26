@@ -1,6 +1,6 @@
 package org.team100.lib.targeting;
 
-import edu.wpi.first.math.MathUtil;
+import org.wpilib.math.util.MathUtil;
 
 /**
  * Shooting solution including time of flight.
@@ -16,10 +16,10 @@ public record FiringParameters(
     public static FiringParameters interpolate(
             FiringParameters a, FiringParameters b, double t) {
         return new FiringParameters(
-                MathUtil.interpolate(a.range(), b.range(), t),
-                MathUtil.interpolate(a.speed(), b.speed(), t),
-                MathUtil.interpolate(a.elevation(), b.elevation(), t),
-                MathUtil.interpolate(a.tof(), b.tof(), t));
+                MathUtil.lerp(a.range(), b.range(), t),
+                MathUtil.lerp(a.speed(), b.speed(), t),
+                MathUtil.lerp(a.elevation(), b.elevation(), t),
+                MathUtil.lerp(a.tof(), b.tof(), t));
     }
 
 }

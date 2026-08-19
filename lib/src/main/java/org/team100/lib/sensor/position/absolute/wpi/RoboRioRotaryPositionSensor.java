@@ -10,7 +10,7 @@ import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.util.Math100;
 
-import edu.wpi.first.math.MathUtil;
+import org.wpilib.math.util.MathUtil;
 
 /**
  * One of the kinds of absolute rotary position sensors directly connected to

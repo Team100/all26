@@ -10,11 +10,11 @@ import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.subsystems.swerve.VeeringCorrection;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Twist2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
 
 /**
  * Kinematics and dynamics of the swerve drive.
@@ -189,7 +189,7 @@ public class SwerveKinodynamics {
      * 
      * @param nextSpeed represents the desired speed for now+dt.
      */
-    public SwerveModuleStates toSwerveModuleStates(ChassisSpeeds nextSpeed) {
+    public SwerveModuleStates toSwerveModuleStates(ChassisVelocities nextSpeed) {
         return toSwerveModuleStates(nextSpeed, TimedRobot100.LOOP_PERIOD_S);
     }
 
@@ -210,18 +210,18 @@ public class SwerveKinodynamics {
      * 
      * @param nextSpeed represents the desired speed for now+dt.
      */
-    SwerveModuleStates toSwerveModuleStates(ChassisSpeeds nextSpeed, double dt) {
+    SwerveModuleStates toSwerveModuleStates(ChassisVelocities nextSpeed, double dt) {
         // This is the extra correction angle ...
-        Rotation2d angle = new Rotation2d(VeeringCorrection.correctionRad(nextSpeed.omegaRadiansPerSecond));
+        Rotation2d angle = new Rotation2d(VeeringCorrection.correctionRad(nextSpeed.omega));
         // ... which is subtracted here; this isn't really a field-relative
         // transformation it's just a rotation.
-        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                nextSpeed.vxMetersPerSecond,
-                nextSpeed.vyMetersPerSecond,
-                nextSpeed.omegaRadiansPerSecond,
-                angle);
+        ChassisVelocities fieldRelative = new ChassisVelocities(
+                nextSpeed.vx,
+                nextSpeed.vy,
+                nextSpeed.omega);
+        ChassisVelocities chassisVelocities = fieldRelative.toRobotRelative(angle);
         // discretization does not affect omega
-        DiscreteSpeed descretized = discretize(chassisSpeeds, dt);
+        DiscreteSpeed descretized = discretize(chassisVelocities, dt);
         SwerveModuleStates states = m_kinematics.inverse(descretized);
         return states;
     }
@@ -230,13 +230,13 @@ public class SwerveKinodynamics {
      * Given a desired instantaneous speed, extrapolate ahead one step, and return
      * the twist required to achieve that state.
      */
-    public static DiscreteSpeed discretize(ChassisSpeeds chassisSpeeds, double dt) {
+    public static DiscreteSpeed discretize(ChassisVelocities ChassisVelocities, double dt) {
         Pose2d desiredDeltaPose = new Pose2d(
-                chassisSpeeds.vxMetersPerSecond * dt,
-                chassisSpeeds.vyMetersPerSecond * dt,
-                new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * dt));
+                ChassisVelocities.vx * dt,
+                ChassisVelocities.vy * dt,
+                new Rotation2d(ChassisVelocities.omega * dt));
 
-        return new DiscreteSpeed(Pose2d.kZero.log(desiredDeltaPose), dt);
+        return new DiscreteSpeed(desiredDeltaPose.minus(Pose2d.kZero).log(), dt);
     }
 
     /**
@@ -249,14 +249,14 @@ public class SwerveKinodynamics {
      * 
      * It performs inverse discretization and an extra correction.
      */
-    public ChassisSpeeds toChassisSpeedsWithDiscretization(
+    public ChassisVelocities toChassisVelocitiesWithDiscretization(
             SwerveModuleStates moduleStates,
             double dt) {
         DiscreteSpeed discreteSpeeds = m_kinematics.forward(moduleStates, dt);
         Twist2d twist = discreteSpeeds.twist();
 
         Pose2d deltaPose = GeometryUtil.sexp(twist);
-        ChassisSpeeds continuousSpeeds = new ChassisSpeeds(
+        ChassisVelocities continuousSpeeds = new ChassisVelocities(
                 deltaPose.getX(),
                 deltaPose.getY(),
                 deltaPose.getRotation().getRadians()).div(dt);
@@ -264,34 +264,32 @@ public class SwerveKinodynamics {
         double omega = twist.dtheta / dt;
         // This is the opposite direction
         Rotation2d angle = new Rotation2d(VeeringCorrection.correctionRad(omega));
-        return ChassisSpeeds.fromFieldRelativeSpeeds(
-                continuousSpeeds.vxMetersPerSecond,
-                continuousSpeeds.vyMetersPerSecond,
-                continuousSpeeds.omegaRadiansPerSecond,
-                angle.unaryMinus());
+        ChassisVelocities fieldRelative = new ChassisVelocities(
+                continuousSpeeds.vx,
+                continuousSpeeds.vy,
+                continuousSpeeds.omega);
+        return fieldRelative.toRobotRelative(angle.unaryMinus());
     }
 
     /**
      * Robot-relative speed, without discretization.
      * This simply rotates the velocity from the field frame to the robot frame.
      */
-    public static ChassisSpeeds toInstantaneousChassisSpeeds(
+    public static ChassisVelocities toInstantaneousChassisVelocities(
             VelocitySE2 v,
             Rotation2d theta) {
-        return ChassisSpeeds.fromFieldRelativeSpeeds(
-                v.x(),
-                v.y(),
-                v.theta(),
-                theta);
+        ChassisVelocities fieldRelative = new ChassisVelocities(
+                v.x(), v.y(), v.theta());
+        return fieldRelative.toRobotRelative(theta);
     }
 
     /**
      * Field-relative speed, without discretization.
      * This simply rotates the velocity from the robot frame to the field frame.
      */
-    public static VelocitySE2 fromInstantaneousChassisSpeeds(ChassisSpeeds instantaneous, Rotation2d theta) {
-        ChassisSpeeds c = ChassisSpeeds.fromRobotRelativeSpeeds(instantaneous, theta);
-        return new VelocitySE2(c.vxMetersPerSecond, c.vyMetersPerSecond, c.omegaRadiansPerSecond);
+    public static VelocitySE2 fromInstantaneousChassisVelocities(ChassisVelocities instantaneous, Rotation2d theta) {
+        ChassisVelocities c = instantaneous.toFieldRelative(theta);
+        return new VelocitySE2(c.vx, c.vy, c.omega);
     }
 
     public SwerveDriveKinematics100 getKinematics() {

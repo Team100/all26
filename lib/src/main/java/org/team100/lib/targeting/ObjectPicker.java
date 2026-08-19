@@ -3,8 +3,8 @@ package org.team100.lib.targeting;
 import java.util.List;
 import java.util.Optional;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Translation2d;
 
 public class ObjectPicker {
 

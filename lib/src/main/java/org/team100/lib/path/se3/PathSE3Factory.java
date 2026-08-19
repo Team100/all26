@@ -8,9 +8,9 @@ import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.se3.DirectionSE3;
 import org.team100.lib.spline.se3.SplineSE3;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Twist3d;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Twist3d;
 
 public class PathSE3Factory {
     private static final boolean DEBUG = false;
@@ -61,11 +61,11 @@ public class PathSE3Factory {
         Pose3d p1 = spline.pose(s1);
 
         // twist from p0 to p1
-        Twist3d twist_full = p0.log(p1);
+        Twist3d twist_full = p1.minus(p0).log();
         // twist halfway from p0 to p1
         Twist3d twist_half = GeometryUtil.scale(twist_full, 0.5);
         // point halfway from p0 to p1
-        Pose3d phalf_predicted = p0.exp(twist_half);
+        Pose3d phalf_predicted = p0.plus(twist_half.exp());
         // difference between twist and sample
         Transform3d error = phalf_predicted.minus(phalf);
 

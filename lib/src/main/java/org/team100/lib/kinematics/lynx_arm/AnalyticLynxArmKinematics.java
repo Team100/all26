@@ -7,13 +7,13 @@ import org.team100.lib.geometry.lynx_arm.LynxArmConfig;
 import org.team100.lib.geometry.lynx_arm.LynxArmPose;
 import org.team100.lib.geometry.rr.RRConfig;
 import org.team100.lib.kinematics.rr.RRKinematics;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.util.MathUtil;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 
 public class AnalyticLynxArmKinematics implements LynxArmKinematics {
     private final double m_swingHeight;
@@ -171,13 +171,13 @@ public class AnalyticLynxArmKinematics implements LynxArmKinematics {
                 swing = OptionalDouble.of(swingAngle);
                 // to get the wrist rotation, project the swing-relative rotation
                 Rotation3d swing3d = new Rotation3d(0, 0, swingAngle);
-                Rotation3d swingRelative3d = endRotation.minus(swing3d);
+                Rotation3d swingRelative3d = endRotation.rotateBy(swing3d.inverse());
                 // to get the stick-relative wrist angle, subtract the joints
                 wrist = swingRelative3d.getY() - boom - stick;
                 // to get the twist, remove the wrist part; the remaining rotation around x is
                 // twist.
                 Rotation3d wrist3d = new Rotation3d(0, swingRelative3d.getY(), 0);
-                Rotation3d twist3d = swingRelative3d.minus(wrist3d);
+                Rotation3d twist3d = swingRelative3d.rotateBy(wrist3d.inverse());
                 twist = OptionalDouble.of(twist3d.getX());
             }
         } else {
@@ -187,13 +187,13 @@ public class AnalyticLynxArmKinematics implements LynxArmKinematics {
             swing = OptionalDouble.of(swingAngle.getRadians());
             // to get the wrist rotation, project the swing-relative rotation
             Rotation3d swing3d = new Rotation3d(swingAngle);
-            Rotation3d swingRelative3d = endRotation.minus(swing3d);
+            Rotation3d swingRelative3d = endRotation.rotateBy(swing3d.inverse());
             // to get the stick-relative wrist angle, subtract the joints
             wrist = swingRelative3d.getY() - boom - stick;
             // to get the twist, remove the wrist part; the remaining rotation around x is
             // twist.
             Rotation3d wrist3d = new Rotation3d(0, swingRelative3d.getY(), 0);
-            Rotation3d twist3d = swingRelative3d.minus(wrist3d);
+            Rotation3d twist3d = swingRelative3d.rotateBy(wrist3d.inverse());
             // System.out.printf("twist3d %s\n", StrUtil.rotStr(twist3d));
             twist = OptionalDouble.of(twist3d.getX());
 

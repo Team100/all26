@@ -8,8 +8,8 @@ import org.team100.lib.geometry.se2.WaypointSE2;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.trajectory.se2.TrajectorySE2Point;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.geometry.Pose2d;
 
 public class ControlSE2Test {
     /** Centrifugal force */

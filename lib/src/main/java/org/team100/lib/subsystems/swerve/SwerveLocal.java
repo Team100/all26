@@ -7,7 +7,7 @@ import org.team100.lib.dynamics.swerve.SwerveEffort;
 import org.team100.lib.geometry.se2.ChassisAcceleration;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.ChassisSpeedsLogger;
+import org.team100.lib.logging.LoggerFactory.ChassisVelocitiesLogger;
 import org.team100.lib.logging.LoggerFactory.SwerveModulePositionsLogger;
 import org.team100.lib.music.Player;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
@@ -16,8 +16,8 @@ import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleState100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
 
 /**
  * The swerve drive in local, or robot, reference frame. This class knows
@@ -37,7 +37,7 @@ public class SwerveLocal implements Player {
     private final SwerveModuleCollection m_modules;
 
     private final SwerveModulePositionsLogger m_logPositions;
-    private final ChassisSpeedsLogger m_log_chassis_speed;
+    private final ChassisVelocitiesLogger m_log_chassis_speed;
 
     private final List<Player> m_players;
 
@@ -46,7 +46,7 @@ public class SwerveLocal implements Player {
             SwerveKinodynamics swerveKinodynamics,
             SwerveModuleCollection modules) {
         LoggerFactory log = parent.type(this);
-        m_log_chassis_speed = log.chassisSpeedsLogger(Level.TRACE, "chassis speed");
+        m_log_chassis_speed = log.ChassisVelocitiesLogger(Level.TRACE, "chassis speed");
         m_logPositions = log.swerveModulePositionsLogger(Level.TRACE, "positions");
         m_swerveKinodynamics = swerveKinodynamics;
         m_modules = modules;
@@ -74,7 +74,7 @@ public class SwerveLocal implements Player {
      * 
      * @param nextSpeed for the next timestep.
      */
-    void setChassisSpeeds(ChassisSpeeds nextSpeed, ChassisAcceleration a) {
+    void setChassisVelocities(ChassisVelocities nextSpeed, ChassisAcceleration a) {
         SwerveModuleStates states = m_swerveKinodynamics.toSwerveModuleStates(nextSpeed);
         SwerveEffort effort = m_swerveKinodynamics.effort(states, a);
         m_modules.setDesiredStates(states, effort);

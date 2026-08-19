@@ -28,17 +28,16 @@ import org.team100.lib.testing.Timeless;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.uncertainty.VariableR1;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.Trajectory.State;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.DataLogManager;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Transform2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.math.trajectory.Trajectory;
+import org.wpilib.math.trajectory.Trajectory.State;
+import org.wpilib.math.trajectory.TrajectoryConfig;
+import org.wpilib.math.trajectory.TrajectoryGenerator;
+import org.wpilib.system.DataLogManager;
 
 class SwerveDrivePoseEstimator100Test implements Timeless {
     private static final double DELTA = 0.001;
@@ -830,7 +829,7 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
                 // yaw is a noisy version of ground truth
                 double gyroNoiseSigma = 0.05;
                 Rotation2d noise = new Rotation2d(rand.nextGaussian() * gyroNoiseSigma);
-                Rotation2d yaw = groundTruthState.poseMeters.getRotation()
+                Rotation2d yaw = groundTruthState.pose.getRotation()
                         .plus(noise);
                 // .minus(trajectory.getInitialPose().getRotation());
                 // System.out.printf("yaw %s\n", yaw);
@@ -898,7 +897,7 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         double errorSum = 0;
 
         double DT = 0.02;
-        while (t <= trajectory.getTotalTimeSeconds()) {
+        while (t <= trajectory.getTotalTime()) {
             groundTruthState = trajectory.sample(t);
 
             // We are due for a new vision measurement if it's been 0.1
@@ -909,7 +908,7 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
                 Transform2d noise = new Transform2d(
                         new Translation2d(rand.nextGaussian() * 0.1, rand.nextGaussian() * 0.1),
                         new Rotation2d(rand.nextGaussian() * 0.05));
-                Pose2d newVisionPose = groundTruthState.poseMeters.plus(noise);
+                Pose2d newVisionPose = groundTruthState.pose.plus(noise);
                 visionUpdateQueue.put(t, newVisionPose);
             }
 
@@ -928,13 +927,13 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
                                 visionMeasurementStdDevs));
             }
 
-            ChassisSpeeds chassisSpeeds = new ChassisSpeeds(
-                    groundTruthState.velocityMetersPerSecond,
+            ChassisVelocities ChassisVelocities = new ChassisVelocities(
+                    groundTruthState.velocity,
                     0,
-                    groundTruthState.velocityMetersPerSecond * groundTruthState.curvatureRadPerMeter);
+                    groundTruthState.velocity * groundTruthState.curvature);
 
             SwerveModuleStates moduleStates = kinodynamics.getKinematics()
-                    .inverse(SwerveKinodynamics.discretize(chassisSpeeds, DT));
+                    .inverse(SwerveKinodynamics.discretize(ChassisVelocities, DT));
             SwerveModuleState100[] moduleStatesAll = moduleStates.all();
             SwerveModulePosition100[] positionsAll = positions.all();
             SwerveModulePosition100[] newPositions = new SwerveModulePosition100[positionsAll.length];
@@ -961,7 +960,7 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
             ou.update(t);
             ModelSE2 xHat = estimator.apply(t);
 
-            double error = groundTruthState.poseMeters.getTranslation().getDistance(
+            double error = groundTruthState.pose.getTranslation().getDistance(
                     xHat.pose().getTranslation());
             // System.out.printf("error %f\n", error);
             if (error > maxError) {
@@ -972,9 +971,9 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
             if (DEBUG) {
                 System.out.printf("t %4.2f GT (%6.3f, %6.3f, %6.3f) xhat (%6.3f, %6.3f, %6.3f)\n",
                         t,
-                        groundTruthState.poseMeters.getX(),
-                        groundTruthState.poseMeters.getY(),
-                        groundTruthState.poseMeters.getRotation().getRadians(),
+                        groundTruthState.pose.getX(),
+                        groundTruthState.pose.getY(),
+                        groundTruthState.pose.getRotation().getRadians(),
                         xHat.pose().getX(),
                         xHat.pose().getY(),
                         xHat.pose().getRotation().getRadians());
@@ -996,7 +995,7 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
                 "Incorrect Final Theta");
 
         assertEquals(
-                0.0, errorSum / (trajectory.getTotalTimeSeconds() / DT), 0.09, "Incorrect mean error");
+                0.0, errorSum / (trajectory.getTotalTime() / DT), 0.09, "Incorrect mean error");
         assertEquals(0.0, maxError, 0.2, "Incorrect max error");
 
     }

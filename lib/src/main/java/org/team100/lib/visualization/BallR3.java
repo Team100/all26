@@ -11,14 +11,13 @@ import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.targeting.Drag;
-
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N6;
-import edu.wpi.first.math.system.NumericalIntegration;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.numbers.N1;
+import org.wpilib.math.numbers.N6;
+import org.wpilib.math.system.NumericalIntegration;
 
 /**
  * Simulated projectile in three dimensions (x, y, z)

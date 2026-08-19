@@ -2,7 +2,7 @@ package org.team100.lib.subsystems.se2;
 
 import org.team100.lib.state.ModelSE2;
 
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import org.wpilib.command2.Subsystem;
 
 /** A planar subsystem */
 public interface SubsystemSE2 extends Subsystem {
