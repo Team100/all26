@@ -2,9 +2,8 @@ package org.team100.cartpole;
 
 import org.jfree.data.xy.VectorSeries;
 import org.team100.math.Simulator;
-
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N4;
+import org.wpilib.math.numbers.N1;
+import org.wpilib.math.numbers.N4;
 
 /** Visualize the pole positions. */
 public class CartPoleChart {

@@ -1,8 +1,8 @@
 package org.team100.control;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Num;
-import edu.wpi.first.math.numbers.N1;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.numbers.N1;
+import org.wpilib.math.util.Num;
 
 /**
  * Implements u = -Kx.
