@@ -1,8 +1,5 @@
 package org.team100.frc2026;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
-
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.CurrentLimit;
@@ -30,14 +27,13 @@ import org.team100.lib.subsystems.tank.commands.TankManual;
 import org.team100.lib.util.Banner;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
-
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.command2.Commands;
+import org.wpilib.command2.button.Trigger;
+import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.util.Color;
 
 public class Robot extends TimedRobot100 {
     private static final ShooterType SHOOTER = ShooterType.VELOCITY;
@@ -81,7 +77,6 @@ public class Robot extends TimedRobot100 {
 
     public Robot() {
         Banner.printBanner();
-        DriverStation.silenceJoystickConnectionWarning(true);
         Experiments.instance.show();
         SmartDashboard.putData(CommandScheduler.getInstance());
 
@@ -97,7 +92,7 @@ public class Robot extends TimedRobot100 {
         m_led = new SolidIndicator(new RoboRioChannel(0), 512);
         m_led.state(this::ledColor);
         // TODO: use machine state instead of buttons
-        m_led.event(xbox::leftTrigger, Color.kWhite);
+        m_led.event(xbox::leftTrigger, Color.WHITE);
         DifferentialDriveDynamics driveDynamics = new DifferentialDriveDynamics(10, 1, 0.4);
         m_drive = TankDriveFactory.make(
                 fieldLogger,
@@ -170,9 +165,9 @@ public class Robot extends TimedRobot100 {
         // changed shooter to "b" because it's easier to see
         new Trigger(xbox::b)
                 .whileTrue(
-                        parallel(
+                        Commands.parallel(
                                 m_shooter.spinSlow(),
-                                waitUntil(m_shooter::atGoal)
+                                Commands.waitUntil(m_shooter::atGoal)
                                         .andThen(m_indexer.single()
                                                 .andThen(m_indexer.stop().withTimeout(0.5)))
                                         .repeatedly())
@@ -194,8 +189,8 @@ public class Robot extends TimedRobot100 {
         double timeSec = Takt.get();
         double modTime = timeSec % 1;
         if (modTime < 0.04)
-            return Color.kDarkOrange;
-        return Color.kBlack;
+            return Color.ORANGE;
+        return Color.BLACK;
     }
 
     /**
