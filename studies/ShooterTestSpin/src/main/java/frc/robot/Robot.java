@@ -14,10 +14,9 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.util.CanId;
-
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.framework.TimedRobot;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -106,18 +105,5 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopExit() {
-    }
-
-    @Override
-    public void testInit() {
-        CommandScheduler.getInstance().cancelAll();
-    }
-
-    @Override
-    public void testPeriodic() {
-    }
-
-    @Override
-    public void testExit() {
     }
 }

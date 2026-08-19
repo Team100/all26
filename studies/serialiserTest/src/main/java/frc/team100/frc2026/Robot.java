@@ -4,13 +4,14 @@
 
 package frc.team100.frc2026;
 
+import org.wpilib.command2.Command;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.framework.TimedRobot;
+
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -23,10 +24,10 @@ public class Robot extends TimedRobot {
   private final SparkFlex flexs;
 
   public Robot() {
-    first = new TalonFX(9);
-    flex = new SparkFlex(2,  MotorType.kBrushless);
-    flexs = new SparkFlex(4,  MotorType.kBrushless);
-    second = new TalonFX(21); 
+    first = new TalonFX(9, new CANBus());
+    flex = new SparkFlex(0, 2,  MotorType.kBrushless);
+    flexs = new SparkFlex(0, 4,  MotorType.kBrushless);
+    second = new TalonFX(21, new CANBus()); 
   }
 
   @Override
@@ -63,10 +64,10 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    first.set(-1);
-    second.set(1);
-    flex.set(-1);
-    flexs.set(1);
+    first.setThrottle(-1);
+    second.setThrottle(1);
+    flex.setThrottle(-1);
+    flexs.setThrottle(1);
   }
 
   @Override
@@ -76,15 +77,4 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopExit() {}
-
-  @Override
-  public void testInit() {
-    CommandScheduler.getInstance().cancelAll();
-  }
-
-  @Override
-  public void testPeriodic() {}
-
-  @Override
-  public void testExit() {}
 }

@@ -5,13 +5,11 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.Identity;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.util.Banner;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.WPILibVersion;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.framework.TimedRobot;
+import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.system.RobotController;
+import org.wpilib.system.WPILibVersion;
 
 public class Robot extends TimedRobot {
     private final Machinery m_machinery;
@@ -20,11 +18,9 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         Banner.printBanner();
-        enableLiveWindowInTest(false);
         System.out.printf("WPILib Version: %s\n", WPILibVersion.Version);
         System.out.printf("RoboRIO serial number: %s\n", RobotController.getSerialNumber());
         System.out.printf("Identity: %s\n", Identity.instance.name());
-        DriverStation.silenceJoystickConnectionWarning(true);
         Experiments.instance.show();
         SmartDashboard.putData(CommandScheduler.getInstance());
         CommandScheduler.getInstance().setPeriod(100);

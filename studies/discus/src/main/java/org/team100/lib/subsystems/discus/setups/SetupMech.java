@@ -5,9 +5,8 @@ import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.subsystems.discus.DiscusMech;
 import org.team100.lib.visualization.ArmVisualization;
-
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.wpilib.command2.button.Trigger;
+import org.wpilib.driverstation.Gamepad;
 
 public class SetupMech implements Runnable {
     private final double CONTROL_SCALE = 1;
@@ -18,7 +17,7 @@ public class SetupMech implements Runnable {
         final Logging logging = Logging.instance();
         final LoggerFactory logger = logging.rootLogger;
         TotalCurrentLog currentLog = new TotalCurrentLog(logger);
-        XboxController controller = new XboxController(0);
+        Gamepad controller = new Gamepad(0);
 
         m_discus = new DiscusMech(logger, currentLog);
         m_viz = new ArmVisualization(m_discus::getPosition, "discus", 0);
@@ -30,11 +29,11 @@ public class SetupMech implements Runnable {
         // These bindings are remembered by the trigger event loop, so we don't need to
         // retain them.
         // button 1, "z" in the sim
-        new Trigger(controller::getAButton).whileTrue(m_discus.home());
+        new Trigger(controller::getSouthFaceButton).whileTrue(m_discus.home());
         // button 2, "x" in the sim
-        new Trigger(controller::getBButton).whileTrue(m_discus.zero());
-        new Trigger(controller::getXButton).whileTrue(m_discus.position(() -> 2));
-        new Trigger(controller::getYButton).whileTrue(m_discus.position(() -> -2));
+        new Trigger(controller::getEastFaceButton).whileTrue(m_discus.zero());
+        new Trigger(controller::getWestFaceButton).whileTrue(m_discus.position(() -> 2));
+        new Trigger(controller::getNorthFaceButton).whileTrue(m_discus.position(() -> -2));
 
         // set voltage directly to tune friction.
         new Trigger(controller::getLeftBumperButton)

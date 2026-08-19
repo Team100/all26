@@ -2,20 +2,18 @@ package frc.robot;
 
 import org.team100.lib.subsystems.led.DemoLED;
 import org.team100.lib.subsystems.lynxmotion_arm.LynxArmSetup;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.driverstation.Gamepad;
+import org.wpilib.framework.TimedRobot;
 
 public class Robot extends TimedRobot {
     private final DemoLED m_led;
-    private final XboxController m_controller;
+    private final Gamepad m_controller;
     private final Runnable m_setup;
 
     public Robot() {
         m_led = new DemoLED();
-        m_controller = new XboxController(0);
+        m_controller = new Gamepad(0);
         // m_led.setDefaultCommand(m_led.sweep());
 
         /////////////////////////////
@@ -51,10 +49,4 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopExit() {
     }
-
-    @Override
-    public void simulationInit() {
-        DriverStation.silenceJoystickConnectionWarning(true);
-    }
-
 }

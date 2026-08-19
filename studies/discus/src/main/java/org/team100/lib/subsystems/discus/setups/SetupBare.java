@@ -5,8 +5,7 @@ import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.subsystems.discus.DiscusBare;
 import org.team100.lib.visualization.ArmVisualization;
-
-import edu.wpi.first.wpilibj.XboxController;
+import org.wpilib.driverstation.Gamepad;
 
 public class SetupBare implements Runnable {
     private final DiscusBare m_discus;
@@ -16,7 +15,7 @@ public class SetupBare implements Runnable {
         Logging logging = Logging.instance();
         LoggerFactory logger = logging.rootLogger;
         TotalCurrentLog currentLog = new TotalCurrentLog(logger);
-        XboxController controller = new XboxController(0);
+        Gamepad controller = new Gamepad(0);
         m_discus = new DiscusBare(logger, currentLog);
         m_viz = new ArmVisualization(m_discus::getPosition, "discus", 0);
         // m_discus.setDefaultCommand(m_discus.dutyCycle(
