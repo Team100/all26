@@ -17,7 +17,6 @@ import org.wpilib.command2.Command;
 import org.wpilib.command2.CommandScheduler;
 import org.wpilib.networktables.NetworkTableInstance;
 import org.wpilib.smartdashboard.SmartDashboard;
-import org.wpilib.system.RobotController;
 import org.wpilib.system.WPILibVersion;
 
 public class Robot2025 extends TimedRobot100 {
@@ -72,7 +71,7 @@ public class Robot2025 extends TimedRobot100 {
         }
     }
 
-    /////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
     //
     // INITIALIZERS, DO NOT CHANGE THESE
     //
@@ -97,7 +96,7 @@ public class Robot2025 extends TimedRobot100 {
         m_allAutons.close();
     }
 
-    //////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
     //
     // LEAVE ALL THESE EMPTY
     //

@@ -8,11 +8,10 @@ import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.util.Banner;
-
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.command2.button.Trigger;
+import org.wpilib.framework.TimedRobot;
+import org.wpilib.system.RobotController;
 
 public class Robot extends TimedRobot {
 

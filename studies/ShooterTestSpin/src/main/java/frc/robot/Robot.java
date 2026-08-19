@@ -13,7 +13,6 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
-import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
 import org.team100.lib.util.CanId;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -35,25 +34,27 @@ public class Robot extends TimedRobot {
     public Robot() {
         m_robotContainer = new RobotContainer();
         // top = new NeoVortexCANSparkMotor(
-        //         rootLogger,
-        //         currentLog,
-        //         new CanId(1),
-        //         NeutralMode100.BRAKE,
-        //         MotorPhase.FORWARD,
-        //         new CurrentLimit(1, 1),
-        //         new Friction(0, 0, 0, 0),
-        //         PIDConstants.zero(), 0, 0);
+        // rootLogger,
+        // currentLog,
+        // new CanId(1),
+        // NeutralMode100.BRAKE,
+        // MotorPhase.FORWARD,
+        // new CurrentLimit(1, 1),
+        // new Friction(0, 0, 0, 0),
+        // PIDConstants.zero(), 0, 0);
         // bottom = new NeoVortexCANSparkMotor(
-        //         rootLogger,
-        //         currentLog,
-        //         new CanId(2),
-        //         NeutralMode100.BRAKE,
-        //         MotorPhase.FORWARD,
-        //         new CurrentLimit(1, 1),
-        //         new Friction(0, 0, 0, 0),
-        //         PIDConstants.makeVelocityPID(1), 0, 0);
-        left = new KrakenX60Motor(rootLogger, currentLog, new CanId(6), NeutralMode100.BRAKE, MotorPhase.FORWARD, new CurrentLimit(1, 1), new Friction(0, 0, 0, 0), PIDConstants.zero());
-        right = new KrakenX60Motor(rootLogger, currentLog, new CanId(7), NeutralMode100.BRAKE, MotorPhase.FORWARD, new CurrentLimit(1, 1), new Friction(0, 0, 0, 0), PIDConstants.zero());
+        // rootLogger,
+        // currentLog,
+        // new CanId(2),
+        // NeutralMode100.BRAKE,
+        // MotorPhase.FORWARD,
+        // new CurrentLimit(1, 1),
+        // new Friction(0, 0, 0, 0),
+        // PIDConstants.makeVelocityPID(1), 0, 0);
+        left = new KrakenX60Motor(rootLogger, currentLog, new CanId(6), NeutralMode100.BRAKE, MotorPhase.FORWARD,
+                new CurrentLimit(1, 1), new Friction(0, 0, 0, 0), PIDConstants.zero());
+    //     right = new KrakenX60Motor(rootLogger, currentLog, new CanId(7), NeutralMode100.BRAKE, MotorPhase.FORWARD,
+    //             new CurrentLimit(1, 1), new Friction(0, 0, 0, 0), PIDConstants.zero());
     }
 
     @Override
@@ -96,7 +97,7 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.cancel();
         }
         left.setDutyCycle(0.05);
-        bottom.setDutyCycle(1);
+        // bottom.setDutyCycle(1);
     }
 
     @Override

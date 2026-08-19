@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Num;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.numbers.N1;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N1;
+import org.wpilib.math.util.Num;
 
 /**
  * Simulate a system with a control law.

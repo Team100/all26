@@ -1,6 +1,6 @@
 package frc.robot;
 
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import org.wpilib.math.interpolation.InterpolatingDoubleTreeMap;
 
 /**
  * This is a basic physics model of a light bulb, used for feedforward for the

@@ -1,8 +1,8 @@
 package org.team100.math;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Num;
-import edu.wpi.first.math.numbers.N1;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.numbers.N1;
+import org.wpilib.math.util.Num;
 
 /**
  * Describes the evolution of the system, a function of state and control input.
