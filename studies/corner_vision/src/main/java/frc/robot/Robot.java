@@ -15,12 +15,11 @@ import org.team100.lib.network.Sync;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.visualization.RobotPoseVisualization;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.driverstation.Alliance;
+import org.wpilib.framework.TimedRobot;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.networktables.NetworkTableInstance;
 
 public class Robot extends TimedRobot {
     private static final LoggerFactory logger = Logging.instance().rootLogger;
@@ -54,7 +53,7 @@ public class Robot extends TimedRobot {
                         pose = noisyMeasurement.pose();
                     }
                 },
-                () -> Optional.of(Alliance.Blue));
+                () -> Optional.of(Alliance.BLUE));
         estimate = new FreshSwerveEstimate(
                 m_localizer::update,
                 () -> {
@@ -83,9 +82,5 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopExit() {
-    }
-
-    @Override
-    public void testExit() {
     }
 }
