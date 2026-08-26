@@ -1,6 +1,5 @@
 package org.team100.battery_tester;
 
-import org.wpilib.math.util.MathUtil;
 import org.wpilib.util.Color8Bit;
 
 /**

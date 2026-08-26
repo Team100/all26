@@ -2,8 +2,7 @@ package org.team100.battery_tester;
 
 import org.team100.battery_tester.BatteryTester.Op;
 import org.team100.lib.coherence.Takt;
-
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
 
 /** Run a full test and print the results. */
 public class ConstantPowerProtocol extends Command {

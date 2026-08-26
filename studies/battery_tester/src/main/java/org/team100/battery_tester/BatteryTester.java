@@ -8,28 +8,14 @@ import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-<<<<<<< HEAD:studies/battery_tester/src/main/java/frc/robot/BatteryTester.java
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
 import org.wpilib.hardware.motor.VictorSP;
 import org.wpilib.hardware.power.PowerDistribution;
 import org.wpilib.hardware.power.PowerDistribution.ModuleType;
-import org.wpilib.math.util.MathUtil;
 import org.wpilib.simulation.RoboRioSim;
 import org.wpilib.system.RobotController;
-=======
-import org.team100.lib.state.StateR1;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
->>>>>>> main:studies/battery_tester/src/main/java/org/team100/battery_tester/BatteryTester.java
 
 /**
  * Uses PWM controllers to extract a target power to the battery.
@@ -73,13 +59,8 @@ public class BatteryTester extends SubsystemBase implements AutoCloseable {
 
     public BatteryTester(LoggerFactory parent) {
         LoggerFactory log = parent.type(this);
-<<<<<<< HEAD:studies/battery_tester/src/main/java/frc/robot/BatteryTester.java
-        pdh = new PowerDistribution(0, 1, ModuleType.REV);
-        controllers = List.of(
-=======
-        m_pdh = new PowerDistribution(1, ModuleType.kRev);
-        m_controllers = List.of(
->>>>>>> main:studies/battery_tester/src/main/java/org/team100/battery_tester/BatteryTester.java
+        m_pdh = new PowerDistribution(0, 1, ModuleType.REV);
+        m_controllers = List.of(        
                 new VictorSP(0),
                 new VictorSP(1),
                 new VictorSP(2),
@@ -129,12 +110,8 @@ public class BatteryTester extends SubsystemBase implements AutoCloseable {
         m_p = p;
         m_log_fb.log(() -> fb);
         m_fb += fb;
-<<<<<<< HEAD:studies/battery_tester/src/main/java/frc/robot/BatteryTester.java
         m_dutycycle = Math.clamp(ff + m_fb, 0, 1);
-        controllers.stream().forEach(x -> x.setThrottle(m_dutycycle));
-=======
-        m_dutycycle = MathUtil.clamp(ff + m_fb, 0, 1);
-        m_controllers.stream().forEach(x -> x.set(m_dutycycle));
+        m_controllers.stream().forEach(x -> x.setThrottle(m_dutycycle));
     }
 
     /** Set battery current (amps). */
@@ -150,9 +127,8 @@ public class BatteryTester extends SubsystemBase implements AutoCloseable {
         m_i = i;
         m_log_fb.log(() -> fb);
         m_fb += fb;
-        m_dutycycle = MathUtil.clamp(ff + m_fb, 0, 1);
-        m_controllers.stream().forEach(x -> x.set(m_dutycycle));
->>>>>>> main:studies/battery_tester/src/main/java/org/team100/battery_tester/BatteryTester.java
+        m_dutycycle = Math.clamp(ff + m_fb, 0, 1);
+        m_controllers.stream().forEach(x -> x.setThrottle(m_dutycycle));
     }
 
     public void off() {
@@ -212,18 +188,10 @@ public class BatteryTester extends SubsystemBase implements AutoCloseable {
      * 
      * @param p desired output power, watts
      */
-<<<<<<< HEAD:studies/battery_tester/src/main/java/frc/robot/BatteryTester.java
-    private double ff(double p) {
-        LightBulb.Op op = lightbulb.operatingPoint(p);
-        // Battery voltage, including the sag from the required current.
-        double vBatt = battery.V(op.i());
-        return Math.clamp(op.v() / vBatt, 0, 1);
-=======
     double ffPower(double p) {
         LightBulb.Op lbop = m_lightbulb.operatingPoint(p);
         Battery.Op bop = m_battery.operatingPoint(p);
-        return MathUtil.clamp(lbop.v() / bop.v(), 0, 1);
->>>>>>> main:studies/battery_tester/src/main/java/org/team100/battery_tester/BatteryTester.java
+        return Math.clamp(lbop.v() / bop.v(), 0, 1);
     }
 
     /**
