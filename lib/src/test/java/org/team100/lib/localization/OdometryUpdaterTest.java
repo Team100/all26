@@ -10,7 +10,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.sensor.gyro.MockGyro;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
@@ -35,7 +35,7 @@ public class OdometryUpdaterTest {
         OdometryUpdater ou = new OdometryUpdater(
                 log, kinodynamics, gyro, null, () -> positions, UnaryOperator.identity());
         // previous state is at zero, but uncertain
-        ModelSE2 sampleModel = new ModelSE2();
+        StateSE2 sampleModel = new StateSE2();
         IsotropicNoiseSE2 stateNoise = IsotropicNoiseSE2.fromStdDev(1, 1);
         SwerveModulePositions positions = SwerveModulePositions.kZero();
         Rotation2d yaw = new Rotation2d();
@@ -86,7 +86,7 @@ public class OdometryUpdaterTest {
                 log, kinodynamics, gyro, null, () -> positions, UnaryOperator.identity());
 
         // previous state is at zero, pretty sure.
-        ModelSE2 sampleModel = new ModelSE2();
+        StateSE2 sampleModel = new StateSE2();
         IsotropicNoiseSE2 stateNoise = IsotropicNoiseSE2.fromStdDev(0.01, 0.01);
         SwerveModulePositions positions = SwerveModulePositions.kZero();
         Rotation2d yaw = new Rotation2d();
@@ -123,7 +123,7 @@ public class OdometryUpdaterTest {
                 log, kinodynamics, gyro, null, () -> positions, UnaryOperator.identity());
 
         // previous state is at zero, pretty sure.
-        ModelSE2 sampleModel = new ModelSE2();
+        StateSE2 sampleModel = new StateSE2();
         IsotropicNoiseSE2 stateNoise = IsotropicNoiseSE2.fromStdDev(0.01, 0.01);
         SwerveModulePositions positions = SwerveModulePositions.kZero();
         Rotation2d yaw = new Rotation2d();
@@ -179,7 +179,7 @@ public class OdometryUpdaterTest {
                 log, kinodynamics, gyro, null, () -> positions, UnaryOperator.identity());
 
         // previous state is at zero, pretty sure.
-        ModelSE2 sampleModel = new ModelSE2();
+        StateSE2 sampleModel = new StateSE2();
         IsotropicNoiseSE2 stateNoise = IsotropicNoiseSE2.fromStdDev(0.01, 0.01);
         SwerveModulePositions positions = SwerveModulePositions.kZero();
         Rotation2d yaw = new Rotation2d();

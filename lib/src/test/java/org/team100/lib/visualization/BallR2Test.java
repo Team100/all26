@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 
 import org.wpilib.math.geometry.Rotation2d;
 
 public class BallR2Test {
     private static final boolean DEBUG = false;
 
-    ModelSE2 robot = new ModelSE2();
+    StateSE2 robot = new StateSE2();
     Rotation2d azimuth = new Rotation2d();
 
     /** 2d ball proceeds forever. */

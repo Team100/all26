@@ -7,7 +7,7 @@ import org.team100.lib.geometry.prr.PRRConfig;
 import org.team100.lib.geometry.prr.PRRVelocity;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.subsystems.prr.SubsystemPRR;
 
 import org.wpilib.math.util.MathUtil;
@@ -20,9 +20,9 @@ public class FollowJointProfiles extends MoveAndHold {
     private static final double DT = TimedRobot100.LOOP_PERIOD_S;
 
     private final SubsystemPRR m_subsystem;
-    private final ModelR1 m_g1;
-    private final ModelR1 m_g2;
-    private final ModelR1 m_g3;
+    private final StateR1 m_g1;
+    private final StateR1 m_g2;
+    private final StateR1 m_g3;
     private final ProfileR1 m_p1;
     private final ProfileR1 m_p2;
     private final ProfileR1 m_p3;
@@ -39,9 +39,9 @@ public class FollowJointProfiles extends MoveAndHold {
             ProfileR1 p3) {
         m_subsystem = subsystem;
         // Joint goals are motionless
-        m_g1 = new ModelR1(goal.q1(), 0);
-        m_g2 = new ModelR1(goal.q2(), 0);
-        m_g3 = new ModelR1(goal.q3(), 0);
+        m_g1 = new StateR1(goal.q1(), 0);
+        m_g2 = new StateR1(goal.q2(), 0);
+        m_g3 = new StateR1(goal.q3(), 0);
         m_p1 = p1;
         m_p2 = p2;
         m_p3 = p3;

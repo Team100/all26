@@ -49,9 +49,9 @@ public class ManualMecanum extends Command {
         if (maxVY > maxVX)
             throw new IllegalArgumentException();
         m_velocity = velocity;
-        m_maxVX =  maxVX;
-        m_maxVY =  maxVY;
-        m_maxOmega =  maxOmega;
+        m_maxVX = maxVX;
+        m_maxVY = maxVY;
+        m_maxOmega = maxOmega;
         m_limiter = limiter;
         m_drive = drive;
         m_chooser = new EnumChooser<>("Input Scaling", InputScaling.NONE);
@@ -61,8 +61,7 @@ public class ManualMecanum extends Command {
 
     @Override
     public void initialize() {
-        m_limiter.updateSetpoint(new VelocityControlSE2(
-                m_drive.getState().velocity()));
+        m_limiter.updateSetpoint(m_drive.getState().velocity());
     }
 
     @Override
@@ -78,14 +77,14 @@ public class ManualMecanum extends Command {
             case SQUASH -> input.squashedDiamond(1, y_x, poseRotation);
         };
         // Scale stick input to field-relative velocity.
-        VelocityControlSE2 scaled = VelocityControlSE2.scale(
+        VelocitySE2 scaled = VelocitySE2.scale(
                 clippedOrSquashed, m_maxVX, m_maxOmega);
         // Apply field-relative limits.
         if (Experiments.instance.enabled(Experiment.UseSwerveLimiter)) {
             scaled = m_limiter.apply(scaled);
         }
         // Compute field-relative accel from backwards finite difference.
-        VelocitySE2 v = scaled.velocity();
+        VelocitySE2 v = scaled;
         // Because this is field-relative, there is no centrifugal force.
         AccelerationSE2 a = v.accel(m_v, TimedRobot100.LOOP_PERIOD_S);
         m_v = v;

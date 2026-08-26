@@ -16,7 +16,7 @@ import org.team100.lib.hid.Velocity;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
@@ -81,7 +81,7 @@ public class DriveMovingTargetLock extends Command {
     @Override
     public void initialize() {
         m_heedRadiusM.accept(HEED_RADIUS_M);
-        m_limiter.updateSetpoint(new VelocityControlSE2(m_drive.getVelocity()));
+        m_limiter.updateSetpoint(m_drive.getVelocity());
         m_aim.reset();
     }
 
@@ -97,17 +97,17 @@ public class DriveMovingTargetLock extends Command {
             return null;
         }
         Solution solution = oSolution.get();
-        ModelR1 target = new ModelR1(
+        StateR1 target = new StateR1(
                 solution.azimuth().getRadians(),
                 solution.azimuthVelocity());
-        ModelR1 measurement = m_drive.getState().theta();
+        StateR1 measurement = m_drive.getState().theta();
         return m_aim.getOmega(measurement, target);
     }
 
     /** Null to skip override */
     private void actuate(Double omega) {
         // Clip and scale user input.
-        VelocityControlSE2 scaled = VelocityControlSE2.scale(
+        VelocitySE2 scaled = VelocitySE2.scale(
                 m_twistSupplier.get().clip(1.0),
                 m_swerveKinodynamics.getMaxDriveVelocityM_S(),
                 m_swerveKinodynamics.getMaxAngleSpeedRad_S());
@@ -123,11 +123,11 @@ public class DriveMovingTargetLock extends Command {
         // Override omega.
         m_log_aiming.log(() -> omega != null);
         if (omega != null) {
-            scaled = new VelocityControlSE2(scaled.x().v(), scaled.y().v(), omega);
+            scaled = new VelocitySE2(scaled.x(), scaled.y(), omega);
         }
 
         // Compute field-relative accel from backwards finite difference.
-        VelocitySE2 v = scaled.velocity();
+        VelocitySE2 v = scaled;
         // Because this is field-relative, there is no centrifugal force.
         AccelerationSE2 a = v.accel(m_v, TimedRobot100.LOOP_PERIOD_S);
         m_v = v;

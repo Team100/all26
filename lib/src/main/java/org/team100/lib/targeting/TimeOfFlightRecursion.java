@@ -5,7 +5,7 @@ import java.util.function.DoubleFunction;
 
 import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.geometry.r2.StateR2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.targeting.TimeOfFlightRecursion.Looper.LoopSolution;
 import org.team100.lib.util.StrUtil;
 
@@ -97,7 +97,7 @@ public class TimeOfFlightRecursion implements Solver {
     }
 
     @Override
-    public Optional<Solution> solve(ModelSE2 state, StateR2 target) {
+    public Optional<Solution> solve(StateSE2 state, StateR2 target) {
         final Translation2d robotPosition = state.translation();
         final VelocityR2 robotVelocity = state.velocityR2();
 

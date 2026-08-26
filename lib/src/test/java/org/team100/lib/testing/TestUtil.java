@@ -36,6 +36,7 @@ import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.math.geometry.Twist2d;
 import org.wpilib.math.geometry.Twist3d;
 import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.numbers.N1;
 import org.wpilib.math.numbers.N3;
 import org.wpilib.math.numbers.N6;
@@ -291,6 +292,12 @@ public class TestUtil {
 
     public static void verify(RRPose expected, RRPose actual) {
         verify(expected.p1(), actual.p1());
+    }
+
+    public static <N extends Num> void verify(Vector<N> expected, Vector<N> actual) {
+        for (int i = 0; i < expected.getNumRows(); ++i) {
+            assertEquals(expected.get(i), actual.get(i), 1e-3, Integer.toString(i));
+        }
     }
 
 }

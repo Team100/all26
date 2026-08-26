@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.camera.Camera;
 import org.team100.lib.camera.Offset;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.wpilib.driverstation.Alliance;
 import org.wpilib.hardware.hal.AllianceStationID;
 import org.wpilib.hardware.hal.HAL;
@@ -26,6 +26,7 @@ import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.numbers.N3;
 import org.wpilib.simulation.DriverStationSim;
 
+
 public class SimulatedTagDetectorTest {
         private static final double DELTA = 0.001;
 
@@ -34,21 +35,23 @@ public class SimulatedTagDetectorTest {
                 HAL.initialize(500, 0);
         }
 
-        @Test
-        void testSimple() throws IOException {
-                List<Camera> cameras = List.of(Camera.SIM0, Camera.SIM1, Camera.SIM2, Camera.SIM3);
-                AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
-                                "2025-reefscape.json");
-                // right in front of tag 7
-                SimulatedTagDetector sim = new SimulatedTagDetector(
-                                cameras,
-                                layout,
-                                x -> new ModelSE2(new Pose2d(2.6576, 4.0259, Rotation2d.kZero)));
-                // sim uses alliance from driver station
-                DriverStationSim.setAllianceStationId(AllianceStationID.RED_1);
-                DriverStationSim.notifyNewData();
-                sim.periodic();
-        }
+
+    @Test
+    void testSimple() throws IOException {
+        List<Camera> cameras = List.of(Camera.SIM0, Camera.SIM1, Camera.SIM2, Camera.SIM3);
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
+                "2025-reefscape.json");
+        // right in front of tag 7
+        SimulatedTagDetector sim = new SimulatedTagDetector(
+                cameras,
+                layout,
+                x -> new StateSE2(new Pose2d(2.6576, 4.0259, Rotation2d.kZero)));
+        // sim uses alliance from driver station
+        DriverStationSim.setAllianceStationId(AllianceStationID.RED_1);
+        DriverStationSim.notifyNewData();
+        sim.periodic();
+    }
+
 
         @Test
         void testProjection1() {

@@ -2,7 +2,7 @@ package org.team100.lib.profile.r1;
 
 import org.team100.lib.optimization.Bisection1d;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 /**
  * This profile takes incremental steps from the setpoint towards the goal.
@@ -19,7 +19,7 @@ public interface ProfileR1 {
      * Return the control for dt in the future. The setpoint is a ControlR1 so that
      * we can regulate jerk.
      */
-    ControlR1 calculate(double dt, ControlR1 setpoint, ModelR1 goal);
+    ControlR1 calculate(double dt, ControlR1 setpoint, StateR1 goal);
 
     /**
      * Find ETA by simply running the whole thing to the end.
@@ -30,9 +30,9 @@ public interface ProfileR1 {
      * so it's not that hard to do, some profiles can be hard to reason about
      * without simulating anyway, and it's guaranteed to work.
      */
-    default double simulateForETA(double dt, ControlR1 initial, ModelR1 goal) {
+    default double simulateForETA(double dt, ControlR1 initial, StateR1 goal) {
         double t = 0;
-        ModelR1 sample = initial.model();
+        StateR1 sample = initial.model();
         while (!sample.near(goal, 0.01)) {
             ControlR1 c = calculate(dt, sample.control(), goal);
             sample = c.model();
@@ -62,7 +62,7 @@ public interface ProfileR1 {
     default double solve(
             double dt,
             ControlR1 i,
-            ModelR1 g,
+            StateR1 g,
             double goalETA,
             double etaTolerance) {
         final double minS = 0.01;

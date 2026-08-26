@@ -39,7 +39,7 @@ public class SwerveDynamicsTest {
                 0, 1, 0, 1, 0, 1, 0, 1, //
                 -1, 1, 1, 1, -1, -1, 1, -1);
         Matrix<N8, N3> minv = new Matrix<>(m.getStorage().pseudoInverse());
-        System.out.println(minv);
+        assertEquals(0.25, minv.get(0, 0), 1e-3);
     }
 
     /** Corner forces for simple accel: all same, 1/4 each. */

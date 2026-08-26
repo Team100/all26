@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.geometry.r2.StateR2;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.targeting.TimeOfFlightRecursion.Looper;
 import org.team100.lib.targeting.TimeOfFlightRecursion.Looper.LoopSolution;
 
@@ -45,7 +45,7 @@ public class TimeOfFlightRecursionTest {
         Translation2d targetPosition = new Translation2d(2, 0);
         VelocityR2 targetVelocity = VelocityR2.ZERO;
         Optional<Solution> o = tofr.solve(
-                new ModelSE2(),
+                new StateSE2(),
                 new StateR2(targetPosition, targetVelocity));
         Solution x = o.orElseThrow();
         assertEquals(0.666, x.parameters().tof(), DELTA);
@@ -143,7 +143,7 @@ public class TimeOfFlightRecursionTest {
         VelocityR2 targetVelocity = VelocityR2.ZERO;
 
         Optional<Solution> o = tofr.solve(
-                new ModelSE2(
+                new StateSE2(
                         new Pose2d(),
                         new VelocitySE2(robotVelocity.x(), robotVelocity.y(), 0)),
                 new StateR2(targetPosition, targetVelocity));
@@ -163,7 +163,7 @@ public class TimeOfFlightRecursionTest {
         VelocityR2 targetVelocity = VelocityR2.ZERO;
 
         Optional<Solution> o = tofr.solve(
-                new ModelSE2(
+                new StateSE2(
                         new Pose2d(),
                         new VelocitySE2(robotVelocity.x(), robotVelocity.y(), 0)),
                 new StateR2(targetPosition, targetVelocity));
@@ -218,7 +218,7 @@ public class TimeOfFlightRecursionTest {
         VelocityR2 targetVelocity = VelocityR2.ZERO;
 
         Optional<Solution> o = tofr.solve(
-                new ModelSE2(new Pose2d(),
+                new StateSE2(new Pose2d(),
                         new VelocitySE2(robotVelocity.x(), robotVelocity.y(), 0)),
                 new StateR2(targetPosition, targetVelocity));
         Solution x = o.orElseThrow();

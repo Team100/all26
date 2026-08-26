@@ -28,9 +28,9 @@ public class RRKinematics {
     private static final boolean DEBUG = false;
 
     /** Proximal link length, meters. */
-    private final double l1;
+    public final double l1;
     /** Distal link length, meters. */
-    private final double l2;
+    public final double l2;
 
     /**
      * @param l1 Proximal link length, meters.

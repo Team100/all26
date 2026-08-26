@@ -23,8 +23,8 @@ import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.reference.r1.SetpointsR1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelR1;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateR1;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.state.VelocityControlR1;
 import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
@@ -689,21 +689,21 @@ public class LoggerFactory {
         return new AccelerationSE2Logger(level, leaf);
     }
 
-    public class ModelR1Logger {
+    public class StateR1Logger {
         private final Level m_level;
         private final DoubleLogger m_xLogger;
         private final DoubleLogger m_vLogger;
 
-        ModelR1Logger(Level level, String leaf) {
+        StateR1Logger(Level level, String leaf) {
             m_level = level;
             m_xLogger = doubleLogger(level, join(leaf, "x"));
             m_vLogger = doubleLogger(level, join(leaf, "v"));
         }
 
-        public void log(Supplier<ModelR1> vals) {
+        public void log(Supplier<StateR1> vals) {
             if (!allow(m_level))
                 return;
-            ModelR1 val = vals.get();
+            StateR1 val = vals.get();
             m_xLogger.log(() -> val.x());
             m_vLogger.log(val::v);
         }
@@ -842,35 +842,35 @@ public class LoggerFactory {
         return new VelocityControlSE2Logger(level, leaf);
     }
 
-    public ModelR1Logger ModelR1Logger(Level level, String leaf) {
-        return new ModelR1Logger(level, leaf);
+    public StateR1Logger StateR1Logger(Level level, String leaf) {
+        return new StateR1Logger(level, leaf);
     }
 
-    public class ModelSE2Logger {
+    public class StateSE2Logger {
         private final Level m_level;
-        private final ModelR1Logger m_xLogger;
-        private final ModelR1Logger m_yLogger;
-        private final ModelR1Logger m_thetaLogger;
+        private final StateR1Logger m_xLogger;
+        private final StateR1Logger m_yLogger;
+        private final StateR1Logger m_thetaLogger;
 
-        ModelSE2Logger(Level level, String leaf) {
+        StateSE2Logger(Level level, String leaf) {
             m_level = level;
-            m_xLogger = ModelR1Logger(level, join(leaf, "x"));
-            m_yLogger = ModelR1Logger(level, join(leaf, "y"));
-            m_thetaLogger = ModelR1Logger(level, join(leaf, "theta"));
+            m_xLogger = StateR1Logger(level, join(leaf, "x"));
+            m_yLogger = StateR1Logger(level, join(leaf, "y"));
+            m_thetaLogger = StateR1Logger(level, join(leaf, "theta"));
         }
 
-        public void log(Supplier<ModelSE2> vals) {
+        public void log(Supplier<StateSE2> vals) {
             if (!allow(m_level))
                 return;
-            ModelSE2 val = vals.get();
+            StateSE2 val = vals.get();
             m_xLogger.log(val::x);
             m_yLogger.log(val::y);
             m_thetaLogger.log(val::theta);
         }
     }
 
-    public ModelSE2Logger modelSE2Logger(Level level, String leaf) {
-        return new ModelSE2Logger(level, leaf);
+    public StateSE2Logger StateSE2Logger(Level level, String leaf) {
+        return new StateSE2Logger(level, leaf);
     }
 
     public class SwerveModulePosition100Logger {
@@ -1144,7 +1144,7 @@ public class LoggerFactory {
 
     public class SwerveStateLogger {
         private final Level m_level;
-        private final ModelSE2Logger m_model;
+        private final StateSE2Logger m_model;
         private final IsotropicNoiseSE2Logger m_noise;
         private final SwerveModulePositionsLogger m_positions;
         private final Rotation2dLogger m_gyroYaw;
@@ -1152,7 +1152,7 @@ public class LoggerFactory {
 
         SwerveStateLogger(Level level, String leaf) {
             m_level = level;
-            m_model = modelSE2Logger(level, join(leaf, "model"));
+            m_model = StateSE2Logger(level, join(leaf, "model"));
             m_noise = isotropicNoiseSE2Logger(level, join(leaf, "noise"));
             m_positions = swerveModulePositionsLogger(level, join(leaf, "positions"));
             m_gyroYaw = rotation2dLogger(level, join(leaf, "gyro yaw (rad)"));

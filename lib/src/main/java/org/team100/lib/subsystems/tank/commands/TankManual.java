@@ -52,7 +52,6 @@ public class TankManual extends Command {
         m_drive.setVelocity(setpoint.getFirst(), setpoint.getSecond());
     }
 
-    /** TODO: move to the control class */
     private Pair<ChassisVelocities, ChassisAcceleration> getSpeed() {
         double translationM_S = MathUtil.applyDeadband(m_translation.getAsDouble(), 0.1) * m_maxV;
         double rotationRad_S = MathUtil.applyDeadband(m_rotation.getAsDouble(), 0.1) * m_maxOmega;
@@ -66,8 +65,6 @@ public class TankManual extends Command {
      * on chassis speed, using a constant DT.
      * 
      * This acceleration includes centrifugal force.
-     * 
-     * TODO: move to the control class
      */
     private ChassisAcceleration accel(ChassisVelocities speed) {
         ChassisAcceleration a = ChassisAcceleration.diff(

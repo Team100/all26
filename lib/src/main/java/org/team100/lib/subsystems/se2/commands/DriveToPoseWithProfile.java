@@ -9,7 +9,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.Pose2dLogger;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.reference.se2.ProfileReferenceSE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.se2.commands.helper.VelocityReferenceControllerSE2;
 
@@ -49,7 +49,7 @@ public class DriveToPoseWithProfile extends MoveAndHold {
         Pose2d goal = m_goal.get();
         m_log_goal.log(() -> goal);
         m_reference = new ProfileReferenceSE2(m_log, m_profile, "embark");
-        m_reference.setGoal(new ModelSE2(goal));
+        m_reference.setGoal(new StateSE2(goal));
         m_referenceController = new VelocityReferenceControllerSE2(
                 m_log, m_drive, m_controller, m_reference);
     }

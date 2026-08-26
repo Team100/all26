@@ -6,7 +6,7 @@ import org.team100.lib.geometry.six_dof.SixDofConfig;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.WPITrapezoidProfileR1;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.subsystems.six_dof.SixDofArm;
 import org.team100.lib.util.StrUtil;
 import org.wpilib.math.geometry.Pose3d;
@@ -35,7 +35,7 @@ public class MoveWithProfile extends MoveAndHold {
 
     private ControlR1 m_setpoint;
     // for now this is always 1.
-    private ModelR1 m_profileGoal;
+    private StateR1 m_profileGoal;
 
     /**
      * @param arm
@@ -59,7 +59,7 @@ public class MoveWithProfile extends MoveAndHold {
             throw new IllegalArgumentException(
                     "infeasible goal: " + StrUtil.poseStr(m_goal));
         m_setpoint = new ControlR1();
-        m_profileGoal = new ModelR1(1, 0);
+        m_profileGoal = new StateR1(1, 0);
     }
 
     @Override

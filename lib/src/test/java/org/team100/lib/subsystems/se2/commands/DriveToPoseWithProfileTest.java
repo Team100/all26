@@ -8,7 +8,7 @@ import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.profile.se2.HolonomicProfile;
 import org.team100.lib.profile.se2.HolonomicProfileFactory;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.se2.MockSubsystemSE2;
 import org.team100.lib.testing.Timeless;
 
@@ -24,7 +24,7 @@ import org.wpilib.command2.Command;
 public class DriveToPoseWithProfileTest implements Timeless {
     private static final boolean DEBUG = false;
     LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
-    MockSubsystemSE2 subsystem = new MockSubsystemSE2(new ModelSE2());
+    MockSubsystemSE2 subsystem = new MockSubsystemSE2(new StateSE2());
     FullStateControllerSE2 controller = ControllerFactorySE2.test(log);
     HolonomicProfile profile = HolonomicProfileFactory.wpi(1, 1, 1, 1);
 
@@ -42,7 +42,7 @@ public class DriveToPoseWithProfileTest implements Timeless {
             System.out.println("x, y, theta");
         for (int i = 0; i < 200; ++i) {
             drive.execute();
-            subsystem.m_state = new ModelSE2(
+            subsystem.m_state = new StateSE2(
                     subsystem.m_state.pose(),
                     subsystem.m_setpoint.velocity());
             subsystem.m_state = subsystem.m_state.evolve(0.02);

@@ -264,15 +264,15 @@ public class SixDofKinematicsPoE implements SixDofKinematics {
         Pose3d eS3q3 = GeometryUtil.exp(S3, q.q3());
         Pose3d eS4q4 = GeometryUtil.exp(S4, q.q4());
         Pose3d eS5q5 = GeometryUtil.exp(S5, q.q5());
-        Pose3d eS6q6 = GeometryUtil.exp(S6, q.q6());
+        // Pose3d eS6q6 = GeometryUtil.exp(S6, q.q6());
         // exponential terms, recursively composed
         Pose3d e1 = eS1q1;
         Pose3d e2 = GeometryUtil.compose(e1, eS2q2);
         Pose3d e3 = GeometryUtil.compose(e2, eS3q3);
         Pose3d e4 = GeometryUtil.compose(e3, eS4q4);
         Pose3d e5 = GeometryUtil.compose(e4, eS5q5);
-        Pose3d e6 = GeometryUtil.compose(e5, eS6q6);
-        Pose3d tcp = GeometryUtil.compose(e6, M7);
+        // Pose3d e6 = GeometryUtil.compose(e5, eS6q6);
+        // Pose3d tcp = GeometryUtil.compose(e6, M7);
 
         // first column is just the q1 axis; Mueller calls the columns Si
         Vector<N6> JS1 = GeometryUtil.toVec(S1);
@@ -307,15 +307,15 @@ public class SixDofKinematicsPoE implements SixDofKinematics {
         Pose3d eS3q3 = GeometryUtil.exp(S3, q.q3());
         Pose3d eS4q4 = GeometryUtil.exp(S4, q.q4());
         Pose3d eS5q5 = GeometryUtil.exp(S5, q.q5());
-        Pose3d eS6q6 = GeometryUtil.exp(S6, q.q6());
+        // Pose3d eS6q6 = GeometryUtil.exp(S6, q.q6());
         // exponential terms, recursively composed
         Pose3d e1 = eS1q1;
         Pose3d e2 = GeometryUtil.compose(e1, eS2q2);
         Pose3d e3 = GeometryUtil.compose(e2, eS3q3);
         Pose3d e4 = GeometryUtil.compose(e3, eS4q4);
         Pose3d e5 = GeometryUtil.compose(e4, eS5q5);
-        Pose3d e6 = GeometryUtil.compose(e5, eS6q6);
-        Pose3d tcp = GeometryUtil.compose(e6, M7);
+        // Pose3d e6 = GeometryUtil.compose(e5, eS6q6);
+        // Pose3d tcp = GeometryUtil.compose(e6, M7);
 
         // first column is just the q1 axis; Mueller calls the columns Si
         Vector<N6> JS1 = GeometryUtil.toVec(S1);
@@ -347,7 +347,6 @@ public class SixDofKinematicsPoE implements SixDofKinematics {
 
     /**
      * Time-derivative of the end-effector Jacobian.
-     * TODO: dedupe with jdotv
      */
     Matrix<N6, N6> Jdot(SixDofConfig q, SixDofVelocity qdot) {
         // exponential terms

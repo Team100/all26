@@ -81,7 +81,6 @@ public class AdjointSE2Test {
     void test5() {
         Pose2d p = new Pose2d(1, 0, new Rotation2d());
         Matrix<N3, N3> ad = AdjointSE2.ad(p);
-        System.out.println(ad);
         Twist2d t = new Twist2d(0, 0, 1);
         Vector<N3> v = GeometryUtil.toVec(t);
         Matrix<N3, N1> v1 = ad.times(v);

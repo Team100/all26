@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 public class PIDFeedbackTest {
     private static final double DELTA = 0.001;
@@ -17,15 +17,15 @@ public class PIDFeedbackTest {
         FeedbackR1 c = new PIDFeedback(logger, 1, 0, 0, false, 0.05, 1);
 
         // zero error, zero feedback
-        double u = c.calculate(new ModelR1(), new ModelR1());
+        double u = c.calculate(new StateR1(), new StateR1());
         assertEquals(0, u, DELTA);
 
         // position error -> u
-        u = c.calculate(new ModelR1(0, 0), new ModelR1(1, 0));
+        u = c.calculate(new StateR1(0, 0), new StateR1(1, 0));
         assertEquals(1, u, DELTA);
 
         // this controller ignores velocity
-        u = c.calculate(new ModelR1(0, 0), new ModelR1(0, 1));
+        u = c.calculate(new StateR1(0, 0), new StateR1(0, 1));
         assertEquals(0, u, DELTA);
     }
 }

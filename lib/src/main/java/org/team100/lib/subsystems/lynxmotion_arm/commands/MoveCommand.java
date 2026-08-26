@@ -6,7 +6,7 @@ import org.team100.lib.geometry.lynx_arm.LynxArmPose;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.WPITrapezoidProfileR1;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.subsystems.lynxmotion_arm.LynxArm;
 import org.team100.lib.util.StrUtil;
 import org.wpilib.command2.Command;
@@ -26,7 +26,7 @@ public class MoveCommand extends Command {
     private final ProfileR1 m_profile;
 
     private ControlR1 m_setpoint;
-    private ModelR1 m_profileGoal;
+    private StateR1 m_profileGoal;
 
     private Pose3d m_start;
     private double m_grip;
@@ -50,7 +50,7 @@ public class MoveCommand extends Command {
         // this doesn't work for twist-only moves without the minimum
         m_distance = Math.max(0.01, m_start.getTranslation().getDistance(m_goal.getTranslation()));
         m_setpoint = new ControlR1();
-        m_profileGoal = new ModelR1(m_distance, 0);
+        m_profileGoal = new StateR1(m_distance, 0);
         m_done = false;
         if (DEBUG) {
             System.out.printf("start %s\n", StrUtil.poseStr(m_start));

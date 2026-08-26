@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.state.ModelR1;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateR1;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
@@ -24,7 +24,7 @@ public class SwerveStateInterpolatorTest {
     void testInterp0() {
         // initially at rest, finally in motion.
         // what does the interpolator do?
-        ModelSE2 s0 = new ModelSE2();
+        StateSE2 s0 = new StateSE2();
         IsotropicNoiseSE2 n0 = IsotropicNoiseSE2.fromStdDev(1, 1);
         SwerveModulePositions p0 = new SwerveModulePositions(
                 new SwerveModulePosition100(0, Optional.empty()),
@@ -35,7 +35,7 @@ public class SwerveStateInterpolatorTest {
         VariableR1 gyroBias = VariableR1.fromVariance(0, 0.001);
         SwerveState r0 = new SwerveState(s0, n0, p0, gyroYaw0, gyroBias);
 
-        ModelSE2 s1 = new ModelSE2(new ModelR1(), new ModelR1(), new ModelR1(1, 1));
+        StateSE2 s1 = new StateSE2(new StateR1(), new StateR1(), new StateR1(1, 1));
         IsotropicNoiseSE2 n1 = IsotropicNoiseSE2.fromStdDev(1, 1);
 
         SwerveModulePositions p1 = new SwerveModulePositions(
@@ -81,7 +81,7 @@ public class SwerveStateInterpolatorTest {
 
     @Test
     void testInterp1() {
-        ModelSE2 s0 = new ModelSE2();
+        StateSE2 s0 = new StateSE2();
         IsotropicNoiseSE2 n0 = IsotropicNoiseSE2.fromStdDev(1, 1);
         // initally driving straight
         SwerveModulePositions p0 = new SwerveModulePositions(
@@ -94,7 +94,7 @@ public class SwerveStateInterpolatorTest {
         SwerveState r0 = new SwerveState(
                 s0, n0, p0, gyroYaw0, gyroBias);
 
-        ModelSE2 s1 = new ModelSE2(new ModelR1(), new ModelR1(), new ModelR1(1, 1));
+        StateSE2 s1 = new StateSE2(new StateR1(), new StateR1(), new StateR1(1, 1));
         IsotropicNoiseSE2 n1 = IsotropicNoiseSE2.fromStdDev(1, 1);
         SwerveModulePositions p1 = new SwerveModulePositions(
                 new SwerveModulePosition100(Math.sqrt(2) / 4,

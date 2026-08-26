@@ -26,7 +26,7 @@ import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.sensor.gyro.Gyro;
 import org.team100.lib.sensor.gyro.SimulatedGyro;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.se2.MockSubsystemSE2;
 import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
 import org.team100.lib.subsystems.swerve.SwerveLocal;
@@ -72,7 +72,7 @@ public class DriveWithTrajectoryTest implements Timeless {
         ControllerSE2 controller = ControllerFactorySE2.test(logger);
 
         // initially at rest
-        MockSubsystemSE2 d = new MockSubsystemSE2(new ModelSE2());
+        MockSubsystemSE2 d = new MockSubsystemSE2(new StateSE2());
 
         DriveWithTrajectory c = new DriveWithTrajectory(logger, d, controller, t, viz);
 
@@ -129,7 +129,7 @@ public class DriveWithTrajectoryTest implements Timeless {
         ControllerSE2 controller = ControllerFactorySE2.test(logger);
 
         // initially at rest
-        MockSubsystemSE2 d = new MockSubsystemSE2(new ModelSE2());
+        MockSubsystemSE2 d = new MockSubsystemSE2(new StateSE2());
 
         DriveWithTrajectory c = new DriveWithTrajectory(logger, d, controller, t, viz);
         c.initialize();
@@ -138,7 +138,7 @@ public class DriveWithTrajectoryTest implements Timeless {
             stepTime();
             c.execute();
             // we have magically reached the end
-            d.m_state = new ModelSE2(new Pose2d(1, 0, Rotation2d.kZero));
+            d.m_state = new StateSE2(new Pose2d(1, 0, Rotation2d.kZero));
         }
         assertTrue(c.isDone());
 

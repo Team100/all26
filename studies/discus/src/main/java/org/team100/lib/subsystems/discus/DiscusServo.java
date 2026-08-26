@@ -48,7 +48,7 @@ public class DiscusServo extends SubsystemBase {
 
         // zeros
         // PID = 1.0, 0.0, 0.05
-        PIDConstants pid = PIDConstants.makePositionPID(0.0, 0, 0); // d = 0.12 was experimentally found
+        PIDConstants pid = PIDConstants.makePositionPID(0.5, 0, 0.05); // d = 0.12 was experimentally found
         Friction friction = new Friction(0.15, 0.14, 0, 0);
         ProfileR1 profile = new TrapezoidProfileR1(
                 MAX_VELOCITY, MAX_ACCEL, POSITION_TOLERANCE);
@@ -97,7 +97,7 @@ public class DiscusServo extends SubsystemBase {
     }
 
     public double getPosition() {
-        return m_servo.getWrappedPositionRad();
+        return m_servo.getUnwrappedPositionRad();
     }
 
     @Override

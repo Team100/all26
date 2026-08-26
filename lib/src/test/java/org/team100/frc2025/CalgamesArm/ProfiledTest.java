@@ -1,5 +1,7 @@
 package org.team100.frc2025.CalgamesArm;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.prr.PRRConfig;
 import org.team100.lib.kinematics.prr.PRRKinematics;
@@ -7,7 +9,7 @@ import org.team100.lib.kinematics.prr.PRRKinematics.Solver;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
@@ -36,9 +38,9 @@ public class ProfiledTest {
         // floor pick position
         PRRConfig goal = new PRRConfig(0, -3 * Math.PI / 4, Math.PI / 4);
 
-        ModelR1 g1 = new ModelR1(goal.q1(), 0);
-        ModelR1 g2 = new ModelR1(goal.q2(), 0);
-        ModelR1 g3 = new ModelR1(goal.q3(), 0);
+        StateR1 g1 = new StateR1(goal.q1(), 0);
+        StateR1 g2 = new StateR1(goal.q2(), 0);
+        StateR1 g3 = new StateR1(goal.q3(), 0);
         ProfileR1 p1 = new TrapezoidProfileR1(1, 1, 0.05);
         ProfileR1 p2 = new TrapezoidProfileR1(1, 1, 0.05);
         ProfileR1 p3 = new TrapezoidProfileR1(1, 1, 0.05);
@@ -90,13 +92,15 @@ public class ProfiledTest {
         // home position
         PRRConfig start = new PRRConfig(0, 0, 0);
 
-        Pose2d pL4 = new Pose2d(1.9, 0.5, new Rotation2d(150));
+        Pose2d pL4 = new Pose2d(1.9, 0.5, Rotation2d.fromDegrees(150));
         // floor pick position
-        PRRConfig goal = k.inverse(pL4);
+        List<PRRConfig> goals = k.inverse(pL4);
+        // for now use the first one
+        PRRConfig goal = goals.get(0);
 
-        ModelR1 g1 = new ModelR1(goal.q1(), 0);
-        ModelR1 g2 = new ModelR1(goal.q2(), 0);
-        ModelR1 g3 = new ModelR1(goal.q3(), 0);
+        StateR1 g1 = new StateR1(goal.q1(), 0);
+        StateR1 g2 = new StateR1(goal.q2(), 0);
+        StateR1 g3 = new StateR1(goal.q3(), 0);
         ProfileR1 p1 = new TrapezoidProfileR1(1, 1, 0.05);
         ProfileR1 p2 = new TrapezoidProfileR1(1, 1, 0.05);
         ProfileR1 p3 = new TrapezoidProfileR1(1, 1, 0.05);
@@ -137,17 +141,19 @@ public class ProfiledTest {
     void l4ToHome() {
 
         PRRKinematics k = new PRRKinematics(0.5, 0.343, Solver.ANALYTIC);
-        Pose2d pL4 = new Pose2d(1.9, 0.5, new Rotation2d(150));
+        Pose2d pL4 = new Pose2d(1.9, 0.5, Rotation2d.fromDegrees(150));
 
         // home position
-        PRRConfig start = k.inverse(pL4);
+        List<PRRConfig> starts = k.inverse(pL4);
+        // for now use the first one
+        PRRConfig start = starts.get(0);
 
         // floor pick position
         PRRConfig goal = new PRRConfig(0, 0, 0);
 
-        ModelR1 g1 = new ModelR1(goal.q1(), 0);
-        ModelR1 g2 = new ModelR1(goal.q2(), 0);
-        ModelR1 g3 = new ModelR1(goal.q3(), 0);
+        StateR1 g1 = new StateR1(goal.q1(), 0);
+        StateR1 g2 = new StateR1(goal.q2(), 0);
+        StateR1 g3 = new StateR1(goal.q3(), 0);
         ProfileR1 p1 = new TrapezoidProfileR1(1, 1, 0.05);
         ProfileR1 p2 = new TrapezoidProfileR1(1, 1, 0.05);
         ProfileR1 p3 = new TrapezoidProfileR1(1, 1, 0.05);

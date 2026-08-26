@@ -2,7 +2,7 @@ package org.team100.lib.subsystems.test;
 
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 
@@ -49,8 +49,8 @@ public class OffsetDrivetrainWithBoost implements VelocitySubsystemSE2 {
     }
 
     @Override
-    public ModelSE2 getState() {
-        return new ModelSE2(toolpointPose(), toolpointVelocity());
+    public StateSE2 getState() {
+        return new StateSE2(toolpointPose(), toolpointVelocity());
     }
 
     /**

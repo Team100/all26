@@ -181,8 +181,6 @@ public abstract class SwerveModule100 implements Player {
      * Turning servo commands compute the velocity based on the previous desired
      * angle.
      * 
-     * TODO: implement force
-     * 
      * @param nextWrapped for now+dt, i.e. "next"
      * @param effort      force and slip angle from dynamics
      */
@@ -239,8 +237,6 @@ public abstract class SwerveModule100 implements Player {
         // regulate the impact on the battery. This will induce some delay,
         // and controller error, but it's not bad: it's using the actual
         // constraint (current) instead of a proxy (profile acceleration).
-        //
-        // TODO: implement torque.
         //
         m_steer.setWrappedPosition(nextWrappedAngle.getRadians(), omega, 0);
 

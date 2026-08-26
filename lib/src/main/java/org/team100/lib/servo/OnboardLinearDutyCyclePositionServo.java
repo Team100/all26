@@ -12,7 +12,7 @@ import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 /**
  * Position control using duty cycle feature of linear mechanism
@@ -41,7 +41,7 @@ public class OnboardLinearDutyCyclePositionServo implements LinearPositionServo 
     private final DoubleLogger m_log_velocity_error;
 
     /** Null if there's no current profile. */
-    private ModelR1 m_goal;
+    private StateR1 m_goal;
     private ControlR1 m_setpoint;
 
     public OnboardLinearDutyCyclePositionServo(
@@ -96,7 +96,7 @@ public class OnboardLinearDutyCyclePositionServo implements LinearPositionServo 
     @Override
     public void setPositionProfiled(double goalM) {
         m_log_goal.log(() -> goalM);
-        final ModelR1 goal = new ModelR1(goalM, 0);
+        final StateR1 goal = new StateR1(goalM, 0);
 
         if (!goal.near(m_goal, POSITION_TOLERANCE, VELOCITY_TOLERANCE)) {
             m_goal = goal;
@@ -132,7 +132,7 @@ public class OnboardLinearDutyCyclePositionServo implements LinearPositionServo 
 
         final double position = getPosition();
         final double velocity = getVelocity();
-        final ModelR1 measurement = new ModelR1(position, velocity);
+        final StateR1 measurement = new StateR1(position, velocity);
 
         final double u_FF = m_kV * m_setpoint.v() + m_kT * t.f();
         final double u_FB = m_feedback.calculate(measurement, setpoints.current().model());

@@ -5,7 +5,7 @@ import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.reference.se2.ConstantReferenceSE2;
 import org.team100.lib.reference.se2.ReferenceSE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.se2.commands.helper.VelocityReferenceControllerSE2;
 
@@ -31,7 +31,7 @@ public class DriveToStateSimple extends MoveAndHold {
             LoggerFactory parent,
             ControllerSE2 controller,
             VelocitySubsystemSE2 drive,
-            ModelSE2 goal) {
+            StateSE2 goal) {
         m_log = parent.type(this);
         m_controller = controller;
         m_drive = drive;

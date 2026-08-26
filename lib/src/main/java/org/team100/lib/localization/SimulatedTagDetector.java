@@ -13,7 +13,7 @@ import org.team100.lib.camera.Camera;
 import org.team100.lib.camera.Offset;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.geometry.Metrics;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VisionNoise;
 import org.wpilib.driverstation.Alliance;
@@ -73,7 +73,7 @@ public class SimulatedTagDetector {
 
     private final List<Camera> m_cameras;
     private final AprilTagFieldLayoutWithCorrectOrientation m_layout;
-    private final DoubleFunction<ModelSE2> m_history;
+    private final DoubleFunction<StateSE2> m_history;
 
     private final Map<Camera, StructArrayPublisher<Blip>> m_publishers;
     /** client instance, not the default */
@@ -89,7 +89,7 @@ public class SimulatedTagDetector {
     public SimulatedTagDetector(
             List<Camera> cameras,
             AprilTagFieldLayoutWithCorrectOrientation layout,
-            DoubleFunction<ModelSE2> history) {
+            DoubleFunction<StateSE2> history) {
         m_cameras = cameras;
         m_layout = layout;
         m_history = history;

@@ -17,11 +17,11 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.EnumLogger;
-import org.team100.lib.logging.LoggerFactory.ModelSE2Logger;
+import org.team100.lib.logging.LoggerFactory.StateSE2Logger;
 import org.team100.lib.logging.LoggerFactory.VelocityControlSE2Logger;
 import org.team100.lib.music.Music;
 import org.team100.lib.music.Player;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
@@ -44,10 +44,10 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
     private final SwerveLocal m_swerveLocal;
 
     // CACHE
-    private final ObjectCache<ModelSE2> m_stateCache;
+    private final ObjectCache<StateSE2> m_stateCache;
 
     // LOGGERS
-    private final ModelSE2Logger m_log_state;
+    private final StateSE2Logger m_log_state;
     private final DoubleArrayLogger m_log_pose_array;
     private final EnumLogger m_log_skill;
     private final VelocityControlSE2Logger m_log_input;
@@ -65,7 +65,7 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
         m_odometryUpdater = odometryUpdater;
         m_swerveLocal = swerveLocal;
         m_stateCache = Cache.of(this::update);
-        m_log_state = log.modelSE2Logger(Level.COMP, "state");
+        m_log_state = log.StateSE2Logger(Level.COMP, "state");
         m_log_pose_array = log.doubleArrayLogger(Level.COMP, "pose array");
         m_log_skill = log.enumLogger(Level.TRACE, "skill level");
         m_log_input = log.velocityControlSE2Logger(Level.TRACE, "drive input");
@@ -89,9 +89,9 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
         // Actuation is constant for the whole control period, which means
         // that to calculate robot-relative speed from field-relative speed,
         // we need to use the robot rotation *at the future time*.
-        ModelSE2 currentState = getState();
+        StateSE2 currentState = getState();
         // Note this may add a bit of noise.
-        ModelSE2 nextState = currentState.evolve(TimedRobot100.LOOP_PERIOD_S);
+        StateSE2 nextState = currentState.evolve(TimedRobot100.LOOP_PERIOD_S);
         Rotation2d nextTheta = nextState.rotation();
         // is there noise here?
         m_log_rotation_evolution.log(
@@ -152,7 +152,7 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
      * acceleration.
      */
     @Override
-    public ModelSE2 getState() {
+    public StateSE2 getState() {
         return m_stateCache.get();
     }
 
@@ -277,10 +277,10 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
      * Compute the current state. This is a fairly heavyweight thing to do, so it
      * should be cached (thus refreshed once per cycle).
      */
-    private ModelSE2 update() {
+    private StateSE2 update() {
         double now = Takt.get();
         SwerveModulePositions positions = m_swerveLocal.positions();
-        ModelSE2 swerveModel = m_estimate.apply(now);
+        StateSE2 swerveModel = m_estimate.apply(now);
         if (DEBUG) {
             System.out.printf("update() positions %s estimated pose: %s\n", positions, swerveModel);
         }

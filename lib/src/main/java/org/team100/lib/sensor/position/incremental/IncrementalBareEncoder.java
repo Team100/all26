@@ -26,15 +26,6 @@ public interface IncrementalBareEncoder {
     double getVelocityRad_S();
 
     /**
-     * Resets position to zero.
-     *
-     * Caches should also be flushed, so the new value is available immediately.
-     * 
-     * // TODO: I think this is unnecessary.
-     */
-    // void reset();
-
-    /**
      * Releases the encoder resource, if necessary (e.g. HAL ports).
      */
     void close();

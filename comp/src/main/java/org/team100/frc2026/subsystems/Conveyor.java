@@ -28,7 +28,6 @@ public class Conveyor extends SubsystemBase {
     private static final double TOLERANCE_M_S = 1;
     private static final double GEAR_RATIO = 3;
     private static final double WHEEL_DIAMETER_M = 0.035;
-    // TODO: TUNE
     private static final double NORMAL_SPEED = 5.0;
 
     private final OutboardLinearVelocityServo m_servo1;

@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
@@ -73,10 +73,10 @@ class Math100Test {
     @Test
     void testBasic0() {
         // Given two states, find the acceleration between them.
-        ModelSE2 s0 = new ModelSE2(
+        StateSE2 s0 = new StateSE2(
                 new Pose2d(0, 0, new Rotation2d(0)),
                 new VelocitySE2(0, 0, 0));
-        ModelSE2 s1 = new ModelSE2(
+        StateSE2 s1 = new StateSE2(
                 new Pose2d(1, 0, new Rotation2d(0)),
                 new VelocitySE2(1, 0, 0));
         AccelerationSE2 a = new AccelerationSE2(
@@ -96,10 +96,10 @@ class Math100Test {
     @Test
     void testBasic1() {
         // This case makes no sense.
-        ModelSE2 s0 = new ModelSE2(
+        StateSE2 s0 = new StateSE2(
                 new Pose2d(0, 0, new Rotation2d(0)),
                 new VelocitySE2(0, 0, 0));
-        ModelSE2 s1 = new ModelSE2(
+        StateSE2 s1 = new StateSE2(
                 new Pose2d(1, 0, new Rotation2d(0)), // <<< positive position
                 new VelocitySE2(-1, 0, 0)); // <<< negative velocity
         AccelerationSE2 a = new AccelerationSE2(

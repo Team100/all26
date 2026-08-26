@@ -14,7 +14,7 @@ import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.geometry.se2.WaypointSE2;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.path.se2.PathSE2Point;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
@@ -143,7 +143,7 @@ class TrajectorySE2PlannerTest implements Timeless {
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
-        ModelSE2 start = new ModelSE2(Pose2d.kZero, new VelocitySE2(0, 0, 0));
+        StateSE2 start = new StateSE2(Pose2d.kZero, new VelocitySE2(0, 0, 0));
         Pose2d end = new Pose2d(1, 0, Rotation2d.kZero);
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         TrajectorySE2 trajectory = ex.restToRest(start.pose(), end);
@@ -174,7 +174,7 @@ class TrajectorySE2PlannerTest implements Timeless {
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
-        ModelSE2 start = new ModelSE2(Pose2d.kZero, new VelocitySE2(1, 0, 0));
+        StateSE2 start = new StateSE2(Pose2d.kZero, new VelocitySE2(1, 0, 0));
         Pose2d end = new Pose2d(1, 0, Rotation2d.kZero);
 
         VelocitySE2 startVelocity = start.velocity();
@@ -219,7 +219,7 @@ class TrajectorySE2PlannerTest implements Timeless {
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
-        ModelSE2 start = new ModelSE2(Pose2d.kZero, new VelocitySE2(0, 1, 0));
+        StateSE2 start = new StateSE2(Pose2d.kZero, new VelocitySE2(0, 1, 0));
         Pose2d end = new Pose2d(1, 0, Rotation2d.kZero);
         VelocitySE2 startVelocity = start.velocity();
 

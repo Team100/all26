@@ -118,9 +118,14 @@ class Blobs(ColorAnalysis):
             
             low_y = 600
 
-            #reject if object is below a y value
             if low_y < cY:
                 continue
+
+
+                    
+                    
+
+                    
 
             # Calculates how big the object is based on how far (high in the image) it is.
             min_area = 100
@@ -152,8 +157,12 @@ class Blobs(ColorAnalysis):
                 rotation = Rotation3d(initial=initial, final=final)
                 
                 targets.append(Target(int(servertime), rotation, range1))
+
+
                 if img_display is not None:
                     DisplayUtil.note(img_display, c, orig_cX, orig_cY)
+
+            
 
             # only send if there's anything to say
             self._targets.send(targets)

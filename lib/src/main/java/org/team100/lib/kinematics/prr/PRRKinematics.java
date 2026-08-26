@@ -1,5 +1,7 @@
 package org.team100.lib.kinematics.prr;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 import org.team100.lib.geometry.GeometryUtil;
@@ -10,7 +12,7 @@ import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.optimization.NumericalJacobian100;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -111,30 +113,50 @@ public class PRRKinematics {
                 Jdot.times(qdot.toVector()).plus(J.times(qddot.toVector())));
     }
 
-    /** Distance from shoulder pivot to wrist pivot. */
-    public double armX(Translation2d wrist) {
+    /**
+     * X distance from shoulder pivot to wrist pivot.
+     * 
+     * There are two solutions here, "arm up" and "arm down".
+     */
+    public List<Double> armX(Translation2d wrist) {
         double d = l2 * l2 - wrist.getY() * wrist.getY();
         if (d < 0) {
-            // Arm is horizontal.
-            return 0;
+            // Infeasible.
+            return List.of();
         }
-        return Math.sqrt(d);
+        if (d > 0) {
+            // There are two solutions.
+            double armX = Math.sqrt(d);
+            return List.of(armX, -armX);
+        }
+        // Arm is horizontal.
+        return List.of(0.0);
+
     }
 
     /**
      * Inverse position kinematics: joint config from cartesian pose.
      * 
-     * TODO: return a list here.
+     * This can yield zero (infeasible pose), one (arm straight out), or two ("arm
+     * up" and "arm down") solutions.
      */
-    public PRRConfig inverse(Pose2d pose) {
+    public List<PRRConfig> inverse(Pose2d pose) {
         /** Translation from wrist axis to tool point. */
         Translation2d wristToTip = new Translation2d(l3, pose.getRotation());
 
         /** Location of wrist axis. */
         Translation2d wrist = pose.getTranslation().minus(wristToTip);
 
+        List<PRRConfig> results = new ArrayList<>();
+        for (Double x : armX(wrist)) {
+            results.add(getResult(pose, wrist, x));
+        }
+        return results;
+    }
+
+    private PRRConfig getResult(Pose2d pose, Translation2d wrist, double armX) {
         /** Translation from shoulder axis to wrist axis. */
-        Translation2d shoulderToWrist = new Translation2d(armX(wrist), wrist.getY());
+        Translation2d shoulderToWrist = new Translation2d(armX, wrist.getY());
 
         /** Location of shoulder axis. */
         Translation2d shoulder = wrist.minus(shoulderToWrist);
@@ -145,10 +167,11 @@ public class PRRKinematics {
         /** Wrist angle from arm to tool point. */
         Rotation2d wristAngle = pose.getRotation().minus(shoulderToWrist.getAngle());
 
-        return new PRRConfig(
+        PRRConfig result = new PRRConfig(
                 shoulder.getX(),
                 shoulderAngle.getRadians(),
                 wristAngle.getRadians());
+        return result;
     }
 
     /**
@@ -158,10 +181,8 @@ public class PRRKinematics {
      * 
      * See README.md equation 5
      */
-    public PRRVelocity inverse(ModelSE2 m) {
-        Pose2d x = m.pose();
+    public PRRVelocity inverse(PRRConfig q, StateSE2 m) {
         VelocitySE2 xdot = m.velocity();
-        PRRConfig q = inverse(x);
         Matrix<N3, N3> Jinv = Jinv(q);
         return PRRVelocity.fromVector(Jinv.times(xdot.toVector()));
     }
@@ -174,11 +195,9 @@ public class PRRKinematics {
      * 
      * See doc/README.md equation 9
      */
-    public PRRAcceleration inverse(ControlSE2 m) {
-        Pose2d x = m.pose();
+    public PRRAcceleration inverse(PRRConfig q, ControlSE2 m) {
         VelocitySE2 xdot = m.velocity();
         AccelerationSE2 xddot = m.acceleration();
-        PRRConfig q = inverse(x);
         Matrix<N3, N3> Jinv = Jinv(q);
         PRRVelocity qdot = PRRVelocity.fromVector(Jinv.times(xdot.toVector()));
         Matrix<N3, N3> Jdot = Jdot(q, qdot);

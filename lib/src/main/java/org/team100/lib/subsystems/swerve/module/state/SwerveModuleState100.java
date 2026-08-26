@@ -13,8 +13,6 @@ import org.wpilib.util.struct.StructSerializable;
  * This class is used both for measurement and for control; in the control case,
  * the angle can be empty, in case the velocity is ~zero: in that case, there's
  * no requirement on the angle.
- * 
- * TODO: add force
  */
 public class SwerveModuleState100 implements Comparable<SwerveModuleState100>, StructSerializable {
     public static SwerveModuleState100 ZERO = new SwerveModuleState100();

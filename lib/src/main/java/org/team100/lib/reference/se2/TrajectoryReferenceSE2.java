@@ -7,9 +7,9 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.ControlSE2Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.logging.LoggerFactory.ModelSE2Logger;
+import org.team100.lib.logging.LoggerFactory.StateSE2Logger;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.trajectory.se2.TrajectorySE2;
 import org.team100.lib.trajectory.se2.TrajectorySE2Entry;
 import org.team100.lib.trajectory.se2.TrajectorySE2Point;
@@ -18,10 +18,10 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Point;
 public class TrajectoryReferenceSE2 implements ReferenceSE2 {
     private final LoggerFactory m_log;
     private final TrajectorySE2 m_trajectory;
-    private final ModelSE2Logger m_log_current;
+    private final StateSE2Logger m_log_current;
     private final ControlSE2Logger m_log_next;
     private final BooleanLogger m_log_done;
-    private final ModelSE2Logger m_log_goal;
+    private final StateSE2Logger m_log_goal;
     private final DoubleLogger m_log_progress;
     private double m_startTimeS;
 
@@ -31,21 +31,21 @@ public class TrajectoryReferenceSE2 implements ReferenceSE2 {
         m_log = parent.type(this);
         m_trajectory = trajectory;
         m_log_progress = m_log.doubleLogger(Level.TRACE, "progress");
-        m_log_current = m_log.modelSE2Logger(Level.TRACE, "current");
+        m_log_current = m_log.StateSE2Logger(Level.TRACE, "current");
         m_log_next = m_log.controlSE2Logger(Level.TRACE, "next");
         m_log_done = m_log.booleanLogger(Level.TRACE, "done");
-        m_log_goal = m_log.modelSE2Logger(Level.TRACE, "goal");
+        m_log_goal = m_log.StateSE2Logger(Level.TRACE, "goal");
     }
 
     /** Ignores the measurement, resets the trajectory timer. */
     @Override
-    public void initialize(ModelSE2 measurement) {
+    public void initialize(StateSE2 measurement) {
         m_startTimeS = Takt.get();
     }
 
     @Override
-    public ModelSE2 current() {
-        ModelSE2 current = sample(progress()).model();
+    public StateSE2 current() {
+        StateSE2 current = sample(progress()).model();
         m_log_current.log(() -> current);
         return current;
     }
@@ -65,10 +65,10 @@ public class TrajectoryReferenceSE2 implements ReferenceSE2 {
     }
 
     @Override
-    public ModelSE2 goal() {
+    public StateSE2 goal() {
         TrajectorySE2Entry entry = m_trajectory.getLastPoint();
         TrajectorySE2Point point = entry.point();
-        ModelSE2 goal = point.control().model();
+        StateSE2 goal = point.control().model();
         m_log_goal.log(() -> goal);
         return goal;
     }

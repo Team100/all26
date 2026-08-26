@@ -98,8 +98,8 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
      * \dot{x} = J(q) \dot{q}
      */
     public VelocitySE3 forward(SixDofConfig q, SixDofVelocity qdot) {
+        // use POE if you want this
         return null;
-        // TODO: finish this
     }
 
     /**
@@ -161,19 +161,19 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
 
     @Override
     public AccelerationSE3 forward(SixDofConfig q, SixDofVelocity qdot, SixDofAcceleration qddot) {
-        // TODO: finish this
+        // use POE if you want this
         return null;
     }
 
     @Override
     public SixDofVelocity inverse(SixDofConfig q, VelocitySE3 xdot) {
-        // TODO: finish this
+        // use POE if you want this
         return null;
     }
 
     @Override
     public SixDofAcceleration inverse(SixDofConfig q, VelocitySE3 xdot, AccelerationSE3 xddot) {
-        // TODO: finish this
+        // use POE if you want this
         return null;
     }
 

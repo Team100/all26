@@ -13,6 +13,7 @@ import org.wpilib.math.numbers.N2;
  * @param q2dot velocity of q2, rad/s
  */
 public record RRVelocity(double q1dot, double q2dot) {
+
     public static RRVelocity fromVector(Vector<N2> v) {
         return new RRVelocity(v.get(0), v.get(1));
     }
@@ -23,5 +24,9 @@ public record RRVelocity(double q1dot, double q2dot) {
 
     public Vector<N2> toVector() {
         return VecBuilder.fill(q1dot, q2dot);
+    }
+
+    public double norm() {
+        return Math.sqrt(RRConfig.s1 * q1dot * q1dot + RRConfig.s2 * q2dot * q2dot);
     }
 }

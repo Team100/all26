@@ -73,7 +73,7 @@ public class DriveBargeAssist extends Command {
     public void initialize() {
         m_heedRadiusM.accept(HEED_RADIUS_M);
         // make sure the limiter knows what we're doing
-        m_limiter.updateSetpoint(new VelocityControlSE2(m_drive.getVelocity()));
+        m_limiter.updateSetpoint(m_drive.getVelocity());
 
     }
 
@@ -98,7 +98,7 @@ public class DriveBargeAssist extends Command {
 
         Velocity avoidBarge = avoidBarge(clipped);
 
-        VelocityControlSE2 scaled = VelocityControlSE2.scale(
+        VelocitySE2 scaled = VelocitySE2.scale(
                 avoidBarge,
                 m_swerveKinodynamics.getMaxDriveVelocityM_S(),
                 m_swerveKinodynamics.getMaxAngleSpeedRad_S());
@@ -112,7 +112,7 @@ public class DriveBargeAssist extends Command {
         }
 
         // Compute field-relative accel from backwards finite difference.
-        VelocitySE2 v = scaled.velocity();
+        VelocitySE2 v = scaled;
         // Because this is field-relative, there is no centrifugal force.
         AccelerationSE2 a = v.accel(m_v, TimedRobot100.LOOP_PERIOD_S);
         m_v = v;

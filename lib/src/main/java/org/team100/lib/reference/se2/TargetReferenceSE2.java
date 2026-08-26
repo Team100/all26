@@ -8,8 +8,8 @@ import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.geometry.r2.StateR2;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelR1;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateR1;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.targeting.Solution;
 import org.team100.lib.targeting.Solver;
 
@@ -31,11 +31,11 @@ public class TargetReferenceSE2 implements ReferenceSE2 {
         m_override = override;
     }
 
-    public void initialize(ModelSE2 measurement) {
+    public void initialize(StateSE2 measurement) {
         m_delegate.initialize(measurement);
     }
 
-    public ModelSE2 current() {
+    public StateSE2 current() {
         return override(m_delegate.current());
     }
 
@@ -47,11 +47,11 @@ public class TargetReferenceSE2 implements ReferenceSE2 {
         return m_delegate.done();
     }
 
-    public ModelSE2 goal() {
+    public StateSE2 goal() {
         return m_delegate.goal();
     }
 
-    private ModelSE2 override(ModelSE2 model) {
+    private StateSE2 override(StateSE2 model) {
         if (!m_override.getAsBoolean())
             return model;
         Optional<Translation2d> oTarget = FieldConstants2026.TARGET(
@@ -63,10 +63,10 @@ public class TargetReferenceSE2 implements ReferenceSE2 {
         if (oSolution.isEmpty())
             return model;
         Solution solution = oSolution.get();
-        ModelR1 theta = new ModelR1(
+        StateR1 theta = new StateR1(
                 solution.azimuth().getRadians(),
                 solution.azimuthVelocity());
-        return new ModelSE2(model.x(), model.y(), theta);
+        return new StateSE2(model.x(), model.y(), theta);
     }
 
     private ControlSE2 override(ControlSE2 control) {

@@ -12,7 +12,7 @@ import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.logging.LoggerFactory.VelocityControlSE2Logger;
 import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.sensor.gyro.Gyro;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
@@ -90,9 +90,9 @@ public class MecanumDrive100 extends SubsystemBase implements VelocitySubsystemS
     }
 
     @Override
-    public ModelSE2 getState() {
+    public StateSE2 getState() {
         // assume the velocity is exactly what was requested.
-        return new ModelSE2(m_pose, m_input);
+        return new StateSE2(m_pose, m_input);
     }
 
     /**

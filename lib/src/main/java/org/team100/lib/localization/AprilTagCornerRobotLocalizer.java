@@ -22,7 +22,7 @@ import org.team100.lib.logging.LoggerFactory.EnumLogger;
 import org.team100.lib.logging.LoggerFactory.Pose2dLogger;
 import org.team100.lib.logging.LoggerFactory.Transform3dLogger;
 import org.team100.lib.network.CameraReader;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.uncertainty.VisionNoise;
 import org.team100.lib.util.TrailingHistory;
@@ -53,7 +53,7 @@ public class AprilTagCornerRobotLocalizer extends CameraReader<BlipWithCorners> 
     private static final double VISION_CHANGE_TOLERANCE_M = 0.25;
 
     private final PoseFromCorners m_estimator;
-    private final DoubleFunction<ModelSE2> m_history;
+    private final DoubleFunction<StateSE2> m_history;
     private final VisionUpdater m_visionUpdater;
     private final Supplier<Optional<Alliance>> m_alliance;
     private final AprilTagFieldLayoutWithCorrectOrientation m_layout;
@@ -129,7 +129,7 @@ public class AprilTagCornerRobotLocalizer extends CameraReader<BlipWithCorners> 
             LoggerFactory parent,
             LoggerFactory fieldLogger,
             AprilTagFieldLayoutWithCorrectOrientation layout,
-            DoubleFunction<ModelSE2> history,
+            DoubleFunction<StateSE2> history,
             VisionUpdater visionUpdater,
             Supplier<Optional<Alliance>> alliance) {
         super(parent, "vision", "blips_with_corners", StructBuffer.create(BlipWithCorners.struct));

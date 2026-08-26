@@ -10,7 +10,7 @@ import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.SetpointsR1Logger;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 /**
  * Extracts current and next references from an incremental profile.
@@ -23,7 +23,7 @@ public class ProfileReferenceR1 implements ReferenceR1 {
     private final Supplier<ProfileR1> m_profile;
     private final double m_positionTolerance;
     private final double m_velocityTolerance;
-    private ModelR1 m_goal;
+    private StateR1 m_goal;
     private double m_currentInstant;
     private SetpointsR1 m_currentSetpoint;
 
@@ -47,12 +47,12 @@ public class ProfileReferenceR1 implements ReferenceR1 {
     }
 
     @Override
-    public void setGoal(ModelR1 goal) {
+    public void setGoal(StateR1 goal) {
         m_goal = goal;
     }
 
     @Override
-    public void init(ModelR1 measurement) {
+    public void init(StateR1 measurement) {
         m_currentInstant = Takt.get();
         m_currentSetpoint = advance(measurement.control());
     }

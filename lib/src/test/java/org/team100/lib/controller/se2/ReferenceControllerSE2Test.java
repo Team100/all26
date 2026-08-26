@@ -18,7 +18,7 @@ import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.reference.se2.TrajectoryReferenceSE2;
 import org.team100.lib.spline.se2.SplineSE2;
 import org.team100.lib.spline.se2.SplineSE2Factory;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.se2.MockSubsystemSE2;
 import org.team100.lib.subsystems.se2.commands.helper.VelocityReferenceControllerSE2;
@@ -59,7 +59,7 @@ public class ReferenceControllerSE2Test implements Timeless {
         ControllerSE2 controller = ControllerFactorySE2.test(logger);
 
         // initially at rest
-        MockSubsystemSE2 drive = new MockSubsystemSE2(new ModelSE2());
+        MockSubsystemSE2 drive = new MockSubsystemSE2(new StateSE2());
 
         TrajectoryReferenceSE2 reference = new TrajectoryReferenceSE2(logger, t);
         VelocityReferenceControllerSE2 c = new VelocityReferenceControllerSE2(
@@ -115,7 +115,7 @@ public class ReferenceControllerSE2Test implements Timeless {
         ControllerSE2 controller = ControllerFactorySE2.test(logger);
 
         // initially at rest
-        MockSubsystemSE2 drive = new MockSubsystemSE2(new ModelSE2());
+        MockSubsystemSE2 drive = new MockSubsystemSE2(new StateSE2());
 
         TrajectoryReferenceSE2 reference = new TrajectoryReferenceSE2(logger, t);
         VelocityReferenceControllerSE2 c = new VelocityReferenceControllerSE2(
@@ -129,7 +129,7 @@ public class ReferenceControllerSE2Test implements Timeless {
             if (DEBUG)
                 System.out.printf("%s\n", drive.m_setpoint);
             // we have magically reached the end (immediately)
-            drive.m_state = new ModelSE2(new Pose2d(1, 0, Rotation2d.kZero));
+            drive.m_state = new StateSE2(new Pose2d(1, 0, Rotation2d.kZero));
         }
         assertTrue(c.isDone());
 
@@ -175,7 +175,7 @@ public class ReferenceControllerSE2Test implements Timeless {
                 0.01, 0.02,
                 0.01, 0.02);
 
-        MockSubsystemSE2 drive = new MockSubsystemSE2(new ModelSE2());
+        MockSubsystemSE2 drive = new MockSubsystemSE2(new StateSE2());
         TrajectoryReferenceSE2 reference = new TrajectoryReferenceSE2(logger, trajectory);
         VelocityReferenceControllerSE2 referenceController = new VelocityReferenceControllerSE2(
                 logger, drive, swerveController, reference);
@@ -183,28 +183,28 @@ public class ReferenceControllerSE2Test implements Timeless {
         Pose2d pose = trajectory.sample(0).point().point().waypoint().pose();
         VelocityControlSE2 velocity = VelocityControlSE2.ZERO;
 
-        double mDt = 0.02;
+        double dt = 0.02;
         int i = 0;
         while (!referenceController.isDone()) {
             if (++i > 500)
                 break;
             stepTime();
-            drive.m_state = new ModelSE2(pose, velocity.velocity());
+            drive.m_state = new StateSE2(pose, velocity.velocity());
             referenceController.execute();
             velocity = drive.m_recentSetpoint;
-            // TODO: add acceleration term here
             pose = new Pose2d(
-                    pose.getX() + velocity.x().v() * mDt,
-                    pose.getY() + velocity.y().v() * mDt,
-                    new Rotation2d(pose.getRotation().getRadians() + velocity.theta().v() * mDt));
+                    pose.getX() + velocity.x().v() * dt + velocity.x().a() * dt * dt / 2,
+                    pose.getY() + velocity.y().v() * dt + velocity.y().a() * dt * dt / 2,
+                    new Rotation2d(pose.getRotation().getRadians() + velocity.theta().v() * dt
+                            + velocity.theta().a() * dt * dt / 2));
             if (DEBUG)
                 System.out.printf("pose %s vel %s\n", pose, velocity);
         }
 
         // this should be exactly right but it's not.
-        assertEquals(195, pose.getTranslation().getX(), 1);
-        assertEquals(13, pose.getTranslation().getY(), 0.4);
-        assertEquals(0, pose.getRotation().getRadians(), 0.1);
+        assertEquals(196, pose.getTranslation().getX(), 0.001);
+        assertEquals(13, pose.getTranslation().getY(), 0.001);
+        assertEquals(0, pose.getRotation().getRadians(), 0.001);
     }
 
 }

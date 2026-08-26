@@ -5,14 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.framework.TimedRobot100;
+import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
-import org.team100.lib.state.VelocityControlSE2;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
@@ -27,66 +27,66 @@ public class SwerveLimiterTest implements Timeless {
     /** The setpoint generator never changes the field-relative course. */
     @Test
     void courseInvariant() {
-        VelocityControlSE2 target = new VelocityControlSE2(0, 0, 0);
+        VelocitySE2 target = new VelocitySE2(0, 0, 0);
         SwerveLimiter limiter = new SwerveLimiter(logger, KINEMATIC_LIMITS, () -> 12);
 
         {
             // motionless
-            VelocityControlSE2 prevSetpoint = new VelocityControlSE2(0, 0, 0);
+            VelocitySE2 prevSetpoint = new VelocitySE2(0, 0, 0);
             limiter.updateSetpoint(prevSetpoint);
-            VelocityControlSE2 setpoint = limiter.apply(target);
-            assertTrue(prevSetpoint.velocity().angle().isEmpty());
-            assertTrue(setpoint.velocity().angle().isEmpty());
+            VelocitySE2 setpoint = limiter.apply(target);
+            assertTrue(prevSetpoint.angle().isEmpty());
+            assertTrue(setpoint.angle().isEmpty());
         }
         {
             // at max speed, 45 to the left and spinning
-            VelocityControlSE2 speed = new VelocityControlSE2(2.640, 2.640, 3.733);
-            VelocityControlSE2 prevSetpoint = speed;
+            VelocitySE2 speed = new VelocitySE2(2.640, 2.640, 3.733);
+            VelocitySE2 prevSetpoint = speed;
             limiter.updateSetpoint(prevSetpoint);
-            VelocityControlSE2 setpoint = limiter.apply(target);
-            assertEquals(Math.PI / 4, prevSetpoint.velocity().angle().get().getRadians(), 1e-12);
-            assertEquals(3.733, prevSetpoint.velocity().norm(), DELTA);
-            assertEquals(3.733, prevSetpoint.theta().v(), DELTA);
-            assertEquals(Math.PI / 4, setpoint.velocity().angle().get().getRadians(), 1e-12);
-            assertEquals(3.733, setpoint.velocity().norm(), 0.2);
-            assertEquals(2.5245058924061974, setpoint.x().v(), 1e-12);
-            assertEquals(2.5206083004022424, setpoint.y().v(), 0.2);
-            assertEquals(3.733, setpoint.theta().v(), 0.2);
+            VelocitySE2 setpoint = limiter.apply(target);
+            assertEquals(Math.PI / 4, prevSetpoint.angle().get().getRadians(), 1e-12);
+            assertEquals(3.733, prevSetpoint.norm(), DELTA);
+            assertEquals(3.733, prevSetpoint.theta(), DELTA);
+            assertEquals(Math.PI / 4, setpoint.angle().get().getRadians(), 1e-12);
+            assertEquals(3.733, setpoint.norm(), 0.2);
+            assertEquals(2.5245058924061974, setpoint.x(), 1e-12);
+            assertEquals(2.5206083004022424, setpoint.y(), 0.2);
+            assertEquals(3.733, setpoint.theta(), 0.2);
         }
     }
 
     /** This is pulled from SimulatedDrivingTest, to isolate the problem. */
     @Test
     void courseInvariantRealistic() {
-        VelocityControlSE2 targetSpeed = new VelocityControlSE2(2, 0, 3.5);
+        VelocitySE2 targetSpeed = new VelocitySE2(2, 0, 3.5);
 
         // not going very fast. note the previous instantaneous robot-relative speed has
         // no "y" component at all, because at the previous time, we had heading of zero
         // (and no speed either).
-        VelocityControlSE2 prevSpeed = new VelocityControlSE2(0.16333333, 0, 0.28583333);
+        VelocitySE2 prevSpeed = new VelocitySE2(0.16333333, 0, 0.28583333);
 
         // the previous course is exactly zero: this is the first time step after
         // starting.
-        assertEquals(0, prevSpeed.velocity().angle().get().getRadians(), 1e-12);
-        assertEquals(0.16333333, prevSpeed.velocity().norm(), 1e-12);
-        assertEquals(0.28583333, prevSpeed.theta().v(), 1e-12);
+        assertEquals(0, prevSpeed.angle().get().getRadians(), 1e-12);
+        assertEquals(0.16333333, prevSpeed.norm(), 1e-12);
+        assertEquals(0.28583333, prevSpeed.theta(), 1e-12);
 
         // field-relative is +x, field-relative course is zero
 
-        assertEquals(0, targetSpeed.velocity().angle().get().getRadians(), 1e-6);
+        assertEquals(0, targetSpeed.angle().get().getRadians(), 1e-6);
         // the norm is the same as the input
-        assertEquals(2, targetSpeed.velocity().norm(), 1e-12);
-        assertEquals(2, targetSpeed.x().v(), 1e-12);
-        assertEquals(0, targetSpeed.y().v(), 1e-12);
-        assertEquals(3.5, targetSpeed.theta().v(), 1e-12);
+        assertEquals(2, targetSpeed.norm(), 1e-12);
+        assertEquals(2, targetSpeed.x(), 1e-12);
+        assertEquals(0, targetSpeed.y(), 1e-12);
+        assertEquals(3.5, targetSpeed.theta(), 1e-12);
 
         SwerveLimiter limiter = new SwerveLimiter(logger, KINEMATIC_LIMITS, () -> 12);
         limiter.updateSetpoint(prevSpeed);
-        VelocityControlSE2 setpoint = limiter.apply(targetSpeed);
+        VelocitySE2 setpoint = limiter.apply(targetSpeed);
 
-        assertEquals(0, setpoint.velocity().angle().get().getRadians(), 1e-12);
-        assertEquals(0.3266666633333334, setpoint.velocity().norm(), 1e-12);
-        assertEquals(0.5716666631110103, setpoint.theta().v(), 1e-12);
+        assertEquals(0, setpoint.angle().get().getRadians(), 1e-12);
+        assertEquals(0.3266666633333334, setpoint.norm(), 1e-12);
+        assertEquals(0.5716666631110103, setpoint.theta(), 1e-12);
 
     }
 
@@ -95,18 +95,18 @@ public class SwerveLimiterTest implements Timeless {
         SwerveKinodynamics unlimited = SwerveKinodynamicsFactory.unlimited();
         SwerveLimiter limiter = new SwerveLimiter(logger, unlimited, () -> 12);
 
-        VelocityControlSE2 target = new VelocityControlSE2(0, 0, 0);
+        VelocitySE2 target = new VelocitySE2(0, 0, 0);
 
-        assertEquals(0, target.x().v(), DELTA);
-        assertEquals(0, target.y().v(), DELTA);
-        assertEquals(0, target.theta().v(), DELTA);
+        assertEquals(0, target.x(), DELTA);
+        assertEquals(0, target.y(), DELTA);
+        assertEquals(0, target.theta(), DELTA);
 
-        VelocityControlSE2 prevSetpoint = new VelocityControlSE2(0, 0, 0);
+        VelocitySE2 prevSetpoint = new VelocitySE2(0, 0, 0);
         limiter.updateSetpoint(prevSetpoint);
-        VelocityControlSE2 setpoint = limiter.apply(target);
-        assertEquals(0, setpoint.x().v(), DELTA);
-        assertEquals(0, setpoint.y().v(), DELTA);
-        assertEquals(0, setpoint.theta().v(), DELTA);
+        VelocitySE2 setpoint = limiter.apply(target);
+        assertEquals(0, setpoint.x(), DELTA);
+        assertEquals(0, setpoint.y(), DELTA);
+        assertEquals(0, setpoint.theta(), DELTA);
 
     }
 
@@ -115,18 +115,18 @@ public class SwerveLimiterTest implements Timeless {
         SwerveKinodynamics unlimited = SwerveKinodynamicsFactory.unlimited();
         SwerveLimiter limiter = new SwerveLimiter(logger, unlimited, () -> 12);
 
-        VelocityControlSE2 target = new VelocityControlSE2(1, 0, 0);
+        VelocitySE2 target = new VelocitySE2(1, 0, 0);
 
-        assertEquals(1, target.x().v(), DELTA);
-        assertEquals(0, target.y().v(), DELTA);
-        assertEquals(0, target.theta().v(), DELTA);
+        assertEquals(1, target.x(), DELTA);
+        assertEquals(0, target.y(), DELTA);
+        assertEquals(0, target.theta(), DELTA);
 
-        VelocityControlSE2 prevSetpoint = new VelocityControlSE2(0, 0, 0);
+        VelocitySE2 prevSetpoint = new VelocitySE2(0, 0, 0);
         limiter.updateSetpoint(prevSetpoint);
-        VelocityControlSE2 setpoint = limiter.apply(target);
-        assertEquals(1, setpoint.x().v(), DELTA);
-        assertEquals(0, setpoint.y().v(), DELTA);
-        assertEquals(0, setpoint.theta().v(), DELTA);
+        VelocitySE2 setpoint = limiter.apply(target);
+        assertEquals(1, setpoint.x(), DELTA);
+        assertEquals(0, setpoint.y(), DELTA);
+        assertEquals(0, setpoint.theta(), DELTA);
 
     }
 
@@ -135,18 +135,18 @@ public class SwerveLimiterTest implements Timeless {
         SwerveKinodynamics unlimited = SwerveKinodynamicsFactory.unlimited();
         SwerveLimiter limiter = new SwerveLimiter(logger, unlimited, () -> 12);
 
-        VelocityControlSE2 target = new VelocityControlSE2(0, 0, 1);
+        VelocitySE2 target = new VelocitySE2(0, 0, 1);
 
-        assertEquals(0, target.x().v(), DELTA);
-        assertEquals(0, target.y().v(), DELTA);
-        assertEquals(1, target.theta().v(), DELTA);
+        assertEquals(0, target.x(), DELTA);
+        assertEquals(0, target.y(), DELTA);
+        assertEquals(1, target.theta(), DELTA);
 
-        VelocityControlSE2 prevSetpoint = new VelocityControlSE2(0, 0, 0);
+        VelocitySE2 prevSetpoint = new VelocitySE2(0, 0, 0);
         limiter.updateSetpoint(prevSetpoint);
-        VelocityControlSE2 setpoint = limiter.apply(target);
-        assertEquals(0, setpoint.x().v(), DELTA);
-        assertEquals(0, setpoint.y().v(), DELTA);
-        assertEquals(1, setpoint.theta().v(), DELTA);
+        VelocitySE2 setpoint = limiter.apply(target);
+        assertEquals(0, setpoint.x(), DELTA);
+        assertEquals(0, setpoint.y(), DELTA);
+        assertEquals(1, setpoint.theta(), DELTA);
     }
 
     @Test
@@ -155,19 +155,19 @@ public class SwerveLimiterTest implements Timeless {
         SwerveLimiter limiter = new SwerveLimiter(logger, unlimited, () -> 12);
 
         // spin fast to make the discretization effect larger
-        VelocityControlSE2 target = new VelocityControlSE2(5, 0, 25);
+        VelocitySE2 target = new VelocitySE2(5, 0, 25);
 
-        assertEquals(5, target.x().v(), DELTA);
-        assertEquals(0, target.y().v(), DELTA);
-        assertEquals(25, target.theta().v(), DELTA);
+        assertEquals(5, target.x(), DELTA);
+        assertEquals(0, target.y(), DELTA);
+        assertEquals(25, target.theta(), DELTA);
 
         // this should do nothing since the limits are so high
-        VelocityControlSE2 prevSetpoint = new VelocityControlSE2(0, 0, 0);
+        VelocitySE2 prevSetpoint = new VelocitySE2(0, 0, 0);
         limiter.updateSetpoint(prevSetpoint);
-        VelocityControlSE2 setpoint = limiter.apply(target);
-        assertEquals(5, setpoint.x().v(), DELTA);
-        assertEquals(0, setpoint.y().v(), DELTA);
-        assertEquals(25, setpoint.theta().v(), DELTA);
+        VelocitySE2 setpoint = limiter.apply(target);
+        assertEquals(5, setpoint.x(), DELTA);
+        assertEquals(0, setpoint.y(), DELTA);
+        assertEquals(25, setpoint.theta(), DELTA);
 
     }
 
@@ -181,20 +181,20 @@ public class SwerveLimiterTest implements Timeless {
         SwerveLimiter limiter = new SwerveLimiter(logger, limits, () -> 12);
 
         // initially at rest, wheels facing forward.
-        VelocityControlSE2 setpoint = new VelocityControlSE2(0, 0, 0);
+        VelocitySE2 setpoint = new VelocitySE2(0, 0, 0);
 
         // initial setpoint steering is at angle zero
 
         // desired speed +x
-        VelocityControlSE2 desiredSpeeds = new VelocityControlSE2(10, 0, 0);
+        VelocitySE2 desiredSpeeds = new VelocitySE2(10, 0, 0);
 
         // the first setpoint should be accel limited: 10 m/s^2, 0.02 sec,
         // so v = 0.2 m/s
         limiter.updateSetpoint(setpoint);
         setpoint = limiter.apply(desiredSpeeds);
-        assertEquals(0.2, setpoint.x().v(), DELTA);
-        assertEquals(0, setpoint.y().v(), DELTA);
-        assertEquals(0, setpoint.theta().v(), DELTA);
+        assertEquals(0.2, setpoint.x(), DELTA);
+        assertEquals(0, setpoint.y(), DELTA);
+        assertEquals(0, setpoint.theta(), DELTA);
 
         // note this says the angles are all empty which is wrong, they should be the
         // previous values.
@@ -203,9 +203,9 @@ public class SwerveLimiterTest implements Timeless {
         for (int i = 0; i < 50; ++i) {
             setpoint = limiter.apply(desiredSpeeds);
         }
-        assertEquals(4.9, setpoint.x().v(), DELTA);
-        assertEquals(0, setpoint.y().v(), DELTA);
-        assertEquals(0, setpoint.theta().v(), DELTA);
+        assertEquals(4.9, setpoint.x(), DELTA);
+        assertEquals(0, setpoint.y(), DELTA);
+        assertEquals(0, setpoint.theta(), DELTA);
     }
 
     @Test
@@ -215,16 +215,16 @@ public class SwerveLimiterTest implements Timeless {
         SwerveLimiter limiter = new SwerveLimiter(logger, limits, () -> 12);
 
         // initially at rest.
-        VelocityControlSE2 setpoint = new VelocityControlSE2(0, 0, 0);
+        VelocitySE2 setpoint = new VelocitySE2(0, 0, 0);
 
         // desired speed is feasible, max accel = 10 * dt = 0.02 => v = 0.2
-        VelocityControlSE2 desiredSpeeds = new VelocityControlSE2(0.2, 0, 0);
+        VelocitySE2 desiredSpeeds = new VelocitySE2(0.2, 0, 0);
 
         limiter.updateSetpoint(setpoint);
         setpoint = limiter.apply(desiredSpeeds);
-        assertEquals(0.2, setpoint.x().v(), DELTA);
-        assertEquals(0, setpoint.y().v(), DELTA);
-        assertEquals(0, setpoint.theta().v(), DELTA);
+        assertEquals(0.2, setpoint.x(), DELTA);
+        assertEquals(0, setpoint.y(), DELTA);
+        assertEquals(0, setpoint.theta(), DELTA);
     }
 
     @Test
@@ -234,22 +234,22 @@ public class SwerveLimiterTest implements Timeless {
         SwerveLimiter limiter = new SwerveLimiter(logger, limits, () -> 12);
 
         // initially at rest.
-        VelocityControlSE2 setpoint = new VelocityControlSE2(0, 0, 0);
+        VelocitySE2 setpoint = new VelocitySE2(0, 0, 0);
 
         // desired speed is double the feasible accel so we should reach it in two
         // iterations.
-        VelocityControlSE2 desiredSpeeds = new VelocityControlSE2(0.4, 0, 0);
+        VelocitySE2 desiredSpeeds = new VelocitySE2(0.4, 0, 0);
 
         limiter.updateSetpoint(setpoint);
         setpoint = limiter.apply(desiredSpeeds);
-        assertEquals(0.2, setpoint.x().v(), DELTA);
-        assertEquals(0, setpoint.y().v(), DELTA);
-        assertEquals(0, setpoint.theta().v(), DELTA);
+        assertEquals(0.2, setpoint.x(), DELTA);
+        assertEquals(0, setpoint.y(), DELTA);
+        assertEquals(0, setpoint.theta(), DELTA);
 
         setpoint = limiter.apply(desiredSpeeds);
-        assertEquals(0.4, setpoint.x().v(), DELTA);
-        assertEquals(0, setpoint.y().v(), DELTA);
-        assertEquals(0, setpoint.theta().v(), DELTA);
+        assertEquals(0.4, setpoint.x(), DELTA);
+        assertEquals(0, setpoint.y(), DELTA);
+        assertEquals(0, setpoint.theta(), DELTA);
     }
 
     @Test
@@ -258,16 +258,16 @@ public class SwerveLimiterTest implements Timeless {
         SwerveLimiter limiter = new SwerveLimiter(logger, limits, () -> 12);
 
         // initially moving 0.5 +y
-        VelocityControlSE2 setpoint = new VelocityControlSE2(0, 0.5, 0);
+        VelocitySE2 setpoint = new VelocitySE2(0, 0.5, 0);
 
         // desired state is 1 +x
-        final VelocityControlSE2 desiredSpeeds = new VelocityControlSE2(1, 0, 0);
+        final VelocitySE2 desiredSpeeds = new VelocitySE2(1, 0, 0);
         limiter.updateSetpoint(setpoint);
         setpoint = limiter.apply(desiredSpeeds);
 
-        assertEquals(0.146, setpoint.x().v(), DELTA);
-        assertEquals(0.427, setpoint.y().v(), DELTA);
-        assertEquals(0, setpoint.theta().v(), DELTA);
+        assertEquals(0.146, setpoint.x(), DELTA);
+        assertEquals(0.427, setpoint.y(), DELTA);
+        assertEquals(0, setpoint.theta(), DELTA);
     }
 
     /**
@@ -289,9 +289,9 @@ public class SwerveLimiterTest implements Timeless {
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.likeComp25();
         SwerveLimiter limiter = new SwerveLimiter(logger, limits, () -> 12);
         // target is infeasible and constant
-        final VelocityControlSE2 target = new VelocityControlSE2(5, 0, 0);
+        final VelocitySE2 target = new VelocitySE2(5, 0, 0);
         // start is motionless
-        VelocityControlSE2 setpoint = new VelocityControlSE2(0, 0, 0);
+        VelocitySE2 setpoint = new VelocitySE2(0, 0, 0);
         limiter.updateSetpoint(setpoint);
         for (int i = 0; i < 100; ++i) {
             if (DEBUG)
@@ -330,22 +330,22 @@ public class SwerveLimiterTest implements Timeless {
     void testProfile() {
         // profile v and a constraints match the limits
         ProfileR1 profile = new TrapezoidProfileR1(3, 5, 0.01);
-        final ModelR1 goal = new ModelR1(5, 0);
-        final ModelR1 initial = new ModelR1(0, 0);
+        final StateR1 goal = new StateR1(5, 0);
+        final StateR1 initial = new StateR1(0, 0);
 
         final SwerveKinodynamics limits = SwerveKinodynamicsFactory.likeComp25();
         final SwerveLimiter limiter = new SwerveLimiter(logger, limits, () -> 12);
 
         ControlR1 profileTarget = initial.control();
-        VelocityControlSE2 target = new VelocityControlSE2(profileTarget.v(), 0, 0);
+        VelocitySE2 target = new VelocitySE2(profileTarget.v(), 0, 0);
         // start is motionless
-        VelocityControlSE2 setpoint = new VelocityControlSE2(0, 0, 0);
+        VelocitySE2 setpoint = new VelocitySE2(0, 0, 0);
         limiter.updateSetpoint(setpoint);
         for (int i = 0; i < 81; ++i) {
-            double accelLimit = SwerveUtil.getAccelLimit(limits, 1, 1, setpoint.velocity(), target.velocity());
+            double accelLimit = SwerveUtil.getAccelLimit(limits, 1, 1, setpoint, target);
 
             profileTarget = profile.calculate(TimedRobot100.LOOP_PERIOD_S, profileTarget, goal);
-            target = new VelocityControlSE2(profileTarget.v(), 0, 0);
+            target = new VelocitySE2(profileTarget.v(), 0, 0);
             setpoint = limiter.apply(target);
             if (DEBUG)
                 System.out.printf("i %d accelLimit %5.2f setpoint %5.2f target %5.2f\n",

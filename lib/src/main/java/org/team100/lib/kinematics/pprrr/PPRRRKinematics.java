@@ -11,10 +11,12 @@ import org.team100.lib.kinematics.urdf.URDFLink;
 import org.team100.lib.kinematics.urdf.URDFRobot;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.numbers.N5;
 import org.wpilib.math.util.Nat;
+
 
 /**
  * 5 DOF mechanism: 3 drivetrain DOF (swerve), 2 arm DOF (like RR).
@@ -40,32 +42,32 @@ public class PPRRRKinematics {
         URDFJoint swerve_x_joint = new URDFJoint("swerve_x_joint",
                 JointType.prismatic, new Limit(1000.0, 0, 16, 0.5),
                 floor, swerve_x,
-                new Pose3d(), VecBuilder.fill(1, 0, 0));
+                new Transform3d(), VecBuilder.fill(1, 0, 0));
         URDFJoint swerve_y_joint = new URDFJoint("swerve_y_joint",
                 JointType.prismatic, new Limit(1000.0, 0, 8, 0.5),
                 swerve_x, swerve_y,
-                new Pose3d(), VecBuilder.fill(0, 1, 0));
+                new Transform3d(), VecBuilder.fill(0, 1, 0));
         // continuous joint is not limited; the limits here
         // are for the solver restart.
         URDFJoint swerve_rot_joint = new URDFJoint("swerve_rot_joint",
                 JointType.continuous, new Limit(1000.0, -Math.PI, Math.PI, 0.5),
                 swerve_y, swerve_rot,
-                new Pose3d(), VecBuilder.fill(0, 0, 1));
+                new Transform3d(), VecBuilder.fill(0, 0, 1));
         URDFJoint shoulder = new URDFJoint("shoulder",
                 JointType.revolute, new Limit(1000.0, -3, -0.1, 0.5),
                 swerve_rot, upper_arm_link,
-                new Pose3d(), VecBuilder.fill(0, 1, 0));
+                new Transform3d(), VecBuilder.fill(0, 1, 0));
         // elbow is l1 away from shoulder, angle zero is +x axis
         // range is always "down", like an excavator.
         URDFJoint elbow = new URDFJoint("elbow",
                 JointType.revolute, new Limit(1000.0, 0.1, 3, 0.5),
                 upper_arm_link, lower_arm_link,
-                new Pose3d(l1, 0, 0, new Rotation3d()), VecBuilder.fill(0, 1, 0));
+                new Transform3d(l1, 0, 0, new Rotation3d()), VecBuilder.fill(0, 1, 0));
         // center point is l3 away from the wrist, zero +x
         URDFJoint center_point = new URDFJoint("center_point",
                 JointType.fixed, null,
                 lower_arm_link, tool_center_point,
-                new Pose3d(l2, 0, 0, new Rotation3d()), null);
+                new Transform3d(l2, 0, 0, new Rotation3d()), null);
 
         // Coordinate-descent seems to work better than Newton.
         m_arm = new URDFRobot<>(

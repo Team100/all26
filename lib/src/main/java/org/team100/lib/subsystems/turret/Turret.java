@@ -30,7 +30,7 @@ import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.LinearVelocityServo;
 import org.team100.lib.servo.OnboardAngularPositionServo;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.targeting.FiringParameters;
 import org.team100.lib.targeting.Solution;
 import org.team100.lib.targeting.Solver;
@@ -64,7 +64,7 @@ public class Turret extends SubsystemBase {
     private final BooleanLogger m_log_solved;
     private final DoubleArrayLogger m_log_field_turret;
     private final DoubleArrayLogger m_log_field_target;
-    private final Supplier<ModelSE2> m_state;
+    private final Supplier<StateSE2> m_state;
     private final Supplier<Optional<Translation2d>> m_target;
     private final AngularPositionServo m_pivot;
     private final AngularPositionServo m_elevation;
@@ -85,7 +85,7 @@ public class Turret extends SubsystemBase {
             LoggerFactory parent,
             LoggerFactory field,
             DoubleFunction<Optional<FiringParameters>> rangeToParams,
-            Supplier<ModelSE2> state,
+            Supplier<StateSE2> state,
             Supplier<Optional<Translation2d>> target) {
         LoggerFactory log = parent.type(this);
         m_log_aiming = log.booleanLogger(Level.TRACE, "aiming");
@@ -193,7 +193,6 @@ public class Turret extends SubsystemBase {
         Optional<Solution> soln = getSolution();
         if (soln.isEmpty()) {
             // no solution is possible, don't do anything
-            // TODO: keep drum spinning for awhile
             m_pivot.stop();
             m_elevation.stop();
             m_drum.stop();

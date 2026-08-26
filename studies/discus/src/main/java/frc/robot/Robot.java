@@ -20,7 +20,7 @@ public class Robot extends TimedRobot {
         // m_setup = new SetupBare();
 
         // PID positional control
-        // m_setup = new SetupMech();
+        //  m_setup = new SetupMech();
 
         // profiled control
         m_setup = new SetupServo();

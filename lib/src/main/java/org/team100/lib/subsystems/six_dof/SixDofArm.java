@@ -1,7 +1,5 @@
 package org.team100.lib.subsystems.six_dof;
 
-import static org.wpilib.command2.Commands.run;
-
 import java.util.List;
 
 import org.team100.lib.commands.MoveAndHold;
@@ -16,7 +14,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.subsystems.rn.PositionSubsystemRn;
 import org.team100.lib.subsystems.six_dof.commands.MoveWithProfile;
 import org.team100.lib.subsystems.six_dof.commands.MoveWithSpline;
@@ -24,11 +22,12 @@ import org.team100.lib.util.StrUtil;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.numbers.N6;
 
 /**
  * Six-DOF arm, for training.
  */
-public class SixDofArm extends SubsystemBase implements PositionSubsystemRn {
+public class SixDofArm extends SubsystemBase implements PositionSubsystemRn<N6> {
     private static final boolean DEBUG = false;
     private final LoggerFactory m_log;
 
@@ -175,15 +174,15 @@ public class SixDofArm extends SubsystemBase implements PositionSubsystemRn {
     }
 
     @Override
-    public List<ModelR1> getStateRn() {
+    public List<StateR1> getStateRn() {
         SixDofConfig q = getConfig();
         return List.of(
-                new ModelR1(q.q1()),
-                new ModelR1(q.q2()),
-                new ModelR1(q.q3()),
-                new ModelR1(q.q4()),
-                new ModelR1(q.q5()),
-                new ModelR1(q.q6()));
+                new StateR1(q.q1()),
+                new StateR1(q.q2()),
+                new StateR1(q.q3()),
+                new StateR1(q.q4()),
+                new StateR1(q.q5()),
+                new StateR1(q.q6()));
     }
 
     @Override

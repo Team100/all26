@@ -9,7 +9,7 @@ import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.profile.se2.HolonomicProfile;
 import org.team100.lib.profile.se2.HolonomicProfileFactory;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.testing.Timeless;
 
 import org.wpilib.math.geometry.Pose2d;
@@ -21,14 +21,14 @@ public class ProfileReferenceSE2Test implements Timeless {
 
     @Test
     void testSimple() {
-        ModelSE2 measurement = new ModelSE2(new Pose2d(0, 0, Rotation2d.kZero));
-        ModelSE2 goal = new ModelSE2(new Pose2d(1, 0, Rotation2d.kZero));
+        StateSE2 measurement = new StateSE2(new Pose2d(0, 0, Rotation2d.kZero));
+        StateSE2 goal = new StateSE2(new Pose2d(1, 0, Rotation2d.kZero));
         HolonomicProfile hp = HolonomicProfileFactory.trapezoidal(1, 1, 0.01, 1, 1, 0.01);
         ProfileReferenceSE2 r = new ProfileReferenceSE2(logger, hp, "test");
         r.setGoal(goal);
         r.initialize(measurement);
         {
-            ModelSE2 c = r.current();
+            StateSE2 c = r.current();
             assertEquals(0, c.velocity().x(), DELTA);
             assertEquals(0, c.pose().getX(), DELTA);
             ControlSE2 n = r.next();
@@ -37,7 +37,7 @@ public class ProfileReferenceSE2Test implements Timeless {
         }
         // no time step, nothing changes
         {
-            ModelSE2 c = r.current();
+            StateSE2 c = r.current();
             assertEquals(0, c.velocity().x(), DELTA);
             assertEquals(0, c.pose().getX(), DELTA);
             ControlSE2 n = r.next();
@@ -48,7 +48,7 @@ public class ProfileReferenceSE2Test implements Timeless {
         // stepping time gets the next references
         stepTime();
         {
-            ModelSE2 c = r.current();
+            StateSE2 c = r.current();
             assertEquals(0.02, c.velocity().x(), DELTA);
             assertEquals(0, c.pose().getX(), DELTA);
             ControlSE2 n = r.next();
@@ -60,7 +60,7 @@ public class ProfileReferenceSE2Test implements Timeless {
             stepTime();
         }
         {
-            ModelSE2 c = r.current();
+            StateSE2 c = r.current();
             assertEquals(0, c.velocity().x(), DELTA);
             assertEquals(1, c.pose().getX(), DELTA);
             ControlSE2 n = r.next();

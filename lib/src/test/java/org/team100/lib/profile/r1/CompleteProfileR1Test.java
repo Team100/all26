@@ -8,7 +8,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.testing.Timeless;
 
 import org.wpilib.math.interpolation.InterpolatingDoubleTreeMap;
@@ -52,7 +52,7 @@ public class CompleteProfileR1Test implements Timeless{
     @Test
     void testFastAccelSlowDecel() {
         CompleteProfileR1 p = new CompleteProfileR1(logger, 5, 12, 5, 50, 50, 50, 0.001);
-        final ModelR1 goal = new ModelR1(2, 0);
+        final StateR1 goal = new StateR1(2, 0);
         ControlR1 c = new ControlR1();
         double t = 0;
         if (DEBUG)
@@ -69,7 +69,7 @@ public class CompleteProfileR1Test implements Timeless{
     @Test
     void testSlowAccelFastDecel() {
         CompleteProfileR1 p = new CompleteProfileR1(logger, 5, 5, 12, 50, 50, 50, 0.001);
-        final ModelR1 goal = new ModelR1(2, 0);
+        final StateR1 goal = new StateR1(2, 0);
         ControlR1 c = new ControlR1();
         double t = 0;
         if (DEBUG)
@@ -86,7 +86,7 @@ public class CompleteProfileR1Test implements Timeless{
     @Test
     void testSimpleBackward() {
         CompleteProfileR1 p = new CompleteProfileR1(logger, 3, 8, 12, 15, 50, 50, 0.001);
-        final ModelR1 goal = new ModelR1(-2, 0);
+        final StateR1 goal = new StateR1(-2, 0);
         ControlR1 c = new ControlR1();
         double t = 0;
         for (int i = 0; i < 100; ++i) {
@@ -100,7 +100,7 @@ public class CompleteProfileR1Test implements Timeless{
     @Test
     void testMovingEntry() {
         CompleteProfileR1 p = new CompleteProfileR1(logger, 2, 6, 10, 30, 50, 50, 0.001);
-        final ModelR1 goal = new ModelR1(1, 0);
+        final StateR1 goal = new StateR1(1, 0);
         ControlR1 c = new ControlR1(0, -1);
         double t = 0;
         for (int i = 0; i < 100; ++i) {
@@ -114,7 +114,7 @@ public class CompleteProfileR1Test implements Timeless{
     @Test
     void testUTurn() {
         CompleteProfileR1 p = new CompleteProfileR1(logger, 3, 8, 12, 15, 50, 50, 0.001);
-        final ModelR1 goal = new ModelR1(0, 0);
+        final StateR1 goal = new StateR1(0, 0);
         // to the left and moving to the left
         ControlR1 c = new ControlR1(-2, -2);
         double t = 0;
@@ -131,7 +131,7 @@ public class CompleteProfileR1Test implements Timeless{
     void testMovingGoal() {
         CompleteProfileR1 p = new CompleteProfileR1(logger, 2, 6, 10, 30, 50, 50, 0.01);
         assertThrows(IllegalArgumentException.class,
-                () -> p.calculate(0.02, new ControlR1(), new ModelR1(1, 1)));
+                () -> p.calculate(0.02, new ControlR1(), new StateR1(1, 1)));
     }
 
     /** How does interpolation work? */

@@ -1,7 +1,7 @@
 package org.team100.lib.profile.r1;
 
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 import org.wpilib.math.util.MathUtil;
 
@@ -116,7 +116,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
      * Returns the goal if the intial is within tolerance of it.
      */
     @Override
-    public ControlR1 calculate(double dt, final ControlR1 initialRaw, final ModelR1 goalRaw) {
+    public ControlR1 calculate(double dt, final ControlR1 initialRaw, final StateR1 goalRaw) {
         if (DEBUG) {
             System.out.printf("calculateWithETA %5.3f %s %s\n", dt, initialRaw, goalRaw);
         }
@@ -138,7 +138,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
         if (goalRaw.v() > m_maxVelocity || goalRaw.v() < -m_maxVelocity) {
             System.out.println("WARNING: Goal velocity is higher than profile velocity");
         }
-        ModelR1 goal = limitVelocity(goalRaw);
+        StateR1 goal = limitVelocity(goalRaw);
 
         if (goal.control().near(initial, m_tolerance)) {
             if (DEBUG) {
@@ -209,13 +209,13 @@ public class TrapezoidProfileR1 implements ProfileR1 {
     }
 
     /** Clamp state velocity to the profile limit. */
-    private ModelR1 limitVelocity(final ModelR1 s) {
-        return new ModelR1(
+    private StateR1 limitVelocity(final StateR1 s) {
+        return new StateR1(
                 s.x(),
                 Math.clamp(s.v(), -m_maxVelocity, m_maxVelocity));
     }
 
-    private ControlR1 handleIplus(double dt, ControlR1 initial, ModelR1 goal, double timeToSwitch) {
+    private ControlR1 handleIplus(double dt, ControlR1 initial, StateR1 goal, double timeToSwitch) {
         if (MathUtil.isNear(timeToSwitch, 0, 1e-12)) {
             // switch eta is zero: go to the goal via G-
             if (DEBUG) {
@@ -268,7 +268,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
      * t1 is the time to the I-G+ switch point, which might be beyond the velocity
      * constraint.
      */
-    private ControlR1 handleIminus(double dt, ControlR1 initial, ModelR1 goal, double timeToSwitch) {
+    private ControlR1 handleIminus(double dt, ControlR1 initial, StateR1 goal, double timeToSwitch) {
 
         if (MathUtil.isNear(timeToSwitch, 0, 1e-12)) {
             // Switch ETA is zero: go to the goal via G+
@@ -306,7 +306,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
     }
 
     /** At positive cruising speed, keep going. */
-    ControlR1 keepCruising(double dt, ControlR1 initial, ModelR1 goal) {
+    ControlR1 keepCruising(double dt, ControlR1 initial, StateR1 goal) {
         if (DEBUG) {
             System.out.printf("keep cruising %s\n", initial);
         }
@@ -345,7 +345,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
                 0);
     }
 
-    ControlR1 keepCruisingMinus(double dt, ControlR1 initial, ModelR1 goal) {
+    ControlR1 keepCruisingMinus(double dt, ControlR1 initial, StateR1 goal) {
         // We're already at negative cruising speed, which means G+ is next.
         // will we reach it during dt?
         double c_plus = c_plus(goal.control());
@@ -373,7 +373,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
      * Travel to the switching point, and then the remainder of time on the goal
      * path.
      */
-    private ControlR1 traverseSwitch(double dt, ControlR1 in_initial, final ModelR1 goal, double t1,
+    private ControlR1 traverseSwitch(double dt, ControlR1 in_initial, final StateR1 goal, double t1,
             double direction) {
         // t1 is the time before the switch
         // t2 is the time after
@@ -407,7 +407,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
     }
 
     /** Returns a shorter dt to avoid overshooting the goal state. */
-    private double truncateDt(double dt, ControlR1 in_initial, ModelR1 in_goal) {
+    private double truncateDt(double dt, ControlR1 in_initial, StateR1 in_goal) {
         double dtg = durationAtMaxA(in_initial.v(), in_goal.v());
         return Math.min(dt, dtg);
     }
@@ -443,7 +443,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
      * 
      * Note this ignores the velocity constraint.
      */
-    double t1IplusGminus(ControlR1 initial, ModelR1 goal) {
+    double t1IplusGminus(ControlR1 initial, StateR1 goal) {
         double q_dot_switch = qDotSwitchIplusGminus(initial, goal);
         // this fixes rounding errors
         if (MathUtil.isNear(initial.v(), q_dot_switch, 1e-6))
@@ -460,7 +460,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
      * 
      * Note this ignores the velocity constraint.
      */
-    double t1IminusGplus(ControlR1 initial, ModelR1 goal) {
+    double t1IminusGplus(ControlR1 initial, StateR1 goal) {
         double q_dot_switch = qDotSwitchIminusGplus(initial, goal);
         // this fixes rounding errors
         if (MathUtil.isNear(initial.v(), q_dot_switch, 1e-6))
@@ -479,7 +479,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
      * "switch" path using I+G- means the goal has to be to the right of the "s"
      * shaped curve including I.
      */
-    double qDotSwitchIplusGminus(ControlR1 initial, ModelR1 goal) {
+    double qDotSwitchIplusGminus(ControlR1 initial, StateR1 goal) {
         if (initial.equals(goal.control()))
             return initial.v();
 
@@ -511,7 +511,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
      * "switch" path using I-G+ means the goal has to be to the left of the I- curve
      * for goal.v less than i.v, and to the left of the I+ curve for goal.v > i.v
      */
-    double qDotSwitchIminusGplus(ControlR1 initial, ModelR1 goal) {
+    double qDotSwitchIminusGplus(ControlR1 initial, StateR1 goal) {
         if (initial.equals(goal.control()))
             return goal.v();
 
@@ -544,14 +544,14 @@ public class TrapezoidProfileR1 implements ProfileR1 {
      * path through the initial state and the negative-acceleration path through the
      * goal state, i.e. the I+G- path.
      */
-    double qSwitchIplusGminus(ControlR1 initial, ModelR1 goal) {
+    double qSwitchIplusGminus(ControlR1 initial, StateR1 goal) {
         return (c_plus(initial) + c_minus(goal.control())) / 2;
     }
 
     /**
      * Midpoint position for the I-G+ path.
      */
-    double qSwitchIminusGplus(ControlR1 initial, ModelR1 goal) {
+    double qSwitchIminusGplus(ControlR1 initial, StateR1 goal) {
         return (c_minus(initial) + c_plus(goal.control())) / 2;
     }
 
@@ -566,7 +566,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
     }
 
     // for testing
-    double t1(ControlR1 initial, ModelR1 goal) {
+    double t1(ControlR1 initial, StateR1 goal) {
         double t1IplusGminus = t1IplusGminus(initial, goal);
         double t1IminusGplus = t1IminusGplus(initial, goal);
         if (Double.isNaN(t1IplusGminus)) {
