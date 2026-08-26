@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 public class DualProfileR1Test {
     private static final boolean DEBUG = false;
@@ -26,7 +26,7 @@ public class DualProfileR1Test {
                 limitedAccel,
                 stallAccel);
         ControlR1 sample = new ControlR1(0, 0);
-        final ModelR1 end = new ModelR1(3, 0);
+        final StateR1 end = new StateR1(3, 0);
         double eta = profile.simulateForETA(0.2, sample, end);
         // approximate
         assertEquals(1.8, eta, 0.001);
@@ -51,7 +51,7 @@ public class DualProfileR1Test {
                 limitedAccel,
                 stallAccel);
         ControlR1 sample = new ControlR1(0, 0);
-        final ModelR1 end = new ModelR1(3, 0);
+        final StateR1 end = new StateR1(3, 0);
         final double ETA_TOLERANCE = 0.02;
         double s = profile.solve(0.1, sample, end, 2.0, ETA_TOLERANCE);
         assertEquals(0.625, s, DELTA);

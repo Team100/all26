@@ -12,7 +12,7 @@ import org.team100.lib.motor.BareMotor;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 /**
  * Profiled or direct position control using the feedback controller in the
@@ -32,7 +32,7 @@ public class OutboardLinearPositionServo implements LinearPositionServo {
     private final DoubleLogger m_log_velocity;
 
     /** Null if there's no current profile. */
-    private ModelR1 m_goal;
+    private StateR1 m_goal;
     private ControlR1 m_nextSetpoint;
 
     public OutboardLinearPositionServo(
@@ -89,7 +89,7 @@ public class OutboardLinearPositionServo implements LinearPositionServo {
     @Override
     public void setPositionProfiled(double goalM) {
         m_log_goal.log(() -> goalM);
-        ModelR1 goal = new ModelR1(goalM, 0);
+        StateR1 goal = new StateR1(goalM, 0);
 
         if (!goal.near(m_goal, m_positionTolerance, m_velocityTolerance)) {
             m_goal = goal;

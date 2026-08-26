@@ -72,9 +72,10 @@ public class TrajectoryJointTest {
             Pose2d p = m.pose();
             VelocitySE2 v = m.velocity();
             AccelerationSE2 a = m.acceleration();
-            PRRConfig q = k.inverse(p);
-            PRRVelocity jv = k.inverse(m.model());
-            PRRAcceleration ja = k.inverse(m);
+            List<PRRConfig> qs = k.inverse(p);
+            PRRConfig q = qs.get(0);
+            PRRVelocity jv = k.inverse(q, m.model());
+            PRRAcceleration ja = k.inverse(q, m);
             if (DEBUG) {
                 System.out.printf(
                         "%6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f\n",

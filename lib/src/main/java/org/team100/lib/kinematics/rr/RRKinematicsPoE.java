@@ -255,11 +255,11 @@ public class RRKinematicsPoE {
     Matrix<N3, N2> Jdotv(RRConfig q, RRVelocity qdot) {
         // exponential terms
         Pose2d eS1q1 = GeometryUtil.exp(S1, q.q1());
-        Pose2d eS2q2 = GeometryUtil.exp(S2, q.q2());
+        // Pose2d eS2q2 = GeometryUtil.exp(S2, q.q2());
         // exponential terms, recursively composed
         Pose2d e1 = eS1q1;
-        Pose2d e2 = GeometryUtil.compose(e1, eS2q2);
-        Pose2d tcp = GeometryUtil.compose(e2, M3);
+        // Pose2d e2 = GeometryUtil.compose(e1, eS2q2);
+        // Pose2d tcp = GeometryUtil.compose(e2, M3);
 
         // first column is just the q1 axis; Mueller calls the columns Si
         Vector<N3> JS1 = GeometryUtil.toVec(S1);

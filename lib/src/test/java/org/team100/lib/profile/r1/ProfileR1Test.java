@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.testing.Timeless;
 
 public class ProfileR1Test implements Timeless {
@@ -15,7 +15,7 @@ public class ProfileR1Test implements Timeless {
     // @Test
     void testETA() {
         ControlR1 initial = new ControlR1();
-        ModelR1 goal = new ModelR1(1, 0);
+        StateR1 goal = new StateR1(1, 0);
         double expectedEta = 2.0;
         double s = 1.0;
         ProfileR1 p = new TrapezoidProfileR1(1, 1, 0.01);
@@ -44,7 +44,7 @@ public class ProfileR1Test implements Timeless {
     // @Test
     void testETA2() {
         ControlR1 initial = new ControlR1();
-        ModelR1 goal = new ModelR1(1, 0);
+        StateR1 goal = new StateR1(1, 0);
         ProfileR1 p = new TrapezoidProfileR1(1, 1, 0.01);
         double eta = p.simulateForETA(0.02, initial, goal);
         assertEquals(2.000, eta, 0.001);
@@ -71,7 +71,7 @@ public class ProfileR1Test implements Timeless {
     // @Test
     void testETA2Exponential() {
         ControlR1 initial = new ControlR1();
-        ModelR1 goal = new ModelR1(1, 0);
+        StateR1 goal = new StateR1(1, 0);
         ProfileR1 p = new WPIExponentialProfileR1(1, 1);
         double eta = p.simulateForETA(0.02, initial, goal);
         assertEquals(2.180, eta, 0.001);

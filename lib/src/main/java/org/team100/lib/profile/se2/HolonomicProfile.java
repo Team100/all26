@@ -4,8 +4,8 @@ import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelR1;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateR1;
+import org.team100.lib.state.StateSE2;
 
 import org.wpilib.math.util.MathUtil;
 
@@ -55,7 +55,7 @@ public class HolonomicProfile implements ProfileSE2 {
      * This is a fairly coarse optimization, i.e. ETA within 0.1 sec or so.
      */
     @Override
-    public void solve(ModelSE2 i, ModelSE2 g) {
+    public void solve(StateSE2 i, StateSE2 g) {
         // first find the max ETA
         if (DEBUG) {
             System.out.printf("i %s g %s\n", i, g);
@@ -86,7 +86,7 @@ public class HolonomicProfile implements ProfileSE2 {
     }
 
     @Override
-    public ControlSE2 calculate(ModelSE2 i, ModelSE2 g) {
+    public ControlSE2 calculate(StateSE2 i, StateSE2 g) {
         if (i == null || g == null) {
             // this can happen on startup when the initial state hasn't yet been defined,
             // but the cache refresher is trying to update the references.
@@ -98,7 +98,7 @@ public class HolonomicProfile implements ProfileSE2 {
         ControlR1 stateX = ppx.calculate(DT, i.x().control(), g.x());
         ControlR1 stateY = ppy.calculate(DT, i.y().control(), g.y());
         // theta is periodic; choose a setpoint angle near the goal.
-        ModelR1 theta = new ModelR1(
+        StateR1 theta = new StateR1(
                 MathUtil.angleModulus(i.theta().x() - g.theta().x()) + g.theta().x(),
                 i.theta().v());
         ControlR1 stateTheta = pptheta.calculate(DT, theta.control(), g.theta());

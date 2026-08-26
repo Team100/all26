@@ -6,10 +6,10 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.ControlSE2Logger;
-import org.team100.lib.logging.LoggerFactory.ModelSE2Logger;
+import org.team100.lib.logging.LoggerFactory.StateSE2Logger;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 
 /**
  * Produces references based on profiles.
@@ -31,7 +31,7 @@ public class ProfileReferenceSE2 implements ReferenceSE2 {
     /**
      * Putting these in the same class allows us to refresh them both atomically.
      */
-    private record References(ModelSE2 m_current, ControlSE2 m_next) {
+    private record References(StateSE2 m_current, ControlSE2 m_next) {
     }
 
     private final LoggerFactory m_log;
@@ -40,12 +40,12 @@ public class ProfileReferenceSE2 implements ReferenceSE2 {
     /** The name is for debugging. */
     private final String m_name;
     private final ObjectCache<References> m_references;
-    private final ModelSE2Logger m_log_current;
+    private final StateSE2Logger m_log_current;
     private final ControlSE2Logger m_log_next;
     private final BooleanLogger m_log_done;
-    private final ModelSE2Logger m_log_goal;
+    private final StateSE2Logger m_log_goal;
 
-    private ModelSE2 m_goal;
+    private StateSE2 m_goal;
     private boolean m_done;
 
     /**
@@ -64,10 +64,10 @@ public class ProfileReferenceSE2 implements ReferenceSE2 {
         // this will keep polling until we stop it.
         m_references = Cache.of(() -> refresh(m_next == null ? null : m_next.model()));
 
-        m_log_current = m_log.modelSE2Logger(Level.TRACE, "current");
+        m_log_current = m_log.StateSE2Logger(Level.TRACE, "current");
         m_log_next = m_log.controlSE2Logger(Level.TRACE, "next");
         m_log_done = m_log.booleanLogger(Level.TRACE, "done");
-        m_log_goal = m_log.modelSE2Logger(Level.TRACE, "goal");
+        m_log_goal = m_log.StateSE2Logger(Level.TRACE, "goal");
     }
 
     /**
@@ -75,21 +75,21 @@ public class ProfileReferenceSE2 implements ReferenceSE2 {
      * initialize(), you'll use the old scales. That's probably fine, if the goal
      * hasn't moved much, but it's not appropriate to move the goal a lot.
      */
-    public void setGoal(ModelSE2 goal) {
+    public void setGoal(StateSE2 goal) {
         m_goal = goal;
     }
 
     /** Immediately overwrite the references. */
     @Override
-    public void initialize(ModelSE2 measurement) {
+    public void initialize(StateSE2 measurement) {
         m_profile.solve(measurement, m_goal);
         m_references.set(refresh(measurement));
         m_done = false;
     }
 
     @Override
-    public ModelSE2 current() {
-        ModelSE2 current = m_references.get().m_current;
+    public StateSE2 current() {
+        StateSE2 current = m_references.get().m_current;
         m_log_current.log(() -> current);
         return current;
     }
@@ -109,7 +109,7 @@ public class ProfileReferenceSE2 implements ReferenceSE2 {
     }
 
     @Override
-    public ModelSE2 goal() {
+    public StateSE2 goal() {
         m_log_goal.log(() -> m_goal);
         return m_goal;
     }
@@ -124,12 +124,12 @@ public class ProfileReferenceSE2 implements ReferenceSE2 {
 
     ////////////////////////////////////
 
-    private References refresh(ModelSE2 newCurrent) {
+    private References refresh(StateSE2 newCurrent) {
         m_next = makeNext(newCurrent);
         return new References(newCurrent, m_next);
     }
 
-    private ControlSE2 makeNext(ModelSE2 current) {
+    private ControlSE2 makeNext(StateSE2 current) {
         if (DEBUG) {
             System.out.printf("ProfileReference refreshing %s\n", m_name);
         }

@@ -77,4 +77,12 @@ public class DiscusBare extends SubsystemBase {
         return run(() -> setVoltage(
                 VOLT_SCALE * p.getAsDouble())); //VOLT_SCALE *
     }
+
+    @Override
+    public void periodic() {
+        m_motor.periodic();
+        m_sensor.periodic();
+    }
+
+    
 }

@@ -17,7 +17,6 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.profile.se2.HolonomicProfileFactory;
 import org.team100.lib.profile.se2.ProfileSE2;
-import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.prr.commands.FollowJointProfiles;
 import org.team100.lib.subsystems.se2.commands.DriveWithTrajectoryFunction;
 import org.team100.lib.subsystems.se2.commands.FloorPickSequence2;
@@ -61,8 +60,7 @@ public class Binder2025 {
                 log,
                 m_machinery.m_swerveKinodynamics,
                 RobotController::getBatteryVoltage);
-        limiter.updateSetpoint(new VelocityControlSE2(
-                m_machinery.m_drive.getVelocity()));
+        limiter.updateSetpoint(m_machinery.m_drive.getVelocity());
 
         // There are 3 modes:
         // * normal

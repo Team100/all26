@@ -27,7 +27,6 @@ public class Feeder extends SubsystemBase {
     private static final double TOLERANCE_M_S = 1.0;
     private static final double GEAR_RATIO = 3.0;
     private static final double WHEEL_DIAMETER_M = 0.05;
-    // TODO: TUNE
     private static final double NORMAL_SPEED = 10.0;
 
     private final OutboardLinearVelocityServo m_servo1;

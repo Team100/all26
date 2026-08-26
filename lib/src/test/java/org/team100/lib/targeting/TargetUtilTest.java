@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
@@ -55,7 +55,7 @@ class TargetUtilTest {
     @Test
     void testTargetMotion() {
         // at the origin moving 1 m/s +x
-        ModelSE2 state = new ModelSE2(new Pose2d(), new VelocitySE2(1, 0, 0));
+        StateSE2 state = new StateSE2(new Pose2d(), new VelocitySE2(1, 0, 0));
         // target is 1m to the left
         Translation2d target = new Translation2d(0, 1);
         // so it appears to move clockwise
@@ -65,7 +65,7 @@ class TargetUtilTest {
     @Test
     void testTargetMotionFaster() {
         // at the origin moving 2 m/s +x
-        ModelSE2 state = new ModelSE2(new Pose2d(), new VelocitySE2(2, 0, 0));
+        StateSE2 state = new StateSE2(new Pose2d(), new VelocitySE2(2, 0, 0));
         // target is 1m to the left
         Translation2d target = new Translation2d(0, 1);
         // so it appears to move clockwise
@@ -75,7 +75,7 @@ class TargetUtilTest {
     @Test
     void testTargetMotionElsewhere() {
         // somewhere else, moving 1 m/s +x
-        ModelSE2 state = new ModelSE2(new Pose2d(1, 1, new Rotation2d()), new VelocitySE2(1, 0, 0));
+        StateSE2 state = new StateSE2(new Pose2d(1, 1, new Rotation2d()), new VelocitySE2(1, 0, 0));
         // target is 1m to the left
         Translation2d target = new Translation2d(1, 2);
         // so it appears to move clockwise
@@ -85,7 +85,7 @@ class TargetUtilTest {
     @Test
     void testTargetMotionReverse() {
         // at the origin, moving 1m/s +x
-        ModelSE2 state = new ModelSE2(new Pose2d(), new VelocitySE2(1, 0, 0));
+        StateSE2 state = new StateSE2(new Pose2d(), new VelocitySE2(1, 0, 0));
         // target is 1m to the right
         Translation2d target = new Translation2d(0, -1);
         // so it appears to move counterclockwise
@@ -95,7 +95,7 @@ class TargetUtilTest {
     @Test
     void testTargetMotionAhead() {
         // at the origin, moving 1m/s +x
-        ModelSE2 state = new ModelSE2(new Pose2d(), new VelocitySE2(1, 0, 0));
+        StateSE2 state = new StateSE2(new Pose2d(), new VelocitySE2(1, 0, 0));
         // target is dead ahead
         Translation2d target = new Translation2d(2, 0);
         // no apparent motion
@@ -105,7 +105,7 @@ class TargetUtilTest {
     @Test
     void testTargetMotionOblique() {
         // at the origin, moving 1m/s +x
-        ModelSE2 state = new ModelSE2(new Pose2d(), new VelocitySE2(1, 0, 0));
+        StateSE2 state = new StateSE2(new Pose2d(), new VelocitySE2(1, 0, 0));
         // target is at 45
         Translation2d target = new Translation2d(1, 1);
         // apparent motion is slower
@@ -115,7 +115,7 @@ class TargetUtilTest {
     @Test
     void testTargetMotionY() {
         // at the origin, moving 1m/s +y
-        ModelSE2 state = new ModelSE2(new Pose2d(), new VelocitySE2(0, 1, 0));
+        StateSE2 state = new StateSE2(new Pose2d(), new VelocitySE2(0, 1, 0));
         // target is dead ahead
         Translation2d target = new Translation2d(1, 0);
         // target moves the other way
@@ -125,7 +125,7 @@ class TargetUtilTest {
     @Test
     void testTargetMotionYReversed() {
         // in front of the origin, facing back to it, moving 1m/s +y,
-        ModelSE2 state = new ModelSE2(
+        StateSE2 state = new StateSE2(
                 new Pose2d(1, 0, Rotation2d.kPi),
                 new VelocitySE2(0, 1, 0));
         // target is dead ahead
@@ -137,7 +137,7 @@ class TargetUtilTest {
     @Test
     void testTargetMotionZero() {
         // not moving, no motion
-        ModelSE2 state = new ModelSE2(new Pose2d(), new VelocitySE2(0, 0, 0));
+        StateSE2 state = new StateSE2(new Pose2d(), new VelocitySE2(0, 0, 0));
         // target is 1m to the left
         Translation2d target = new Translation2d(0, 1);
         // it should not move

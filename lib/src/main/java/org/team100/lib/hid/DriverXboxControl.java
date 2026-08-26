@@ -23,8 +23,6 @@ public class DriverXboxControl {
      * * right Y (axis 5) is the field "X" direction, ahead
      * * right X (axis 4) is the field "Y" direction, to the left
      * * left X (axis 0) is rotation, counterclockwise
-     * 
-     * TODO: add acceleration computation.
      */
     public Velocity velocity() {
         return ControlUtil.velocity(

@@ -39,7 +39,9 @@ public class DiscusMech extends SubsystemBase {
     public DiscusMech(LoggerFactory parent, TotalCurrentLog currentLog) {
         LoggerFactory logger = parent.type(this);
         /** Units of positional PID are volts per revolution. */
-        PIDConstants pid = PIDConstants.makePositionPID(0.0); // 2.0
+        // PIDConstants pid = PIDConstants.makePositionPID(0.0); // 2.0
+        PIDConstants pid = PIDConstants.makePositionPID(0.5, 0, 0.1); // 2.0
+
         Friction friction = new Friction(0.16, 0.15, 0, 0);
 
         switch (Identity.instance) {

@@ -11,7 +11,7 @@ import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
@@ -44,9 +44,9 @@ public class TrajectoryReferenceTest implements Timeless {
                 new Pose2d(1, 0, Rotation2d.kZero));
                 TrajectoryReferenceSE2 r = new TrajectoryReferenceSE2(logger, t);
         // measurement is irrelevant
-        r.initialize(new ModelSE2());
+        r.initialize(new StateSE2());
         {
-            ModelSE2 c = r.current();
+            StateSE2 c = r.current();
             assertEquals(0, c.velocity().x(), DELTA);
             assertEquals(0, c.pose().getX(), DELTA);
             ControlSE2 n = r.next();
@@ -55,7 +55,7 @@ public class TrajectoryReferenceTest implements Timeless {
         }
         // no time step, nothing changes
         {
-            ModelSE2 c = r.current();
+            StateSE2 c = r.current();
             assertEquals(0, c.velocity().x(), DELTA);
             assertEquals(0, c.pose().getX(), DELTA);
             ControlSE2 n = r.next();
@@ -66,7 +66,7 @@ public class TrajectoryReferenceTest implements Timeless {
         // stepping time gets the next references
         stepTime();
         {
-            ModelSE2 c = r.current();
+            StateSE2 c = r.current();
             assertEquals(0.033, c.velocity().x(), DELTA);
             assertEquals(0.0003, c.pose().getX(), DELTA);
             ControlSE2 n = r.next();
@@ -78,7 +78,7 @@ public class TrajectoryReferenceTest implements Timeless {
             stepTime();
         }
         {
-            ModelSE2 c = r.current();
+            StateSE2 c = r.current();
             assertEquals(0, c.velocity().x(), DELTA);
             assertEquals(1, c.pose().getX(), DELTA);
             ControlSE2 n = r.next();

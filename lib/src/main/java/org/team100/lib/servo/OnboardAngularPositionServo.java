@@ -10,12 +10,12 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.logging.LoggerFactory.ModelR1Logger;
+import org.team100.lib.logging.LoggerFactory.StateR1Logger;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 /**
  * Uses mechanism velocity control.
@@ -29,7 +29,7 @@ public class OnboardAngularPositionServo extends AngularPositionServoImpl {
     private final FeedbackR1 m_feedback;
 
     private final DoubleLogger m_log_feedforward_torque;
-    private final ModelR1Logger m_log_measurement;
+    private final StateR1Logger m_log_measurement;
     private final ControlR1Logger m_log_control;
     private final DoubleLogger m_log_u_FB;
     private final DoubleLogger m_log_u_FF;
@@ -50,7 +50,7 @@ public class OnboardAngularPositionServo extends AngularPositionServoImpl {
         m_feedback = feedback;
 
         m_log_feedforward_torque = log.doubleLogger(Level.TRACE, "Feedforward Torque (Nm)");
-        m_log_measurement = log.ModelR1Logger(Level.COMP, "measurement (rad)");
+        m_log_measurement = log.StateR1Logger(Level.COMP, "measurement (rad)");
         m_log_control = log.ControlR1Logger(Level.COMP, "control (rad)");
         m_log_u_FB = log.doubleLogger(Level.TRACE, "u_FB (rad_s)");
         m_log_u_FF = log.doubleLogger(Level.TRACE, "u_FF (rad_s)");
@@ -76,8 +76,8 @@ public class OnboardAngularPositionServo extends AngularPositionServoImpl {
             System.out.printf("setpoint %s\n", unwrappedSetpoint);
         }
 
-        ModelR1 unwrappedMeasurement = m_mechanism.getUnwrappedMeasurement();
-        ModelR1 currentUnwrappedSetpoint = unwrappedSetpoint.current().model();
+        StateR1 unwrappedMeasurement = m_mechanism.getUnwrappedMeasurement();
+        StateR1 currentUnwrappedSetpoint = unwrappedSetpoint.current().model();
         ControlR1 nextUnwrappedSetpoint = unwrappedSetpoint.next();
 
         REffort t = m_dynamics.effort(

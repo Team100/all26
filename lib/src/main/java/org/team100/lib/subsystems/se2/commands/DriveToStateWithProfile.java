@@ -9,7 +9,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.reference.se2.ProfileReferenceSE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.se2.commands.helper.VelocityReferenceControllerSE2;
 
@@ -20,19 +20,19 @@ import org.team100.lib.subsystems.se2.commands.helper.VelocityReferenceControlle
 public class DriveToStateWithProfile extends MoveAndHold {
     private final LoggerFactory m_log;
     private final DoubleArrayLogger m_log_target;
-    private final Supplier<ModelSE2> m_goals;
+    private final Supplier<StateSE2> m_goals;
     private final VelocitySubsystemSE2 m_drive;
     private final ControllerSE2 m_controller;
     private final ProfileSE2 m_profile;
 
-    private ModelSE2 m_goal;
+    private StateSE2 m_goal;
     private ProfileReferenceSE2 m_reference;
     private VelocityReferenceControllerSE2 m_referenceController;
 
     public DriveToStateWithProfile(
             LoggerFactory parent,
             LoggerFactory fieldLogger,
-            Supplier<ModelSE2> goal,
+            Supplier<StateSE2> goal,
             VelocitySubsystemSE2 drive,
             ControllerSE2 controller,
             ProfileSE2 profile) {

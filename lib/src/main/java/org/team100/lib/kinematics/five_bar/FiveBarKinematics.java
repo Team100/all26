@@ -26,8 +26,6 @@ import org.team100.lib.util.Math100;
  * Hayward, 2005 https://cim.mcgill.ca/~haptic/pub/GC-QW-VH-IROS-05.pdf
  * 
  * See pantograph.png for the coordinates used here.
- * 
- * TODO: implement Jacobian.
  */
 public class FiveBarKinematics {
 

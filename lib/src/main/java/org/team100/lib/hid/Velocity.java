@@ -5,8 +5,6 @@ import org.wpilib.math.geometry.Rotation2d;
 /**
  * This represents driver's velocity command, usually mapped to three axes in
  * the control, so the ranges are [-1,1]
- * 
- * TODO: add fields for acceleration.
  */
 public record Velocity(double x, double y, double theta) {
 

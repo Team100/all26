@@ -1,7 +1,7 @@
 package org.team100.lib.profile.r1;
 
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 /**
  * Uses a trapezoid profile for low (current-limited) speed.
@@ -50,7 +50,7 @@ public class DualProfileR1 implements ProfileR1 {
     }
 
     @Override
-    public ControlR1 calculate(double dt, ControlR1 initial, ModelR1 goal) {
+    public ControlR1 calculate(double dt, ControlR1 initial, StateR1 goal) {
         ControlR1 trapezoid = m_trapezoid.calculate(dt, initial, goal);
         ControlR1 exponential = m_exponential.calculate(dt, initial, goal);
         if (!isAccel(initial, exponential)) {

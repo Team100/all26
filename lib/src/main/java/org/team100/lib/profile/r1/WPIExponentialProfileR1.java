@@ -1,7 +1,7 @@
 package org.team100.lib.profile.r1;
 
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 import org.wpilib.math.trajectory.ExponentialProfile;
 import org.wpilib.math.trajectory.ExponentialProfile.Constraints;
@@ -28,7 +28,7 @@ public class WPIExponentialProfileR1 implements ProfileR1 {
     }
 
     @Override
-    public ControlR1 calculate(double dt, ControlR1 initial, ModelR1 goal) {
+    public ControlR1 calculate(double dt, ControlR1 initial, StateR1 goal) {
         State result = m_profile.calculate(dt, new State(initial.x(), initial.v()), new State(goal.x(), goal.v()));
         return new ControlR1(result.position, result.velocity, 0);
     }

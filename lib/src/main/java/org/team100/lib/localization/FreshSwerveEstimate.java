@@ -4,7 +4,7 @@ import java.util.function.DoubleFunction;
 
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.SideEffect;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 
 /**
  * Updates the vision and odometry before sampling the history.
@@ -13,8 +13,8 @@ import org.team100.lib.state.ModelSE2;
  * mutate it. Some clients want "fresh" estimates, and should use this class;
  * other clients only need old historical estimates, and should use the history.
  */
-public class FreshSwerveEstimate implements DoubleFunction<ModelSE2> {
-    private final DoubleFunction<ModelSE2> m_history;
+public class FreshSwerveEstimate implements DoubleFunction<StateSE2> {
+    private final DoubleFunction<StateSE2> m_history;
     /** Side effect mutates history. */
     private final SideEffect m_vision;
     /** Side effect mutates history. */
@@ -23,7 +23,7 @@ public class FreshSwerveEstimate implements DoubleFunction<ModelSE2> {
     public FreshSwerveEstimate(
             Runnable visionUpdate,
             Runnable odometryUpdate,
-            DoubleFunction<ModelSE2> history) {
+            DoubleFunction<StateSE2> history) {
         m_history = history;
         m_vision = Cache.ofSideEffect(visionUpdate);
         m_odometry = Cache.ofSideEffect(odometryUpdate);
@@ -34,7 +34,7 @@ public class FreshSwerveEstimate implements DoubleFunction<ModelSE2> {
      * making sure any pending updates from vision or odometry have been applied.
      */
     @Override
-    public ModelSE2 apply(double timestampS) {
+    public StateSE2 apply(double timestampS) {
         // run our dependencies if they haven't already
         m_vision.run();
         m_odometry.run();

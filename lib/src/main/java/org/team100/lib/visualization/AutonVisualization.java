@@ -15,8 +15,6 @@ import org.wpilib.math.geometry.Pose2d;
 
 /**
  * Shows positions and trajectories.
- * 
- * TODO: make this run upon selection, not continuously.
  */
 public class AutonVisualization {
     private final DoubleArrayLogger m_log_poses;

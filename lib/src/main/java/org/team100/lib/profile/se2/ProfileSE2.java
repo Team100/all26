@@ -1,7 +1,7 @@
 package org.team100.lib.profile.se2;
 
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 
 public interface ProfileSE2 {
 
@@ -11,7 +11,7 @@ public interface ProfileSE2 {
      * @param i initial
      * @param g goal
      */
-    void solve(ModelSE2 i, ModelSE2 g);
+    void solve(StateSE2 i, StateSE2 g);
 
     /**
      * Compute the control for the end of the next time step.
@@ -20,6 +20,6 @@ public interface ProfileSE2 {
      * @param g goal
      * @return control
      */
-    ControlSE2 calculate(ModelSE2 i, ModelSE2 g);
+    ControlSE2 calculate(StateSE2 i, StateSE2 g);
 
 }

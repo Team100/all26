@@ -8,10 +8,10 @@ import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.ControlSE2Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.GlobaDeltaSE2Logger;
-import org.team100.lib.logging.LoggerFactory.ModelSE2Logger;
+import org.team100.lib.logging.LoggerFactory.StateSE2Logger;
 import org.team100.lib.logging.LoggerFactory.VelocitySE2Logger;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.state.VelocityControlSE2;
 
 import org.wpilib.math.geometry.Rotation2d;
@@ -23,8 +23,8 @@ import org.wpilib.math.geometry.Rotation2d;
  */
 public abstract class ControllerSE2Base implements ControllerSE2 {
 
-    private final ModelSE2Logger m_log_measurement;
-    private final ModelSE2Logger m_log_currentReference;
+    private final StateSE2Logger m_log_measurement;
+    private final StateSE2Logger m_log_currentReference;
     private final ControlSE2Logger m_log_nextReference;
 
     private final GlobaDeltaSE2Logger m_log_position_error;
@@ -56,8 +56,8 @@ public abstract class ControllerSE2Base implements ControllerSE2 {
             double omegaTolerance) {
         LoggerFactory log = parent.type(this);
 
-        m_log_measurement = log.modelSE2Logger(Level.DEBUG, "measurement");
-        m_log_currentReference = log.modelSE2Logger(Level.DEBUG, "current reference");
+        m_log_measurement = log.StateSE2Logger(Level.DEBUG, "measurement");
+        m_log_currentReference = log.StateSE2Logger(Level.DEBUG, "current reference");
         m_log_nextReference = log.controlSE2Logger(Level.DEBUG, "next reference");
 
         m_log_position_error = log.DeltaSE2Logger(Level.TRACE, "position error");
@@ -77,8 +77,8 @@ public abstract class ControllerSE2Base implements ControllerSE2 {
 
     @Override
     public VelocityControlSE2 calculate(
-            ModelSE2 measurement,
-            ModelSE2 currentReference,
+            StateSE2 measurement,
+            StateSE2 currentReference,
             ControlSE2 nextReference) {
         m_log_measurement.log(() -> measurement);
         m_log_currentReference.log(() -> currentReference);
@@ -134,7 +134,7 @@ public abstract class ControllerSE2Base implements ControllerSE2 {
     /**
      * Wraps heading.
      */
-    DeltaSE2 positionError(ModelSE2 measurement, ModelSE2 currentReference) {
+    DeltaSE2 positionError(StateSE2 measurement, StateSE2 currentReference) {
         DeltaSE2 err = DeltaSE2.delta(measurement.pose(), currentReference.pose());
         m_log_position_error.log(() -> err);
         return err;
@@ -143,7 +143,7 @@ public abstract class ControllerSE2Base implements ControllerSE2 {
     /**
      * Velocity does not wrap.
      */
-    VelocitySE2 velocityError(ModelSE2 measurement, ModelSE2 currentReference) {
+    VelocitySE2 velocityError(StateSE2 measurement, StateSE2 currentReference) {
         VelocitySE2 err = currentReference.velocity().minus(measurement.velocity());
         m_log_velocity_error.log(() -> err);
         return err;

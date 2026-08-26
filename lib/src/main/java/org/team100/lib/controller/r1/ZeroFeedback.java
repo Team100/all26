@@ -2,7 +2,7 @@ package org.team100.lib.controller.r1;
 
 import java.util.function.DoubleUnaryOperator;
 
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 import org.wpilib.math.util.MathUtil;
 
@@ -26,7 +26,7 @@ public class ZeroFeedback implements FeedbackR1 {
     }
 
     @Override
-    public double calculate(ModelR1 measurement, ModelR1 setpoint) {
+    public double calculate(StateR1 measurement, StateR1 setpoint) {
         double xError = m_modulus.applyAsDouble(setpoint.x() - measurement.x());
         double xDotError = setpoint.v() - measurement.v();
         m_atSetpoint = Math.abs(xError) < m_xtol && Math.abs(xDotError) < m_vtol;

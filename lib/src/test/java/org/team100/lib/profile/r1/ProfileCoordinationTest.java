@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.testing.Timeless;
 
 /**
@@ -43,11 +43,11 @@ class ProfileCoordinationTest implements Timeless {
         TrapezoidProfileR1 p1 = new TrapezoidProfileR1(maxVel, maxAccel, tolerance);
         TrapezoidProfileR1 p2 = new TrapezoidProfileR1(maxVel, maxAccel, tolerance);
         // initial state at the origin at rest
-        ModelR1 i1 = new ModelR1(0, 0);
-        ModelR1 i2 = new ModelR1(0, 0);
+        StateR1 i1 = new StateR1(0, 0);
+        StateR1 i2 = new StateR1(0, 0);
         // final state at 1, at rest
-        ModelR1 g1 = new ModelR1(1, 0);
-        ModelR1 g2 = new ModelR1(2, 0);
+        StateR1 g1 = new StateR1(1, 0);
+        StateR1 g2 = new StateR1(2, 0);
 
         // how long does it take to get to the first goal?
         ControlR1 s1 = i1.control();
@@ -105,11 +105,11 @@ class ProfileCoordinationTest implements Timeless {
         WPITrapezoidProfileR1 p1 = new WPITrapezoidProfileR1(maxVel, maxAccel);
         WPITrapezoidProfileR1 p2 = new WPITrapezoidProfileR1(maxVel, maxAccel);
         // initial state at the origin at rest
-        ModelR1 i1 = new ModelR1(0, 0);
-        ModelR1 i2 = new ModelR1(0, 0);
+        StateR1 i1 = new StateR1(0, 0);
+        StateR1 i2 = new StateR1(0, 0);
         // final state at 1, at rest
-        ModelR1 g1 = new ModelR1(1, 0);
-        ModelR1 g2 = new ModelR1(2, 0);
+        StateR1 g1 = new StateR1(1, 0);
+        StateR1 g2 = new StateR1(2, 0);
 
         // how long does it take to get to the first goal?
         ControlR1 s1 = i1.control();
@@ -167,11 +167,11 @@ class ProfileCoordinationTest implements Timeless {
         TrapezoidProfileR1 p1 = new TrapezoidProfileR1(maxVel, maxAccel, tolerance);
         TrapezoidProfileR1 p2 = new TrapezoidProfileR1(maxVel, maxAccel, tolerance);
         // initial state at the origin at rest
-        ModelR1 i1 = new ModelR1(0, 0);
-        ModelR1 i2 = new ModelR1(0, 0);
+        StateR1 i1 = new StateR1(0, 0);
+        StateR1 i2 = new StateR1(0, 0);
         // final state at 1, at rest
-        ModelR1 g1 = new ModelR1(1, 0);
-        ModelR1 g2 = new ModelR1(2, 0);
+        StateR1 g1 = new StateR1(1, 0);
+        StateR1 g2 = new StateR1(2, 0);
 
         double total_time = p1.simulateForETA(0.2, i1.control(), g1);
         assertEquals(2.0, total_time, DELTA);
@@ -189,11 +189,11 @@ class ProfileCoordinationTest implements Timeless {
         WPITrapezoidProfileR1 p1 = new WPITrapezoidProfileR1(maxVel, maxAccel);
         WPITrapezoidProfileR1 p2 = new WPITrapezoidProfileR1(maxVel, maxAccel);
         // initial state at the origin at rest
-        ModelR1 i1 = new ModelR1(0, 0);
-        ModelR1 i2 = new ModelR1(0, 0);
+        StateR1 i1 = new StateR1(0, 0);
+        StateR1 i2 = new StateR1(0, 0);
         // final state at 1, at rest
-        ModelR1 g1 = new ModelR1(1, 0);
-        ModelR1 g2 = new ModelR1(2, 0);
+        StateR1 g1 = new StateR1(1, 0);
+        StateR1 g2 = new StateR1(2, 0);
 
         double total_time = p1.simulateForETA(0.2, i1.control(), g1);
         assertEquals(2.0, total_time, DELTA);
@@ -215,9 +215,9 @@ class ProfileCoordinationTest implements Timeless {
         // initial y state is stationary
         ControlR1 iy = new ControlR1(0, 0);
         // goal x state is still at the origin (i.e. a "slow and back up" profile)
-        ModelR1 gx = new ModelR1(0, 0);
+        StateR1 gx = new StateR1(0, 0);
         // goal y state is not far
-        ModelR1 gy = new ModelR1(0.5, 0);
+        StateR1 gy = new StateR1(0.5, 0);
 
         // the "default profiles" produce different ETA's
         double tx = px.simulateForETA(0.2, ix, gx);

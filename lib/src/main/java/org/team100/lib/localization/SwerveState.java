@@ -2,7 +2,7 @@ package org.team100.lib.localization;
 
 import java.util.Objects;
 
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VariableR1;
@@ -11,7 +11,7 @@ import org.wpilib.math.geometry.Rotation2d;
 
 public class SwerveState {
     /** Estimate for position and velocity. */
-    private final ModelSE2 m_state;
+    private final StateSE2 m_state;
     /** Estimate for position uncertainty. */
     private final IsotropicNoiseSE2 m_noise;
     /** Verbatim measurement of wheel position and angle. */
@@ -22,7 +22,7 @@ public class SwerveState {
     private final VariableR1 m_gyroBiasRad_S;
 
     SwerveState(
-            ModelSE2 state,
+            StateSE2 state,
             IsotropicNoiseSE2 noise,
             SwerveModulePositions positions,
             Rotation2d gyroYaw,
@@ -47,7 +47,7 @@ public class SwerveState {
                 && Objects.equals(m_state, rec.m_state);
     }
 
-    public ModelSE2 state() {
+    public StateSE2 state() {
         return m_state;
     }
 

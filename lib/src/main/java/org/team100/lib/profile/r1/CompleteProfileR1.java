@@ -2,7 +2,7 @@ package org.team100.lib.profile.r1;
 
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.util.Math100;
 
 import org.wpilib.math.util.MathUtil;
@@ -179,7 +179,7 @@ public class CompleteProfileR1 implements ProfileR1 {
     }
 
     @Override
-    public ControlR1 calculate(double dt, ControlR1 setpoint, ModelR1 goal) {
+    public ControlR1 calculate(double dt, ControlR1 setpoint, StateR1 goal) {
         if (Math.abs(goal.v()) > 1e-6)
             throw new IllegalArgumentException("This profile works only with stationary goals.");
 
@@ -268,7 +268,7 @@ public class CompleteProfileR1 implements ProfileR1 {
     private ControlR1 control(
             double dt,
             ControlR1 setpoint,
-            ModelR1 goal,
+            StateR1 goal,
             double togo,
             double direction,
             double a) {
@@ -289,7 +289,7 @@ public class CompleteProfileR1 implements ProfileR1 {
     private ControlR1 goalPath(
             double dt,
             ControlR1 setpoint,
-            ModelR1 goal,
+            StateR1 goal,
             double togo,
             double accel) {
         double nextX = togo + setpoint.v() * dt + 0.5 * accel * dt * dt;

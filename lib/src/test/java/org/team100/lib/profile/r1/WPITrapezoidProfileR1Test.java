@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 class WPITrapezoidProfileR1Test {
     private static final boolean DEBUG = false;
@@ -23,7 +23,7 @@ class WPITrapezoidProfileR1Test {
     void testTriangle() {
         WPITrapezoidProfileR1 profileX = new WPITrapezoidProfileR1(5, 2);
         ControlR1 sample = new ControlR1(0, 0);
-        final ModelR1 end = new ModelR1(1, 0);
+        final StateR1 end = new StateR1(1, 0);
 
         double tt = 0;
         // the first sample is near the starting state
@@ -60,7 +60,7 @@ class WPITrapezoidProfileR1Test {
         double maxAccel = 10;
         WPITrapezoidProfileR1 profile = new WPITrapezoidProfileR1(maxVel, maxAccel);
         ControlR1 sample = new ControlR1(0, 0);
-        final ModelR1 end = new ModelR1(3, 0);
+        final StateR1 end = new StateR1(3, 0);
         final double ETA_TOLERANCE = 0.02;
         double s = profile.solve(0.1, sample, end, 2.0, ETA_TOLERANCE);
         assertEquals(0.4375, s, DELTA);
@@ -74,7 +74,7 @@ class WPITrapezoidProfileR1Test {
         double maxAccel = 10;
         WPITrapezoidProfileR1 profile = new WPITrapezoidProfileR1(maxVel, maxAccel);
         ControlR1 sample = new ControlR1(0, 0);
-        final ModelR1 end = new ModelR1(3, 0);
+        final StateR1 end = new StateR1(3, 0);
         final double ETA_TOLERANCE = 0.02;
 
         int N = 100000;

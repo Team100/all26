@@ -11,6 +11,8 @@ import org.wpilib.math.numbers.N3;
 /**
  * For velocity control in SE2, where position is not
  * directly controlled, e.g. the swerve drive.
+ * 
+ * Includes targets for both velocity and acceleration.
  */
 public class VelocityControlSE2 {
     public static final VelocityControlSE2 ZERO = new VelocityControlSE2(0, 0, 0);
@@ -71,15 +73,14 @@ public class VelocityControlSE2 {
     }
 
     /**
-     * Integrate the velocity from the initial pose for time dt.
-     * 
-     * TODO: add acceleration term
+     * Integrate from the initial pose for time dt.
      */
     public Pose2d integrate(Pose2d initial, double dt) {
         return new Pose2d(
-                initial.getX() + m_x.v() * dt,
-                initial.getY() + m_y.v() * dt,
-                initial.getRotation().plus(new Rotation2d(m_theta.v() * dt)));
+                initial.getX() + m_x.v() * dt + m_x.a() * dt * dt / 2,
+                initial.getY() + m_y.v() * dt + m_y.a() * dt * dt / 2,
+                initial.getRotation().plus(new Rotation2d(
+                        m_theta.v() * dt + m_theta.a() * dt * dt / 2)));
     }
 
     /** Velocity only. */
@@ -88,11 +89,10 @@ public class VelocityControlSE2 {
     }
 
     /**
-     * Scales driver input to field-relative velocity control.
+     * Scales driver input to field-relative velocity control (without
+     * acceleration).
      * 
      * This makes no attempt to address infeasibilty, it just multiplies.
-     * 
-     * TODO: add support for acceleration via backwards finite difference.
      * 
      * @param v        [-1,1]
      * @param maxSpeed meters per second

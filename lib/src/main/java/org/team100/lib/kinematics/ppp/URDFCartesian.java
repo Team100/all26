@@ -7,8 +7,8 @@ import org.team100.lib.kinematics.urdf.URDFJoint.JointType;
 import org.team100.lib.kinematics.urdf.URDFJoint.Limit;
 import org.team100.lib.kinematics.urdf.URDFLink;
 import org.team100.lib.kinematics.urdf.URDFRobot;
-import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.numbers.N3;
 import org.wpilib.math.util.Nat;
@@ -50,7 +50,7 @@ public class URDFCartesian extends URDFRobot<N3> {
                                 new Limit(1000, 0, 1, 1),
                                 base,
                                 gantry,
-                                new Pose3d(),
+                                new Transform3d(),
                                 VecBuilder.fill(0, 1, 0)),
                         new URDFJoint(
                                 "gantry_head",
@@ -58,7 +58,7 @@ public class URDFCartesian extends URDFRobot<N3> {
                                 new Limit(1000, 0, 1, 1),
                                 gantry,
                                 head_stock,
-                                new Pose3d(),
+                                new Transform3d(),
                                 VecBuilder.fill(1, 0, 0)),
                         new URDFJoint(
                                 "head_spindle",
@@ -66,7 +66,7 @@ public class URDFCartesian extends URDFRobot<N3> {
                                 new Limit(1000, 0, 0.2, 1),
                                 head_stock,
                                 spindle,
-                                new Pose3d(),
+                                new Transform3d(),
                                 VecBuilder.fill(0, 0, 1)),
                         new URDFJoint(
                                 "center_point",
@@ -74,7 +74,7 @@ public class URDFCartesian extends URDFRobot<N3> {
                                 null,
                                 spindle,
                                 tool_center_point,
-                                new Pose3d(0, 0, -0.1, new Rotation3d()),
+                                new Transform3d(0, 0, -0.1, new Rotation3d()),
                                 null)));
     }
 }

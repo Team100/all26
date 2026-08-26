@@ -8,7 +8,7 @@ import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
@@ -30,7 +30,7 @@ import org.wpilib.math.geometry.Rotation2d;
  * 
  * Other SwerveModel consumers should use SwerveModelEstimate.
  */
-public class SwerveHistory implements DoubleFunction<ModelSE2> {
+public class SwerveHistory implements DoubleFunction<StateSE2> {
     /**
      * The buffer only needs to be long enough to catch stale-but-still-helpful
      * vision updates.
@@ -57,7 +57,7 @@ public class SwerveHistory implements DoubleFunction<ModelSE2> {
         m_log_timestamp = parent.type(this).doubleLogger(Level.TRACE, "sample timestamp");
         SwerveStateInterpolator interpolator = new SwerveStateInterpolator(
                 kinodynamics.getKinematics());
-        ModelSE2 state = new ModelSE2(initialPoseMeters, VelocitySE2.ZERO);
+        StateSE2 state = new StateSE2(initialPoseMeters, VelocitySE2.ZERO);
         SwerveState initialState = new SwerveState(
                 state, noise, modulePositions, gyroAngle, gyroBias);
         m_poseBuffer = new TimeInterpolatableBuffer100<>(
@@ -68,7 +68,7 @@ public class SwerveHistory implements DoubleFunction<ModelSE2> {
      * Sample the state estimate buffer.
      */
     @Override
-    public ModelSE2 apply(double timestampSeconds) {
+    public StateSE2 apply(double timestampSeconds) {
         m_log_timestamp.log(() -> timestampSeconds);
         return m_poseBuffer.get(timestampSeconds).state();
     }
@@ -81,7 +81,7 @@ public class SwerveHistory implements DoubleFunction<ModelSE2> {
             double timestampSeconds,
             Rotation2d gyroYaw,
             VariableR1 gyroBias) {
-        ModelSE2 model = new ModelSE2(pose, VelocitySE2.ZERO);
+        StateSE2 model = new StateSE2(pose, VelocitySE2.ZERO);
         SwerveState state = new SwerveState(
                 model,
                 noise,
@@ -99,7 +99,7 @@ public class SwerveHistory implements DoubleFunction<ModelSE2> {
      */
     void put(
             double timestamp,
-            ModelSE2 model,
+            StateSE2 model,
             IsotropicNoiseSE2 noise,
             SwerveModulePositions positions,
             Rotation2d gyroYaw,

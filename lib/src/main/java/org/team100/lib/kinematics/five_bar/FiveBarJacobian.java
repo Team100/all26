@@ -7,8 +7,6 @@ package org.team100.lib.kinematics.five_bar;
  * 
  * Which is itself adapted from "The Pantograph Mk-II: A Haptic Instrument"
  * Hayward, 2005 https://cim.mcgill.ca/~haptic/pub/GC-QW-VH-IROS-05.pdf
- * 
- * TODO: finish this
  */
 public class FiveBarJacobian {
     

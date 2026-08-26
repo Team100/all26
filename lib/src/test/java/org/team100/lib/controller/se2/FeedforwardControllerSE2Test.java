@@ -10,8 +10,8 @@ import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelR1;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateR1;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.state.VelocityControlSE2;
 
 public class FeedforwardControllerSE2Test {
@@ -23,14 +23,14 @@ public class FeedforwardControllerSE2Test {
         FeedforwardControllerSE2 c = new FeedforwardControllerSE2(logger, 0.01, 0.01, 0.01, 0.01);
         assertFalse(c.atReference());
         VelocityControlSE2 v = c.calculate(
-                new ModelSE2(
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
-                new ModelSE2(
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
+                new StateSE2(
+                        new StateR1(0, 0),
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
+                new StateSE2(
+                        new StateR1(0, 0),
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
                 new ControlSE2(
                         new ControlR1(0, 0),
                         new ControlR1(0, 0),
@@ -46,14 +46,14 @@ public class FeedforwardControllerSE2Test {
         FeedforwardControllerSE2 c = new FeedforwardControllerSE2(logger, 0.01, 0.01, 0.01, 0.01);
         assertFalse(c.atReference());
         VelocityControlSE2 v = c.calculate(
-                new ModelSE2(
-                        new ModelR1(1, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
-                new ModelSE2(
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
+                new StateSE2(
+                        new StateR1(1, 0),
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
+                new StateSE2(
+                        new StateR1(0, 0),
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
                 new ControlSE2(
                         new ControlR1(0, 0),
                         new ControlR1(0, 0),
@@ -69,14 +69,14 @@ public class FeedforwardControllerSE2Test {
         FeedforwardControllerSE2 c = new FeedforwardControllerSE2(logger, 0.01, 0.01, 0.01, 0.01);
         assertFalse(c.atReference());
         VelocityControlSE2 v = c.calculate(
-                new ModelSE2(
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
-                new ModelSE2(
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
+                new StateSE2(
+                        new StateR1(0, 0),
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
+                new StateSE2(
+                        new StateR1(0, 0),
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
                 new ControlSE2(
                         new ControlR1(0, 1),
                         new ControlR1(0, 0),

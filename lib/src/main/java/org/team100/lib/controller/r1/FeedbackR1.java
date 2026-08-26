@@ -1,6 +1,6 @@
 package org.team100.lib.controller.r1;
 
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 /**
  * Represents a single-output feedback controller, such as PID.
@@ -14,7 +14,7 @@ import org.team100.lib.state.ModelR1;
  */
 public interface FeedbackR1 {
 
-    double calculate(ModelR1 measurement, ModelR1 setpoint);
+    double calculate(StateR1 measurement, StateR1 setpoint);
 
     /** True if the most-recent calculation inputs are within tolerance. */
     boolean atSetpoint();

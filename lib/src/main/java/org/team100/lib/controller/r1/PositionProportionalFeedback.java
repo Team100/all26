@@ -1,6 +1,6 @@
 package org.team100.lib.controller.r1;
 
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 /**
  * A very simple feedback method, proportional to position error.
@@ -18,7 +18,7 @@ public class PositionProportionalFeedback implements FeedbackR1 {
     }
 
     @Override
-    public double calculate(ModelR1 measurement, ModelR1 setpoint) {
+    public double calculate(StateR1 measurement, StateR1 setpoint) {
         double xError = setpoint.x() - measurement.x();
         m_atSetpoint = Math.abs(xError) < m_tol;
         return m_p * xError;

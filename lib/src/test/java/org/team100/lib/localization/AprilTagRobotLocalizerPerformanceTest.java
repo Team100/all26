@@ -14,7 +14,7 @@ import org.team100.lib.camera.Camera;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
 
 import org.wpilib.math.geometry.Pose2d;
@@ -37,7 +37,7 @@ class AprilTagRobotLocalizerPerformanceTest {
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
         List<Pose2d> poseEstimate = new ArrayList<Pose2d>();
         List<Double> timeEstimate = new ArrayList<Double>();
-        DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(-Math.PI / 4));
+        DoubleFunction<StateSE2> history = t -> new StateSE2(new Rotation2d(-Math.PI / 4));
 
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override

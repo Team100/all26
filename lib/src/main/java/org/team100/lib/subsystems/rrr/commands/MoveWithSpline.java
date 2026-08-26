@@ -38,13 +38,14 @@ import org.wpilib.math.util.Nat;
  */
 public class MoveWithSpline extends MoveAndHold {
     private static final boolean DEBUG = false;
+    @SuppressWarnings("unused")
     private final LoggerFactory m_log;
     private final RRRArm m_arm;
     private final VelocitySE2 m_x0dot;
     private final Pose2d m_x1;
     private final VelocitySE2 m_x1dot;
     /** Non-null when the command is running, otherwise null. */
-    private PositionReferenceControllerRn m_referenceController;
+    private PositionReferenceControllerRn<N3> m_referenceController;
 
     public MoveWithSpline(
             LoggerFactory parent,
@@ -89,7 +90,7 @@ public class MoveWithSpline extends MoveAndHold {
             System.out.printf("duration %f\n", duration);
         SplineReferenceRn<N3> reference = new SplineReferenceRn<>(
                 spline, duration);
-        m_referenceController = new PositionReferenceControllerRn(
+        m_referenceController = new PositionReferenceControllerRn<>(
                 m_arm, reference);
     }
 

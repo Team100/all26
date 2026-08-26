@@ -9,7 +9,7 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.targeting.Drag;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation3d;
@@ -27,7 +27,7 @@ public class BallR3 implements Ball {
     private final DoubleLogger m_log_ball_altitude;
     private final DoubleArrayLogger m_log_field_ball;
     private final Drag m_drag;
-    private final Supplier<ModelSE2> m_robot;
+    private final Supplier<StateSE2> m_robot;
     private final Supplier<Rotation2d> m_azimuth;
     private final Supplier<Rotation2d> m_elevation;
     private final DoubleSupplier m_speed;
@@ -54,7 +54,7 @@ public class BallR3 implements Ball {
             LoggerFactory parent,
             LoggerFactory field,
             Drag drag,
-            Supplier<ModelSE2> robot,
+            Supplier<StateSE2> robot,
             Supplier<Rotation2d> azimuth,
             Supplier<Rotation2d> elevation,
             DoubleSupplier speed,

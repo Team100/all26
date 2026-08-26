@@ -18,12 +18,12 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.logging.LoggerFactory.ModelR1Logger;
+import org.team100.lib.logging.LoggerFactory.StateR1Logger;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateR1;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
@@ -77,7 +77,7 @@ public class DriveTargetLockWithProfile extends Command {
     private final DoubleLogger m_log_apparent_motion;
     private final DoubleArrayLogger m_log_target;
     private final ControlR1Logger m_log_setpoint;
-    private final ModelR1Logger m_log_goal;
+    private final StateR1Logger m_log_goal;
     private final DoubleLogger m_log_thetaFB;
     private final DoubleLogger m_log_thetaFF;
 
@@ -96,7 +96,7 @@ public class DriveTargetLockWithProfile extends Command {
             SwerveLimiter limiter) {
         LoggerFactory log = parent.type(this);
         m_log_setpoint = log.ControlR1Logger(Level.TRACE, "setpoint");
-        m_log_goal = log.ModelR1Logger(Level.TRACE, "goal");
+        m_log_goal = log.StateR1Logger(Level.TRACE, "goal");
         m_log_thetaFB = log.doubleLogger(Level.TRACE, "thetaFB");
         m_log_thetaFF = log.doubleLogger(Level.TRACE, "thetaFF");
         m_twistSupplier = twistSupplier;
@@ -119,18 +119,16 @@ public class DriveTargetLockWithProfile extends Command {
     @Override
     public void initialize() {
         m_heedRadiusM.accept(HEED_RADIUS_M);
-        m_limiter.updateSetpoint(new VelocityControlSE2(m_drive.getVelocity()));
-        ModelSE2 state = m_drive.getState();
+        m_limiter.updateSetpoint(m_drive.getVelocity());
+        StateSE2 state = m_drive.getState();
         // always use zero initial setpoint velocity to avoid "jerk" on init.
-        // TODO: is this ok?
-        // m_thetaSetpoint = p.theta().control();
         m_thetaSetpoint = new ControlR1(state.theta().x(), 0);
         m_thetaController.reset();
     }
 
     @Override
     public void execute() {
-        ModelSE2 state = m_drive.getState();
+        StateSE2 state = m_drive.getState();
 
         // Feedback based on the current state and the previous setpoint.
         double thetaFB = m_thetaController.calculate(state.theta(), m_thetaSetpoint.model());
@@ -148,8 +146,8 @@ public class DriveTargetLockWithProfile extends Command {
         double unwrappedBearing = TargetUtil.unwrappedAbsoluteBearing(state.pose(), target);
         // eliminate target motion to reduce noise
         // TODO: put back target motion
-        ModelR1 goal = new ModelR1(unwrappedBearing, 0);
-        // final ModelR1 goal = new ModelR1(unwrappedBearing, targetMotion);
+        StateR1 goal = new StateR1(unwrappedBearing, 0);
+        // final StateR1 goal = new StateR1(unwrappedBearing, targetMotion);
         m_log_goal.log(() -> goal);
 
         // Make sure the old setpoint uses the modulus close to the measurement.
@@ -171,7 +169,7 @@ public class DriveTargetLockWithProfile extends Command {
                 m_swerveKinodynamics.getMaxAngleSpeedRad_S());
 
         // Clip and scale user input.
-        VelocityControlSE2 scaled = VelocityControlSE2.scale(
+        VelocitySE2 scaled = VelocitySE2.scale(
                 m_twistSupplier.get().clip(1.0),
                 m_swerveKinodynamics.getMaxDriveVelocityM_S(),
                 m_swerveKinodynamics.getMaxAngleSpeedRad_S());
@@ -185,11 +183,10 @@ public class DriveTargetLockWithProfile extends Command {
         }
 
         // Override omega.
-        // TODO: remember accel
-        scaled = new VelocityControlSE2(scaled.x().v(), scaled.y().v(), omega);
+        scaled = new VelocitySE2(scaled.x(), scaled.y(), omega);
 
         // Compute field-relative accel from backwards finite difference.
-        VelocitySE2 v = scaled.velocity();
+        VelocitySE2 v = scaled;
         // Because this is field-relative, there is no centrifugal force.
         AccelerationSE2 a = v.accel(m_v, TimedRobot100.LOOP_PERIOD_S);
         m_v = v;

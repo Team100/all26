@@ -10,7 +10,7 @@ import org.team100.lib.logging.LoggerFactory.Translation2dLogger;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.WPITrapezoidProfileR1;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.subsystems.five_bar.FiveBarCartesian;
 
 import org.wpilib.math.geometry.Translation2d;
@@ -33,7 +33,7 @@ public class Move extends Command {
     private final DoubleLogger m_log_s;
 
     private ControlR1 m_setpoint;
-    private ModelR1 m_profileGoal;
+    private StateR1 m_profileGoal;
 
     private Translation2d m_start;
     private double m_distance;
@@ -67,7 +67,7 @@ public class Move extends Command {
         m_log_goal.log(() -> m_goal);
         m_distance = m_start.getDistance(m_goal);
         m_setpoint = new ControlR1();
-        m_profileGoal = new ModelR1(m_distance, 0);
+        m_profileGoal = new StateR1(m_distance, 0);
         m_done = false;
     }
 

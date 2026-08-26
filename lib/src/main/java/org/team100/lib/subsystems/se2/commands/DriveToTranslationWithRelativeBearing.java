@@ -10,7 +10,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.reference.se2.ProfileReferenceSE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.se2.commands.helper.VelocityReferenceControllerSE2;
 import org.team100.lib.targeting.TargetUtil;
@@ -69,7 +69,7 @@ public class DriveToTranslationWithRelativeBearing extends MoveAndHold {
         if (m_goal == null)
             return;
         m_reference = new ProfileReferenceSE2(m_log, m_profile, "DriveToTranslationWithRelativeBearing");
-        m_reference.setGoal(new ModelSE2(m_goal));
+        m_reference.setGoal(new StateSE2(m_goal));
         m_referenceController = new VelocityReferenceControllerSE2(
                 m_log, m_drive, m_controller, m_reference);
     }
@@ -78,7 +78,7 @@ public class DriveToTranslationWithRelativeBearing extends MoveAndHold {
     public void execute() {
         if (m_goal == null || m_referenceController == null)
             return;
-        m_reference.setGoal(new ModelSE2(m_goal));
+        m_reference.setGoal(new StateSE2(m_goal));
         m_referenceController.execute();
         m_log_field_ball.log(() -> new double[] {
                 m_goal.getX(),

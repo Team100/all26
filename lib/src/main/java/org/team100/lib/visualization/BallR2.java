@@ -8,7 +8,7 @@ import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -21,7 +21,7 @@ import org.wpilib.math.geometry.Translation2d;
 public class BallR2 implements Ball {
     private static final double DT = TimedRobot100.LOOP_PERIOD_S;
     private final DoubleArrayLogger m_log_field_ball;
-    private final Supplier<ModelSE2> m_robot;
+    private final Supplier<StateSE2> m_robot;
     private final Supplier<Rotation2d> m_azimuth;
     /** Projectile speed m/s */
     private final DoubleSupplier m_speed;
@@ -38,7 +38,7 @@ public class BallR2 implements Ball {
      */
     public BallR2(
             LoggerFactory field,
-            Supplier<ModelSE2> robot,
+            Supplier<StateSE2> robot,
             Supplier<Rotation2d> azimuth,
             DoubleSupplier speed) {
         m_log_field_ball = field.doubleArrayLogger(Level.COMP, "ball");

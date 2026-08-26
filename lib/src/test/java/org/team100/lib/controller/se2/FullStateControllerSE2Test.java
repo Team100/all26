@@ -15,8 +15,8 @@ import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelR1;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateR1;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.se2.TrajectorySE2Point;
@@ -34,14 +34,14 @@ class FullStateControllerSE2Test implements Timeless {
         FullStateControllerSE2 c = ControllerFactorySE2.test2(logger);
         assertFalse(c.atReference());
         VelocityControlSE2 t = c.calculate(
-                new ModelSE2(
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
-                new ModelSE2(
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
+                new StateSE2(
+                        new StateR1(0, 0),
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
+                new StateSE2(
+                        new StateR1(0, 0),
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
                 new ControlSE2(
                         new ControlR1(0, 0),
                         new ControlR1(0, 0),
@@ -58,14 +58,14 @@ class FullStateControllerSE2Test implements Timeless {
         assertFalse(c.atReference());
         // no velocity, no feedforward
         VelocityControlSE2 t = c.calculate(
-                new ModelSE2(
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
-                new ModelSE2(
-                        new ModelR1(1, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
+                new StateSE2(
+                        new StateR1(0, 0),
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
+                new StateSE2(
+                        new StateR1(1, 0),
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
                 new ControlSE2(
                         new ControlR1(1, 0),
                         new ControlR1(0, 0),
@@ -82,14 +82,14 @@ class FullStateControllerSE2Test implements Timeless {
         FullStateControllerSE2 c = ControllerFactorySE2.test2(logger);
         assertFalse(c.atReference());
         VelocityControlSE2 t = c.calculate(
-                new ModelSE2(
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
-                new ModelSE2(
-                        new ModelR1(0, 1), // produces error = 1
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
+                new StateSE2(
+                        new StateR1(0, 0),
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
+                new StateSE2(
+                        new StateR1(0, 1), // produces error = 1
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
                 new ControlSE2(
                         new ControlR1(0, 1), // produces FF = 1
                         new ControlR1(0, 0),
@@ -107,14 +107,14 @@ class FullStateControllerSE2Test implements Timeless {
         FullStateControllerSE2 c = ControllerFactorySE2.test2(logger);
         assertFalse(c.atReference());
         VelocityControlSE2 t = c.calculate(
-                new ModelSE2(
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
-                new ModelSE2(
-                        new ModelR1(-1, 0.5), // position + velocity error
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
+                new StateSE2(
+                        new StateR1(0, 0),
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
+                new StateSE2(
+                        new StateR1(-1, 0.5), // position + velocity error
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
                 new ControlSE2(
                         new ControlR1(-1, 0.5), // velocity reference
                         new ControlR1(0, 0),
@@ -132,14 +132,14 @@ class FullStateControllerSE2Test implements Timeless {
         assertFalse(c.atReference());
         // none of these have any velocity so there's no feedforward.
         VelocityControlSE2 t = c.calculate(
-                new ModelSE2(
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0)),
-                new ModelSE2(
-                        new ModelR1(1, 0),
-                        new ModelR1(2, 0),
-                        new ModelR1(3, 0)),
+                new StateSE2(
+                        new StateR1(0, 0),
+                        new StateR1(0, 0),
+                        new StateR1(0, 0)),
+                new StateSE2(
+                        new StateR1(1, 0),
+                        new StateR1(2, 0),
+                        new StateR1(3, 0)),
                 new ControlSE2(
                         new ControlR1(2, 0),
                         new ControlR1(4, 0),
@@ -156,14 +156,14 @@ class FullStateControllerSE2Test implements Timeless {
         FullStateControllerSE2 c = ControllerFactorySE2.test2(logger);
         assertFalse(c.atReference());
         VelocityControlSE2 t = c.calculate(
-                new ModelSE2(
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(3, 0)),
-                new ModelSE2(
-                        new ModelR1(0, 0),
-                        new ModelR1(0, 0),
-                        new ModelR1(-3, 0)),
+                new StateSE2(
+                        new StateR1(0, 0),
+                        new StateR1(0, 0),
+                        new StateR1(3, 0)),
+                new StateSE2(
+                        new StateR1(0, 0),
+                        new StateR1(0, 0),
+                        new StateR1(-3, 0)),
                 new ControlSE2(
                         new ControlR1(0, 0),
                         new ControlR1(0, 0),
@@ -179,11 +179,11 @@ class FullStateControllerSE2Test implements Timeless {
     void testErrZero() {
         FullStateControllerSE2 controller = new FullStateControllerSE2(
                 logger, 2.4, 2.4, 0.0, 0.0, 0.01, 0.02, 0.01, 0.02);
-        ModelSE2 measurement = new ModelSE2();
+        StateSE2 measurement = new StateSE2();
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 0));
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, 0);
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, 0);
         DeltaSE2 err = controller.positionError(measurement, currentReference);
         assertEquals(0, err.getX(), 0.001);
         assertEquals(0, err.getY(), 0.001);
@@ -194,12 +194,12 @@ class FullStateControllerSE2Test implements Timeless {
     void testErrXAhead() {
         FullStateControllerSE2 controller = new FullStateControllerSE2(logger, 2.4, 2.4, 0.0, 0.0, 0.01, 0.02,
                 0.01, 0.02);
-        ModelSE2 measurement = new ModelSE2(new Pose2d(1, 0, new Rotation2d()));
+        StateSE2 measurement = new StateSE2(new Pose2d(1, 0, new Rotation2d()));
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 0));
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, 0);
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, 0);
         DeltaSE2 err = controller.positionError(measurement, currentReference);
         assertEquals(-1, err.getX(), 0.001);
         assertEquals(0, err.getY(), 0.001);
@@ -210,12 +210,12 @@ class FullStateControllerSE2Test implements Timeless {
     void testErrXBehind() {
         FullStateControllerSE2 controller = new FullStateControllerSE2(logger, 2.4, 2.4, 0.0, 0.0, 0.01, 0.02,
                 0.01, 0.02);
-        ModelSE2 measurement = new ModelSE2(new Pose2d(0, 0, new Rotation2d()));
+        StateSE2 measurement = new StateSE2(new Pose2d(0, 0, new Rotation2d()));
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(1, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 0));
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, 0);
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, 0);
         DeltaSE2 err = controller.positionError(measurement, currentReference);
         assertEquals(1, err.getX(), 0.001);
         assertEquals(0, err.getY(), 0.001);
@@ -227,11 +227,11 @@ class FullStateControllerSE2Test implements Timeless {
     void testErrXAheadWithRotation() {
         FullStateControllerSE2 controller = new FullStateControllerSE2(logger, 2.4, 2.4, 0.0, 0.0, 0.01, 0.02,
                 0.01, 0.02);
-        ModelSE2 measurement = new ModelSE2(new Pose2d(1, 0, new Rotation2d(1)));
+        StateSE2 measurement = new StateSE2(new Pose2d(1, 0, new Rotation2d(1)));
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(1)), 0, 1.2),
                 VecBuilder.fill(0, 0));
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, 0);
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, 0);
         DeltaSE2 err = controller.positionError(measurement, currentReference);
         assertEquals(-1, err.getX(), 0.001);
         assertEquals(0, err.getY(), 0.001);
@@ -243,7 +243,7 @@ class FullStateControllerSE2Test implements Timeless {
         FullStateControllerSE2 controller = new FullStateControllerSE2(logger, 2.4, 2.4, 0.0, 0.0, 0.01, 0.02,
                 0.01, 0.02);
         // measurement is at the origin, facing ahead
-        ModelSE2 measurement = new ModelSE2(new Pose2d());
+        StateSE2 measurement = new StateSE2(new Pose2d());
         // motion is in a straight line, down the x axis
 
         // setpoint is also at the origin
@@ -256,7 +256,7 @@ class FullStateControllerSE2Test implements Timeless {
         double velocity = 1;
 
         // we're exactly on the setpoint so zero error
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, velocity);
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, velocity);
         DeltaSE2 positionError = controller.positionError(measurement, currentReference);
         assertEquals(0, positionError.getX(), DELTA);
         assertEquals(0, positionError.getY(), DELTA);
@@ -268,7 +268,7 @@ class FullStateControllerSE2Test implements Timeless {
         FullStateControllerSE2 controller = new FullStateControllerSE2(logger, 2.4, 2.4, 0.0, 0.0, 0.01, 0.02,
                 0.01, 0.02);
         // measurement is at the origin, facing down y
-        ModelSE2 measurement = new ModelSE2(new Pose2d(0, 0, Rotation2d.kCCW_Pi_2));
+        StateSE2 measurement = new StateSE2(new Pose2d(0, 0, Rotation2d.kCCW_Pi_2));
         // motion is in a straight line, down the x axis
         // setpoint is +x, facing down y
         PathSE2Point p = new PathSE2Point(
@@ -279,7 +279,7 @@ class FullStateControllerSE2Test implements Timeless {
         // moving
         double velocity = 1;
 
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, velocity);
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, velocity);
         DeltaSE2 positionError = controller.positionError(measurement, currentReference);
         assertEquals(1, positionError.getX(), DELTA);
         assertEquals(0, positionError.getY(), DELTA);
@@ -291,7 +291,7 @@ class FullStateControllerSE2Test implements Timeless {
         FullStateControllerSE2 controller = new FullStateControllerSE2(logger, 1, 1, 0, 0, 0.01, 0.02, 0.01,
                 0.02);
         // measurement position doesn't matter, rotation here matches velocity below
-        ModelSE2 measurement = new ModelSE2(
+        StateSE2 measurement = new StateSE2(
                 new Pose2d(1, 2, new Rotation2d(Math.PI)),
                 new VelocitySE2(1, 0, 0));
         // motion is in a straight line, down the x axis
@@ -304,7 +304,7 @@ class FullStateControllerSE2Test implements Timeless {
         // moving
         double velocity = 1;
 
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, velocity);
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, velocity);
         VelocitySE2 error = controller.velocityError(measurement, currentReference);
         // we're exactly on the setpoint so zero error
         assertEquals(0, error.x(), DELTA);
@@ -318,7 +318,7 @@ class FullStateControllerSE2Test implements Timeless {
                 0.02);
         // measurement is at the origin, facing ahead
         // measurement is the wrong velocity
-        ModelSE2 measurement = new ModelSE2(
+        StateSE2 measurement = new StateSE2(
                 new Pose2d(),
                 new VelocitySE2(0, 1, 0));
         // motion is in a straight line, down the x axis
@@ -331,7 +331,7 @@ class FullStateControllerSE2Test implements Timeless {
         // moving
         double velocity = 1;
 
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, velocity);
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, velocity);
         VelocitySE2 error = controller.velocityError(measurement, currentReference);
         // error should include both components
         assertEquals(1, error.x(), DELTA);
@@ -432,11 +432,11 @@ class FullStateControllerSE2Test implements Timeless {
         // moving
         double velocity = 1;
 
-        ModelSE2 measurement = new ModelSE2(
+        StateSE2 measurement = new StateSE2(
                 currentState,
                 new VelocitySE2(1, 0, 0));
         // feedforward should be straight ahead, no rotation.
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, velocity);
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, velocity);
         DeltaSE2 err = DeltaSE2.delta(measurement.pose(), currentReference.pose());
         VelocitySE2 speeds = controller.positionFeedback(err);
         // we're exactly on the setpoint so zero feedback
@@ -462,11 +462,11 @@ class FullStateControllerSE2Test implements Timeless {
         // moving
         double velocity = 1;
 
-        ModelSE2 measurement = new ModelSE2(
+        StateSE2 measurement = new StateSE2(
                 currentState,
                 new VelocitySE2(1, 0, 0));
         // feedforward should be straight ahead, no rotation.
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, velocity);
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, velocity);
         DeltaSE2 err = DeltaSE2.delta(measurement.pose(), currentReference.pose());
         VelocitySE2 speeds = controller.positionFeedback(err);
         // setpoint should be negative y
@@ -492,9 +492,9 @@ class FullStateControllerSE2Test implements Timeless {
         // moving
         double velocity = 1;
 
-        ModelSE2 measurement = new ModelSE2(currentState, new VelocitySE2(1, 0, 0));
+        StateSE2 measurement = new StateSE2(currentState, new VelocitySE2(1, 0, 0));
         // feedforward should be straight ahead, no rotation.
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, velocity);
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, velocity);
         DeltaSE2 err = DeltaSE2.delta(measurement.pose(), currentReference.pose());
         VelocitySE2 speeds = controller.positionFeedback(err);
         // robot is on the setpoint in translation
@@ -523,10 +523,10 @@ class FullStateControllerSE2Test implements Timeless {
         // moving
         double velocity = 1;
 
-        ModelSE2 measurement = new ModelSE2(
+        StateSE2 measurement = new StateSE2(
                 currentState,
                 new VelocitySE2(1, 0, 0));
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, velocity);
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, velocity);
         DeltaSE2 err = DeltaSE2.delta(measurement.pose(), currentReference.pose());
         VelocitySE2 speeds = controller.positionFeedback(err);
         // on target
@@ -552,8 +552,8 @@ class FullStateControllerSE2Test implements Timeless {
         // moving
         double velocity = 1;
 
-        ModelSE2 measurement = new ModelSE2(currentState, new VelocitySE2(1, 0, 0));
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, velocity);
+        StateSE2 measurement = new StateSE2(currentState, new VelocitySE2(1, 0, 0));
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, velocity);
         DeltaSE2 err = DeltaSE2.delta(measurement.pose(), currentReference.pose());
         VelocitySE2 speeds = controller.positionFeedback(err);
         // feedback is -y field relative
@@ -580,8 +580,8 @@ class FullStateControllerSE2Test implements Timeless {
         double velocity = 1;
 
         // motion is on setpoint
-        ModelSE2 measurement = new ModelSE2(currentState, new VelocitySE2(1, 0, 0));
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, velocity);
+        StateSE2 measurement = new StateSE2(currentState, new VelocitySE2(1, 0, 0));
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, velocity);
         DeltaSE2 perr = DeltaSE2.delta(measurement.pose(), currentReference.pose());
         VelocitySE2 verr = currentReference.velocity().minus(measurement.velocity());
         VelocityControlSE2 speeds = controller.fullFeedback(perr, verr);
@@ -610,10 +610,10 @@ class FullStateControllerSE2Test implements Timeless {
         double velocity = 1;
 
         // measurement is too slow
-        ModelSE2 measurement = new ModelSE2(
+        StateSE2 measurement = new StateSE2(
                 currentPose,
                 new VelocitySE2(0.5, 0, 0));
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, velocity);
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, velocity);
         DeltaSE2 perr = DeltaSE2.delta(measurement.pose(), currentReference.pose());
         VelocitySE2 verr = currentReference.velocity().minus(measurement.velocity());
         VelocityControlSE2 speeds = controller.fullFeedback(perr, verr);
@@ -630,7 +630,7 @@ class FullStateControllerSE2Test implements Timeless {
 
         // measurement is ahead in x and y and theta
         // measurement is too slow
-        ModelSE2 measurement = new ModelSE2(
+        StateSE2 measurement = new StateSE2(
                 new Pose2d(0.1, 0.1,
                         Rotation2d.kCCW_Pi_2.plus(new Rotation2d(0.1))),
                 new VelocitySE2(0.5, 0, 0));
@@ -646,7 +646,7 @@ class FullStateControllerSE2Test implements Timeless {
         // moving
         double velocity = 1;
 
-        ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, velocity);
+        StateSE2 currentReference = StateSE2.fromMovingPathPointSE2(p, velocity);
 
         // feedforward should be straight ahead, no rotation.
         DeltaSE2 perr = DeltaSE2.delta(measurement.pose(), currentReference.pose());

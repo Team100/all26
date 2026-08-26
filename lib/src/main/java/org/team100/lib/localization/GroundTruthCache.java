@@ -4,14 +4,14 @@ import java.util.function.DoubleFunction;
 
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.SideEffect;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 
 /**
  * Run the ground truth odometry updater at the right time.
  * 
  * Similar to FreshSwerveEstimate.
  */
-public class GroundTruthCache implements DoubleFunction<ModelSE2> {
+public class GroundTruthCache implements DoubleFunction<StateSE2> {
     private final SwerveHistory m_history;
     private final SideEffect m_odometry;
 
@@ -23,7 +23,7 @@ public class GroundTruthCache implements DoubleFunction<ModelSE2> {
     }
 
     @Override
-    public ModelSE2 apply(double timestampS) {
+    public StateSE2 apply(double timestampS) {
         m_odometry.run();
         return m_history.apply(timestampS);
     }

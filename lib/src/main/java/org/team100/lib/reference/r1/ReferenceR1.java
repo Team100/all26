@@ -1,6 +1,6 @@
 package org.team100.lib.reference.r1;
 
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 /**
  * Provides current and next references for servos.
@@ -11,10 +11,10 @@ import org.team100.lib.state.ModelR1;
  */
 public interface ReferenceR1 {
 
-    void setGoal(ModelR1 goal);
+    void setGoal(StateR1 goal);
 
     /** Set setpoint to measurement. */
-    void init(ModelR1 measurement);
+    void init(StateR1 measurement);
 
     SetpointsR1 get();
 

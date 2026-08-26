@@ -49,11 +49,9 @@ public class IntakeExtend extends SubsystemBase {
         final BareMotor motor2;
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
-
                 // friction test 3/12/26
                 Friction friction = new Friction(0.32, 0.32, 0.0, 0.5);
                 // tuned 3/12/26
-                // TODO: get correct pid value
                 PIDConstants pid = PIDConstants.makePositionPID(1);
                 motor = new KrakenX44Motor(
                         log1, currentLog, CAN_ID,

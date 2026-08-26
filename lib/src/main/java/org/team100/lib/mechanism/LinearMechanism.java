@@ -169,14 +169,6 @@ public class LinearMechanism implements Player {
         m_encoder.close();
     }
 
-    /**
-     * Caches should also be flushed, so the new value is available immediately.
-     * TODO: I think this is unnecessary.
-     */
-    // public void resetEncoderPosition() {
-    // m_encoder.reset();
-    // }
-
     /** For logging. */
     public void periodic() {
         m_motor.periodic();

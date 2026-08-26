@@ -7,7 +7,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.profile.r1.WPITrapezoidProfileR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.testing.Timeless;
 
 public class IncrementalProfileReferenceR1Test implements Timeless {
@@ -17,10 +17,10 @@ public class IncrementalProfileReferenceR1Test implements Timeless {
     @Test
     void testSimple() {
         WPITrapezoidProfileR1 p = new WPITrapezoidProfileR1(2, 6);
-        ModelR1 goal = new ModelR1(1, 0);
+        StateR1 goal = new StateR1(1, 0);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> p, 0.05, 0.05);
         ref.setGoal(goal);
-        ModelR1 measurement = new ModelR1();
+        StateR1 measurement = new StateR1();
         ref.init(measurement);
 
         // initial current setpoint is the measurement.

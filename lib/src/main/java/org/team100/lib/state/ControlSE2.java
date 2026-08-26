@@ -65,8 +65,8 @@ public class ControlSE2 {
         return new ControlSE2(new ControlR1(), new ControlR1(), new ControlR1());
     }
 
-    public ModelSE2 model() {
-        return new ModelSE2(m_x.model(), m_y.model(), m_theta.model());
+    public StateSE2 model() {
+        return new StateSE2(m_x.model(), m_y.model(), m_theta.model());
     }
 
     /** Component-wise difference (not geodesic) */
@@ -131,7 +131,7 @@ public class ControlSE2 {
     }
 
     public String toString() {
-        return "SwerveControl(" + m_x + ", " + m_y + ", " + m_theta + ")";
+        return "ControlSE2(" + m_x + ", " + m_y + ", " + m_theta + ")";
     }
 
 }

@@ -15,7 +15,7 @@ import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.optimization.NumericalJacobian100;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.trajectory.se2.TrajectorySE2;
 import org.team100.lib.trajectory.se2.TrajectorySE2Entry;
 import org.team100.lib.trajectory.se2.TrajectorySE2Factory;
@@ -42,10 +42,11 @@ public class PRRKinematicsTest {
     void testArmHeightComp() {
         PRRKinematics k = new PRRKinematics(5, 1, PRRKinematics.Solver.ANALYTIC);
         Translation2d wristPosition = new Translation2d(3, 3);
-        double h = k.armX(wristPosition);
+        List<Double> h = k.armX(wristPosition);
         if (DEBUG)
             System.out.println(wristPosition.getY());
-        assertEquals(4, h);
+        assertEquals(4, h.get(0));
+        assertEquals(-4, h.get(1));
     }
 
     @Test
@@ -81,11 +82,11 @@ public class PRRKinematicsTest {
         // should be straight up
         PRRKinematics k = new PRRKinematics(2, 1, PRRKinematics.Solver.ANALYTIC);
         Pose2d p = new Pose2d(4, 0, Rotation2d.kZero);
-        PRRConfig c = k.inverse(p);
+        List<PRRConfig> cs = k.inverse(p);
         // pose at 4, total is 3 long, so shoulder at 1
-        assertEquals(1, c.q1(), FINE);
-        assertEquals(0, c.q2(), FINE);
-        assertEquals(0, c.q3(), FINE);
+        assertEquals(1, cs.get(0).q1(), FINE);
+        assertEquals(0, cs.get(0).q2(), FINE);
+        assertEquals(0, cs.get(0).q3(), FINE);
     }
 
     @Test
@@ -93,22 +94,22 @@ public class PRRKinematicsTest {
         // built for a 45 45 90 triangle for
         PRRKinematics k = new PRRKinematics((2 * Math.sqrt(2)), 1, PRRKinematics.Solver.ANALYTIC);
         Pose2d p = new Pose2d(0.1, 3, Rotation2d.kCCW_90deg);
-        PRRConfig c = k.inverse(p);
+        List<PRRConfig> cs = k.inverse(p);
 
-        assertEquals(-1.9, c.q1(), 0.001);
-        assertEquals(Math.toRadians(45), c.q2(), 0.001);
-        assertEquals(Math.toRadians(45), c.q3(), 0.001);
+        assertEquals(-1.9, cs.get(0).q1(), 0.001);
+        assertEquals(Math.toRadians(45), cs.get(0).q2(), 0.001);
+        assertEquals(Math.toRadians(45), cs.get(0).q3(), 0.001);
     }
 
     @Test
     void testInverseDownArm() {
         PRRKinematics k = new PRRKinematics(2, 1, PRRKinematics.Solver.ANALYTIC);
         Pose2d p = new Pose2d(0.1, 2, Rotation2d.kCCW_90deg);
-        PRRConfig c = k.inverse(p);
+        List<PRRConfig> cs = k.inverse(p);
 
-        assertEquals(0.1 - Math.sqrt(3), c.q1(), 0.001);
-        assertEquals(Math.toRadians(30), c.q2(), 0.001);
-        assertEquals(Math.toRadians(60), c.q3(), 0.001);
+        assertEquals(0.1 - Math.sqrt(3), cs.get(0).q1(), 0.001);
+        assertEquals(Math.toRadians(30), cs.get(0).q2(), 0.001);
+        assertEquals(Math.toRadians(60), cs.get(0).q3(), 0.001);
     }
 
     @Test
@@ -116,11 +117,11 @@ public class PRRKinematicsTest {
         // arm up, wrist to the side
         PRRKinematics k = new PRRKinematics(2, 1, PRRKinematics.Solver.ANALYTIC);
         Pose2d p = new Pose2d(3, 1, Rotation2d.kCCW_90deg);
-        PRRConfig c = k.inverse(p);
+        List<PRRConfig> cs = k.inverse(p);
         // arm length is 2, wrist location is at 3
-        assertEquals(1, c.q1(), FINE);
-        assertEquals(0, c.q2(), FINE);
-        assertEquals(Math.PI / 2, c.q3(), FINE);
+        assertEquals(1, cs.get(0).q1(), FINE);
+        assertEquals(0, cs.get(0).q2(), FINE);
+        assertEquals(Math.PI / 2, cs.get(0).q3(), FINE);
     }
 
     @Test
@@ -128,10 +129,10 @@ public class PRRKinematicsTest {
         // arm to the side, wrist down
         PRRKinematics k = new PRRKinematics(2, 1, PRRKinematics.Solver.ANALYTIC);
         Pose2d p = new Pose2d(0, 2, Rotation2d.k180deg);
-        PRRConfig c = k.inverse(p);
-        assertEquals(1, c.q1(), FINE);
-        assertEquals(Math.PI / 2, c.q2(), FINE);
-        assertEquals(Math.PI / 2, c.q3(), FINE);
+        List<PRRConfig> cs = k.inverse(p);
+        assertEquals(1, cs.get(0).q1(), FINE);
+        assertEquals(Math.PI / 2, cs.get(0).q2(), FINE);
+        assertEquals(Math.PI / 2, cs.get(0).q3(), FINE);
     }
 
     @Test
@@ -139,8 +140,8 @@ public class PRRKinematicsTest {
         PRRKinematics k = new PRRKinematics(0.3, 0.1, PRRKinematics.Solver.ANALYTIC);
         Pose2d p = new Pose2d(1.178, 0.207, new Rotation2d(Math.toRadians(55)));
 
-        PRRConfig c2 = k.inverse(p);
-        Pose2d p2 = k.forward(c2);
+        List<PRRConfig> c2 = k.inverse(p);
+        Pose2d p2 = k.forward(c2.get(0));
 
         assertEquals(p.getX(), p2.getX(), FINE);
         assertEquals(p.getY(), p2.getY(), FINE);
@@ -158,10 +159,10 @@ public class PRRKinematicsTest {
         assertEquals(0.3 * Math.sqrt(3) / 2 + 0.1 * Math.sqrt(3) / 2, p2.getY(), FINE);
         assertEquals(Math.toRadians(120), p2.getRotation().getRadians(), FINE);
 
-        PRRConfig c2 = k.inverse(p2);
-        assertEquals(c.q1(), c2.q1(), FINE);
-        assertEquals(c.q2(), c2.q2(), FINE);
-        assertEquals(c.q3(), c2.q3(), FINE);
+        List<PRRConfig> c2 = k.inverse(p2);
+        assertEquals(c.q1(), c2.get(0).q1(), FINE);
+        assertEquals(c.q2(), c2.get(0).q2(), FINE);
+        assertEquals(c.q3(), c2.get(0).q3(), FINE);
     }
 
     @Test
@@ -215,30 +216,30 @@ public class PRRKinematicsTest {
 
         // some example velocities
         // zero velocity
-        ModelSE2 v = new ModelSE2(p);
+        StateSE2 v = new StateSE2(p);
 
-        PRRVelocity jv = k.inverse(v);
+        PRRVelocity jv = k.inverse(c, v);
         assertEquals(0, jv.q1dot(), COARSE);
         assertEquals(0, jv.q2dot(), COARSE);
         assertEquals(0, jv.q3dot(), COARSE);
 
         // +x
-        v = new ModelSE2(p, new VelocitySE2(1, 0, 0));
-        jv = k.inverse(v);
+        v = new StateSE2(p, new VelocitySE2(1, 0, 0));
+        jv = k.inverse(c, v);
         assertEquals(1, jv.q1dot(), COARSE);
         assertEquals(0, jv.q2dot(), COARSE);
         assertEquals(0, jv.q3dot(), COARSE);
 
         // +y
-        v = new ModelSE2(p, new VelocitySE2(0, 1, 0));
-        jv = k.inverse(v);
+        v = new StateSE2(p, new VelocitySE2(0, 1, 0));
+        jv = k.inverse(c, v);
         assertEquals(0, jv.q1dot(), COARSE);
         assertEquals(0.5, jv.q2dot(), COARSE);
         assertEquals(-0.5, jv.q3dot(), COARSE);
 
         // +theta
-        v = new ModelSE2(p, new VelocitySE2(0, 0, 1));
-        jv = k.inverse(v);
+        v = new StateSE2(p, new VelocitySE2(0, 0, 1));
+        jv = k.inverse(c, v);
         assertEquals(0, jv.q1dot(), COARSE);
         assertEquals(-0.5, jv.q2dot(), COARSE);
         assertEquals(1.5, jv.q3dot(), COARSE);
@@ -311,7 +312,7 @@ public class PRRKinematicsTest {
         Pose2d p = k.forward(c);
         VelocitySE2 v = new VelocitySE2(0, 0, 0);
         ControlSE2 m = new ControlSE2(p, v, new AccelerationSE2(0, 0, 0));
-        PRRAcceleration ja = k.inverse(m);
+        PRRAcceleration ja = k.inverse(c, m);
         assertEquals(0, ja.q1ddot(), COARSE);
         assertEquals(0, ja.q2ddot(), COARSE);
         assertEquals(0, ja.q3ddot(), COARSE);
@@ -321,7 +322,7 @@ public class PRRKinematicsTest {
         p = k.forward(c);
         v = new VelocitySE2(0, 0, 0);
         m = new ControlSE2(p, v, new AccelerationSE2(1, 0, 0));
-        ja = k.inverse(m);
+        ja = k.inverse(c, m);
         assertEquals(1, ja.q1ddot(), COARSE);
         assertEquals(0, ja.q2ddot(), COARSE);
         assertEquals(0, ja.q3ddot(), COARSE);
@@ -331,7 +332,7 @@ public class PRRKinematicsTest {
         p = k.forward(c);
         v = new VelocitySE2(0, 0, 0);
         m = new ControlSE2(p, v, new AccelerationSE2(0, 1, 0));
-        ja = k.inverse(m);
+        ja = k.inverse(c, m);
         assertEquals(0, ja.q1ddot(), COARSE);
         assertEquals(0.5, ja.q2ddot(), COARSE);
         assertEquals(-0.5, ja.q3ddot(), COARSE);
@@ -341,7 +342,7 @@ public class PRRKinematicsTest {
         p = k.forward(c);
         v = new VelocitySE2(0, 0, 0);
         m = new ControlSE2(p, v, new AccelerationSE2(0, 0, 1));
-        ja = k.inverse(m);
+        ja = k.inverse(c, m);
         assertEquals(0, ja.q1ddot(), COARSE);
         assertEquals(-0.5, ja.q2ddot(), COARSE);
         assertEquals(1.5, ja.q3ddot(), COARSE);
@@ -352,7 +353,7 @@ public class PRRKinematicsTest {
         p = k.forward(c);
         v = new VelocitySE2(0, 0, 0);
         m = new ControlSE2(p, v, new AccelerationSE2(1, 0, 0));
-        ja = k.inverse(m);
+        ja = k.inverse(c, m);
         assertEquals(1, ja.q1ddot(), COARSE);
         assertEquals(0, ja.q2ddot(), COARSE);
         assertEquals(0, ja.q3ddot(), COARSE);
@@ -363,7 +364,7 @@ public class PRRKinematicsTest {
         p = k.forward(c);
         v = new VelocitySE2(0, 0, 0);
         m = new ControlSE2(p, v, new AccelerationSE2(0, 1, 0));
-        ja = k.inverse(m);
+        ja = k.inverse(c, m);
         assertEquals(1, ja.q1ddot(), COARSE);
         assertEquals(0.707, ja.q2ddot(), COARSE);
         assertEquals(-0.707, ja.q3ddot(), COARSE);
@@ -374,7 +375,7 @@ public class PRRKinematicsTest {
         p = k.forward(c);
         v = new VelocitySE2(0, 0, 0);
         m = new ControlSE2(p, v, new AccelerationSE2(0, 1, 0));
-        ja = k.inverse(m);
+        ja = k.inverse(c, m);
         assertEquals(1, ja.q1ddot(), COARSE);
         assertEquals(0.707, ja.q2ddot(), COARSE);
         assertEquals(-0.707, ja.q3ddot(), COARSE);
@@ -396,17 +397,17 @@ public class PRRKinematicsTest {
         double dt = d / 20;
         for (double time = 0; time < d; time += dt) {
             TrajectorySE2Entry tp = t.sample(time);
-            ModelSE2 sm = ModelSE2.fromMovingPathPointSE2(tp.point().point(), tp.point().velocity());
+            StateSE2 sm = StateSE2.fromMovingPathPointSE2(tp.point().point(), tp.point().velocity());
             Pose2d p = sm.pose();
             VelocitySE2 v = sm.velocity();
-            PRRConfig c = k.inverse(p);
-            PRRVelocity jv = k.inverse(sm);
+            List<PRRConfig> c = k.inverse(p);
+            PRRVelocity jv = k.inverse(c.get(0), sm);
             if (DEBUG)
                 System.out.printf(
                         "s (%5.2f) pose(%5.2f %5.2f %5.2f) conf(%5.2f %5.2f %5.2f) tv(%5.2f %5.2f %5.2f) jv(%5.2f %5.2f %5.2f)\n",
                         time,
                         p.getX(), p.getY(), p.getRotation().getRadians(),
-                        c.q1(), c.q2(), c.q3(),
+                        c.get(0).q1(), c.get(0).q2(), c.get(0).q3(),
                         v.x(), v.y(), v.theta(),
                         jv.q1dot(), jv.q2dot(), jv.q3dot());
         }
@@ -511,30 +512,30 @@ public class PRRKinematicsTest {
 
         // some example velocities
         // zero velocity
-        ModelSE2 v = new ModelSE2(p);
+        StateSE2 v = new StateSE2(p);
 
-        PRRVelocity jv = k.inverse(v);
+        PRRVelocity jv = k.inverse(c, v);
         assertEquals(0, jv.q1dot(), COARSE);
         assertEquals(0, jv.q2dot(), COARSE);
         assertEquals(0, jv.q3dot(), COARSE);
 
         // +x
-        v = new ModelSE2(p, new VelocitySE2(1, 0, 0));
-        jv = k.inverse(v);
+        v = new StateSE2(p, new VelocitySE2(1, 0, 0));
+        jv = k.inverse(c, v);
         assertEquals(1, jv.q1dot(), COARSE);
         assertEquals(0, jv.q2dot(), COARSE);
         assertEquals(0, jv.q3dot(), COARSE);
 
         // +y
-        v = new ModelSE2(p, new VelocitySE2(0, 1, 0));
-        jv = k.inverse(v);
+        v = new StateSE2(p, new VelocitySE2(0, 1, 0));
+        jv = k.inverse(c, v);
         assertEquals(0, jv.q1dot(), COARSE);
         assertEquals(0.5, jv.q2dot(), COARSE);
         assertEquals(-0.5, jv.q3dot(), COARSE);
 
         // +theta
-        v = new ModelSE2(p, new VelocitySE2(0, 0, 1));
-        jv = k.inverse(v);
+        v = new StateSE2(p, new VelocitySE2(0, 0, 1));
+        jv = k.inverse(c, v);
         assertEquals(0, jv.q1dot(), COARSE);
         assertEquals(-0.5, jv.q2dot(), COARSE);
         assertEquals(1.5, jv.q3dot(), COARSE);
@@ -558,7 +559,7 @@ public class PRRKinematicsTest {
                         Nat.N3(),
                         Nat.N3(),
                         f,
-                        k.inverse(p).toVector());
+                        k.inverse(p).get(0).toVector());
                 double det = j.det();
                 if (DEBUG)
                     System.out.printf("%8.2f", det);
@@ -586,12 +587,12 @@ public class PRRKinematicsTest {
                     p.getX() - prev.getX(),
                     p.getY() - prev.getY(),
                     p.getRotation().minus(prev.getRotation()).getRadians());
-            PRRConfig c = k.inverse(p);
+            List<PRRConfig> c = k.inverse(p);
             Matrix<N3, N3> j = NumericalJacobian100.numericalJacobian(
                     Nat.N3(),
                     Nat.N3(),
                     f,
-                    c.toVector());
+                    c.get(0).toVector());
             Matrix<N3, N3> jinv = j.inv();
             Vector<N3> cv = new Vector<>(jinv.times(tv));
             if (DEBUG)
@@ -599,7 +600,7 @@ public class PRRKinematicsTest {
                         "s (%5.2f) pose(%5.2f %5.2f %5.2f) conf(%5.2f %5.2f %5.2f) tv(%5.2f %5.2f %5.2f) cv(%5.2f %5.2f %5.2f)\n",
                         s,
                         p.getX(), p.getY(), p.getRotation().getRadians(),
-                        c.q1(), c.q2(), c.q3(),
+                        c.get(0).q1(), c.get(0).q2(), c.get(0).q3(),
                         tv.get(0), tv.get(1), tv.get(2),
                         cv.get(0), cv.get(1), cv.get(2));
             prev = p;
@@ -622,17 +623,17 @@ public class PRRKinematicsTest {
         double dt = d / 20;
         for (double time = 0; time < d; time += dt) {
             TrajectorySE2Entry tp = t.sample(time);
-            ModelSE2 sm = ModelSE2.fromMovingPathPointSE2(tp.point().point(), tp.point().velocity());
+            StateSE2 sm = StateSE2.fromMovingPathPointSE2(tp.point().point(), tp.point().velocity());
             Pose2d p = sm.pose();
             VelocitySE2 v = sm.velocity();
-            PRRConfig c = k.inverse(p);
-            PRRVelocity jv = k.inverse(sm);
+            List<PRRConfig> c = k.inverse(p);
+            PRRVelocity jv = k.inverse(c.get(0), sm);
             if (DEBUG)
                 System.out.printf(
                         "s (%5.2f) pose(%5.2f %5.2f %5.2f) conf(%5.2f %5.2f %5.2f) tv(%5.2f %5.2f %5.2f) jv(%5.2f %5.2f %5.2f)\n",
                         time,
                         p.getX(), p.getY(), p.getRotation().getRadians(),
-                        c.q1(), c.q2(), c.q3(),
+                        c.get(0).q1(), c.get(0).q2(), c.get(0).q3(),
                         v.x(), v.y(), v.theta(),
                         jv.q1dot(), jv.q2dot(), jv.q3dot());
         }

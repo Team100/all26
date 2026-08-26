@@ -1,23 +1,23 @@
 package org.team100.lib.reference.se2;
 
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 
 /** Always returns the same reference. */
 public class ConstantReferenceSE2 implements ReferenceSE2 {
-    private final ModelSE2 m_goal;
+    private final StateSE2 m_goal;
 
-    public ConstantReferenceSE2(ModelSE2 goal) {
+    public ConstantReferenceSE2(StateSE2 goal) {
         m_goal = goal;
     }
 
     @Override
-    public void initialize(ModelSE2 measurement) {
+    public void initialize(StateSE2 measurement) {
         //
     }
 
     @Override
-    public ModelSE2 current() {
+    public StateSE2 current() {
         return m_goal;
     }
 
@@ -32,7 +32,7 @@ public class ConstantReferenceSE2 implements ReferenceSE2 {
     }
 
     @Override
-    public ModelSE2 goal() {
+    public StateSE2 goal() {
         return m_goal;
     }
 

@@ -17,7 +17,7 @@ import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.sensor.gyro.Gyro;
 import org.team100.lib.sensor.gyro.MockGyro;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
@@ -58,7 +58,7 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
 
     private static void verify(double x, double sigma, SwerveHistory history, double timestamp) {
         SwerveState state = history.getRecord(timestamp);
-        ModelSE2 model = state.state();
+        StateSE2 model = state.state();
         Pose2d estimate = model.pose();
         assertEquals(x, estimate.getX(), DELTA);
         assertEquals(0, estimate.getY(), DELTA);
@@ -72,7 +72,7 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         assertEquals(sigma, history.getRecord(timestamp).gyroBias().sigma(), DELTA);
     }
 
-    private static void verifyVelocity(double xV, ModelSE2 state) {
+    private static void verifyVelocity(double xV, StateSE2 state) {
         VelocitySE2 v = state.velocity();
         assertEquals(xV, v.x(), DELTA);
     }
@@ -958,7 +958,7 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
             positions = new SwerveModulePositions(newPositions[0], newPositions[1], newPositions[2], newPositions[3]);
 
             ou.update(t);
-            ModelSE2 xHat = estimator.apply(t);
+            StateSE2 xHat = estimator.apply(t);
 
             double error = groundTruthState.pose.getTranslation().getDistance(
                     xHat.pose().getTranslation());

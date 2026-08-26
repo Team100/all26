@@ -12,7 +12,7 @@ import org.team100.lib.localization.VisionUpdater;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.network.Sync;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.visualization.RobotPoseVisualization;
 import org.wpilib.command2.CommandScheduler;
@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
         //
         LoggerFactory driveLog = logger.name("Drive");
         AprilTagFieldLayoutWithCorrectOrientation layout = AprilTagFieldLayoutWithCorrectOrientation.getLayout();
-        DoubleFunction<ModelSE2> history = (x) -> new ModelSE2();
+        DoubleFunction<StateSE2> history = (x) -> new StateSE2();
         m_localizer = new AprilTagCornerRobotLocalizer(
                 driveLog,
                 fieldLogger,

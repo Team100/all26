@@ -50,7 +50,7 @@ import org.team100.lib.sensor.position.absolute.wpi.AS5048RotaryPositionSensor;
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 import org.team100.lib.sensor.position.incremental.ctre.Talon6Encoder;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.prr.SubsystemPRR;
 import org.team100.lib.subsystems.prr.commands.FollowJointProfiles;
 import org.team100.lib.subsystems.se2.PositionSubsystemSE2;
@@ -314,12 +314,12 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
     }
 
     @Override
-    public ModelSE2 getState() {
+    public StateSE2 getState() {
         PRRConfig c = getConfig();
         PRRVelocity jv = getJointVelocity();
         Pose2d p = m_kinematics.forward(c);
         VelocitySE2 v = m_kinematics.forward(c, jv);
-        return new ModelSE2(p, v);
+        return new StateSE2(p, v);
     }
 
     // for testing only
@@ -328,8 +328,9 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
         AccelerationSE2 a = new AccelerationSE2(0, 0, 0);
         ControlSE2 control = new ControlSE2(pose, v, a);
 
-        PRRVelocity jv = m_kinematics.inverse(control.model());
-        PRRAcceleration ja = m_kinematics.inverse(control);
+        PRRConfig q = getConfig();
+        PRRVelocity jv = m_kinematics.inverse(q, control.model());
+        PRRAcceleration ja = m_kinematics.inverse(q, control);
         PRREffort jf = m_dynamics.forward(getConfig(), jv, ja);
 
         m_elevatorFront.setVelocity(jv.q1dot(), jf.f1());
@@ -346,18 +347,20 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
     @Override
     public void set(ControlSE2 control) {
         Pose2d pose = control.pose();
-        PRRConfig config = m_kinematics.inverse(pose);
-        if (DEBUG) {
-            System.out.printf("pose %s config %s\n", StrUtil.pose2Str(pose), config);
-        }
-        if (config.isNaN()) {
+        List<PRRConfig> configs = m_kinematics.inverse(pose);
+        if (configs.isEmpty()) {
             if (DEBUG)
                 System.out.println("skipping invalid config");
             stop();
             return;
         }
-        PRRVelocity jv = m_kinematics.inverse(control.model());
-        PRRAcceleration ja = m_kinematics.inverse(control);
+        // for now always use the "up" config.
+        PRRConfig config = configs.get(0);
+        if (DEBUG) {
+            System.out.printf("pose %s config %s\n", StrUtil.pose2Str(pose), config);
+        }
+        PRRVelocity jv = m_kinematics.inverse(config, control.model());
+        PRRAcceleration ja = m_kinematics.inverse(config, control);
         set(config, jv, ja);
     }
 

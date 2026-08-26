@@ -10,7 +10,7 @@ import org.team100.lib.hid.Velocity;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.visualization.VizUtil;
 
 import org.wpilib.math.geometry.Pose2d;
@@ -30,9 +30,9 @@ public class ManualPose {
     private static final double MAX_OMEGA = 2.0;
     private final DoubleArrayLogger m_log_field_robot;
     private final Supplier<Velocity> m_v;
-    private final ObjectCache<ModelSE2> m_stateCache;
+    private final ObjectCache<StateSE2> m_stateCache;
     /** Used only by update(). */
-    private ModelSE2 m_state;
+    private StateSE2 m_state;
 
     public ManualPose(
             LoggerFactory fieldLogger,
@@ -40,11 +40,11 @@ public class ManualPose {
             Pose2d initial) {
         m_log_field_robot = fieldLogger.doubleArrayLogger(Level.COMP, "robot");
         m_v = v;
-        m_state = new ModelSE2(initial);
+        m_state = new StateSE2(initial);
         m_stateCache = Cache.of(this::update);
     }
 
-    public ModelSE2 getState() {
+    public StateSE2 getState() {
         return m_stateCache.get();
     }
 
@@ -61,12 +61,12 @@ public class ManualPose {
         return VizUtil.poseToArray(pose);
     }
 
-    private ModelSE2 update() {
+    private StateSE2 update() {
         Velocity v = m_v.get();
         double vx = v.x() * MAX_V;
         double vy = v.y() * MAX_V;
         double omega = v.theta() * MAX_OMEGA;
-        m_state = new ModelSE2(
+        m_state = new StateSE2(
                 new Pose2d(
                         m_state.pose().getX() + vx * DT,
                         m_state.pose().getY() + vy * DT,

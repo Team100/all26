@@ -41,8 +41,7 @@ public class OdometryNoise {
     private static double rotation(double distanceM, double rotationRad) {
         double norm = Math.abs(distanceM) + Math.abs(rotationRad);
         // We kinda measured 5% error in the best (slow) case.
-        // TODO: I boosted this to help rely more on the gyro
-        // TODO: Calibrate it!
+        // I boosted this to help rely more on the gyro
         // double lowSpeedError = 0.05;
         double lowSpeedError = 0.25;
         // This is just a guess

@@ -54,9 +54,7 @@ public class URDFRobot<Q extends Num> {
 
     private final Solver m_solver;
     private static final int DEBUG = 0;
-    @SuppressWarnings("unused")
     private final String m_name;
-    @SuppressWarnings("unused")
     private final List<URDFLink> m_links;
     private final List<URDFJoint> m_joints;
     private final Nat<Q> m_qDim;

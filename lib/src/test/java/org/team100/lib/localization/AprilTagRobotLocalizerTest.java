@@ -15,7 +15,7 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.util.StrUtil;
@@ -38,14 +38,14 @@ class AprilTagRobotLocalizerTest implements Timeless {
         private static final LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());
         private static final LoggerFactory fieldLogger = new TestLoggerFactory(new TestPrimitiveLogger());
 
-        @Test
-        void testEndToEnd() throws IOException, InterruptedException {
-                AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
-                                "2025-reefscape.json");
-                // these lists receive the updates
-                final List<Pose2d> poseEstimate = new ArrayList<Pose2d>();
-                final List<Double> timeEstimate = new ArrayList<Double>();
-                DoubleFunction<ModelSE2> history = t -> new ModelSE2();
+    @Test
+    void testEndToEnd() throws IOException, InterruptedException {
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
+                "2025-reefscape.json");
+        // these lists receive the updates
+        final List<Pose2d> poseEstimate = new ArrayList<Pose2d>();
+        final List<Double> timeEstimate = new ArrayList<Double>();
+        DoubleFunction<StateSE2> history = t -> new StateSE2();
 
                 VisionUpdater visionUpdater = new VisionUpdater() {
                         @Override
@@ -118,7 +118,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
                 final List<Pose2d> poseEstimate = new ArrayList<Pose2d>();
                 final List<Double> timeEstimate = new ArrayList<Double>();
 
-                DoubleFunction<ModelSE2> history = t -> new ModelSE2();
+        DoubleFunction<StateSE2> history = t -> new StateSE2();
 
                 VisionUpdater visionUpdater = new VisionUpdater() {
                         @Override
@@ -164,21 +164,21 @@ class AprilTagRobotLocalizerTest implements Timeless {
                 assertEquals(0, result.getRotation().getRadians(), DELTA); // facing along x
         }
 
-        @Test
-        void testEstimateRobotPose2() throws IOException {
-                // robot is panned right 45, translation is ignored.
-                AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
-                                "2025-reefscape.json");
-                final List<Pose2d> poseEstimate = new ArrayList<Pose2d>();
-                final List<Double> timeEstimate = new ArrayList<Double>();
-                DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(-Math.PI / 4));
-                VisionUpdater visionUpdater = new VisionUpdater() {
-                        @Override
-                        public void put(double t, NoisyPose2d p) {
-                                poseEstimate.add(p.pose());
-                                timeEstimate.add(t);
-                        }
-                };
+    @Test
+    void testEstimateRobotPose2() throws IOException {
+        // robot is panned right 45, translation is ignored.
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
+                "2025-reefscape.json");
+        final List<Pose2d> poseEstimate = new ArrayList<Pose2d>();
+        final List<Double> timeEstimate = new ArrayList<Double>();
+        DoubleFunction<StateSE2> history = t -> new StateSE2(new Rotation2d(-Math.PI / 4));
+        VisionUpdater visionUpdater = new VisionUpdater() {
+            @Override
+            public void put(double t, NoisyPose2d p) {
+                poseEstimate.add(p.pose());
+                timeEstimate.add(t);
+            }
+        };
 
                 AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
                                 logger, fieldLogger, layout, history, visionUpdater, () -> Optional.of(Alliance.RED));
@@ -230,11 +230,11 @@ class AprilTagRobotLocalizerTest implements Timeless {
                 assertEquals(-5, c.getDegrees(), DELTA);
         }
 
-        @Test
-        void testCase1() throws IOException {
-                AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
-                                "2025-reefscape.json");
-                DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(3 * Math.PI / 4));
+    @Test
+    void testCase1() throws IOException {
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
+                "2025-reefscape.json");
+        DoubleFunction<StateSE2> history = t -> new StateSE2(new Rotation2d(3 * Math.PI / 4));
 
                 VisionUpdater visionUpdater = new VisionUpdater() {
                         @Override
@@ -271,18 +271,18 @@ class AprilTagRobotLocalizerTest implements Timeless {
                 assertEquals(1.868, tag4pose.getZ(), DELTA);
                 System.out.println(StrUtil.poseStr(tag4pose));
 
-                DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(0));
-                VisionUpdater visionUpdater = new VisionUpdater() {
-                        @Override
-                        public void put(double t, NoisyPose2d p) {
-                                System.out.println(p);
-                                // if the camera is 1m away at 30 deg down then the x dimension is sqrt(3)/2
-                                assertEquals(8.272 - Math.sqrt(3) / 2, p.pose().getX(), DELTA);
-                                assertEquals(1.914, p.pose().getY(), DELTA);
-                        }
-                };
-                AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                                logger, fieldLogger, layout, history, visionUpdater, () -> Optional.of(Alliance.RED));
+        DoubleFunction<StateSE2> history = t -> new StateSE2(new Rotation2d(0));
+        VisionUpdater visionUpdater = new VisionUpdater() {
+            @Override
+            public void put(double t, NoisyPose2d p) {
+                System.out.println(p);
+                // if the camera is 1m away at 30 deg down then the x dimension is sqrt(3)/2
+                assertEquals(8.272 - Math.sqrt(3) / 2, p.pose().getX(), DELTA);
+                assertEquals(1.914, p.pose().getY(), DELTA);
+            }
+        };
+        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
+                logger, fieldLogger, layout, history, visionUpdater, () -> Optional.of(Alliance.RED));
 
                 // tag is 1m away on bore
                 final Blip tag4 = new Blip(0, 4, new Transform3d(
@@ -307,14 +307,14 @@ class AprilTagRobotLocalizerTest implements Timeless {
                 assertEquals(1.914, tag4pose.getY(), DELTA);
                 assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-                DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(Math.PI));
-                VisionUpdater visionUpdater = new VisionUpdater() {
-                        @Override
-                        public void put(double t, NoisyPose2d p) {
-                                assertEquals(7.272 - Math.sqrt(3) / 2, p.pose().getX(), DELTA);
-                                assertEquals(1.914, p.pose().getY(), DELTA);
-                        }
-                };
+        DoubleFunction<StateSE2> history = t -> new StateSE2(new Rotation2d(Math.PI));
+        VisionUpdater visionUpdater = new VisionUpdater() {
+            @Override
+            public void put(double t, NoisyPose2d p) {
+                assertEquals(7.272 - Math.sqrt(3) / 2, p.pose().getX(), DELTA);
+                assertEquals(1.914, p.pose().getY(), DELTA);
+            }
+        };
 
                 AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
                                 logger, fieldLogger, layout, history, visionUpdater, () -> Optional.of(Alliance.RED));
@@ -340,7 +340,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
                 assertEquals(1.914, tag4pose.getY(), DELTA);
                 assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-                DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(Math.PI));
+        DoubleFunction<StateSE2> history = t -> new StateSE2(new Rotation2d(Math.PI));
 
                 VisionUpdater visionUpdater = new VisionUpdater() {
                         @Override
@@ -376,7 +376,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
                 assertEquals(1.914, tag4pose.getY(), DELTA);
                 assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-                DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(Math.PI));
+        DoubleFunction<StateSE2> history = t -> new StateSE2(new Rotation2d(Math.PI));
 
                 VisionUpdater visionUpdater = new VisionUpdater() {
                         @Override
@@ -409,7 +409,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
                 assertEquals(1.914, tag4pose.getY(), DELTA);
                 assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-                DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(Math.PI));
+        DoubleFunction<StateSE2> history = t -> new StateSE2(new Rotation2d(Math.PI));
 
                 VisionUpdater visionUpdater = new VisionUpdater() {
                         @Override
@@ -442,7 +442,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
                 assertEquals(1.914, tag4pose.getY(), DELTA);
                 assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-                DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(-3 * Math.PI / 4));
+        DoubleFunction<StateSE2> history = t -> new StateSE2(new Rotation2d(-3 * Math.PI / 4));
 
                 VisionUpdater visionUpdater = new VisionUpdater() {
                         @Override
@@ -475,7 +475,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
                 assertEquals(1.914, tag4pose.getY(), DELTA);
                 assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-                DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(3 * Math.PI / 4));
+        DoubleFunction<StateSE2> history = t -> new StateSE2(new Rotation2d(3 * Math.PI / 4));
 
                 VisionUpdater visionUpdater = new VisionUpdater() {
                         @Override
@@ -506,7 +506,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
                 assertEquals(1.914, tag4pose.getY(), DELTA);
                 assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-                DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(3 * Math.PI / 4));
+        DoubleFunction<StateSE2> history = t -> new StateSE2(new Rotation2d(3 * Math.PI / 4));
 
                 VisionUpdater visionUpdater = new VisionUpdater() {
                         @Override
@@ -538,7 +538,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
                 assertEquals(1.914, tag4pose.getY(), DELTA);
                 assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-                DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(3 * Math.PI / 4));
+        DoubleFunction<StateSE2> history = t -> new StateSE2(new Rotation2d(3 * Math.PI / 4));
 
                 VisionUpdater visionUpdater = new VisionUpdater() {
                         @Override

@@ -7,7 +7,7 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.IsotropicNoiseSE2Logger;
 import org.team100.lib.logging.LoggerFactory.SwerveStateLogger;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.uncertainty.VariableR1;
@@ -102,7 +102,7 @@ public class NudgingVisionUpdater implements VisionUpdater {
             SwerveState sample, NoisyPose2d noisyMeasurement) {
 
         // Nudge the sample pose towards the measurement.
-        ModelSE2 sampleModel = sample.state();
+        StateSE2 sampleModel = sample.state();
 
         NoisyPose2d noisySample = new NoisyPose2d(
                 sampleModel.pose(), sample.noise());
@@ -110,7 +110,7 @@ public class NudgingVisionUpdater implements VisionUpdater {
         NoisyPose2d nudged = nudge(noisySample, noisyMeasurement);
 
         // Velocity is unchanged.
-        ModelSE2 model = new ModelSE2(nudged.pose(), sampleModel.velocity());
+        StateSE2 model = new StateSE2(nudged.pose(), sampleModel.velocity());
 
         IsotropicNoiseSE2 noise = nudged.noise();
 

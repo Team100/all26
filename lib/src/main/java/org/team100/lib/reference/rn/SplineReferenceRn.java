@@ -7,13 +7,13 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.spline.rn.SplineRn;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.util.StrUtil;
 import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.util.Num;
 
 /** Produces references based on an N-dimensional spline. */
-public class SplineReferenceRn<N extends Num> implements ReferenceRn {
+public class SplineReferenceRn<N extends Num> implements ReferenceRn<N> {
     private static final boolean DEBUG = false;
     private final SplineRn<N> m_spline;
     private final double m_duration;
@@ -30,11 +30,11 @@ public class SplineReferenceRn<N extends Num> implements ReferenceRn {
     }
 
     @Override
-    public List<ModelR1> current() {
+    public List<StateR1> current() {
         Vector<N> sample = sample(progress());
-        List<ModelR1> l = new ArrayList<>();
+        List<StateR1> l = new ArrayList<>();
         for (int i = 0; i < sample.getNumRows(); ++i) {
-            l.add(new ModelR1(sample.get(i)));
+            l.add(new StateR1(sample.get(i)));
         }
         return l;
     }

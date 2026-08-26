@@ -4,7 +4,7 @@ import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 import org.wpilib.math.controller.PIDController;
 
@@ -43,7 +43,7 @@ public class PIDFeedback implements FeedbackR1 {
      * Observe position error, produce PID output.
      */
     @Override
-    public double calculate(ModelR1 measurement, ModelR1 setpoint) {
+    public double calculate(StateR1 measurement, StateR1 setpoint) {
         // System.out.printf("PIDFeedback measurement %s setpoint %s\n", measurement,
         // setpoint);
         double u = m_controller.calculate(measurement.x(), setpoint.x());

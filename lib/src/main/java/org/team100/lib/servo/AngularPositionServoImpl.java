@@ -10,7 +10,7 @@ import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 import org.wpilib.math.util.MathUtil;
 
@@ -38,7 +38,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
     /**
      * Goal is "unwrapped" i.e. it's it's [-inf, inf], not [-pi,pi]
      */
-    private ModelR1 m_unwrappedGoal = new ModelR1(0, 0);
+    private StateR1 m_unwrappedGoal = new StateR1(0, 0);
     /**
      * Setpoint is "unwrapped" i.e. it's [-inf, inf], not [-pi,pi]
      * This is written when it is the setpoint for the "next" time step, i.e. the
@@ -235,7 +235,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
     }
 
     @Override
-    public ModelR1 getUnwrappedGoal() {
+    public StateR1 getUnwrappedGoal() {
         return m_unwrappedGoal;
     }
 
@@ -315,14 +315,14 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
     ///////////////////////////////////////////
 
     private void actuateProfiledImpl(double unwrappedGoalX) {
-        initReference(new ModelR1(unwrappedGoalX, 0));
+        initReference(new StateR1(unwrappedGoalX, 0));
         SetpointsR1 unwrappedSetpoint = m_ref.get();
         m_nextUnwrappedSetpoint = unwrappedSetpoint.next();
         actuate(unwrappedSetpoint);
     }
 
     /** The reference only understands unwrapped angles. */
-    private void initReference(ModelR1 unwrappedGoal) {
+    private void initReference(StateR1 unwrappedGoal) {
         if (DEBUG) {
             System.out.printf("initReference old %s new %s\n", m_unwrappedGoal, unwrappedGoal);
         }

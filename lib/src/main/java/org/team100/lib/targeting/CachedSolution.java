@@ -12,7 +12,7 @@ import org.team100.lib.geometry.r2.StateR2;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 
 import org.wpilib.math.geometry.Translation2d;
 
@@ -21,7 +21,7 @@ import org.wpilib.math.geometry.Translation2d;
  * solution that may be used by multiple consumers.
  */
 public class CachedSolution {
-    private final Supplier<ModelSE2> m_state;
+    private final Supplier<StateSE2> m_state;
     private final Supplier<Optional<Translation2d>> m_target;
     private final Solver m_solver;
     private final ObjectCache<Optional<Solution>> m_cache;
@@ -35,7 +35,7 @@ public class CachedSolution {
      */
     public CachedSolution(
             LoggerFactory fieldLogger,
-            Supplier<ModelSE2> state,
+            Supplier<StateSE2> state,
             Supplier<Optional<Translation2d>> target,
             Solver solver) {
         m_state = state;
@@ -68,7 +68,7 @@ public class CachedSolution {
 
     private Optional<Solution> solve() {
         // This is the *current* state
-        ModelSE2 state = m_state.get();
+        StateSE2 state = m_state.get();
 
         // We're aiming at the *next* timestep.
         state = state.evolve(TimedRobot100.LOOP_PERIOD_S);

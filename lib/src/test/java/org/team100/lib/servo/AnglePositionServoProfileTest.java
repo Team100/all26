@@ -16,7 +16,7 @@ import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.sensor.position.absolute.MockRotaryPositionSensor;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.testing.Timeless;
 
 class AnglePositionServoProfileTest implements Timeless {
@@ -53,7 +53,7 @@ class AnglePositionServoProfileTest implements Timeless {
     @Test
     void testProfile() {
         // the profile pays attention to time, so this needs to be in the test method.
-        ref.init(new ModelR1());
+        ref.init(new StateR1());
         verify(0.1, 0.005, 0.1);
         verify(0.2, 0.020, 0.2);
         verify(0.3, 0.045, 0.3);

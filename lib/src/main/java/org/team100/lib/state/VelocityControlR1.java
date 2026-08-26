@@ -4,6 +4,8 @@ package org.team100.lib.state;
  * For velocity control, where position is not directly
  * controlled, e.g. an intake roller or shooter drum.
  * 
+ * Includes targets for both velocity and acceleration.
+ * 
  * @param v velocity
  * @param a acceleration
  */

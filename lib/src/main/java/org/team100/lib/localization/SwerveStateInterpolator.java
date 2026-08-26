@@ -1,7 +1,7 @@
 package org.team100.lib.localization;
 
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveDriveKinematics100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDeltas;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
@@ -60,7 +60,7 @@ public class SwerveStateInterpolator implements Interpolator<SwerveState> {
         VelocitySE2 velocity = startVelocity.plus(
                 endVelocity.minus(startVelocity).times(t));
 
-        ModelSE2 newState = new ModelSE2(pose, velocity);
+        StateSE2 newState = new StateSE2(pose, velocity);
         IsotropicNoiseSE2 newNoise = startValue.noise().interpolate(
                 endValue.noise(), t);
 

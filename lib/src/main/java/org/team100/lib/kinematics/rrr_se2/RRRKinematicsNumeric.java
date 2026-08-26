@@ -10,6 +10,7 @@ import org.team100.lib.kinematics.urdf.URDFLink;
 import org.team100.lib.kinematics.urdf.URDFRobot;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.numbers.N3;
@@ -46,25 +47,25 @@ public class RRRKinematicsNumeric {
         URDFJoint shoulder = new URDFJoint("shoulder",
                 JointType.revolute, new Limit(1000.0, -Math.PI, 0, 0.5),
                 base, upper_arm_link,
-                new Pose3d(), VecBuilder.fill(0, 1, 0));
+                new Transform3d(), VecBuilder.fill(0, 1, 0));
         // elbow is l1 away from shoulder, angle zero is +x axis
         // range is always "down", like an excavator.
         URDFJoint elbow = new URDFJoint("elbow",
                 JointType.revolute, new Limit(1000.0, 0, Math.PI, 0.5),
                 upper_arm_link, lower_arm_link,
-                new Pose3d(l1, 0, 0, new Rotation3d()), VecBuilder.fill(0, 1, 0));
+                new Transform3d(l1, 0, 0, new Rotation3d()), VecBuilder.fill(0, 1, 0));
         // wrist is l2 away from elbow, angle zero is +x axis.
         // range is +/- 90
         URDFJoint wrist = new URDFJoint("wrist",
                 JointType.revolute,
                 new Limit(1000.0, -Math.PI / 2, Math.PI / 2, 0.5),
                 lower_arm_link, end_effector,
-                new Pose3d(l2, 0, 0, new Rotation3d()), VecBuilder.fill(0, 1, 0));
+                new Transform3d(l2, 0, 0, new Rotation3d()), VecBuilder.fill(0, 1, 0));
         // center point is l3 away from the wrist, zero +x
         URDFJoint center_point = new URDFJoint("center_point",
                 JointType.fixed, null,
                 end_effector, tool_center_point,
-                new Pose3d(l3, 0, 0, new Rotation3d()), null);
+                new Transform3d(l3, 0, 0, new Rotation3d()), null);
 
         m_arm = new URDFRobot<>(
                 URDFRobot.Solver.NEWTON,
@@ -90,9 +91,6 @@ public class RRRKinematicsNumeric {
                 "elbow", q.get(1),
                 "wrist", q.get(2));
         Map<String, Pose3d> poses = m_arm.forward(qMap);
-        for (Map.Entry<String, Pose3d> e : poses.entrySet()) {
-            System.out.printf("%s %s\n", e.getKey(), e.getValue());
-        }
         return poses.get("center_point");
     }
 

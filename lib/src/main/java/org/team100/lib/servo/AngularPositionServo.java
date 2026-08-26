@@ -1,7 +1,7 @@
 package org.team100.lib.servo;
 
 import org.team100.lib.music.Player;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 /**
  * Angular position control, e.g. for swerve steering axes or arm axes.
@@ -116,7 +116,7 @@ public interface AngularPositionServo extends Player {
     double getUnwrappedPositionRad();
 
     /** For testing. */
-    ModelR1 getUnwrappedGoal();
+    StateR1 getUnwrappedGoal();
 
     /** A valid setpoint exists. Not true when the goal is inaccessible. */
     boolean validSetpoint();

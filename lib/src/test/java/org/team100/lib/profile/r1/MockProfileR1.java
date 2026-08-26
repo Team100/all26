@@ -1,7 +1,7 @@
 package org.team100.lib.profile.r1;
 
 import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.StateR1;
 
 public class MockProfileR1 implements ProfileR1 {
     ControlR1 result;
@@ -9,7 +9,7 @@ public class MockProfileR1 implements ProfileR1 {
     int count = 0;
 
     @Override
-    public ControlR1 calculate(double dt, ControlR1 initial, ModelR1 goal) {
+    public ControlR1 calculate(double dt, ControlR1 initial, StateR1 goal) {
         count++;
         return result;
     }
@@ -24,7 +24,7 @@ public class MockProfileR1 implements ProfileR1 {
     }
 
     @Override
-    public double solve(double dt, ControlR1 i, ModelR1 g, double eta, double etaTolerance) {
+    public double solve(double dt, ControlR1 i, StateR1 g, double eta, double etaTolerance) {
         return 1.0;
     }
 
