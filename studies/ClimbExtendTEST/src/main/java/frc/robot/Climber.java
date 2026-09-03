@@ -9,16 +9,16 @@ import org.team100.lib.dynamics.r.RDynamicsAnalytic;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.RotaryMechanism;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.util.CanId;
@@ -27,8 +27,8 @@ import org.wpilib.command2.FunctionalCommand;
 import org.wpilib.command2.SubsystemBase;
 
 public class Climber extends SubsystemBase {
-    private final BareMotor m_motor;
-    private final BareMotor m_motor2;
+    private final Motor m_motor;
+    private final Motor m_motor2;
     private final AngularPositionServo m_servo;
     private final AngularPositionServo m_servo2;
     private static final double m_level0 = 0;
@@ -59,7 +59,7 @@ public class Climber extends SubsystemBase {
                         limit,
                         friction,
                         pid);
-                IncrementalBareEncoder encoder = m_motor.encoder();
+                IncrementalEncoder encoder = m_motor.encoder();
                 RotaryMechanism climberMech = new RotaryMechanism(
                         log1, m_motor, encoder, initialPosition, gearRatio,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -73,7 +73,7 @@ public class Climber extends SubsystemBase {
                         limit,
                         friction,
                         pid);
-                IncrementalBareEncoder encoder2 = m_motor2.encoder();
+                IncrementalEncoder encoder2 = m_motor2.encoder();
                 RotaryMechanism climberMech2 = new RotaryMechanism(
                         log2, m_motor2, encoder2, initialPosition, gearRatio,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -81,13 +81,13 @@ public class Climber extends SubsystemBase {
             }
 
             default -> {
-                m_motor = new SimulatedBareMotor(log1, 600);
-                IncrementalBareEncoder encoder = m_motor.encoder();
+                m_motor = new SimulatedMotor(log1, 600);
+                IncrementalEncoder encoder = m_motor.encoder();
                 RotaryMechanism climberMech = new RotaryMechanism(
                         log1, m_motor, encoder, initialPosition, gearRatio,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_motor2 = new SimulatedBareMotor(log2, 600);
-                IncrementalBareEncoder encoder2 = m_motor2.encoder();
+                m_motor2 = new SimulatedMotor(log2, 600);
+                IncrementalEncoder encoder2 = m_motor2.encoder();
                 RotaryMechanism climberMech2 = new RotaryMechanism(
                         log2, m_motor2, encoder2, initialPosition, gearRatio,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);

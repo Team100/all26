@@ -12,7 +12,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.mechanism.RotaryMechanism;
-import org.team100.lib.motor.MockBareMotor;
+import org.team100.lib.motor.MockMotor;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.profile.r1.WPITrapezoidProfileR1;
@@ -25,7 +25,7 @@ class AngularPositionProfileTest implements Timeless {
     private static final double DELTA = 0.001;
     private static final LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());
 
-    private final MockBareMotor motor;
+    private final MockMotor motor;
     private final RotaryMechanism mech;
     private final MockRotaryPositionSensor sensor;
     private final FeedbackR1 feedback2;
@@ -34,7 +34,7 @@ class AngularPositionProfileTest implements Timeless {
 
     public AngularPositionProfileTest() {
         Friction friction = new Friction(0.100, 0.100, 0.0, 0.1);
-        motor = new MockBareMotor(friction);
+        motor = new MockMotor(friction);
         sensor = new MockRotaryPositionSensor();
         mech = new RotaryMechanism(
                 logger, motor, sensor, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);

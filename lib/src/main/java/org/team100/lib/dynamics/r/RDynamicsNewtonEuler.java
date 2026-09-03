@@ -20,7 +20,6 @@ import org.wpilib.math.util.Nat;
  * the Newton Euler code correctness.
  */
 public class RDynamicsNewtonEuler implements RDynamics {
-    // TODO: make g variable, to account for drive base acceleration.
     final Vector<N3> g;
     final List<Matrix<N4, N4>> Mlist;
     final List<Matrix<N6, N6>> Glist;
@@ -79,6 +78,18 @@ public class RDynamicsNewtonEuler implements RDynamics {
         // The S list is axis screws, [w, v], in the global frame.
         Vector<N6> S1 = VecBuilder.fill(0, 0, 1, 0, 0, 0);
         Slist = List.of(S1);
+    }
+
+    /**
+     * Thin rod, center of mass in the geometric center.
+     * 
+     * https://en.wikipedia.org/wiki/List_of_moments_of_inertia
+     * 
+     * @param M mass in kg
+     * @param L length in m
+     */
+    public static RDynamicsNewtonEuler thinRod(double M, double L) {
+        return new RDynamicsNewtonEuler(M, L, L / 2, M * L * L / 12);
     }
 
     /** Compute effort (torque) for each joint, with zero tip force. */

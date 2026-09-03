@@ -9,8 +9,6 @@ import org.wpilib.math.util.Num;
  * The lifespan of this object is intended to be a single "playback" of a
  * trajectory, so create it in Command.initialize().
  * 
- * TODO: add "toGo"
- * 
  */
 public class PositionReferenceControllerRn<N extends Num> {
     private final PositionSubsystemRn<N> m_subsystem;
@@ -26,8 +24,6 @@ public class PositionReferenceControllerRn<N extends Num> {
 
     /**
      * This should be called in Command.execute().
-     * 
-     * TODO: add an onboard controller using "current()"
      */
     public void execute() {
         m_subsystem.setRn(m_reference.next());

@@ -14,7 +14,7 @@ import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
@@ -23,7 +23,7 @@ import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.sim.SimulatedRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.wpi.AS5048RotaryPositionSensor;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OnboardAngularPositionServo;
 import org.team100.lib.util.CanId;
@@ -65,9 +65,9 @@ public class Climber2025 extends SubsystemBase {
             }
 
             default -> {
-                SimulatedBareMotor climberMotor = new SimulatedBareMotor(log, 600);
+                SimulatedMotor climberMotor = new SimulatedMotor(log, 600);
 
-                IncrementalBareEncoder encoder = climberMotor.encoder();
+                IncrementalEncoder encoder = climberMotor.encoder();
                 SimulatedRotaryPositionSensor sensor = new SimulatedRotaryPositionSensor(log, encoder, 1);
 
                 RotaryMechanism climberMech = new RotaryMechanism(

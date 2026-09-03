@@ -79,8 +79,6 @@ public class URDFRobot<Q extends Num> {
      * Solve forward kinematics for all joints.
      * 
      * Key is joint name.
-     * 
-     * TODO: replace the map with a vector
      */
     public Map<String, Pose3d> forward(Map<String, Double> qMap) {
         Map<String, Pose3d> poses = new HashMap<>();
@@ -109,8 +107,6 @@ public class URDFRobot<Q extends Num> {
      * 
      * if not, then the "error" is between two tangent vectors whose origin is far
      * away.
-     * 
-     * TODO: replace the returned map with a vector
      */
     public Map<String, Double> inverse(
             Vector<Q> q0,

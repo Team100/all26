@@ -6,12 +6,12 @@ import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
-import org.team100.lib.motor.sim.LazySimulatedBareMotor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.LazySimulatedMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.util.CanId;
 
 import org.wpilib.command2.Command;
@@ -19,7 +19,7 @@ import org.wpilib.command2.SubsystemBase;
 
 public class ClimberIntake extends SubsystemBase {
 
-    private final BareMotor m_motor;
+    private final Motor m_motor;
     private int count;
 
     public ClimberIntake(LoggerFactory parent, TotalCurrentLog currentLog, CanId canID) {
@@ -35,8 +35,8 @@ public class ClimberIntake extends SubsystemBase {
                         PIDConstants.zero());
             }
             default -> {
-                m_motor = new LazySimulatedBareMotor(
-                        log, new SimulatedBareMotor(log, 600), 1.5);
+                m_motor = new LazySimulatedMotor(
+                        log, new SimulatedMotor(log, 600), 1.5);
             }
         }
     }

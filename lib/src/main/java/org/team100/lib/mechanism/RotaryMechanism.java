@@ -1,17 +1,16 @@
 package org.team100.lib.mechanism;
 
-import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.music.Player;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.state.StateR1;
-import org.wpilib.math.filter.LinearFilter;
 import org.wpilib.math.util.MathUtil;
+
 
 /**
  * Uses a motor and gears to produce rotational output, e.g. an arm joint.
@@ -26,20 +25,19 @@ import org.wpilib.math.util.MathUtil;
  * difference.
  */
 public class RotaryMechanism implements Player {
-    private final BareMotor m_motor;
+    private final Motor m_motor;
     private final RotaryPositionSensor m_sensor;
     private final double m_gearRatio;
     private final double m_minPositionRad;
     private final double m_maxPositionRad;
     private final DoubleLogger m_log_accel;
     private final DoubleLogger m_log_velocity;
-    private final DoubleLogger m_log_position;
-    private final DoubleLogger m_log_desired_position;
-    private final DoubleLogger m_log_filtered_velocity;
-    LinearFilter lowPassFilter = LinearFilter.singlePoleIIR(0.2375, TimedRobot100.LOOP_PERIOD_S);
+    private final DoubleLogger m_log_wrapped_position;
+    private final DoubleLogger m_log_unwrapped_position;
+    private final DoubleLogger m_log_desired_unwrapped_position;
 
-    /** For computing acceleration. */
-    private double m_velocity;
+    /** Respects limits. */
+    private double m_unwrappedPositionWithinLimits;
 
     /**
      * The provided sensor encapsulates the motor sensor and/or the external
@@ -48,7 +46,7 @@ public class RotaryMechanism implements Player {
      */
     public RotaryMechanism(
             LoggerFactory parent,
-            BareMotor motor,
+            Motor motor,
             RotaryPositionSensor sensor,
             double gearRatio,
             double minPositionRad,
@@ -61,16 +59,16 @@ public class RotaryMechanism implements Player {
         m_maxPositionRad = maxPositionRad;
         m_log_accel = log.doubleLogger(Level.DEBUG, "accel (rad_s2)");
         m_log_velocity = log.doubleLogger(Level.DEBUG, "velocity (rad_s)");
-        m_log_position = log.doubleLogger(Level.DEBUG, "position (rad)");
-        m_log_desired_position = log.doubleLogger(Level.DEBUG, "desired position (rad)");
-        m_log_filtered_velocity = log.doubleLogger(Level.DEBUG, "filtered velocity (rad_s)");
+        m_log_wrapped_position = log.doubleLogger(Level.DEBUG, "wrapped position (rad)");
+        m_log_unwrapped_position = log.doubleLogger(Level.DEBUG, "unwrapped position (rad)");
+        m_log_desired_unwrapped_position = log.doubleLogger(Level.DEBUG, "desired unwrapped position (rad)");
     }
 
     /** There is no absolute position sensor in this case. */
     public RotaryMechanism(
             LoggerFactory parent,
-            BareMotor motor,
-            IncrementalBareEncoder encoder,
+            Motor motor,
+            IncrementalEncoder encoder,
             double initialPosition,
             double gearRatio,
             double minPositionRad,
@@ -153,11 +151,11 @@ public class RotaryMechanism implements Player {
      * want spotting, use an AngularPositionServo.
      */
     public void setWrappedPosition(
-            double positionRad,
+            double wrappedPositionRad,
             double velocityRad_S,
             double torqueNm) {
         double unwrappedMeasurement = getUnwrappedPositionRad();
-        double dx = MathUtil.angleModulus(positionRad - unwrappedMeasurement);
+        double dx = MathUtil.angleModulus(wrappedPositionRad - unwrappedMeasurement);
         double unwrappedRad = unwrappedMeasurement + dx;
         if (unwrappedRad > getMaxPositionRad()) {
             return;
@@ -180,26 +178,32 @@ public class RotaryMechanism implements Player {
      * addressed with Subsystem-level dynamics.
      */
     public void setUnwrappedPosition(
-            double positionRad,
+            double unwrappedPositionRad,
             double velocityRad_S,
             double torqueNm) {
-        m_log_desired_position.log(() -> positionRad);
-        if (positionRad < m_minPositionRad) {
+        m_log_desired_unwrapped_position.log(() -> unwrappedPositionRad);
+        if (unwrappedPositionRad < m_minPositionRad) {
             System.out.printf("WARNING: requested position %8.3f less than min %8.3f\n",
-                    positionRad, m_minPositionRad);
+                    unwrappedPositionRad, m_minPositionRad);
             m_motor.stop();
             return;
         }
-        if (positionRad > m_maxPositionRad) {
+        if (unwrappedPositionRad > m_maxPositionRad) {
             System.out.printf("WARNING: requested position %8.3f more than max %8.3f\n",
-                    positionRad, m_maxPositionRad);
+                    unwrappedPositionRad, m_maxPositionRad);
             m_motor.stop();
             return;
         }
+        m_unwrappedPositionWithinLimits = unwrappedPositionRad;
         m_motor.setUnwrappedPosition(
-                positionRad * m_gearRatio,
+                unwrappedPositionRad * m_gearRatio,
                 velocityRad_S * m_gearRatio,
                 torqueNm / m_gearRatio);
+    }
+
+    /** Desired position, with limits applied. */
+    public double getUnwrappedPositionWithinLimits() {
+        return m_unwrappedPositionWithinLimits;
     }
 
     public StateR1 getUnwrappedMeasurement() {
@@ -213,6 +217,15 @@ public class RotaryMechanism implements Player {
      */
     public double getVelocityRad_S() {
         return m_sensor.getVelocityRad_S();
+    }
+
+    /**
+     * Value is updated in Robot.robotPeriodic().
+     * 
+     * @return acceleration in rad/s^2
+     */
+    public double getAccelerationRad_S2() {
+        return m_sensor.getAccelerationRad_S2();
     }
 
     /**
@@ -247,25 +260,16 @@ public class RotaryMechanism implements Player {
 
     public void close() {
         m_motor.close();
+        m_sensor.close();
     }
 
     public void periodic() {
-        /**
-         * The time constant is the minimum frequency to filter out,
-         * and the period is the rate of sampling. Here, both are 50Hz.
-         */
-        // LinearFilter lowPassFilter = LinearFilter.movingAverage(5);
         m_motor.periodic();
         m_sensor.periodic();
-        m_log_position.log(() -> getWrappedPositionRad());
-        final double velocity = getVelocityRad_S();
-        m_log_velocity.log(() -> velocity);
-        double filt = lowPassFilter.calculate(velocity);
-        m_log_filtered_velocity.log(() -> filt);
-        double accel = (filt - m_velocity) / TimedRobot100.LOOP_PERIOD_S;
-        m_velocity = filt;
-        m_log_accel.log(() -> accel);
-
+        m_log_wrapped_position.log(this::getWrappedPositionRad);
+        m_log_unwrapped_position.log(this::getUnwrappedPositionRad);
+        m_log_velocity.log(this::getVelocityRad_S);
+        m_log_accel.log(this::getAccelerationRad_S2);
     }
 
     @Override

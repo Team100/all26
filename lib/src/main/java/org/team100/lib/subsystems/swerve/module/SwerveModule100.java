@@ -3,11 +3,11 @@ package org.team100.lib.subsystems.swerve.module;
 import java.util.List;
 import java.util.Optional;
 
-import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.Identity;
 import org.team100.lib.dynamics.swerve.SwerveEffort.ModuleEffort;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
+import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
@@ -57,7 +57,6 @@ public abstract class SwerveModule100 implements Player {
     /** For playing sounds */
     private final List<Player> m_players;
 
-    private final DoubleLogger m_log_dt;
     private final DoubleLogger m_log_speed;
     private final DoubleLogger m_log_omega;
 
@@ -68,7 +67,6 @@ public abstract class SwerveModule100 implements Player {
      * value
      */
     private Rotation2d m_previousDesiredWrappedAngle;
-    private double m_previousTime;
 
     protected SwerveModule100(
             LoggerFactory log,
@@ -76,7 +74,6 @@ public abstract class SwerveModule100 implements Player {
             RotaryMechanism steer,
             double wheelDiameterM,
             double finalDriveRatio) {
-        m_log_dt = log.doubleLogger(Level.TRACE, "dt");
         m_log_speed = log.doubleLogger(Level.TRACE, "speed");
         m_log_omega = log.doubleLogger(Level.TRACE, "omega");
         m_drive = drive;
@@ -84,7 +81,6 @@ public abstract class SwerveModule100 implements Player {
         m_wheelRadiusM = wheelDiameterM / 2;
         // The initial previous angle is the measurement.
         m_previousDesiredWrappedAngle = new Rotation2d(m_steer.getWrappedPositionRad());
-        m_previousTime = Takt.get();
         m_finalDriveRatio = finalDriveRatio;
         m_players = List.of(m_drive, m_steer);
     }
@@ -108,7 +104,8 @@ public abstract class SwerveModule100 implements Player {
      * Note: this uses "wrapped" states that come from inverse kinematics, since the
      * kinematics doesn't care about the total turns of the modules;
      * 
-     * @param desiredWrapped for now+dt
+     * @param desiredWrapped For now+dt. There shouldn't be any noise in this input.
+     * @param effort         Force.
      */
     void setDesiredState(SwerveModuleState100 desiredWrapped, ModuleEffort effort) {
         desiredWrapped = usePreviousAngleIfEmpty(desiredWrapped);
@@ -120,17 +117,13 @@ public abstract class SwerveModule100 implements Player {
      * Does not optimize.
      * 
      * Given an empty angle, it uses the previous one.
+     * 
+     * @param desired for now+dt. There shouldn't be any noise in this input.
+     * @param effort  Force.
      */
     void setRawDesiredState(SwerveModuleState100 desired, ModuleEffort effort) {
         desired = usePreviousAngleIfEmpty(desired);
         actuate(desired, effort);
-    }
-
-    /**
-     * Set turning setpoint to measurement, zero drive encoder.
-     * TODO: remove this.
-     */
-    void reset() {
     }
 
     void close() {
@@ -181,7 +174,8 @@ public abstract class SwerveModule100 implements Player {
      * Turning servo commands compute the velocity based on the previous desired
      * angle.
      * 
-     * @param nextWrapped for now+dt, i.e. "next"
+     * @param nextWrapped for now+dt, i.e. "next". There shouldn't be any noise in
+     *                    this input.
      * @param effort      force and slip angle from dynamics
      */
     void actuate(SwerveModuleState100 nextWrapped, ModuleEffort effort) {
@@ -197,20 +191,14 @@ public abstract class SwerveModule100 implements Player {
             // use the kinematics (zero slip) angle.
             nextWrappedAngle = nextWrapped.angle().get();
         }
-        // TODO: Experiment with fixed DT here.
-        double dt = dt();
-        m_log_dt.log(() -> dt);
 
         // Deduce the desired omega using backward finite difference.
-        // TODO: maybe filter this.
-        double nextOmega = omega(nextWrappedAngle, dt);
+        double nextOmega = omega(nextWrappedAngle);
         m_log_omega.log(() -> nextOmega);
 
         // Adjust the drive speed to compensate for steering movement.
         double nextSpeed = correctSpeedForSteering(
-                nextWrapped.speed(),
-                nextOmega,
-                dt);
+                nextWrapped.speed(), nextOmega);
         m_log_speed.log(() -> nextSpeed);
         if (Experiments.instance.enabled(Experiment.SwerveDynamicsLongitudinal)) {
             // add the force from dynamics.
@@ -248,40 +236,34 @@ public abstract class SwerveModule100 implements Player {
     /**
      * Correct the desired speed for steering coupling.
      */
-    private double correctSpeedForSteering(double speed, double omega, double dt) {
-        double correction = speedCorrection(speed, omega, dt);
+    private double correctSpeedForSteering(double speed, double omega) {
+        double correction = speedCorrection(omega);
         if (DEBUG) {
             System.out.printf("correction %6.3f\n", correction);
         }
         return speed + correction;
     }
 
-    private double speedCorrection(double desiredSpeed, double omega, double dt) {
-        if (dt > 0.04) {
-            // clock is unreliable, don't do anything.
-            return 0;
-        }
-        if (dt < 0.01) {
-            // avoid short intervals
-            return 0;
-        }
+    /**
+     * Linear velocity corresponding to angular velocity.
+     */
+    private double speedCorrection(double omega) {
         return m_wheelRadiusM * omega / m_finalDriveRatio;
     }
 
     /**
-     * use the previous desired angle to compute steering angular velocity in
-     * radians per sec
+     * Use the previous desired angle to compute steering angular velocity in
+     * radians per sec.
      * 
-     * @param desiredWrappedAngle angle for the next timestep
-     * @param dt                  time until then (s)
+     * @param desiredWrappedAngle Angle for the next timestep. There shouldn't be
+     *                            any noise in this input, because we use a pure
+     *                            single-step backwards difference to compute omega.
      * @returns rad/s
      */
-    private double omega(Rotation2d desiredWrappedAngle, double dt) {
-        if (dt < 1e-6)
-            return 0;
+    private double omega(Rotation2d desiredWrappedAngle) {
         // dtheta is definitely a lot less than 2pi so wrapped is fine.
         Rotation2d dthetaWrapped = desiredWrappedAngle.minus(m_previousDesiredWrappedAngle);
-        return dthetaWrapped.getRadians() / dt;
+        return dthetaWrapped.getRadians() / TimedRobot100.LOOP_PERIOD_S;
     }
 
     /**
@@ -311,12 +293,5 @@ public abstract class SwerveModule100 implements Player {
                     Optional.of(m_previousDesiredWrappedAngle));
         }
         return desired;
-    }
-
-    private double dt() {
-        double now = Takt.get();
-        double dt = now - m_previousTime;
-        m_previousTime = now;
-        return dt;
     }
 }

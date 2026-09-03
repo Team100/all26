@@ -128,8 +128,6 @@ public class WCPSwerveModule100 extends SwerveModule100 {
     }
 
     /**
-     * TODO: use this on the drivetrain that works this way.
-     * 
      * MAKE SURE THAT THE BEVELS ON THE WHEELS FOR ZEROING GO TO THE RIGHT
      */
     public static WCPSwerveModule100 getKrakenDriveFalconSteer(
@@ -258,7 +256,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
         ProxyRotaryPositionSensor proxy = new ProxyRotaryPositionSensor(builtInEncoder, gearRatio);
         CombinedRotaryPositionSensor combined = new CombinedRotaryPositionSensor(parent, turningSensor, proxy);
 
-        return new RotaryMechanism(
+        return new RotaryMechanism(     
                 parent, turningMotor, combined, gearRatio,
                 Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
     }

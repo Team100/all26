@@ -14,67 +14,73 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+    private Command m_autonomousCommand;
 
+    // private final m_robotContainer;
+    // private final TalonFX first;
+    private final TalonFX second;
+    private final SparkFlex flex;
+    private final SparkFlex flexs;
 
-  // private final  m_robotContainer;
-  private final TalonFX first; 
-  private final TalonFX second; 
-  private final SparkFlex flex;
-  private final SparkFlex flexs;
-
-  public Robot() {
-    first = new TalonFX(9, new CANBus());
-    flex = new SparkFlex(0, 2,  MotorType.kBrushless);
-    flexs = new SparkFlex(0, 4,  MotorType.kBrushless);
-    second = new TalonFX(21, new CANBus()); 
-  }
-
-  @Override
-  public void robotPeriodic() {
-    CommandScheduler.getInstance().run();
-  }
-
-  @Override
-  public void disabledInit() {}
-
-  @Override
-  public void disabledPeriodic() {}
-
-  @Override
-  public void disabledExit() {}
-
-  @Override
-  public void autonomousInit() {
-    // m_autonomousCommand = %m_robotContainer.getAutonomousCommand();
-
-    if (m_autonomousCommand != null) {
-      CommandScheduler.getInstance().schedule(m_autonomousCommand);
+    public Robot() {
+        // first = new TalonFX(9, new CANBus());
+        flex = new SparkFlex(0, 14, MotorType.kBrushless);
+        flexs = new SparkFlex(0, 1, MotorType.kBrushless);
+        second = new TalonFX(4, new CANBus());
     }
-  }
 
-  @Override
-  public void autonomousPeriodic() {}
-
-  @Override
-  public void autonomousExit() {}
-
-  @Override
-  public void teleopInit() {
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    @Override
+    public void robotPeriodic() {
+        CommandScheduler.getInstance().run();
     }
-    first.setThrottle(-1);
-    second.setThrottle(1);
-    flex.setThrottle(-1);
-    flexs.setThrottle(1);
-  }
 
-  @Override
-  public void teleopPeriodic() {
+    @Override
+    public void disabledInit() {
+    }
 
-  }
+    @Override
+    public void disabledPeriodic() {
+    }
 
-  @Override
-  public void teleopExit() {}
+    @Override
+    public void disabledExit() {
+    }
+
+    @Override
+    public void autonomousInit() {
+        // m_autonomousCommand = %m_robotContainer.getAutonomousCommand();
+
+        if (m_autonomousCommand != null) {
+            CommandScheduler.getInstance().schedule(m_autonomousCommand);
+        }
+    }
+
+    @Override
+    public void autonomousPeriodic() {
+    }
+
+    @Override
+    public void autonomousExit() {
+    }
+
+    @Override
+    public void teleopInit() {
+        if (m_autonomousCommand != null) {
+            m_autonomousCommand.cancel();
+        }
+        // first.setThrottle(-1);
+        second.setThrottle(-0.2);
+        flex.setThrottle(0.2);
+        flexs.setThrottle(0.2);
+
+    }
+
+    @Override
+    public void teleopPeriodic() {
+
+    }
+
+    @Override
+    public void teleopExit() {
+    }
 }

@@ -1,5 +1,6 @@
 package org.team100.lib.geometry.rrr;
 
+import java.util.List;
 
 import org.team100.lib.util.Math100;
 import org.wpilib.math.linalg.Matrix;
@@ -7,7 +8,6 @@ import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.numbers.N1;
 import org.wpilib.math.numbers.N3;
-
 
 /**
  * 3R config
@@ -26,7 +26,7 @@ public record RRRConfig(double q1, double q2, double q3) {
     private static final double s3 = 1.0;
 
     /**
-     * For now, euclidean with weights.
+     * Euclidean distance in joint space, with weights.
      * 
      * You can change these weights to change how configs are selected, based on
      * their "nearness" to the current pose.
@@ -53,7 +53,6 @@ public record RRRConfig(double q1, double q2, double q3) {
         return VecBuilder.fill(q1, q2, q3);
     }
 
-
     public static RRRConfig fromVector(Vector<N3> v) {
         return new RRRConfig(v.get(0), v.get(1), v.get(2));
     }
@@ -76,6 +75,23 @@ public record RRRConfig(double q1, double q2, double q3) {
 
     public RRRConfig minus(RRRConfig other) {
         return new RRRConfig(q1 - other.q1, q2 - other.q2, q3 - other.q3);
+    }
+
+    /**
+     * Choose config "closest" to q0, using the (non-Euclidean) config distance
+     * metric.
+     */
+    public static RRRConfig getBest(List<RRRConfig> qAll, RRRConfig q0) {
+        double closest = Double.POSITIVE_INFINITY;
+        RRRConfig best = qAll.get(0);
+        for (RRRConfig q : qAll) {
+            double d = q0.distance(q);
+            if (d < closest) {
+                closest = d;
+                best = q;
+            }
+        }
+        return best;
     }
 
 }

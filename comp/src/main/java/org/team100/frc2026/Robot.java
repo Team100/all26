@@ -91,6 +91,7 @@ public class Robot extends TimedRobot100 {
         // Run one iteration of the command scheduler.
         CommandScheduler.getInstance().run();
         m_machinery.periodic();
+        m_binder.periodic();
         m_robotLog.periodic();
         if (Experiments.instance.enabled(Experiment.FlushOften)) {
             // StrUtil.warn("FLUSHING EVERY LOOP, DO NOT USE IN COMP");

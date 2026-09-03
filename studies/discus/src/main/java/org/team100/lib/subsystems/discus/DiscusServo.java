@@ -6,16 +6,16 @@ import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.dynamics.r.Disc;
 import org.team100.lib.dynamics.r.RDynamics;
-import org.team100.lib.dynamics.r.RDynamicsAnalytic;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.RotaryMechanism;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
@@ -54,9 +54,9 @@ public class DiscusServo extends SubsystemBase {
                 MAX_VELOCITY, MAX_ACCEL, POSITION_TOLERANCE);
         ReferenceR1 ref = new ProfileReferenceR1(
                 logger, () -> profile, POSITION_TOLERANCE, VELOCITY_TOLERANCE);
-        RDynamics dyn = new RDynamicsAnalytic(0, 0, 0, 0.005);
+        RDynamics dyn = new Disc(0.1);
 
-        BareMotor motor;
+        Motor motor;
         switch (Identity.instance) {
             case TEAM100_2018 -> {
                 motor = new Falcon500Motor(
@@ -70,7 +70,7 @@ public class DiscusServo extends SubsystemBase {
                         pid);
             }
             default -> {
-                motor = new SimulatedBareMotor(logger, 600);
+                motor = new SimulatedMotor(logger, 600);
             }
         }
         m_sensor = new ProxyRotaryPositionSensor(motor.encoder(), 1.0);

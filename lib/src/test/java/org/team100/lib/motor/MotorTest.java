@@ -4,14 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class BareMotorTest {
+public class MotorTest {
 
     @Test
     void test0() {
-        BareMotor m = new AbstractBareMotor() {
+        Motor m = new AbstractMotor() {
             @Override
-            public double kFreeSpeedRPM() {
-                return 114.59;
+            public double kE() {
+                return 1;
             }
         };
         assertEquals(1, m.backEMFVoltage(1), 0.001);

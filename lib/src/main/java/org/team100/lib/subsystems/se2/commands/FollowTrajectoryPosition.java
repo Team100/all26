@@ -28,7 +28,7 @@ public class FollowTrajectoryPosition extends MoveAndHold {
     @Override
     public void initialize() {
         m_referenceController = new PositionReferenceControllerSE2(
-                m_log, m_subsystem, new TrajectoryReferenceSE2(m_log, m_trajectory));
+                m_log, m_subsystem, 0.1, new TrajectoryReferenceSE2(m_log, m_trajectory));
     }
 
     @Override

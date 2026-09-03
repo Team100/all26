@@ -8,11 +8,11 @@ import org.team100.lib.dynamics.r.RDynamics;
 import org.team100.lib.dynamics.r.RDynamicsAnalytic;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
@@ -42,8 +42,8 @@ public class Climber extends SubsystemBase {
         ProfileR1 profile = new TrapezoidProfileR1(3, 5, 0.05);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
         double initialPosition = 0;
-        final BareMotor m1;
-        final BareMotor m2;
+        final Motor m1;
+        final Motor m2;
         switch (Identity.instance) {
             case TEST_BOARD_B0 -> {
                 CurrentLimit limit = new CurrentLimit(60, 40);
@@ -61,8 +61,8 @@ public class Climber extends SubsystemBase {
                         friction, pid);
             }
             default -> {
-                m1 = new SimulatedBareMotor(log1, 600);
-                m2 = new SimulatedBareMotor(log2, 600);
+                m1 = new SimulatedMotor(log1, 600);
+                m2 = new SimulatedMotor(log2, 600);
             }
         }
         m_servo1 = OutboardAngularPositionServo.make(

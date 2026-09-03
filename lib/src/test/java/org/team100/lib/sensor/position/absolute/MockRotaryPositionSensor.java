@@ -6,6 +6,7 @@ import org.wpilib.math.util.MathUtil;
 public class MockRotaryPositionSensor implements RotaryPositionSensor {
     public double angle = 0;
     public double rate = 0;
+    public double accel = 0;
 
     @Override
     public double getWrappedPositionRad() {
@@ -20,6 +21,11 @@ public class MockRotaryPositionSensor implements RotaryPositionSensor {
     @Override
     public double getVelocityRad_S() {
         return rate;
+    }
+
+    @Override
+    public double getAccelerationRad_S2() {
+        return accel;
     }
 
     @Override

@@ -9,6 +9,14 @@ import org.wpilib.math.numbers.N1;
 import org.wpilib.math.numbers.N6;
 
 /**
+ * Coordinates:
+ * X horizontal
+ * Y vertical
+ * Theta: the opposite of the usual direction :(
+ * 
+ * So gravity opposes the y axis.
+ * Positive omega is "backspin" when dx and dy are positive.
+ * 
  * Newton drag is proportional to the square of velocity, using the drag
  * coefficient cd and cross-sectional area A.
  * 

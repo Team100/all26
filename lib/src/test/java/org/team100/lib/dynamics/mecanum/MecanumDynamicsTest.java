@@ -23,7 +23,6 @@ public class MecanumDynamicsTest {
         ChassisAcceleration accel = ChassisAcceleration.fromFieldRelative(
                 a, Rotation2d.kZero);
         MecanumEffort e = d.effort(accel);
-        // TODO: this seems like double what it should be.
         assertEquals(0.5, e.fl(), 0.001);
         assertEquals(0.5, e.fr(), 0.001);
         assertEquals(0.5, e.rl(), 0.001);
@@ -63,7 +62,6 @@ public class MecanumDynamicsTest {
         ChassisAcceleration accel = ChassisAcceleration.fromFieldRelative(
                 a, Rotation2d.kZero);
         MecanumEffort e = d.effort(accel);
-        // TODO: this seems like double what it should be.
         assertEquals(-0.5, e.fl(), 0.001);
         assertEquals(0.5, e.fr(), 0.001);
         assertEquals(0.5, e.rl(), 0.001);
@@ -83,7 +81,6 @@ public class MecanumDynamicsTest {
         ChassisAcceleration accel = ChassisAcceleration.fromFieldRelative(
                 a, Rotation2d.kZero);
         MecanumEffort e = d.effort(accel);
-        // TODO: this seems like double what it should be.
         assertEquals(-1, e.fl(), 0.001);
         assertEquals(1, e.fr(), 0.001);
         assertEquals(-1, e.rl(), 0.001);

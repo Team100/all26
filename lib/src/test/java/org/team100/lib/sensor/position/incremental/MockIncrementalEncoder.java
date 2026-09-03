@@ -1,9 +1,15 @@
 package org.team100.lib.sensor.position.incremental;
 
 /** Contains no logic. */
-public class MockIncrementalBareEncoder implements IncrementalBareEncoder {
+public class MockIncrementalEncoder implements IncrementalEncoder {
     public double position = 0;
     public double velocity = 0;
+    public double acceleration = 0;
+
+    @Override
+    public double getUnwrappedPositionRad() {
+        return position;
+    }
 
     @Override
     public double getVelocityRad_S() {
@@ -11,14 +17,9 @@ public class MockIncrementalBareEncoder implements IncrementalBareEncoder {
     }
 
     @Override
-    public double getUnwrappedPositionRad() {
-        return position;
+    public double getAccelerationRad_S2() {
+        return acceleration;
     }
-
-    // @Override
-    // public void reset() {
-    //     //
-    // }
 
     @Override
     public void close() {

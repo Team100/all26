@@ -4,26 +4,31 @@ package org.team100.lib.sensor.position.incremental;
  * Represents motor-shaft encoder, probably some kind of built-in, but could
  * also represent any incremental (e.g. quadrature) encoder.
  */
-public interface IncrementalBareEncoder {
+public interface IncrementalEncoder {
 
     /**
-     * Returns the "unwrapped" angular position, i.e. the measurement domain
-     * continues beyond +/- pi.
+     * "Unwrapped" angular position (rad), i.e. the measurement domain
+     * continues beyond +/- pi.  May be filtered.
      * 
      * Value should be updated in Robot.robotPeriodic().
-     * 
-     * @return rad
      */
     double getUnwrappedPositionRad();
 
     /**
+     * Velocity (rad/s).
+     * 
+     * Note some rate implementations can be noisy.  May be filtered.
+     * 
      * Value should be updated in Robot.robotPeriodic().
-     * 
-     * Note some rate implementations can be noisy.
-     * 
-     * @return rad/s
      */
     double getVelocityRad_S();
+
+    /**
+     * Acceleration (rad/s^2).
+     * 
+     * May be noisy. May be filtered.
+     */
+    double getAccelerationRad_S2();
 
     /**
      * Releases the encoder resource, if necessary (e.g. HAL ports).

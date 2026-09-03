@@ -12,8 +12,8 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.mechanism.RotaryMechanism;
-import org.team100.lib.motor.MockBareMotor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.MockMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.MockProfileReferenceR1;
@@ -23,8 +23,8 @@ import org.team100.lib.sensor.position.absolute.CombinedRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.MockRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.sim.SimulatedRotaryPositionSensor;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
-import org.team100.lib.sensor.position.incremental.MockIncrementalBareEncoder;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
+import org.team100.lib.sensor.position.incremental.MockIncrementalEncoder;
 import org.team100.lib.testing.Timeless;
 
 public class OutboardAngularPositionServoTest implements Timeless {
@@ -37,8 +37,8 @@ public class OutboardAngularPositionServoTest implements Timeless {
     @Test
     void testAtGoal() {
         Friction friction = new Friction(0.100, 0.100, 0.0, 0.1);
-        MockBareMotor motor = new MockBareMotor(friction);
-        MockIncrementalBareEncoder encoder = new MockIncrementalBareEncoder();
+        MockMotor motor = new MockMotor(friction);
+        MockIncrementalEncoder encoder = new MockIncrementalEncoder();
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
 
         ProxyRotaryPositionSensor proxy = new ProxyRotaryPositionSensor(encoder, 1);
@@ -83,8 +83,8 @@ public class OutboardAngularPositionServoTest implements Timeless {
     void testNoReset() {
         RDynamicsAnalytic dyn = new RDynamicsAnalytic(0, 0, 0, 0);
         Friction friction = new Friction(0.100, 0.100, 0.0, 0.1);
-        MockBareMotor motor = new MockBareMotor(friction);
-        MockIncrementalBareEncoder encoder = new MockIncrementalBareEncoder();
+        MockMotor motor = new MockMotor(friction);
+        MockIncrementalEncoder encoder = new MockIncrementalEncoder();
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
 
         ProxyRotaryPositionSensor proxy = new ProxyRotaryPositionSensor(encoder, 1);
@@ -105,8 +105,8 @@ public class OutboardAngularPositionServoTest implements Timeless {
     @Test
     void testProfiled() {
         Friction friction = new Friction(0.100, 0.100, 0.0, 0.1);
-        final MockBareMotor motor = new MockBareMotor(friction);
-        final MockIncrementalBareEncoder encoder = new MockIncrementalBareEncoder();
+        final MockMotor motor = new MockMotor(friction);
+        final MockIncrementalEncoder encoder = new MockIncrementalEncoder();
         final MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
 
         final ProxyRotaryPositionSensor proxy = new ProxyRotaryPositionSensor(encoder, 1);
@@ -147,8 +147,8 @@ public class OutboardAngularPositionServoTest implements Timeless {
     /** Within +/- pi, no surprises. */
     @Test
     void testDirect() {
-        SimulatedBareMotor motor = new SimulatedBareMotor(log, 600);
-        IncrementalBareEncoder encoder = motor.encoder();
+        SimulatedMotor motor = new SimulatedMotor(log, 600);
+        IncrementalEncoder encoder = motor.encoder();
         SimulatedRotaryPositionSensor sensor = new SimulatedRotaryPositionSensor(log, encoder, 1);
         RDynamicsAnalytic dyn = new RDynamicsAnalytic(0, 0, 0, 0);
         RotaryMechanism mech = new RotaryMechanism(
@@ -207,8 +207,8 @@ public class OutboardAngularPositionServoTest implements Timeless {
      */
     @Test
     void testDirectMultiturn() {
-        SimulatedBareMotor motor = new SimulatedBareMotor(log, 600);
-        IncrementalBareEncoder encoder = motor.encoder();
+        SimulatedMotor motor = new SimulatedMotor(log, 600);
+        IncrementalEncoder encoder = motor.encoder();
         SimulatedRotaryPositionSensor sensor = new SimulatedRotaryPositionSensor(log, encoder, 1);
         RDynamicsAnalytic dyn = new RDynamicsAnalytic(0, 0, 0, 0);
         // total range is 5.5 turns
@@ -336,8 +336,8 @@ public class OutboardAngularPositionServoTest implements Timeless {
      */
     @Test
     void testDirectContinuous() {
-        SimulatedBareMotor motor = new SimulatedBareMotor(log, 600);
-        IncrementalBareEncoder encoder = motor.encoder();
+        SimulatedMotor motor = new SimulatedMotor(log, 600);
+        IncrementalEncoder encoder = motor.encoder();
         SimulatedRotaryPositionSensor sensor = new SimulatedRotaryPositionSensor(log, encoder, 1);
         RDynamicsAnalytic dyn = new RDynamicsAnalytic(0, 0, 0, 0);
         RotaryMechanism mech = new RotaryMechanism(
@@ -393,8 +393,8 @@ public class OutboardAngularPositionServoTest implements Timeless {
      */
     @Test
     void testDirectUnwrapped() {
-        SimulatedBareMotor motor = new SimulatedBareMotor(log, 600);
-        IncrementalBareEncoder encoder = motor.encoder();
+        SimulatedMotor motor = new SimulatedMotor(log, 600);
+        IncrementalEncoder encoder = motor.encoder();
         SimulatedRotaryPositionSensor sensor = new SimulatedRotaryPositionSensor(log, encoder, 1);
         RDynamicsAnalytic dyn = new RDynamicsAnalytic(0, 0, 0, 0);
         RotaryMechanism mech = new RotaryMechanism(
@@ -492,8 +492,8 @@ public class OutboardAngularPositionServoTest implements Timeless {
      */
     @Test
     void testDirectWrapped() {
-        SimulatedBareMotor motor = new SimulatedBareMotor(log, 600);
-        IncrementalBareEncoder encoder = motor.encoder();
+        SimulatedMotor motor = new SimulatedMotor(log, 600);
+        IncrementalEncoder encoder = motor.encoder();
         SimulatedRotaryPositionSensor sensor = new SimulatedRotaryPositionSensor(log, encoder, 1);
         RDynamicsAnalytic dyn = new RDynamicsAnalytic(0, 0, 0, 0);
         RotaryMechanism mech = new RotaryMechanism(

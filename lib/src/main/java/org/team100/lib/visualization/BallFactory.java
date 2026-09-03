@@ -27,7 +27,7 @@ public class BallFactory {
             Supplier<Rotation2d> azimuth,
             Supplier<Rotation2d> elevation,
             DoubleSupplier speed,
-            double omega) {
+            DoubleSupplier omega) {
         Drag d = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
         return new BallR3(log, field, d, robot, azimuth, elevation, speed, omega);
     }

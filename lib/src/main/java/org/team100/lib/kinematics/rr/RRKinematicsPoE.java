@@ -123,17 +123,22 @@ public class RRKinematicsPoE {
      * 
      * Returns 0 (infeasible), 1 (singularity), or 2 (usual case) solutions.
      * 
-     * TODO: supply q1 default in case of the singularity at the origin.
-     * 
      * Refer to the diagram, or README.md
      * https://docs.google.com/document/d/1B6vGPtBtnDSOpfzwHBflI8-nn98W9QvmrX78bon8Ajw
      */
-    public List<RRConfig> inverse(Translation2d x) {
+    public List<RRConfig> inverse(Translation2d x, Double q1Default) {
         if (DEBUG)
             System.out.printf("t %s\n", StrUtil.transStr(x));
         // Use law of cosines.
         double r = x.getNorm();
-        // TODO: handle zero r
+        if (r < 1e-3) {
+            // This can only occur if l1 and l2 are (nearly) the same,
+            // so use the default, and 180 degrees for the elbow.
+            if (q1Default == null)
+                throw new IllegalArgumentException("RR singularity with no default");
+            return List.of(new RRConfig(q1Default, Math.PI));
+        }
+
         double gamma = Math.atan2(x.getY(), x.getX());
         double c1 = (r * r + l1 * l1 - l2 * l2) / (2 * r * l1);
         double beta = Math.acos(c1);

@@ -11,10 +11,11 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.TotalCurrentLog;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.sensor.position.incremental.rev.CANSparkEncoder;
+import org.team100.lib.util.LowPassDerivative;
 
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
@@ -36,9 +37,16 @@ import com.revrobotics.spark.SparkLowLevel.ControlType;
  * 
  * Supply current is unmeasured and unlimited.
  * 
+ * The REV closed-loop controller mechanism is used for position and velocity
+ * control. Position control uses "slot zero" and velocity control uses "slot
+ * one".
+ * 
  * WARNING! REV motors are not good for velocity-controlled flywheels, because
  * the built-in encoder is noisy. The default filters induce much too much delay
  * to be useful; turning the filters all the way down helps.
+ * 
+ * WARNING! REV voltage control and current control ALSO use closed-loop SLOT
+ * ZERO!!
  * 
  * https://www.chiefdelphi.com/t/psa-default-neo-sparkmax-velocity-readings-are-still-bad-for-flywheels/454453
  * https://www.chiefdelphi.com/t/psa-rev-spark-default-velocity-filtering-is-still-really-bad-for-flywheels/514567
@@ -48,7 +56,7 @@ import com.revrobotics.spark.SparkLowLevel.ControlType;
  * https://www.chiefdelphi.com/t/rev-robotics-2024-2025/471083/26
  * https://www.reca.lc/flywheel
  */
-public abstract class CANSparkMotor implements BareMotor {
+public abstract class CANSparkMotor implements Motor {
     private final LoggerFactory m_log;
     private final Friction m_friction;
     private final SparkBase m_motor;
@@ -57,6 +65,7 @@ public abstract class CANSparkMotor implements BareMotor {
     private final SparkLimitSwitch m_revLimitSwitch;
     private final RelativeEncoder m_encoder;
     private final SparkClosedLoopController m_pidController;
+    private final LowPassDerivative m_smoothDerivative;
 
     // CACHES
 
@@ -64,6 +73,8 @@ public abstract class CANSparkMotor implements BareMotor {
     private final DoubleCache m_position;
     /** radians per second */
     private final DoubleCache m_velocity;
+    /** radians per second squared */
+    private final DoubleCache m_acceleration;
     /** amps */
     private final DoubleCache m_statorCurrent;
     /** volts */
@@ -81,11 +92,13 @@ public abstract class CANSparkMotor implements BareMotor {
     private final DoubleLogger m_log_torque_FF;
     /** duty cycle */
     private final DoubleLogger m_log_output;
-    private final DoubleLogger m_log_volts;
+    private final DoubleLogger m_log_desired_voltage;
+    private final DoubleLogger m_log_desired_current;
     /** rad */
     private final DoubleLogger m_log_position;
     /** rad/s */
     private final DoubleLogger m_log_velocity;
+    private final DoubleLogger m_log_accel;
     private final DoubleLogger m_log_stator_current;
     private final DoubleLogger m_log_supplyVoltage;
 
@@ -128,6 +141,7 @@ public abstract class CANSparkMotor implements BareMotor {
 
         m_encoder = m_motor.getEncoder();
         m_pidController = m_motor.getClosedLoopController();
+        m_smoothDerivative = new LowPassDerivative();
 
         // LIMIT SWITCHES
         m_forLimitSwitch = m_motor.getForwardLimitSwitch();
@@ -137,6 +151,7 @@ public abstract class CANSparkMotor implements BareMotor {
         // TODO: fix for 2027
         m_position = Cache.ofDouble(() -> m_encoder.getPosition().get() * 2 * Math.PI);
         m_velocity = Cache.ofDouble(() -> m_encoder.getVelocity().get() * 2 * Math.PI / 60);
+        m_acceleration = Cache.ofDouble(() -> m_smoothDerivative.calculate(m_velocity.getAsDouble()));
         m_statorCurrent = Cache.ofDouble(() -> m_motor.getOutputCurrent().get());
         m_supplyVoltage = Cache.ofDouble(() -> m_motor.getBusVoltage().get());
         m_output = Cache.ofDouble(() -> m_motor.getAppliedOutput().get());
@@ -148,9 +163,11 @@ public abstract class CANSparkMotor implements BareMotor {
         m_log_velocity_FF = m_log.doubleLogger(Level.TRACE, "velocity feedforward (V)");
         m_log_torque_FF = m_log.doubleLogger(Level.TRACE, "torque feedforward (V)");
         m_log_output = m_log.doubleLogger(Level.DEBUG, "output [-1,1]");
-        m_log_volts = m_log.doubleLogger(Level.DEBUG, "volts (V)");
+        m_log_desired_voltage = m_log.doubleLogger(Level.DEBUG, "desired voltage (V)");
+        m_log_desired_current = m_log.doubleLogger(Level.DEBUG, "desired current (A)");
         m_log_position = m_log.doubleLogger(Level.DEBUG, "position (rad)");
         m_log_velocity = m_log.doubleLogger(Level.DEBUG, "velocity (rad_s)");
+        m_log_accel = m_log.doubleLogger(Level.DEBUG, "accel (rad_s2)");
         m_log_stator_current = m_log.doubleLogger(Level.DEBUG, "stator current (A)");
         m_log_supplyVoltage = m_log.doubleLogger(Level.DEBUG, "voltage (V)");
         m_log.intLogger(Level.TRACE, "Device ID").log(m_motor::getDeviceId);
@@ -162,10 +179,22 @@ public abstract class CANSparkMotor implements BareMotor {
         m_log_output.log(() -> output);
     }
 
+    /**
+     * Warning! This is a closed-loop control that uses PID SLOT ZERO!
+     */
     @Override
     public void setVoltage(double volts) {
-        m_motor.setVoltage(volts);
-        m_log_volts.log(() -> volts);
+        m_pidController.setSetpoint(volts, ControlType.kVoltage);
+        m_log_desired_voltage.log(() -> volts);
+    }
+
+    /**
+     * Warning! This is a closed-loop control that uses PID SLOT ZERO!
+     */
+    @Override
+    public void setCurrent(double amps) {
+        m_pidController.setSetpoint(amps, ControlType.kCurrent);
+        m_log_desired_current.log(() -> amps);
     }
 
     public boolean getForwardLimitSwitch() {
@@ -178,7 +207,7 @@ public abstract class CANSparkMotor implements BareMotor {
 
     @Override
     public void setTorqueLimit(double torqueNm) {
-        int currentA = (int) (torqueNm / kTNm_amp());
+        int currentA = (int) (torqueNm / kT());
         m_configurator.overrideStatorLimit(currentA);
     }
 
@@ -240,12 +269,24 @@ public abstract class CANSparkMotor implements BareMotor {
 
     /** Value is updated in Robot.robotPeriodic(). */
     @Override
+    public double getUnwrappedPositionRad() {
+        return m_position.getAsDouble();
+    }
+
+    /** Value is updated in Robot.robotPeriodic(). */
+    @Override
     public double getVelocityRad_S() {
         return m_velocity.getAsDouble();
     }
 
+    /** Value is updated in Robot.robotPeriodic(). */
     @Override
-    public double getCurrent() {
+    public double getAccelerationRad_S2() {
+        return m_acceleration.getAsDouble();
+    }
+
+    @Override
+    public double getStatorCurrent() {
         return m_statorCurrent.getAsDouble();
     }
 
@@ -281,11 +322,6 @@ public abstract class CANSparkMotor implements BareMotor {
         m_motor.close();
     }
 
-    @Override
-    public double getUnwrappedPositionRad() {
-        return m_position.getAsDouble();
-    }
-
     /**
      * Sets integrated sensor position to zero.
      */
@@ -304,14 +340,15 @@ public abstract class CANSparkMotor implements BareMotor {
     public void play(double freq) {
     }
 
-    ////////////////////////////////////////////
+    ///////////////////////////////////////////
 
     private void log() {
         m_log_position.log(m_position);
         m_log_velocity.log(m_velocity);
+        m_log_accel.log(m_acceleration);
+        m_log_output.log(m_output);
         m_log_stator_current.log(m_statorCurrent);
         m_log_supplyVoltage.log(m_supplyVoltage);
-        m_log_output.log(m_output);
     }
 
     private static void warn(Supplier<REVLibError> s) {

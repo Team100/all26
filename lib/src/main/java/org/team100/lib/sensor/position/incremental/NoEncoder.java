@@ -5,7 +5,12 @@ package org.team100.lib.sensor.position.incremental;
  * This is useful if you want to make a mechanism (so you can have gears) but
  * you are using a primitive motor controller and no separate encoder anywhere.
  */
-public class NoEncoder implements IncrementalBareEncoder {
+public class NoEncoder implements IncrementalEncoder {
+
+    @Override
+    public double getUnwrappedPositionRad() {
+        return 0;
+    }
 
     @Override
     public double getVelocityRad_S() {
@@ -13,13 +18,9 @@ public class NoEncoder implements IncrementalBareEncoder {
     }
 
     @Override
-    public double getUnwrappedPositionRad() {
+    public double getAccelerationRad_S2() {
         return 0;
     }
-
-    // @Override
-    // public void reset() {
-    // }
 
     @Override
     public void close() {

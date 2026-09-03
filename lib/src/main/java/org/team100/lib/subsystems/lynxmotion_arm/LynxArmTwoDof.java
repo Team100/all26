@@ -1,16 +1,20 @@
 package org.team100.lib.subsystems.lynxmotion_arm;
 
+import java.util.List;
+
 import org.team100.lib.geometry.lynx_arm.LynxArmConfig;
 import org.team100.lib.geometry.lynx_arm.LynxArmPose;
 import org.team100.lib.geometry.rr.RRConfig;
 import org.team100.lib.geometry.rr.RRPosition;
 import org.team100.lib.kinematics.lynx_arm.AnalyticLynxArmKinematics;
 import org.team100.lib.kinematics.lynx_arm.LynxArmKinematics;
+import org.team100.lib.kinematics.rr.RRFeasibility;
 import org.team100.lib.kinematics.rr.RRKinematics;
 import org.team100.lib.motor.servo.CalibratedServo;
 import org.team100.lib.subsystems.lynxmotion_arm.commands.MoveCommandTwoDof;
 import org.team100.lib.util.AffineFunction;
 import org.team100.lib.util.Clamp;
+import org.team100.lib.util.StrUtil;
 
 import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.command2.SubsystemBase;
@@ -31,6 +35,8 @@ public class LynxArmTwoDof extends SubsystemBase implements AutoCloseable {
     private final CalibratedServo m_grip;
 
     private final RRKinematics m_kinematics;
+    final RRFeasibility m_feasibility;
+
     private final LynxArmKinematics m_fullKinematics;
 
     public LynxArmTwoDof() {
@@ -72,6 +78,10 @@ public class LynxArmTwoDof extends SubsystemBase implements AutoCloseable {
         m_twist.set(0);
 
         m_kinematics = new RRKinematics(0.146, 0.298);
+        m_feasibility = new RRFeasibility(
+                m_kinematics,
+                new RRConfig(-Math.PI / 2, -3),
+                new RRConfig(Math.PI / 2, 3));
         m_fullKinematics = AnalyticLynxArmKinematics.real();
 
         setPosition(HOME);
@@ -79,9 +89,18 @@ public class LynxArmTwoDof extends SubsystemBase implements AutoCloseable {
 
     /** Translation coordinates are x-forward y-up, measured from the boom joint. */
     public void setPosition(Translation2d end) {
-        // TODO: check both solutions against limits
-        // TODO: default
-        RRConfig q = m_kinematics.inverse(end, null).get(0);
+        RRConfig q0 = getMeasuredConfig();
+        List<RRConfig> qAll = m_kinematics.inverse(end, q0.q1());
+        if (qAll.isEmpty()) {
+            System.out.println("no solution for pose " + StrUtil.transStr(end));
+            return;
+        }
+        List<RRConfig> qFeasible = m_feasibility.filter(qAll);
+        if (qFeasible.isEmpty()) {
+            System.out.println("infeasible pose " + StrUtil.transStr(end));
+            return;
+        }
+        RRConfig q = RRConfig.getBest(qFeasible, q0);
         // the joint coordinates use the 3d convention which is inverted
         // from the 2d one, so fix it here.
         m_boom.set(-1.0 * q.q1());

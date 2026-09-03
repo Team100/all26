@@ -12,11 +12,6 @@ public class MockLinearVelocityServo implements LinearVelocityServo {
     }
 
     @Override
-    public void setVelocityDirect(double setpoint) {
-        m_setpoint = setpoint;
-    }
-
-    @Override
     public void setVelocityDirect(double setpoint, double setpoint_2) {
         m_setpoint = setpoint;
     }

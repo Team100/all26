@@ -3,9 +3,9 @@ package org.team100.lib.subsystems.swerve.module;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.mechanism.RotaryMechanism;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.position.absolute.sim.SimulatedRotaryPositionSensor;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 
 /**
  * Uses simulated position sensors, must be used with clock control (e.g.
@@ -22,7 +22,7 @@ public class SimulatedSwerveModule100 extends SwerveModule100 {
     }
 
     private static LinearMechanism drive(LoggerFactory parent) {
-        SimulatedBareMotor motor = new SimulatedBareMotor(parent, 600);
+        SimulatedMotor motor = new SimulatedMotor(parent, 600);
         return new LinearMechanism(
                 parent, motor, motor.encoder(), DRIVE_GEAR_RATIO, WHEEL_DIAMETER_M,
                 Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -34,8 +34,8 @@ public class SimulatedSwerveModule100 extends SwerveModule100 {
      */
     private static RotaryMechanism steer(LoggerFactory parent) {
         // simulated turning motor free speed is 20 rad/s
-        SimulatedBareMotor turningMotor = new SimulatedBareMotor(parent, 600);
-        IncrementalBareEncoder encoder = turningMotor.encoder();
+        SimulatedMotor turningMotor = new SimulatedMotor(parent, 600);
+        IncrementalEncoder encoder = turningMotor.encoder();
         SimulatedRotaryPositionSensor turningSensor = new SimulatedRotaryPositionSensor(
                 parent, encoder, 1);
         return new RotaryMechanism(

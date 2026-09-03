@@ -11,12 +11,12 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.LinearMechanism;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
-import org.team100.lib.motor.sim.LazySimulatedBareMotor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.LazySimulatedMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.music.Music;
 import org.team100.lib.music.Player;
 import org.team100.lib.sensor.distance.LaserCan100;
@@ -35,7 +35,7 @@ public class Manipulator extends SubsystemBase implements Music {
     private final BooleanLogger coralLogger;
 
     private static final int NEAR = 50;
-    private final BareMotor m_algaeMotor;
+    private final Motor m_algaeMotor;
     private final LinearMechanism m_leftMech;
     private final LinearMechanism m_rightMech;
     private final LinearMechanism m_algaeMech;
@@ -89,11 +89,11 @@ public class Manipulator extends SubsystemBase implements Music {
                         16, 0.1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
             }
             default -> {
-                SimulatedBareMotor leftMotor = new SimulatedBareMotor(log, 600);
-                SimulatedBareMotor rightMotor = new SimulatedBareMotor(log, 600);
+                SimulatedMotor leftMotor = new SimulatedMotor(log, 600);
+                SimulatedMotor rightMotor = new SimulatedMotor(log, 600);
                 // simulated algae motor gets overloaded 2 sec after starting
-                LazySimulatedBareMotor algaeMotor = new LazySimulatedBareMotor(
-                        log, new SimulatedBareMotor(log, 600), 2);
+                LazySimulatedMotor algaeMotor = new LazySimulatedMotor(
+                        log, new SimulatedMotor(log, 600), 2);
                 m_algaeMotor = algaeMotor;
                 m_leftMech = new LinearMechanism(log, leftMotor, leftMotor.encoder(),
                         1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -200,7 +200,7 @@ public class Manipulator extends SubsystemBase implements Music {
      * (...and also at startup so include a delay.)
      */
     public boolean hasAlgae() {
-        return m_algaeMotor.getCurrent() > 50;
+        return m_algaeMotor.getStatorCurrent() > 50;
     }
 
     ////////////////////////////////////////////////

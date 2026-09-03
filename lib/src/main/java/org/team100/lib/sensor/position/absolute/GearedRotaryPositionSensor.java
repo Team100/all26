@@ -43,6 +43,11 @@ public class GearedRotaryPositionSensor implements RotaryPositionSensor {
     }
 
     @Override
+    public double getAccelerationRad_S2() {
+        return m_delegate.getAccelerationRad_S2() / m_ratio;
+    }
+
+    @Override
     public void periodic() {
         m_delegate.periodic();
     }

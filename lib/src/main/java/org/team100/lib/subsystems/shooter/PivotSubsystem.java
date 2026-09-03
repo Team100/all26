@@ -8,11 +8,11 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.TotalCurrentLog;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.Neo550CANSparkMotor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.util.CanId;
 
 import org.wpilib.command2.Command;
@@ -23,7 +23,7 @@ import org.wpilib.command2.SubsystemBase;
  */
 public class PivotSubsystem extends SubsystemBase {
 
-    private final BareMotor m_pivot;
+    private final Motor m_pivot;
     private final DoubleLogger m_log_angle;
 
     public PivotSubsystem(
@@ -35,7 +35,7 @@ public class PivotSubsystem extends SubsystemBase {
         m_log_angle = logger.doubleLogger(Level.TRACE, "Angle (rad)");
         m_pivot = (switch (Identity.instance) {
             case BLANK ->
-                new SimulatedBareMotor(logger, 600);
+                new SimulatedMotor(logger, 600);
             default -> new Neo550CANSparkMotor(
                     logger,
                     currentLog,

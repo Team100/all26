@@ -1,21 +1,59 @@
 package org.team100.lib.hid;
 
-import org.wpilib.math.geometry.Rotation2d;
+import org.team100.lib.coherence.Cache;
+import org.team100.lib.coherence.DoubleCache;
+import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LoggerFactory;
+import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.wpilib.driverstation.Gamepad;
+import org.wpilib.math.filter.LinearFilter;
+import org.wpilib.math.geometry.Rotation2d;
 
 /**
  * This is a Microsoft Xbox controller, Logitech F310, or similar.
  * 
- * This class exists to group inputs for velocity, and to provide nicer method
- * names.
+ * We use "Mode 2" stick arrangement, with cartesian motion on the right
+ * and yaw on the left.
+ * 
+ * Smooths the input a little, to compensate for the low sampling rate.
  * 
  * Do not use stick buttons, they are prone to stray clicks
  */
 public class DriverXboxControl {
-    private final Gamepad m_controller;
 
-    public DriverXboxControl(int port) {
+    // width of the stick filter in clock cycles
+    private static final int BOXCAR = 4;
+    private final Gamepad m_controller;
+    /**
+     * Controls are sampled at half the main clock rate,
+     * which makes the "acceleration" computation return zero
+     * half the time. So this smooths it out.
+     */
+    private final LinearFilter m_filterRightY;
+    private final LinearFilter m_filterRightX;
+    private final LinearFilter m_filterLeftX;
+
+    private final DoubleCache m_rightY;
+    private final DoubleCache m_rightX;
+    private final DoubleCache m_leftX;
+
+    private final DoubleLogger m_log_rightY;
+    private final DoubleLogger m_log_rightX;
+    private final DoubleLogger m_log_leftX;
+
+    public DriverXboxControl(LoggerFactory parent, int port) {
+        LoggerFactory log = parent.type(this);
         m_controller = new Gamepad(port);
+        // Match the control sampling rate.
+        m_filterRightY = LinearFilter.movingAverage(BOXCAR);
+        m_filterRightX = LinearFilter.movingAverage(BOXCAR);
+        m_filterLeftX = LinearFilter.movingAverage(BOXCAR);
+        m_rightY = Cache.ofDouble(this::rightY);
+        m_rightX = Cache.ofDouble(this::rightX);
+        m_leftX = Cache.ofDouble(this::leftX);
+        m_log_rightY = log.doubleLogger(Level.DEBUG, "right Y");
+        m_log_rightX = log.doubleLogger(Level.DEBUG, "right X");
+        m_log_leftX = log.doubleLogger(Level.DEBUG, "left X");
     }
 
     /**
@@ -26,26 +64,32 @@ public class DriverXboxControl {
      */
     public Velocity velocity() {
         return ControlUtil.velocity(
-                m_controller::getRightY,
-                m_controller::getRightX,
-                m_controller::getLeftX,
+                m_rightY,
+                m_rightX,
+                m_leftX,
                 0.1,
                 0.65);
     }
 
+    public void periodic() {
+        m_log_rightY.log(m_rightY);
+        m_log_rightX.log(m_rightX);
+        m_log_leftX.log(m_leftX);
+    }
+
     /** Axis 5 */
     public double rightY() {
-        return m_controller.getRightY();
+        return m_filterRightY.calculate(m_controller.getRightY());
     }
 
     /** Axis 4 */
     public double rightX() {
-        return m_controller.getRightX();
+        return m_filterRightX.calculate(m_controller.getRightX());
     }
 
     /** Axis 0 */
     public double leftX() {
-        return m_controller.getLeftX();
+        return m_filterLeftX.calculate(m_controller.getLeftX());
     }
 
     public Rotation2d pov() {

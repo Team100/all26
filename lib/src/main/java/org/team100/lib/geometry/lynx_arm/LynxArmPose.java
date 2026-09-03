@@ -1,6 +1,7 @@
 package org.team100.lib.geometry.lynx_arm;
 
 import org.team100.lib.util.Math100;
+import org.team100.lib.util.StrUtil;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation3d;
 import org.wpilib.math.geometry.Translation3d;
@@ -53,5 +54,16 @@ public record LynxArmPose(
                 Math100.interpolate(a.getX(), b.getX(), x),
                 Math100.interpolate(a.getY(), b.getY(), x),
                 Math100.interpolate(a.getZ(), b.getZ(), x));
+    }
+
+    @Override
+    public String toString() {
+        return String.format("p1 %s\np2 %s\np3 %s\np4 %s\np5 %s\np6 %s",
+                StrUtil.poseStr(p1),
+                StrUtil.poseStr(p2),
+                StrUtil.poseStr(p3),
+                StrUtil.poseStr(p4),
+                StrUtil.poseStr(p5),
+                StrUtil.poseStr(p6));
     }
 }

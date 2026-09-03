@@ -9,7 +9,7 @@ import static org.wpilib.command2.Commands.waitUntil;
 import org.team100.lib.controller.r1.AzimuthController;
 import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.FullStateFeedback;
-import org.team100.lib.hid.InterLinkDX;
+import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
@@ -28,6 +28,7 @@ public class Binder {
 
     private final Machinery m_machinery;
     private final LoggerFactory m_log;
+    private final DriverXboxControl m_driver;
 
     public Binder(Machinery machinery) {
         m_machinery = machinery;
@@ -37,8 +38,9 @@ public class Binder {
         ///
         /// CONTROLLER
         ///
-        // DriverXboxControl driver = new DriverXboxControl(0);
-        InterLinkDX driver = new InterLinkDX(0);
+        m_driver = new DriverXboxControl(m_log, 0);
+        // InterLinkDX driver = new InterLinkDX(m_log, 0);
+
 
         ////////////////////////////////////////////////////
         ///
@@ -48,7 +50,7 @@ public class Binder {
                 new DriveFieldRelative(
                         m_log,
                         m_machinery.m_swerveKinodynamics,
-                        driver::velocity,
+                        m_driver::velocity,
                         m_machinery.m_localizer::setHeedRadiusM,
                         m_machinery.m_drive,
                         m_machinery.m_limiter));
@@ -62,19 +64,23 @@ public class Binder {
         ///
         /// DISORIENT
         ///
-        /// Back: nudge the rotation towards zero. Start: forget the current pose, listen
-        /// to camera input.
+        /// Back: nudge the rotation towards zero.
+        /// Start: forget the current pose, listen to camera input.
+        ///
+        /// both together: warp to the origin. FOR TESTING ONLY.
 
-        onTrue(driver::back, m_machinery.zeroRotation());
-        onTrue(driver::start, m_machinery.disorient());
+        onTrue(m_driver::back, m_machinery.zeroRotation());
+        onTrue(m_driver::start, m_machinery.disorient());
+        onTrue(() -> m_driver.start() && m_driver.back(), m_machinery.zeroPose());
 
         ////////////////////////////////////////////////////
         ///
         /// DEFENSE X POSITION
         ///
-        whileTrue(driver::povDown, m_machinery.m_drive.defend());
+        whileTrue(m_driver::povDown, m_machinery.m_drive.defend());
 
-        whileTrue(driver::rightTrigger,
+        whileTrue(m_driver::rightTrigger,
+
                 parallel(
                         m_machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
                         sequence(
@@ -83,13 +89,13 @@ public class Binder {
                                         m_machinery.m_intake.intake(),
                                         m_machinery.m_shooter.shooterFullspeed()))));
 
-        whileTrue(driver::x,
+        whileTrue(m_driver::x,
                 m_machinery.m_intake.intake());
-        whileTrue(driver::a,
+        whileTrue(m_driver::a,
                 m_machinery.m_intakeExtend.goToExtendedPositionEndlessly());
-        whileTrue(driver::b,
+        whileTrue(m_driver::b,
                 m_machinery.m_intakeExtend.goToRetractedPosition());
-        whileTrue(driver::y, m_machinery.m_shooter.testShooterFullspeed());
+        whileTrue(m_driver::y, m_machinery.m_shooter.testShooterFullspeed());
 
         ////////////////////////////////////////////////////
         ///
@@ -105,18 +111,21 @@ public class Binder {
                 m_log,
                 m_machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
                 thetaFeedback);
-        whileTrue(() -> driver.leftBumper(),
+        whileTrue(() -> m_driver.leftBumper(),
                 new DriveMovingTargetLock(
                         m_log,
                         m_machinery.m_swerveKinodynamics,
                         aim,
-                        driver::velocity,
+                        m_driver::velocity,
                         m_machinery.m_localizer::setHeedRadiusM,
                         m_machinery.m_limiter,
                         m_machinery.m_cachedSolution,
                         m_machinery.m_drive)
                         .withName("Target lock"));
+    }
 
+    public void periodic() {
+        m_driver.periodic();
     }
 
     /** Keeps tests from conflicting. */

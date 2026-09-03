@@ -3,14 +3,14 @@ package org.team100.lib.motor.wpi;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.motor.BareMotor;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
-import org.team100.lib.sensor.position.incremental.sim.SimulatedBareEncoder;
+import org.team100.lib.motor.Motor;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
+import org.team100.lib.sensor.position.incremental.sim.SimulatedEncoder;
 import org.wpilib.hardware.motor.MotorController;
 
-
 /** Wrapoer for RoboRIO-connected PWM speed control */
-public class BareMotorController100 implements BareMotor {
+public class MotorController100 implements Motor {
+    private static final double FREE_SPEED_RPM = 6000;
     /**
      * Very much not calibrated.
      * Say 600 rad/s max so 0.0016?
@@ -21,7 +21,7 @@ public class BareMotorController100 implements BareMotor {
     private final DoubleLogger m_log_duty;
     private final DoubleLogger m_log_reported;
 
-    public BareMotorController100(
+    public MotorController100(
             LoggerFactory parent,
             MotorController motorController) {
         m_log = parent.type(this);
@@ -39,6 +39,11 @@ public class BareMotorController100 implements BareMotor {
 
     @Override
     public void setVoltage(double volts) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setCurrent(double current) {
         throw new UnsupportedOperationException();
     }
 
@@ -60,23 +65,23 @@ public class BareMotorController100 implements BareMotor {
 
     /** placeholder */
     @Override
-    public double kROhms() {
+    public double R() {
         return 0.1;
     }
 
     /** placeholder */
     @Override
-    public double kTNm_amp() {
+    public double kT() {
         return 0.02;
     }
 
     @Override
-    public double kFreeSpeedRPM() {
-        return 6000;
+    public double kE() {
+        return 60 * 12 / (FREE_SPEED_RPM * 2 * Math.PI);
     }
 
-    public IncrementalBareEncoder encoder() {
-        return new SimulatedBareEncoder(m_log, this);
+    public IncrementalEncoder encoder() {
+        return new SimulatedEncoder(m_log, this);
     }
 
     @Override
@@ -95,9 +100,13 @@ public class BareMotorController100 implements BareMotor {
         // m_motor.close();
     }
 
-    /** MotorControllers do not support velocity measurement. */
     @Override
     public double getVelocityRad_S() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public double getAccelerationRad_S2() {
         throw new UnsupportedOperationException();
     }
 
@@ -107,7 +116,7 @@ public class BareMotorController100 implements BareMotor {
     }
 
     @Override
-    public double getCurrent() {
+    public double getStatorCurrent() {
         throw new UnsupportedOperationException();
     }
 

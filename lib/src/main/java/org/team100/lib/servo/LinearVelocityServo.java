@@ -23,22 +23,6 @@ public interface LinearVelocityServo extends Player {
     void setDutyCycle(double dutyCycle);
 
     /**
-     * Sets velocity without a profile.
-     * 
-     * You need to keep calling this to keep actuating.
-     *
-     * Computes implied acceleration based on the previous call,
-     * using TimedRobot100.LOOP_PERIOD_S. If you call this more often, you'll
-     * get weird results.
-     * <p>
-     * Also, the acceleration calculation will tend to magnify noise in the
-     * setpoint; consider the other setVelocity() method if this is a problem.
-     * 
-     * @param setpointM_S desired speed, m/s
-     */
-    void setVelocityDirect(double setpointM_S);
-
-    /**
      * Use a velocity profile.
      * 
      * You need to keep calling this to keep actuating.

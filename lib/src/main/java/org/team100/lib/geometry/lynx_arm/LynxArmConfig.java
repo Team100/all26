@@ -28,6 +28,13 @@ public record LynxArmConfig(
 
     private static final boolean DEBUG = false;
 
+    /**
+     * @param swing zero is centered, positive CCW, looking down at the joint
+     * @param boom  zero is straight out, positive down
+     * @param stick zero is straight out, positive down
+     * @param wrist zero is straight out, positive down
+     * @param twist zero is centered, positive CW, looking out
+     */
     public LynxArmConfig(double swing, double boom, double stick, double wrist, double twist) {
         this(OptionalDouble.of(swing), boom, stick, wrist, OptionalDouble.of(twist));
     }

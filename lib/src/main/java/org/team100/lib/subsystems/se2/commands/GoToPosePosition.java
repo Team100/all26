@@ -47,7 +47,7 @@ public class GoToPosePosition extends MoveAndHold {
         TrajectorySE2 m_trajectory = m_planner.restToRest(
                 List.of(m_currentPose, m_goal));
         m_referenceController = new PositionReferenceControllerSE2(
-                m_log, m_subsystem, new TrajectoryReferenceSE2(m_log, m_trajectory));
+                m_log, m_subsystem, 0.1, new TrajectoryReferenceSE2(m_log, m_trajectory));
     }
 
     @Override

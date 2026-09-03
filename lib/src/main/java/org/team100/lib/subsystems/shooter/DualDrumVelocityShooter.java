@@ -76,8 +76,8 @@ public class DualDrumVelocityShooter extends SubsystemBase implements DualDrumSh
             m_left.setVelocityProfiled(x);
             m_right.setVelocityProfiled(x);
         } else {
-            m_left.setVelocityDirect(x);
-            m_right.setVelocityDirect(x);
+            m_left.setVelocityDirect(x, 0);
+            m_right.setVelocityDirect(x, 0);
         }
     }
 

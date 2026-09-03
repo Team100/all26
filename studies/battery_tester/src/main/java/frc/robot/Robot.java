@@ -36,7 +36,7 @@ public class Robot extends TimedRobot100 {
         RobotController.setBrownoutVoltage(6.3); // RoboRIO 1.0 value
         Logging log = Logging.instance();
         LoggerFactory robotLog = log.rootLogger;
-        m_controller = new DriverXboxControl(0);
+        m_controller = new DriverXboxControl(robotLog, 0);
         m_subsystem = new BatteryTester(robotLog);
         m_viz = new LightBulbVisualizer(m_subsystem::temperature);
         m_subsystem.setDefaultCommand(m_subsystem.run(m_subsystem::off));
@@ -65,9 +65,9 @@ public class Robot extends TimedRobot100 {
                         .whileTrue(m_subsystem.run(() -> m_subsystem.setCurrent(150)));
                 new Trigger(m_controller::y)
                         .whileTrue(m_subsystem.run(() -> m_subsystem.setCurrent(200)));
-                // this is like the old tester
-                m_auton = new ConstantCurrentProtocol(m_subsystem, 10, 10.5);
-                // 
+                // this current is not the actual current
+                m_auton = new ConstantCurrentProtocol(m_subsystem, 15, 11.0);
+                //
                 // m_auton = new ConstantCurrentProtocol(m_subsystem, 150, 9.5);
                 break;
         }

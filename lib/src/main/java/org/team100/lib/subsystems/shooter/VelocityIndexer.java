@@ -61,7 +61,7 @@ public class VelocityIndexer extends SubsystemBase implements ShooterIndexer {
         if (m_profiled) {
             m_servo.setVelocityProfiled(velocityM_S);
         } else {
-            m_servo.setVelocityDirect(velocityM_S);
+            m_servo.setVelocityDirect(velocityM_S, 0);
         }
     }
 

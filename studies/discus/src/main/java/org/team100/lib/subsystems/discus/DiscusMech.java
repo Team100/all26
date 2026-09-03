@@ -9,11 +9,11 @@ import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.RotaryMechanism;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.position.absolute.HomingRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.util.CanId;
@@ -32,7 +32,7 @@ public class DiscusMech extends SubsystemBase {
 
     private final RotaryMechanism m_mech;
 
-    private final BareMotor m_motor;
+    private final Motor m_motor;
 
     private final HomingRotaryPositionSensor m_sensor;
 
@@ -71,7 +71,7 @@ public class DiscusMech extends SubsystemBase {
 
             }
             default -> {
-                SimulatedBareMotor motor = new SimulatedBareMotor(logger, 600);
+                SimulatedMotor motor = new SimulatedMotor(logger, 600);
                 m_motor = motor;
 
                 m_sensor = new HomingRotaryPositionSensor(

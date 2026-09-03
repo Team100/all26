@@ -38,7 +38,7 @@ public class TestBinder {
         ///
         /// CONTROLLER
         ///
-        DriverXboxControl driver = new DriverXboxControl(0);
+        DriverXboxControl driver = new DriverXboxControl(m_log, 0);
 
         ////////////////////////////////////////////////////
         ///

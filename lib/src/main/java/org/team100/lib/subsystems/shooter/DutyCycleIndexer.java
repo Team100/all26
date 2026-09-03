@@ -1,7 +1,7 @@
 package org.team100.lib.subsystems.shooter;
 
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -13,9 +13,9 @@ public class DutyCycleIndexer extends SubsystemBase implements ShooterIndexer {
     private static final double BLIP_DURATION = 0.12;
     /** full output duty cycle */
     private final double m_full;
-    private final BareMotor m_motor;
+    private final Motor m_motor;
 
-    public DutyCycleIndexer(LoggerFactory log, double full, BareMotor motor) {
+    public DutyCycleIndexer(LoggerFactory log, double full, Motor motor) {
         m_full = full;
         m_motor = motor;
     }

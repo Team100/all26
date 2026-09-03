@@ -137,7 +137,9 @@ public class DriveProfiledReefLock extends Command {
     public void execute() {
 
         // input in [-1,1] control units
+        // TODO: control noise in this input
         Velocity t = m_twistSupplier.get();
+        // TODO: control noise in this input
         StateSE2 s = m_drive.getState();
 
         // scale for driver skill.

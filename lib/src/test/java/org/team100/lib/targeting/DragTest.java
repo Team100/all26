@@ -3,6 +3,7 @@ package org.team100.lib.targeting;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import org.team100.lib.testing.TestUtil;
 import org.wpilib.math.linalg.Matrix;
 import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.numbers.N1;
@@ -31,6 +32,39 @@ public class DragTest {
             if (x.get(1, 0) < 0)
                 break;
         }
+    }
+
+    @Test
+    void testMagnus0() {
+        Drag f = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
+        // launch angle is 45 degrees
+        Matrix<N6, N1> x = VecBuilder.fill(0, 0, 0, 5, 5, 0);
+        double dt = 0.1;
+        x = NumericalIntegration.rk4(f, x, dt);
+        // a bit less y than x
+        TestUtil.verify(VecBuilder.fill(0.453, 0.408, 0, 4.147, 3.248, 0), x);
+    }
+
+    @Test
+    void testMagnus1() {
+        Drag f = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
+        // launch angle is 45 degrees with "negative" spin
+        Matrix<N6, N1> x = VecBuilder.fill(0, 0, 0, 5, 5, -50);
+        double dt = 0.1;
+        x = NumericalIntegration.rk4(f, x, dt);
+        // more x, less y: topspin
+        TestUtil.verify(VecBuilder.fill(0.468, 0.392, -4.359, 4.386, 2.962, -38.279), x);
+    }
+
+    @Test
+    void testMagnus2() {
+        Drag f = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
+        // launch angle is 45 degrees with "positive" spin
+        Matrix<N6, N1> x = VecBuilder.fill(0, 0, 0, 5, 5, 50);
+        double dt = 0.1;
+        x = NumericalIntegration.rk4(f, x, dt);
+        // less x, more y: backspin
+        TestUtil.verify(VecBuilder.fill(0.439, 0.422, 4.359, 3.890, 3.517, 38.279), x);
     }
 
     /** Without drag, this should yield gravity only. */

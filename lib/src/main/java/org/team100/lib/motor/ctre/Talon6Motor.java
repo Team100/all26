@@ -11,12 +11,13 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.TotalCurrentLog;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.sensor.position.incremental.ctre.Talon6Encoder;
 import org.team100.lib.util.CanId;
 import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.AngularAcceleration;
 import org.wpilib.units.measure.AngularVelocity;
 import org.wpilib.units.measure.Current;
 import org.wpilib.units.measure.Temperature;
@@ -29,9 +30,11 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MusicTone;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+
 
 /**
  * Superclass for TalonFX motors.
@@ -40,7 +43,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
  * in
  * Robot.robotPeriodic().
  */
-public abstract class Talon6Motor implements BareMotor {
+public abstract class Talon6Motor implements Motor {
     private final LoggerFactory m_log;
     private static final boolean DEBUG = false;
 
@@ -56,6 +59,8 @@ public abstract class Talon6Motor implements BareMotor {
     protected final DoubleCache m_position;
     /** radians per second */
     protected final DoubleCache m_velocity;
+    /** radians per second squared */
+    protected final DoubleCache m_acceleration;
     protected final DoubleCache m_dutyCycle;
     protected final DoubleCache m_error;
     protected final DoubleCache m_supplyCurrent;
@@ -71,12 +76,14 @@ public abstract class Talon6Motor implements BareMotor {
     private final VelocityVoltage m_velocityVoltage;
     private final DutyCycleOut m_dutyCycleOut;
     private final VoltageOut m_voltageOut;
+    private final TorqueCurrentFOC m_currentOut;
     private final PositionVoltage m_positionVoltage;
     private final MusicTone m_music;
 
     // LOGGERS
     private final DoubleLogger m_log_desired_duty;
     private final DoubleLogger m_log_desired_voltage;
+    private final DoubleLogger m_log_desired_current;
     /** rad */
     private final DoubleLogger m_log_desired_position;
     /** rad/s */
@@ -89,6 +96,8 @@ public abstract class Talon6Motor implements BareMotor {
     private final DoubleLogger m_log_position;
     /** rad/s */
     private final DoubleLogger m_log_velocity;
+    /** rad/s^2 */
+    private final DoubleLogger m_log_accel;
     /** duty cycle */
     private final DoubleLogger m_log_output;
     private final DoubleLogger m_log_error;
@@ -114,6 +123,7 @@ public abstract class Talon6Motor implements BareMotor {
         m_velocityVoltage = new VelocityVoltage(0);
         m_dutyCycleOut = new DutyCycleOut(0);
         m_voltageOut = new VoltageOut(0);
+        m_currentOut = new TorqueCurrentFOC(0);
         m_positionVoltage = new PositionVoltage(0);
         m_music = new MusicTone(0);
 
@@ -124,6 +134,7 @@ public abstract class Talon6Motor implements BareMotor {
         m_velocityVoltage.UpdateFreqHz = 0;
         m_dutyCycleOut.UpdateFreqHz = 0;
         m_voltageOut.UpdateFreqHz = 0;
+        m_currentOut.UpdateFreqHz = 0;
         m_positionVoltage.UpdateFreqHz = 0;
 
         m_log = parent.type(this);
@@ -147,6 +158,7 @@ public abstract class Talon6Motor implements BareMotor {
         // Cache the status signal getters.
         StatusSignal<Angle> motorPositionRev = m_motor.getPosition();
         StatusSignal<AngularVelocity> motorVelocityRev_S = m_motor.getVelocity();
+        StatusSignal<AngularAcceleration> motorAccelerationRev_S2 = m_motor.getAcceleration();
         StatusSignal<Double> motorDutyCycle = m_motor.getDutyCycle();
         StatusSignal<Double> motorClosedLoopError = m_motor.getClosedLoopError();
         StatusSignal<Current> motorSupplyCurrent = m_motor.getSupplyCurrent();
@@ -157,6 +169,7 @@ public abstract class Talon6Motor implements BareMotor {
         // The memoizer refreshes all the signals at once.
         Cache.registerSignal(motorPositionRev);
         Cache.registerSignal(motorVelocityRev_S);
+        Cache.registerSignal(motorAccelerationRev_S2);
         Cache.registerSignal(motorDutyCycle);
         Cache.registerSignal(motorClosedLoopError);
         Cache.registerSignal(motorSupplyCurrent);
@@ -179,6 +192,7 @@ public abstract class Talon6Motor implements BareMotor {
             return motorRad + (motorRad_S * latency);
         });
         m_velocity = Cache.ofDouble(() -> motorVelocityRev_S.getValueAsDouble() * 2 * Math.PI);
+        m_acceleration = Cache.ofDouble(() -> motorAccelerationRev_S2.getValueAsDouble() * 2 * Math.PI);
         m_dutyCycle = Cache.ofDouble(() -> motorDutyCycle.getValueAsDouble());
         m_error = Cache.ofDouble(() -> motorClosedLoopError.getValueAsDouble());
         m_supplyCurrent = Cache.ofDouble(() -> motorSupplyCurrent.getValueAsDouble());
@@ -188,6 +202,7 @@ public abstract class Talon6Motor implements BareMotor {
 
         m_log_desired_duty = m_log.doubleLogger(Level.DEBUG, "desired duty cycle [-1,1]");
         m_log_desired_voltage = m_log.doubleLogger(Level.DEBUG, "desired voltage (V)");
+        m_log_desired_current = m_log.doubleLogger(Level.DEBUG, "desired current (A)");
         m_log_desired_position = m_log.doubleLogger(Level.DEBUG, "desired position (rad)");
         m_log_desired_speed = m_log.doubleLogger(Level.DEBUG, "desired speed (rad_s)");
         m_log_friction_FF = m_log.doubleLogger(Level.TRACE, "friction feedforward (V)");
@@ -197,6 +212,7 @@ public abstract class Talon6Motor implements BareMotor {
 
         m_log_position = m_log.doubleLogger(Level.DEBUG, "position (rad)");
         m_log_velocity = m_log.doubleLogger(Level.COMP, "velocity (rad_s)");
+        m_log_accel = m_log.doubleLogger(Level.DEBUG, "accel (rad_s2)");
         m_log_output = m_log.doubleLogger(Level.COMP, "output [-1,1]");
         m_log_error = m_log.doubleLogger(Level.TRACE, "error");
         m_log_supply_current = m_log.doubleLogger(Level.DEBUG, "supply current (A)");
@@ -221,19 +237,25 @@ public abstract class Talon6Motor implements BareMotor {
     }
 
     @Override
+    public void setCurrent(double current) {
+        warn(() -> m_motor.setControl(m_currentOut.withOutput(current)));
+        m_log_desired_current.log(() -> current);
+    }
+
+    @Override
     public void setTorqueLimit(double torqueNm) {
-        int currentA = (int) (torqueNm / kTNm_amp());
+        int currentA = (int) (torqueNm / kT());
         m_configurator.overrideStatorLimit(currentA);
     }
 
     @Override
-    public double getCurrent() {
-        return m_motor.getStatorCurrent().getValueAsDouble();
+    public double getStatorCurrent() {
+        return m_statorCurrent.getAsDouble();
     }
 
     @Override
     public double getSupplyCurrent() {
-        return m_motor.getSupplyCurrent().getValueAsDouble();
+        return m_supplyCurrent.getAsDouble();
     }
 
     /**
@@ -307,10 +329,28 @@ public abstract class Talon6Motor implements BareMotor {
         m_totalFeedForward.log(() -> FFVolts);
     }
 
-    /** Not latency-compensated. Updated in Robot.robotPeriodic(). */
+    /**
+     * This is the "unwrapped" position, i.e. the domain is infinite, not cyclical
+     * within +/- pi.
+     * 
+     * Latency-compensated, represents the current Takt.
+     * Updated in `Robot.robotPeriodic()`.
+     */
+    @Override
+    public double getUnwrappedPositionRad() {
+        return m_position.getAsDouble();
+    }
+
+    /** Not latency-compensated, not filtered. Updated in Robot.robotPeriodic(). */
     @Override
     public double getVelocityRad_S() {
         return m_velocity.getAsDouble();
+    }
+
+    /** Not latency-compensated, not filtered. Updated in Robot.robotPeriodic(). */
+    @Override
+    public double getAccelerationRad_S2() {
+        return m_acceleration.getAsDouble();
     }
 
     @Override
@@ -349,18 +389,6 @@ public abstract class Talon6Motor implements BareMotor {
         warn(() -> m_motor.setPosition(positionRad / (2.0 * Math.PI), 1));
     }
 
-    /**
-     * This is the "unwrapped" position, i.e. the domain is infinite, not cyclical
-     * within +/- pi.
-     * 
-     * Latency-compensated, represents the current Takt.
-     * Updated in `Robot.robotPeriodic()`.
-     */
-    @Override
-    public double getUnwrappedPositionRad() {
-        return m_position.getAsDouble();
-    }
-
     @Override
     public void periodic() {
         log();
@@ -371,6 +399,7 @@ public abstract class Talon6Motor implements BareMotor {
     private void log() {
         m_log_position.log(m_position);
         m_log_velocity.log(m_velocity);
+        m_log_accel.log(m_acceleration);
         m_log_output.log(m_dutyCycle);
         m_log_error.log(m_error);
         m_log_supply_current.log(m_supplyCurrent);

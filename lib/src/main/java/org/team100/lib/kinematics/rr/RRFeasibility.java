@@ -11,9 +11,13 @@ public class RRFeasibility {
     private static final boolean DEBUG = false;
 
     private final RRKinematics m_k;
+    private final RRConfig m_qMin;
+    private final RRConfig m_qMax;
 
-    public RRFeasibility(RRKinematics k) {
+    public RRFeasibility(RRKinematics k, RRConfig qMin, RRConfig qMax) {
         m_k = k;
+        m_qMin = qMin;
+        m_qMax = qMax;
     }
 
     public List<RRConfig> filter(List<RRConfig> ql) {
@@ -32,16 +36,14 @@ public class RRFeasibility {
 
     /**
      * True if the joints configurations are in their allowed ranges.
-     * 
-     * TODO: make this match the real mechanism.
      */
     boolean qRange(RRConfig q) {
-        if (q.q1() < -Math.PI / 2 || q.q1() > Math.PI / 2) {
+        if (q.q1() < m_qMin.q1() || q.q1() > m_qMax.q1()) {
             if (DEBUG)
                 System.out.printf("q1 out of range %s\n", q.q1());
             return false;
         }
-        if (q.q2() < -3 || q.q2() > 3) {
+        if (q.q2() < m_qMin.q2() || q.q2() > m_qMax.q2()) {
             if (DEBUG)
                 System.out.printf("q2 out of range %s\n", q.q2());
             return false;
@@ -51,8 +53,6 @@ public class RRFeasibility {
 
     /**
      * True if the joint workspace positions are ok.
-     * 
-     * TODO: make a real work envelope
      */
     boolean xRange(RRConfig q) {
         RRPosition x = m_k.forward(q);

@@ -4,7 +4,7 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.motor.rev.CANSparkMotor;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 
 /**
  * The built-in encoder in Neo motors.
@@ -12,7 +12,7 @@ import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
  * This encoder simply senses the 14 rotor magnets in 3 places, so it's 42 ticks
  * per turn.
  */
-public class CANSparkEncoder implements IncrementalBareEncoder {
+public class CANSparkEncoder implements IncrementalEncoder {
     private final CANSparkMotor m_motor;
     private final DoubleLogger m_log_position;
     private final DoubleLogger m_log_velocity;
@@ -31,22 +31,19 @@ public class CANSparkEncoder implements IncrementalBareEncoder {
 
     //////////////////////////////////
 
-    /**
-     * Not latency-compensated.
-     * Value is updated in Robot.robotPeriodic().
-     */
     @Override
     public double getUnwrappedPositionRad() {
         return m_motor.getUnwrappedPositionRad();
     }
 
-    /**
-     * Not latency-compensated.
-     * Value is updated in Robot.robotPeriodic().
-     */
     @Override
     public double getVelocityRad_S() {
         return m_motor.getVelocityRad_S();
+    }
+
+    @Override
+    public double getAccelerationRad_S2() {
+        return m_motor.getAccelerationRad_S2();
     }
 
     @Override

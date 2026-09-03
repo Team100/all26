@@ -17,11 +17,11 @@ import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.Translation2dLogger;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.RotaryMechanism;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.subsystems.five_bar.commands.Move;
 import org.team100.lib.util.CanId;
@@ -74,8 +74,8 @@ public class FiveBarCartesian extends SubsystemBase {
         PIDConstants pid = PIDConstants.makePositionPID(2.0);
         Friction friction = new Friction(0, 0, 0, 0);
 
-        BareMotor motorP1;
-        BareMotor motorP5;
+        Motor motorP1;
+        Motor motorP5;
         switch (Identity.instance) {
             case SWERVE_TWO -> {
                 motorP1 = new Falcon500Motor(
@@ -98,8 +98,8 @@ public class FiveBarCartesian extends SubsystemBase {
                         pid);
             }
             default -> {
-                motorP1 = new SimulatedBareMotor(loggerP1, 600);
-                motorP5 = new SimulatedBareMotor(loggerP5, 600);
+                motorP1 = new SimulatedMotor(loggerP1, 600);
+                motorP5 = new SimulatedMotor(loggerP5, 600);
             }
         }
 
@@ -119,8 +119,6 @@ public class FiveBarCartesian extends SubsystemBase {
                 1.0,
                 -100.0,
                 100.0);
-
-        // TODO: what to do for initial position?
         m_mechP1.setUnwrappedPosition(0, 0, 0);
         m_mechP5.setUnwrappedPosition(0, 0, 0);
     }

@@ -128,6 +128,11 @@ public class CombinedRotaryPositionSensor implements RotaryPositionSensor {
     }
 
     @Override
+    public double getAccelerationRad_S2() {
+        return m_incremental.getAccelerationRad_S2();
+    }
+
+    @Override
     public void close() {
         m_absolute.close();
         m_incremental.close();

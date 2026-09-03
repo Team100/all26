@@ -83,8 +83,6 @@ public class SixDofFeasibility {
      * True if the joint workspace positions are ok,
      * 
      * For now this means "above the floor".
-     * 
-     * TODO: make a real work envelope.
      */
     boolean xRange(SixDofConfig q) {
         SixDofPose p = m_k.forward(q);

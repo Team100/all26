@@ -7,11 +7,11 @@ import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.p.PDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
@@ -37,7 +37,7 @@ public class ClimberExtension extends SubsystemBase {
         // dynamics are unimportant for this subsystem.
         PDynamics dyn = new PDynamics(0);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
-        final BareMotor motor;
+        final Motor motor;
         switch (Identity.instance) {
             case TEST_BOARD_6B -> {
                 CurrentLimit limit = new CurrentLimit(40, 40);
@@ -49,7 +49,7 @@ public class ClimberExtension extends SubsystemBase {
                         limit, friction, pid, 0, 0);
             }
             default -> {
-                motor = new SimulatedBareMotor(log, 600);
+                motor = new SimulatedMotor(log, 600);
             }
         }
         m_servo = OutboardLinearPositionServo.make(

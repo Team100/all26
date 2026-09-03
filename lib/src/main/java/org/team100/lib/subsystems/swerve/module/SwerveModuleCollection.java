@@ -21,6 +21,13 @@ import org.team100.lib.util.RoboRioChannel;
 /**
  * Represents the modules in the drivetrain.
  * Do not put logic here; this is just for bundling the modules together.
+ * 
+ * HOW TO CALIBRATE THE STEERING
+ * 
+ * 1. align the bevels to the right
+ * 2. find the "position (turns)" in glass
+ * 3. copy the value there into the offset argument
+ * 4. deploy and check that "position (turns-offset)" is zero.
  */
 public class SwerveModuleCollection implements Player {
     private static final boolean DEBUG = false;
@@ -69,9 +76,7 @@ public class SwerveModuleCollection implements Player {
         LoggerFactory rearRightLogger = collectionLogger.name("Rear Right");
 
         switch (Identity.instance) {
-            // TODO: turned off while testing
             case COMP_BOT:
-                // case SWERVE_TWO:
                 System.out.println("************** WCP MODULES w/Duty-Cycle Encoders **************");
                 return new SwerveModuleCollection(
                         WCPSwerveModule100.getKrakenDriveKrakenSteer(
@@ -119,7 +124,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.FAST,
                                 new CanId(32), // steer
                                 new RoboRioChannel(6),
-                                0.936189,
+                                0.648451,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getFalconDriveFalconSteer(
@@ -150,7 +155,6 @@ public class SwerveModuleCollection implements Player {
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
             case BETA_BOT:
-                // case SWERVE_TWO:
                 System.out.println("************** WCP MODULES w/Duty-Cycle Encoders **************");
                 return new SwerveModuleCollection(
                         WCPSwerveModule100.getKrakenDriveKrakenSteer(
@@ -167,7 +171,7 @@ public class SwerveModuleCollection implements Player {
                                 new CanId(8), // drive
                                 DriveRatio.MEDIUM,
                                 new CanId(7), // steer
-                                  new RoboRioChannel(2),
+                                new RoboRioChannel(2),
                                 0.817243,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
@@ -189,8 +193,6 @@ public class SwerveModuleCollection implements Player {
                                 0.853782,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
-            
-
 
             case BLANK:
             default:
@@ -226,7 +228,8 @@ public class SwerveModuleCollection implements Player {
      * 
      * Works fine with empty angles.
      * 
-     * @param nextStates for now+dt
+     * @param nextStates for now+dt. Avoid noise here.
+     * @param effort     force
      */
     public void setDesiredStates(
             SwerveModuleStates nextStates, SwerveEffort effort) {
@@ -245,6 +248,9 @@ public class SwerveModuleCollection implements Player {
      * This "raw" mode is just for testing.
      * 
      * Works fine with empty angles.
+     * 
+     * @param swerveModuleStates. Avoid noise in these inputs.
+     * @param effort              Forces.
      */
     public void setRawDesiredStates(
             SwerveModuleStates swerveModuleStates, SwerveEffort effort) {
@@ -259,14 +265,6 @@ public class SwerveModuleCollection implements Player {
         m_frontRight.stop();
         m_rearLeft.stop();
         m_rearRight.stop();
-    }
-
-    /** Set turning setpoint to measurement, zero drive encoders. */
-    public void reset() {
-        m_frontLeft.reset();
-        m_frontRight.reset();
-        m_rearLeft.reset();
-        m_rearRight.reset();
     }
 
     //////////////////////////////////////////////////////

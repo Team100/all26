@@ -14,12 +14,18 @@ import org.team100.lib.state.StateSE2;
  * other clients only need old historical estimates, and should use the history.
  */
 public class FreshSwerveEstimate implements DoubleFunction<StateSE2> {
+    /** Actually SwerveHistory */
     private final DoubleFunction<StateSE2> m_history;
     /** Side effect mutates history. */
     private final SideEffect m_vision;
     /** Side effect mutates history. */
     private final SideEffect m_odometry;
 
+    /**
+     * @param visionUpdate   AprilTagRobotLocalizer::update
+     * @param odometryUpdate OdometryUpdater::update
+     * @param history        SwerveHistory
+     */
     public FreshSwerveEstimate(
             Runnable visionUpdate,
             Runnable odometryUpdate,

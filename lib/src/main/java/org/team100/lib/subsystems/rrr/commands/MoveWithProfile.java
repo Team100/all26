@@ -55,11 +55,6 @@ public class MoveWithProfile extends MoveAndHold {
     public void initialize() {
         m_start = m_arm.getConfig();
         m_configGoal = m_arm.config(m_goal);
-        // l1 norm treats all joints the same
-        // RRRConfig.distance weighs the root higher
-        // TODO: which is better?
-        // double distance =
-        // Metrics.l1Norm(m_start.toVector().minus(m_configGoal.toVector()));
         double distance = m_start.distance(m_configGoal);
         m_unit = RRRConfig.unit(m_start, m_configGoal);
 
@@ -74,8 +69,10 @@ public class MoveWithProfile extends MoveAndHold {
     @Override
     public void execute() {
         double distance = m_profileGoal.x();
-        if (distance < 1e-6)
+        if (distance < 1e-6) {
+            // we're already there
             return;
+        }
         m_setpoint = m_profile.calculate(
                 TimedRobot100.LOOP_PERIOD_S,
                 m_setpoint,

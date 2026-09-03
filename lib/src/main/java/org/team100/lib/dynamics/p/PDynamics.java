@@ -27,9 +27,6 @@ public class PDynamics {
      * This method "translates" the drum inertia into the equivalent
      * "mass" for the prismatic dynamics.
      * 
-     * TODO: this is an awkward way to do it. Instead, use an angular
-     * servo, and a proxy to translate the velocity API?
-     * 
      * @param I inertia in kg m^2
      * @param r radius in m
      */

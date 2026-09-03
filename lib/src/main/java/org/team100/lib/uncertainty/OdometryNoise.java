@@ -35,8 +35,6 @@ public class OdometryNoise {
      * odometry rotation term alone.
      * 
      * Maybe just add them, 1 meter == 1 radian.
-     * 
-     * TODO: calibrate this
      */
     private static double rotation(double distanceM, double rotationRad) {
         double norm = Math.abs(distanceM) + Math.abs(rotationRad);

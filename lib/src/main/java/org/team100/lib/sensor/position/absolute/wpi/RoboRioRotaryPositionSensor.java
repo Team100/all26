@@ -125,8 +125,6 @@ public abstract class RoboRioRotaryPositionSensor implements RotaryPositionSenso
         }
     }
 
-
-
     /**
      * Always returns zero.
      * 
@@ -134,6 +132,14 @@ public abstract class RoboRioRotaryPositionSensor implements RotaryPositionSenso
      */
     @Override
     public double getVelocityRad_S() {
+        return 0;
+    }
+
+    /**
+     * Always returns zero.
+     */
+    @Override
+    public double getAccelerationRad_S2() {
         return 0;
     }
 

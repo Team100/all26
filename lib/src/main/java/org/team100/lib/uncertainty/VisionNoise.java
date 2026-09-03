@@ -27,7 +27,6 @@ public class VisionNoise {
         if (offAxisAngleRad < 0)
             throw new IllegalArgumentException();
         // these extra 0.01 values are total guesses
-        // TODO: calibrate this
         double cartesianErrorM = figure5(distanceM) + 0.01;
         double rotationErrorRad = figure6(offAxisAngleRad) + 0.01;
         double rotationEffectM = distanceM * rotationErrorRad;
@@ -38,8 +37,6 @@ public class VisionNoise {
     /**
      * Figure 5 in the Wang paper (below 15 m) indicates a linear relationship
      * between cartesian error and tag distance.
-     *
-     * TODO: calibrate this
      */
     static double figure5(double distanceM) {
         return 0.03 * distanceM;
@@ -51,8 +48,6 @@ public class VisionNoise {
      * 
      * Remember that our tag normal direction is "into the page", but the "off axis"
      * normal is "out of the page".
-     * 
-     * TODO: calibrate this
      */
     static double figure6(double offAxisAngleRad) {
         if (offAxisAngleRad < 0)

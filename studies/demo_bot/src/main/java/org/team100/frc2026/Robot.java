@@ -87,7 +87,7 @@ public class Robot extends TimedRobot100 {
         LoggerFactory fieldLogger = logging.fieldLogger;
         LoggerFactory logger = logging.rootLogger;
 
-        DriverXboxControl xbox = new DriverXboxControl(0);
+        DriverXboxControl xbox = new DriverXboxControl(logger, 0);
 
         m_led = new SolidIndicator(new RoboRioChannel(0), 512);
         m_led.state(this::ledColor);

@@ -82,7 +82,7 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
     /**
      * Drive using field coordinates
      * 
-     * @param nextV for the next timestep
+     * @param nextV For the next timestep. Avoid noise here.
      */
     @Override
     public void set(VelocityControlSE2 nextV) {
@@ -130,7 +130,6 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
     public void resetPose(Pose2d robotPose, IsotropicNoiseSE2 noise) {
         if (DEBUG)
             System.out.println("WARNING: Make sure resetting the swerve module collection doesn't break anything");
-        m_swerveLocal.reset();
         m_odometryUpdater.reset(robotPose, noise);
         m_stateCache.reset();
     }
@@ -280,6 +279,10 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
     private StateSE2 update() {
         double now = Takt.get();
         SwerveModulePositions positions = m_swerveLocal.positions();
+        // The estimate is used for many things downstream; noise there is bad.
+        // The estimator itself should have enough controls to make the estimate
+        // arbitrarily smooth.
+        // TODO: eliminate noise in this measurement
         StateSE2 swerveModel = m_estimate.apply(now);
         if (DEBUG) {
             System.out.printf("update() positions %s estimated pose: %s\n", positions, swerveModel);

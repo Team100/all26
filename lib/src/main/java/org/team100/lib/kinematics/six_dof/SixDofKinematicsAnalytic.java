@@ -65,7 +65,7 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
     /**
      * Forward position kinematics: cartesian joint poses from joint configurations.
      * 
-     * TODO: this returns joint positions *with* the rotation of the child
+     * NOTE: this returns joint positions *with* the rotation of the child
      * link, which is probably not what we want.
      */
     @Override
@@ -115,7 +115,8 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
      * @param q4Default In case of wrst singularity.
      */
     @Override
-    public List<SixDofConfig> inverse(Pose3d p, Double q1Default, Double q4Default) {
+    public List<SixDofConfig> inverse(Pose3d p,
+            Double q1Default, Double q2Default, Double q4Default) {
         Translation3d t = p.getTranslation();
         if (DEBUG)
             System.out.printf("t %s\n", StrUtil.transStr(t));
@@ -138,7 +139,7 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
         for (double q1 : q1List) {
             if (DEBUG)
                 System.out.printf("swing %f\n", q1);
-            List<RRConfig> rrs = rrConfig(w, q1);
+            List<RRConfig> rrs = rrConfig(w, q1, q2Default);
             if (DEBUG)
                 System.out.printf("RR options %d\n", rrs.size());
             for (RRConfig rr : rrs) {
@@ -205,12 +206,15 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
     }
 
     /**
+     * RR solution for q2 and q3.
+     * 
      * 0, 1, or 2 solutions
      * 
-     * @param w  wrist position
-     * @param q1 swing configuration
+     * @param w         wrist position
+     * @param q1        swing configuration
+     * @param q2Default in case the wrist is at the joint origin
      */
-    private List<RRConfig> rrConfig(Translation3d w, double q1) {
+    private List<RRConfig> rrConfig(Translation3d w, double q1, Double q2Default) {
         // Is this the "inline" or the "flip" case?
         Rotation2d rot = w.toTranslation2d().getAngle();
         double signum = 0;
@@ -227,8 +231,7 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
         // RR sub-problem.
         Translation2d end = new Translation2d(x, y);
         // Find the RR configs
-        // TODO: default
-        return rrk.inverse(end, null);
+        return rrk.inverse(end, q2Default);
     }
 
     /**

@@ -20,7 +20,7 @@ import org.wpilib.math.numbers.N4;
  * Maps desired acceleration in SE2 (in the robot frame)
  * to linear forces produced at each wheel.
  * 
- * Ignores "slip". TODO: add slip.
+ * Ignores "slip".
  */
 public class MecanumDynamics {
     private static final double n = Math.sqrt(2) / 2;

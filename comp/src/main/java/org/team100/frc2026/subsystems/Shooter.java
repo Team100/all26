@@ -10,11 +10,11 @@ import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.p.PDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.CurrentLimitedExponentialVelocityProfileR1;
 import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
@@ -70,10 +70,10 @@ public class Shooter extends SubsystemBase {
                 20, 20, 40, 60);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
-        final BareMotor m1;
-        final BareMotor m2;
-        final BareMotor m3;
-        final BareMotor m4;
+        final Motor m1;
+        final Motor m2;
+        final Motor m3;
+        final Motor m4;
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
 
@@ -99,10 +99,10 @@ public class Shooter extends SubsystemBase {
 
             }
             default -> {
-                m1 = new SimulatedBareMotor(log1, 600);
-                m2 = new SimulatedBareMotor(log2, 600);
-                m3 = new SimulatedBareMotor(log3, 600);
-                m4 = new SimulatedBareMotor(log4, 600);
+                m1 = new SimulatedMotor(log1, 600);
+                m2 = new SimulatedMotor(log2, 600);
+                m3 = new SimulatedMotor(log3, 600);
+                m4 = new SimulatedMotor(log4, 600);
             }
         }
         // note different gear ratio
@@ -247,10 +247,10 @@ public class Shooter extends SubsystemBase {
 
     @SuppressWarnings("unused")
     private void setVelocityDirect(double setpointM_S) {
-        m_servo1.setVelocityDirect(setpointM_S);
-        m_servo2.setVelocityDirect(setpointM_S);
-        m_servo3.setVelocityDirect(setpointM_S);
-        m_servo4.setVelocityDirect(setpointM_S);
+        m_servo1.setVelocityDirect(setpointM_S, 0);
+        m_servo2.setVelocityDirect(setpointM_S, 0);
+        m_servo3.setVelocityDirect(setpointM_S, 0);
+        m_servo4.setVelocityDirect(setpointM_S, 0);
     }
 
     private void setVelocityProfiled(double goalM_S) {

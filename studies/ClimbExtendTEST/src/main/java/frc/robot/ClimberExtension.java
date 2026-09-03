@@ -11,12 +11,12 @@ import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.servo.LinearPositionServo;
 import org.team100.lib.servo.OutboardLinearPositionServo;
 import org.team100.lib.util.CanId;
@@ -51,7 +51,7 @@ public class ClimberExtension extends SubsystemBase {
                         new PIDConstants(1, 0, 0, 0, 0, 0),
                         0,
                         0);
-                IncrementalBareEncoder encoder = m_motor.encoder();
+                IncrementalEncoder encoder = m_motor.encoder();
                 LinearMechanism climberMech = new LinearMechanism(
                         log, m_motor, encoder, gearRatio, wheelDiameterM,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -60,8 +60,8 @@ public class ClimberExtension extends SubsystemBase {
             }
 
             default -> {
-                SimulatedBareMotor m_motor = new SimulatedBareMotor(log, 600);
-                IncrementalBareEncoder encoder = m_motor.encoder();
+                SimulatedMotor m_motor = new SimulatedMotor(log, 600);
+                IncrementalEncoder encoder = m_motor.encoder();
                 LinearMechanism climberMech = new LinearMechanism(
                         log, m_motor, encoder, gearRatio, wheelDiameterM,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
