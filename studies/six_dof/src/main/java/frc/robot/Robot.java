@@ -6,7 +6,6 @@ import org.team100.lib.config.Identity;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.util.Banner;
 import org.wpilib.command2.CommandScheduler;
-import org.wpilib.driverstation.DriverStation;
 import org.wpilib.framework.TimedRobot;
 import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.system.RobotController;
