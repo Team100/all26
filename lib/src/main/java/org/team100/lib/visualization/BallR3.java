@@ -31,7 +31,7 @@ public class BallR3 implements Ball {
     private final Supplier<Rotation2d> m_azimuth;
     private final Supplier<Rotation2d> m_elevation;
     private final DoubleSupplier m_speed;
-    private final double m_omega;
+    private final DoubleSupplier m_omega;
 
     // null when contained in robot.
     // robot location at launch
@@ -58,7 +58,7 @@ public class BallR3 implements Ball {
             Supplier<Rotation2d> azimuth,
             Supplier<Rotation2d> elevation,
             DoubleSupplier speed,
-            double omega) {
+            DoubleSupplier omega) {
         LoggerFactory log = parent.type(this);
         m_log_ball_altitude = log.doubleLogger(Level.COMP, "altitude");
         m_log_field_ball = field.doubleArrayLogger(Level.COMP, "ball");
@@ -83,7 +83,7 @@ public class BallR3 implements Ball {
         // velocity in the XY plane
         double vxy = m_velocity.normXY();
         double vz = m_velocity.z();
-        m_x = VecBuilder.fill(0, 0, 0, vxy, vz, m_omega);
+        m_x = VecBuilder.fill(0, 0, 0, vxy, vz, m_omega.getAsDouble());
         m_az = m_azimuth.get();
     }
 

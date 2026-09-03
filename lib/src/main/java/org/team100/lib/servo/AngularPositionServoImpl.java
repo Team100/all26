@@ -44,8 +44,6 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
      * This is written when it is the setpoint for the "next" time step, i.e. the
      * one we use for feedforward, and the next cycle it is read as the "current"
      * setpoint.
-     * 
-     * TODO: this seems duplicative of ProfileReferenceR1.m_currentSetpoint
      */
     ControlR1 m_nextUnwrappedSetpoint = null;
 

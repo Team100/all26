@@ -12,11 +12,11 @@ import org.team100.lib.kinematics.five_bar.JointPositions;
 import org.team100.lib.kinematics.five_bar.Scenario;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.util.CanId;
@@ -39,9 +39,9 @@ public class FiveBarBare extends SubsystemBase {
     private final Scenario m_scenario;
     private final FiveBarKinematics m_kinematics;
     /** Left motor, "P1" in the diagram. */
-    private final BareMotor m_motorP1;
+    private final Motor m_motorP1;
     /** Right motor, "P5" in the diagram. */
-    private final BareMotor m_motorP5;
+    private final Motor m_motorP5;
     private final RotaryPositionSensor m_sensorP1;
     private final RotaryPositionSensor m_sensorP5;
 
@@ -59,8 +59,8 @@ public class FiveBarBare extends SubsystemBase {
                 m_motorP5 = makeMotor(loggerP5, currentLog, new CanId(5));
             }
             default -> {
-                m_motorP1 = new SimulatedBareMotor(loggerP1, 600);
-                m_motorP5 = new SimulatedBareMotor(loggerP5, 600);
+                m_motorP1 = new SimulatedMotor(loggerP1, 600);
+                m_motorP5 = new SimulatedMotor(loggerP5, 600);
             }
         }
         m_sensorP1 = new ProxyRotaryPositionSensor(m_motorP1.encoder(), 1.0, 0.0);
@@ -77,7 +77,7 @@ public class FiveBarBare extends SubsystemBase {
 
     /////////////////////
 
-    private BareMotor makeMotor(LoggerFactory logger, TotalCurrentLog currentLog, CanId canId) {
+    private Motor makeMotor(LoggerFactory logger, TotalCurrentLog currentLog, CanId canId) {
         Friction friction = new Friction(0, 0, 0, 0);
         PIDConstants pid = PIDConstants.makePositionPID(2.0);
         return new Falcon500Motor(

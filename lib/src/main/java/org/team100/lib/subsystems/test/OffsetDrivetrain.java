@@ -1,6 +1,7 @@
 package org.team100.lib.subsystems.test;
 
 import org.team100.lib.geometry.GeometryUtil;
+import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.state.StateSE2;
 import org.team100.lib.state.VelocityControlSE2;
@@ -47,8 +48,6 @@ public class OffsetDrivetrain implements VelocitySubsystemSE2 {
      * Set delegate velocity from toolpoint velocity and offset.
      * r is from toolpoint to delegate, so invert offset.
      * 
-     * TODO: the accel component is wrong. fix it.
-     * 
      * @param nextV toolpoint velocity for the next timestep
      */
     @Override
@@ -57,12 +56,16 @@ public class OffsetDrivetrain implements VelocitySubsystemSE2 {
         // delegate in x and y
         // respecting 100% of this velocity will keep the toolpoint
         // where it wants to go (if the delegate responds perfectly)
-        VelocityControlSE2 tangentialVelocity = new VelocityControlSE2(
-                OffsetUtil.tangentialVelocity(
-                        OffsetUtil.omega(nextV.velocity()),
-                        r(m_offset.unaryMinus())));
-
-        m_delegate.set(nextV.plus(tangentialVelocity));
+        VelocitySE2 velocity = nextV.velocity();
+        Vector<N3> omega = OffsetUtil.omega(velocity);
+        Vector<N3> r = offset(m_offset.unaryMinus());
+        VelocitySE2 tangentialVelocity = OffsetUtil.tangentialVelocity(
+                omega, r);
+        AccelerationSE2 centripetalAccel = OffsetUtil.centripetalAcceleration(
+                omega, r);
+        VelocityControlSE2 control = new VelocityControlSE2(
+                tangentialVelocity, centripetalAccel);
+        m_delegate.set(nextV.plus(control));
     }
 
     @Override
@@ -85,7 +88,7 @@ public class OffsetDrivetrain implements VelocitySubsystemSE2 {
         VelocitySE2 delegateVelocity = m_delegate.getState().velocity();
         return delegateVelocity.plus(
                 OffsetUtil.tangentialVelocity(
-                        OffsetUtil.omega(delegateVelocity), r(m_offset)));
+                        OffsetUtil.omega(delegateVelocity), offset(m_offset)));
     }
 
     private Rotation2d delegateRotation() {
@@ -95,7 +98,7 @@ public class OffsetDrivetrain implements VelocitySubsystemSE2 {
     /**
      * Vector form of the offset, rotated by the delegate pose rotation.
      */
-    private Vector<N3> r(Translation2d offset) {
+    private Vector<N3> offset(Translation2d offset) {
         return GeometryUtil.toVec3(
                 offset.rotateBy(delegateRotation()));
     }

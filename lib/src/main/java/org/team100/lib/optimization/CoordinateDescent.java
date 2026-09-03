@@ -11,9 +11,6 @@ import org.wpilib.math.util.Num;
 /**
  * Line search over each coordinate.
  * 
- * TODO: tolerance and iteration are used for two purposes here,
- * the outer loop and the inner loop for each dimension. Split them.
- * 
  * @see https://en.wikipedia.org/wiki/Coordinate_descent
  */
 @SuppressWarnings("unused")

@@ -6,7 +6,9 @@ import java.util.OptionalDouble;
 import org.team100.lib.geometry.lynx_arm.LynxArmConfig;
 import org.team100.lib.geometry.lynx_arm.LynxArmPose;
 import org.team100.lib.geometry.rr.RRConfig;
+import org.team100.lib.kinematics.rr.RRFeasibility;
 import org.team100.lib.kinematics.rr.RRKinematics;
+import org.team100.lib.util.StrUtil;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Rotation3d;
@@ -14,14 +16,14 @@ import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.math.util.MathUtil;
 
-
 public class AnalyticLynxArmKinematics implements LynxArmKinematics {
     private final double m_swingHeight;
     private final double m_boomLength;
     private final double m_stickLength;
     private final double m_wristLength;
     private final double m_gripLength;
-    private final RRKinematics twodof;
+    private final RRKinematics m_twodof;
+    final RRFeasibility m_feasibility;
 
     /** All distances are in meters. */
     private AnalyticLynxArmKinematics(
@@ -35,17 +37,26 @@ public class AnalyticLynxArmKinematics implements LynxArmKinematics {
         m_stickLength = stickLength;
         m_wristLength = wristLength;
         m_gripLength = gripLength;
-        twodof = new RRKinematics(boomLength, stickLength);
+        m_twodof = new RRKinematics(boomLength, stickLength);
+        // the real apparatus limits
+        // rr is inverted
+        m_feasibility = new RRFeasibility(
+                m_twodof,
+                new RRConfig(0, -Math.PI),
+                new RRConfig(Math.PI, 0));
     }
 
+    /** All links 1 meter long. */
     public static AnalyticLynxArmKinematics unit() {
         return new AnalyticLynxArmKinematics(1, 1, 1, 1, 1);
     }
 
+    /** All links 0.5 meters long. */
     public static AnalyticLynxArmKinematics half() {
         return new AnalyticLynxArmKinematics(0.5, 0.5, 0.5, 0.5, 0.5);
     }
 
+    /** Measured link lengths of the real Lynx apparatus. */
     public static AnalyticLynxArmKinematics real() {
         return new AnalyticLynxArmKinematics(0.06731, 0.14605, 0.187325, 0.061, 0.055);
     }
@@ -108,12 +119,11 @@ public class AnalyticLynxArmKinematics implements LynxArmKinematics {
      * Refer to the diagram
      * https://docs.google.com/document/d/1B6vGPtBtnDSOpfzwHBflI8-nn98W9QvmrX78bon8Ajw
      * 
-     * TODO: this includes fixups for the bad Rotation2d winding behavior which is
-     * fixed in 2027
+     * @param config current measurement
+     * @param end    target pose
      */
     @Override
-    public LynxArmConfig inverse(LynxArmConfig c, final Pose3d end) {
-
+    public LynxArmConfig inverse(LynxArmConfig config, final Pose3d end) {
         final OptionalDouble swing;
         final double boom;
         final double stick;
@@ -135,18 +145,23 @@ public class AnalyticLynxArmKinematics implements LynxArmKinematics {
         Translation2d twoDofEnd = new Translation2d(
                 hypot,
                 twoDofY);
-        // TODO: default
-        List<RRConfig> twoDofConfig = twodof.inverse(twoDofEnd, null);
-        // for now, throw like it used to
-        // TODO: handle zero solutions gracefully
-        if (twoDofConfig.isEmpty())
-            throw new IllegalArgumentException();
+        List<RRConfig> twoDofConfig = m_twodof.inverse(twoDofEnd, -config.boom());
+        if (twoDofConfig.isEmpty()) {
+            System.out.println("AnalyticLynxArmKinematics.inverse: no solution for RR " + StrUtil.transStr(twoDofEnd));
+            return config;
+        }
+        List<RRConfig> qFeasible = m_feasibility.filter(twoDofConfig);
+        if (qFeasible.isEmpty()) {
+            System.out.println("AnalyticLynxArmKinematics.inverse: infeasible RR " + StrUtil.transStr(twoDofEnd));
+            return config;
+        }
 
         // the 2d coordinates are inverted for convenience, so fix it here.
-        // TODO: assuming the first result is good.
-        // TODO: instead, test against joint limits and choose the feasible one.
-        boom = -1.0 * twoDofConfig.get(0).q1();
-        stick = -1.0 * twoDofConfig.get(0).q2();
+        RRConfig rrConfig = RRConfig.getBest(
+                qFeasible,
+                new RRConfig(-config.boom(), -config.stick()));
+        boom = -1.0 * rrConfig.q1();
+        stick = -1.0 * rrConfig.q2();
 
         Rotation3d endRotation = end.getRotation();
         if (translation.getNorm() < 1e-3) {
@@ -224,7 +239,7 @@ public class AnalyticLynxArmKinematics implements LynxArmKinematics {
                         : OptionalDouble.empty());
     }
 
-    /////////////////////////////////////////////////
+    ////////////////////////////////////////////////
 
     /** Translate along the x axis. */
     private static Transform3d x(double x) {

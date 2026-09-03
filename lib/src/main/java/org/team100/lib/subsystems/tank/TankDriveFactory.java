@@ -8,12 +8,12 @@ import org.team100.lib.dynamics.differential.DifferentialDriveDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.LinearMechanism;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.Neo550CANSparkMotor;
 import org.team100.lib.motor.rev.NeoCANSparkMotor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.util.CanId;
 
 public class TankDriveFactory {
@@ -42,10 +42,10 @@ public class TankDriveFactory {
         // ensure the simulated motor can go fast enough.
         double freeSpeedRad_S = maxSpeedM_S * gearRatio / (0.5 * wheelDiaM);
 
-        BareMotor motorL = getMotor(
+        Motor motorL = getMotor(
                 logL, currentLog, freeSpeedRad_S, canL,
                 MotorPhase.FORWARD, limit, friction, pid);
-        BareMotor motorR = getMotor(
+        Motor motorR = getMotor(
                 logR, currentLog, freeSpeedRad_S, canR,
                 MotorPhase.REVERSE, limit, friction, pid);
 
@@ -64,12 +64,7 @@ public class TankDriveFactory {
                 log, fieldLogger, dynamics, trackWidthM, maxSpeedM_S, mechL, mechR);
     }
 
-    /**
-     * Real or simulated depending on identity.
-     * 
-     * TODO: verify the velocity averaging parameters
-     */
-    private static BareMotor getMotor(
+    private static Motor getMotor(
             LoggerFactory log,
             TotalCurrentLog currentLog,
             double freeSpeedRad_S,
@@ -78,14 +73,17 @@ public class TankDriveFactory {
             CurrentLimit limit,
             Friction friction,
             PIDConstants pid) {
+        // parameters for velocity control.
+        int averageDepth = 2;
+        int measurementPeriod = 4;
         return switch (Identity.instance) {
-            case BLANK -> new SimulatedBareMotor(log, freeSpeedRad_S);
+            case BLANK -> new SimulatedMotor(log, freeSpeedRad_S);
             case DEMO_BOT -> new Neo550CANSparkMotor(
                     log, currentLog, can, NeutralMode100.BRAKE, phase,
-                    limit, friction, pid, 2, 4);
+                    limit, friction, pid, averageDepth, measurementPeriod);
             default -> new NeoCANSparkMotor(
                     log, currentLog, can, NeutralMode100.BRAKE, phase,
-                    limit, friction, pid, 2, 4);
+                    limit, friction, pid, averageDepth, measurementPeriod);
         };
     }
 }

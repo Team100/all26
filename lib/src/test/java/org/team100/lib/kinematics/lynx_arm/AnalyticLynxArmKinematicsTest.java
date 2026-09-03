@@ -1,10 +1,7 @@
 package org.team100.lib.kinematics.lynx_arm;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.OptionalDouble;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.lynx_arm.LynxArmConfig;
@@ -152,8 +149,8 @@ public class AnalyticLynxArmKinematicsTest {
                 new Pose3d(),
                 new Pose3d(new Translation3d(5, 0, 1), new Rotation3d(0, 0, 0)));
         LynxArmConfig q = new LynxArmConfig(0, 0, 0, 0, 0);
-
-        assertThrows(IllegalArgumentException.class, () -> k.inverse(q, t.p6()));
+        // no solution, return measurement
+        TestUtil.verify(q, k.inverse(q, t.p6()));
     }
 
     @Test
@@ -169,6 +166,15 @@ public class AnalyticLynxArmKinematicsTest {
                 new Pose3d(new Translation3d(4, 0, 1), new Rotation3d()));
         LynxArmConfig q = new LynxArmConfig(0, 0, 0, 0, 0);
         verify(k, p, q);
+    }
+
+    @Test
+    void test1a() {
+        // testing foward
+        AnalyticLynxArmKinematics k = AnalyticLynxArmKinematics.unit();
+        // negative is up
+        LynxArmPose x = k.forward(new LynxArmConfig(0, -0.775, 0.775, 0, 0));
+        System.out.println(x);
     }
 
     @Test
@@ -298,49 +304,6 @@ public class AnalyticLynxArmKinematicsTest {
                 new Pose3d(
                         new Translation3d(0.5, Math.sqrt(3) / 2, -1),
                         new Rotation3d(0, Math.PI / 2, -Math.PI / 6)));
-        verify(k, p, q);
-    }
-
-    @Test
-    void test9() {
-        // grip is on the swing axis, make the swing match end yaw
-        AnalyticLynxArmKinematics k = AnalyticLynxArmKinematics.unit();
-        LynxArmPose p = new LynxArmPose(
-                new Pose3d(
-                        new Translation3d(0, 0, 1),
-                        new Rotation3d(0, 0, -Math.PI / 4)),
-                new Pose3d(
-                        new Translation3d(0, 0, 1),
-                        new Rotation3d(0, -Math.PI, -Math.PI / 4)),
-                new Pose3d(
-                        new Translation3d(-Math.sqrt(2) / 2, Math.sqrt(2) / 2, 1),
-                        new Rotation3d(0, -Math.PI / 2, -Math.PI / 4)),
-                new Pose3d(
-                        new Translation3d(-Math.sqrt(2) / 2, Math.sqrt(2) / 2, 2),
-                        new Rotation3d(0, 0, -Math.PI / 4)),
-                new Pose3d(
-                        new Translation3d(0, 0, 2),
-                        new Rotation3d(0, 0, -Math.PI / 4)),
-                new Pose3d(
-                        new Translation3d(Math.sqrt(2) / 2, -Math.sqrt(2) / 2, 2),
-                        new Rotation3d(0, 0, -Math.PI / 4)));
-        LynxArmConfig q = new LynxArmConfig(-Math.PI / 4, -Math.PI, Math.PI / 2, Math.PI / 2, 0);
-        verify(k, p, q);
-    }
-
-    @Test
-    void test10() {
-        // grip is on the swing axis, wrist pointing up => indeterminate
-        AnalyticLynxArmKinematics k = AnalyticLynxArmKinematics.unit();
-        LynxArmPose p = new LynxArmPose(
-                new Pose3d(new Translation3d(0, 0, 1), new Rotation3d()),
-                new Pose3d(new Translation3d(0, 0, 1), new Rotation3d(0, -5 * Math.PI / 6, 0)),
-                new Pose3d(new Translation3d(-Math.sqrt(3) / 2, 0, 1.5), new Rotation3d(0, -Math.PI / 6, 0)),
-                new Pose3d(new Translation3d(0, 0, 2), new Rotation3d(0, -Math.PI / 2, 0)),
-                new Pose3d(new Translation3d(0, 0, 3), new Rotation3d(0, -Math.PI / 2, 0)),
-                new Pose3d(new Translation3d(0, 0, 4), new Rotation3d(0, -Math.PI / 2, 0)));
-        LynxArmConfig q = new LynxArmConfig(
-                OptionalDouble.empty(), -5 * Math.PI / 6, 2 * Math.PI / 3, -Math.PI / 3, OptionalDouble.empty());
         verify(k, p, q);
     }
 

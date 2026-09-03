@@ -39,6 +39,25 @@ public class RRDynamicsAnalytic implements RRDynamics {
     }
 
     /**
+     * Thin rods, center of mass in the geometric center.
+     * 
+     * https://en.wikipedia.org/wiki/List_of_moments_of_inertia
+     * 
+     * @param M1 mass in kg
+     * @param M2 mass in kg
+     * @param L1 length in m
+     * @param L2 length in m
+     */
+    public static RRDynamicsAnalytic thinRod(
+            double M1, double M2, double L1, double L2) {
+        return new RRDynamicsAnalytic(
+                M1, M2,
+                L1, L2,
+                L1 / 2, L2 / 2,
+                M1 * L1 * L1 / 12, M2 * L2 * L2 / 12);
+    }
+
+    /**
      * Generalized force (torque or force) to achieve the required
      * velocity and acceleration, and also to oppose gravity.
      */

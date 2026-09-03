@@ -7,8 +7,8 @@ import org.team100.lib.config.Friction;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.motor.MockBareMotor;
-import org.team100.lib.sensor.position.incremental.MockIncrementalBareEncoder;
+import org.team100.lib.motor.MockMotor;
+import org.team100.lib.sensor.position.incremental.MockIncrementalEncoder;
 import org.team100.lib.testing.Timeless;
 
 public class LinearMechanismTest implements Timeless {
@@ -19,8 +19,8 @@ public class LinearMechanismTest implements Timeless {
     @Test
     void testLimits() {
         Friction friction = new Friction(0.100, 0.100, 0.0, 0.1);
-        MockBareMotor motor = new MockBareMotor(friction);
-        MockIncrementalBareEncoder encoder = new MockIncrementalBareEncoder();
+        MockMotor motor = new MockMotor(friction);
+        MockIncrementalEncoder encoder = new MockIncrementalEncoder();
         double gearRatio = 1;
         double wheelDiameterM = 2;
         LinearMechanism mech = new LinearMechanism(
@@ -59,8 +59,8 @@ public class LinearMechanismTest implements Timeless {
     @Test
     void testUnlimited() {
         Friction friction = new Friction(0.100, 0.100, 0.0, 0.1);
-        MockBareMotor motor = new MockBareMotor(friction);
-        MockIncrementalBareEncoder encoder = new MockIncrementalBareEncoder();
+        MockMotor motor = new MockMotor(friction);
+        MockIncrementalEncoder encoder = new MockIncrementalEncoder();
         double gearRatio = 1;
         double wheelDiameterM = 2;
         LinearMechanism mech = new LinearMechanism(logger,

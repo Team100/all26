@@ -8,11 +8,11 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.mechanism.LinearMechanism;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.testing.Timeless;
 
 public class OnboardLinearDutyCyclePositionServoTest implements Timeless {
@@ -22,8 +22,8 @@ public class OnboardLinearDutyCyclePositionServoTest implements Timeless {
     @Test
     void test1() {
         PDynamics dyn = new PDynamics(0);
-        SimulatedBareMotor driveMotor = new SimulatedBareMotor(logger, 600);
-        IncrementalBareEncoder driveEncoder = driveMotor.encoder();
+        SimulatedMotor driveMotor = new SimulatedMotor(logger, 600);
+        IncrementalEncoder driveEncoder = driveMotor.encoder();
         LinearMechanism mech = new LinearMechanism(logger,
                 driveMotor, driveEncoder, 1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 

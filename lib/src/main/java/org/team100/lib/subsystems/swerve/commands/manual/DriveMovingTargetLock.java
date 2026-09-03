@@ -104,7 +104,13 @@ public class DriveMovingTargetLock extends Command {
         return m_aim.getOmega(measurement, target);
     }
 
-    /** Null to skip override */
+    /**
+     * Null to skip override.
+     * 
+     * TODO: control omega noise
+     * 
+     * @param omega override. avoid noise in this input.
+     */
     private void actuate(Double omega) {
         // Clip and scale user input.
         VelocitySE2 scaled = VelocitySE2.scale(

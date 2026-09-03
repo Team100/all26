@@ -3,7 +3,7 @@ package org.team100.lib.servo;
 import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.dynamics.r.RAcceleration;
 import org.team100.lib.dynamics.r.RConfig;
-import org.team100.lib.dynamics.r.RDynamicsAnalytic;
+import org.team100.lib.dynamics.r.RDynamics;
 import org.team100.lib.dynamics.r.REffort;
 import org.team100.lib.dynamics.r.RVelocity;
 import org.team100.lib.logging.Level;
@@ -40,7 +40,7 @@ public class OnboardAngularPositionServo extends AngularPositionServoImpl {
     public OnboardAngularPositionServo(
             LoggerFactory parent,
             RotaryMechanism mech,
-            RDynamicsAnalytic dynamics,
+            RDynamics dynamics,
             ReferenceR1 ref,
             FeedbackR1 feedback) {
         super(parent, mech, dynamics, ref);

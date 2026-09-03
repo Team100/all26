@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.motor.wpi.BareMotorController100;
+import org.team100.lib.motor.wpi.MotorController100;
 
 class MotorController100Test {
     private static final double DELTA = 0.001;
@@ -15,7 +15,7 @@ class MotorController100Test {
     @Test
     void testTurning() {
         MockMotorController mc = new MockMotorController();
-        BareMotorController100 m = new BareMotorController100(logger, mc);
+        MotorController100 m = new MotorController100(logger, mc);
         m.setVelocity(0, 0);
         assertEquals(0, mc.speed, DELTA);
         m.setVelocity(1, 0);

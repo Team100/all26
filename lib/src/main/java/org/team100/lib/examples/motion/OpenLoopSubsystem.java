@@ -6,11 +6,11 @@ import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.util.CanId;
 
 import org.wpilib.command2.Command;
@@ -30,7 +30,7 @@ import org.wpilib.command2.SubsystemBase;
  * the logger will use the class name.
  */
 public class OpenLoopSubsystem extends SubsystemBase {
-    private final BareMotor m_motor;
+    private final Motor m_motor;
 
     public OpenLoopSubsystem(LoggerFactory parent, TotalCurrentLog currentLog) {
         LoggerFactory log = parent.type(this);
@@ -51,7 +51,7 @@ public class OpenLoopSubsystem extends SubsystemBase {
                         limit, friction, pid);
             }
             default -> {
-                m_motor = new SimulatedBareMotor(log, 600);
+                m_motor = new SimulatedMotor(log, 600);
             }
         }
     }

@@ -45,7 +45,7 @@ public class TargetUtil {
      * 
      * This is useful for feedforward, to track the apparent movement.
      * 
-     * @param state  current robot state
+     * @param state  current robot state.  Avoid noise here.
      * @param target field-relative target position
      * @return apparent rotation of the target around the robot, rad/s
      */

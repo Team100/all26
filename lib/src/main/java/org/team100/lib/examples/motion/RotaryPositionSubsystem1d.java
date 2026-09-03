@@ -13,7 +13,7 @@ import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.WPITrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
@@ -22,7 +22,7 @@ import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.sim.SimulatedRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.wpi.AS5048RotaryPositionSensor;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OnboardAngularPositionServo;
 import org.team100.lib.util.CanId;
@@ -115,8 +115,8 @@ public class RotaryPositionSubsystem1d extends SubsystemBase {
                 m_servo.reset();
             }
             default -> {
-                SimulatedBareMotor motor = new SimulatedBareMotor(log, 600);
-                IncrementalBareEncoder encoder = motor.encoder();
+                SimulatedMotor motor = new SimulatedMotor(log, 600);
+                IncrementalEncoder encoder = motor.encoder();
                 SimulatedRotaryPositionSensor sensor = new SimulatedRotaryPositionSensor(
                         log, encoder, GEAR_RATIO);
                 RotaryMechanism mech = new RotaryMechanism(

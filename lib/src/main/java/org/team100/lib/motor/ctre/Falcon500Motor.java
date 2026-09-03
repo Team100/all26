@@ -29,18 +29,19 @@ public class Falcon500Motor extends Talon6Motor {
     }
 
     @Override
-    public double kROhms() {
+    public double R() {
         return 0.03; // 0.03
     }
 
     @Override
-    public double kTNm_amp() {
+    public double kT() {
         return 0.018; // 0.018
     }
 
     @Override
-    public double kFreeSpeedRPM() {
-        return 6079;
+    public double kE() {
+        // 60 * 12 / (6079 * 2 * pi) volt-sec/rad
+        return 0.0188504;
     }
 
 }

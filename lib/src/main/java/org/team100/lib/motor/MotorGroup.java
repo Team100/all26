@@ -4,15 +4,15 @@ import java.util.function.Consumer;
 import java.util.function.ToDoubleFunction;
 
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
-import org.team100.lib.sensor.position.incremental.sim.SimulatedBareEncoder;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
+import org.team100.lib.sensor.position.incremental.sim.SimulatedEncoder;
 
 /** Treat a group of motors as a single motor. */
-public class BareMotorGroup implements BareMotor {
+public class MotorGroup implements Motor {
     private final LoggerFactory m_log;
-    private final BareMotor[] m_motors;
+    private final Motor[] m_motors;
 
-    public BareMotorGroup(LoggerFactory parent, BareMotor... motors) {
+    public MotorGroup(LoggerFactory parent, Motor... motors) {
         m_log = parent.type(this);
         m_motors = motors;
     }
@@ -28,8 +28,13 @@ public class BareMotorGroup implements BareMotor {
     }
 
     @Override
-    public void setVoltage(double volts) {
-        apply((m) -> m.setVoltage(volts));
+    public void setVoltage(double voltage) {
+        apply((m) -> m.setVoltage(voltage));
+    }
+
+    @Override
+    public void setCurrent(double current) {
+        apply((m) -> m.setCurrent(current));
     }
 
     @Override
@@ -38,18 +43,23 @@ public class BareMotorGroup implements BareMotor {
     }
 
     @Override
-    public double getVelocityRad_S() {
-        return mean((m) -> m.getVelocityRad_S());
-    }
-
-    @Override
     public double getUnwrappedPositionRad() {
         return mean((m) -> m.getUnwrappedPositionRad());
     }
 
     @Override
-    public double getCurrent() {
-        return mean((m) -> m.getCurrent());
+    public double getVelocityRad_S() {
+        return mean((m) -> m.getVelocityRad_S());
+    }
+
+    @Override
+    public double getAccelerationRad_S2() {
+        return mean((m) -> m.getAccelerationRad_S2());
+    }
+
+    @Override
+    public double getStatorCurrent() {
+        return mean((m) -> m.getStatorCurrent());
     }
 
     @Override
@@ -63,23 +73,23 @@ public class BareMotorGroup implements BareMotor {
     }
 
     @Override
-    public double kROhms() {
-        return mean((m) -> m.kROhms());
+    public double R() {
+        return mean((m) -> m.R());
     }
 
     @Override
-    public double kTNm_amp() {
-        return mean((m) -> m.kTNm_amp());
+    public double kT() {
+        return mean((m) -> m.kT());
     }
 
     @Override
-    public double kFreeSpeedRPM() {
-        return mean((m) -> m.kFreeSpeedRPM());
+    public double kE() {
+        return mean((m) -> m.kE());
     }
 
     @Override
-    public IncrementalBareEncoder encoder() {
-        return new SimulatedBareEncoder(m_log, this);
+    public IncrementalEncoder encoder() {
+        return new SimulatedEncoder(m_log, this);
     }
 
     @Override
@@ -107,24 +117,24 @@ public class BareMotorGroup implements BareMotor {
         apply((m) -> m.play(freq));
     }
 
-    private void apply(Consumer<BareMotor> f) {
-        for (BareMotor m : m_motors) {
+    private void apply(Consumer<Motor> f) {
+        for (Motor m : m_motors) {
             f.accept(m);
         }
     }
 
-    private double mean(ToDoubleFunction<BareMotor> f) {
+    private double mean(ToDoubleFunction<Motor> f) {
         double v = 0;
-        for (BareMotor m : m_motors) {
+        for (Motor m : m_motors) {
             v += f.applyAsDouble(m);
         }
         v /= m_motors.length;
         return v;
     }
 
-    private double sum(ToDoubleFunction<BareMotor> f) {
+    private double sum(ToDoubleFunction<Motor> f) {
         double v = 0;
-        for (BareMotor m : m_motors) {
+        for (Motor m : m_motors) {
             v += f.applyAsDouble(m);
         }
         return v;
@@ -132,7 +142,7 @@ public class BareMotorGroup implements BareMotor {
 
     @Override
     public double getSupplyCurrent() {
-        return sum(BareMotor::getSupplyCurrent);
+        return sum(Motor::getSupplyCurrent);
     }
 
 }

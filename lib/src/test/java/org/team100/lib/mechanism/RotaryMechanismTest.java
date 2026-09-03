@@ -7,7 +7,7 @@ import org.team100.lib.config.Friction;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.motor.MockBareMotor;
+import org.team100.lib.motor.MockMotor;
 import org.team100.lib.sensor.position.absolute.MockRotaryPositionSensor;
 import org.team100.lib.testing.Timeless;
 
@@ -19,7 +19,7 @@ public class RotaryMechanismTest implements Timeless {
     @Test
     void testLimits() {
         Friction friction = new Friction(0.100, 0.100, 0.0, 0.1);
-        MockBareMotor motor = new MockBareMotor(friction);
+        MockMotor motor = new MockMotor(friction);
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
         double gearRatio = 1;
         RotaryMechanism mech = new RotaryMechanism(logger, motor, sensor, gearRatio, 1, 2);
@@ -57,7 +57,7 @@ public class RotaryMechanismTest implements Timeless {
     @Test
     void testUnlimited() {
         Friction friction = new Friction(0.100, 0.100, 0.0, 0.1);
-        MockBareMotor motor = new MockBareMotor(friction);
+        MockMotor motor = new MockMotor(friction);
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
         double gearRatio = 1;
         RotaryMechanism mech = new RotaryMechanism(
@@ -96,7 +96,7 @@ public class RotaryMechanismTest implements Timeless {
     void testWrapNearMeasurement() {
         LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
         Friction friction = new Friction(0.100, 0.100, 0.0, 0.1);
-        MockBareMotor motor = new MockBareMotor(friction);
+        MockMotor motor = new MockMotor(friction);
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
         RotaryMechanism mech = new RotaryMechanism(
                 log, motor, sensor, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);

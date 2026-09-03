@@ -25,15 +25,16 @@ class ControlUtilTest {
 
     @Test
     void testVelocity() {
-        // does not squash
+        // squashes the input to a circle.  This should only be used
+        // for controls with circular envelopes.
         Velocity v = ControlUtil.velocity(
                 () -> 1.0,
                 () -> 1.0,
                 () -> 0.0,
                 0,
                 0);
-        assertEquals(-1, v.x(), DELTA);
-        assertEquals(-1, v.y(), DELTA);
+        assertEquals(-0.707, v.x(), DELTA);
+        assertEquals(-0.707, v.y(), DELTA);
     }
 
 }

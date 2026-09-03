@@ -8,11 +8,11 @@ import org.team100.lib.kinematics.mecanum.MecanumKinematics100.Slip;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.LinearMechanism;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.NeoCANSparkMotor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.gyro.Gyro;
 import org.team100.lib.sensor.gyro.ReduxGyro;
 import org.team100.lib.util.CanId;
@@ -48,16 +48,16 @@ public class MecanumDriveFactory {
         Gyro gyro = gyro(log, gyroId);
         slip = slip(slip);
 
-        BareMotor motorFL = getMotor(
+        Motor motorFL = getMotor(
                 logFL, currentLog, canFL, MotorPhase.REVERSE,
                 limit, friction, pid);
-        BareMotor motorFR = getMotor(
+        Motor motorFR = getMotor(
                 logFR, currentLog, canFR, MotorPhase.FORWARD,
                 limit, friction, pid);
-        BareMotor motorRL = getMotor(
+        Motor motorRL = getMotor(
                 logRL, currentLog, canRL, MotorPhase.REVERSE,
                 limit, friction, pid);
-        BareMotor motorRR = getMotor(
+        Motor motorRR = getMotor(
                 logRR, currentLog, canRR, MotorPhase.FORWARD,
                 limit, friction, pid);
 
@@ -79,19 +79,17 @@ public class MecanumDriveFactory {
                 mechFL, mechFR, mechRL, mechRR);
     }
 
-    /**
-     * Real or simulated depending on identity.
-     * 
-     * TODO: verify the velocity averaging parameters
-     */
-    public static BareMotor getMotor(
+    public static Motor getMotor(
             LoggerFactory log, TotalCurrentLog currentLog, CanId can, MotorPhase phase,
             CurrentLimit limit, Friction friction, PIDConstants pid) {
+        // parameters for velocity control
+        int averageDepth = 2;
+        int measurementPeriod = 4;
         return switch (Identity.instance) {
-            case BLANK -> new SimulatedBareMotor(log, 600);
+            case BLANK -> new SimulatedMotor(log, 600);
             default -> new NeoCANSparkMotor(
                     log, currentLog, can, NeutralMode100.BRAKE, phase,
-                    limit, friction, pid, 2, 4);
+                    limit, friction, pid, averageDepth, measurementPeriod);
         };
     }
 

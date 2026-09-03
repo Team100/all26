@@ -44,7 +44,8 @@ public class BatteryTester extends SubsystemBase implements AutoCloseable {
     private final DoubleLogger m_log_output_voltage;
     private final DoubleLogger m_log_output_current;
     private final DoubleLogger m_log_output_power;
-    private final DoubleLogger m_log_battery_voltage;
+    private final DoubleLogger m_log_input_voltage;
+    private final DoubleLogger m_log_input_current;
     private final DoubleLogger m_log_sim_battery_voltage;
     private final DoubleLogger m_log_soc;
 
@@ -65,8 +66,12 @@ public class BatteryTester extends SubsystemBase implements AutoCloseable {
                 new VictorSP(1),
                 new VictorSP(2),
                 new VictorSP(3),
-                new VictorSP(4));
-        m_feedback = new PIDFeedback(log, 0.00025, 0, 0.000001, false, 0.1, 1);
+                new VictorSP(4),
+                new VictorSP(5),
+                new VictorSP(6),
+                new VictorSP(7));
+        m_feedback = new PIDFeedback(log, 0.0, 0, 0.0, false, 0.1, 1);
+        // m_feedback = new PIDFeedback(log, 0.00025, 0, 0.000001, false, 0.1, 1);
         m_lightbulb = new LightBulb();
         m_battery = new EternalBattery();
         m_simBattery = new StatefulBattery();
@@ -81,7 +86,8 @@ public class BatteryTester extends SubsystemBase implements AutoCloseable {
         m_log_output_voltage = log.doubleLogger(Level.DEBUG, "output voltage (V)");
         m_log_output_current = log.doubleLogger(Level.DEBUG, "output current (A)");
         m_log_output_power = log.doubleLogger(Level.DEBUG, "output power (W)");
-        m_log_battery_voltage = log.doubleLogger(Level.DEBUG, "battery voltage (V)");
+        m_log_input_voltage = log.doubleLogger(Level.DEBUG, "battery voltage (V)");
+        m_log_input_current = log.doubleLogger(Level.DEBUG, "battery current (A)");
         m_log_sim_battery_voltage = log.doubleLogger(Level.DEBUG, "sim battery voltage (V)");
         m_log_soc = log.doubleLogger(Level.DEBUG, "soc");
     }
@@ -227,7 +233,8 @@ public class BatteryTester extends SubsystemBase implements AutoCloseable {
         m_log_output_voltage.log(() -> simOp().inputV());
         m_log_output_current.log(() -> simOp().inputI());
         m_log_output_power.log(() -> simOp().p());
-        m_log_battery_voltage.log(this::batteryVoltage);
+        m_log_input_voltage.log(() -> op.inputV);
+        m_log_input_current.log(() -> op.inputI);
     }
 
 }

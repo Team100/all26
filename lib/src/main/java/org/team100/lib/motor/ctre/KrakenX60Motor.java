@@ -29,20 +29,20 @@ public class KrakenX60Motor extends Talon6Motor {
     }
 
     @Override
-    public double kROhms() {
+    public double R() {
         // 12.0 V, 483 A
         return 0.025;
     }
 
     @Override
-    public double kTNm_amp() {
+    public double kT() {
         // 9.39 Nm, 483 A
         return 0.019;
     }
 
     @Override
-    public double kFreeSpeedRPM() {
-        // return Double.MAX_VALUE;
-        return 5800;
+    public double kE() {
+        // 60 * 12 / (5800 * 2 * pi) volt-sec/rad
+        return 0.0197572;
     }
 }

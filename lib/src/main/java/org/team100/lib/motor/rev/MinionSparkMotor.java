@@ -47,17 +47,18 @@ public class MinionSparkMotor extends CANSparkMotor {
     }
 
     @Override
-    public double kROhms() {
+    public double R() {
         return 0.056;
     }
 
     @Override
-    public double kTNm_amp() {
+    public double kT() {
         return 0.015;
     }
 
     @Override
-    public double kFreeSpeedRPM() {
-        return 7700;
+    public double kE() {
+        // 60 * 12 / (7700 * 2 * pi) volt-sec/rad
+        return 0.0148820;
     }
 }

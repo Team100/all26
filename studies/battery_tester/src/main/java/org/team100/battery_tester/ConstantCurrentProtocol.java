@@ -12,7 +12,8 @@ public class ConstantCurrentProtocol extends Command {
     private final BatteryTester m_subsystem;
     private final double m_i;
     private final double m_v;
-    private final Summarizer m_summarizer;
+    private Summarizer m_summarizer;
+    private double m_start;
 
     /**
      * @param subsystem tester
@@ -24,19 +25,29 @@ public class ConstantCurrentProtocol extends Command {
         m_subsystem = subsystem;
         m_i = i;
         m_v = v;
-        m_summarizer = new Summarizer(DECIMATION);
         addRequirements(subsystem);
     }
 
     @Override
     public void initialize() {
         // nothing to initialize.
+        m_start = Takt.get();
+        m_summarizer = new Summarizer(DECIMATION);
     }
 
     @Override
     public void execute() {
-        m_subsystem.setCurrent(m_i);
+        // System.out.println("current running");
         double t = Takt.get();
+        double dt = t - m_start;
+        double targetI = 0;
+        if (dt < 3) {
+            targetI = m_i * dt / 3;
+        } else {
+            targetI = m_i;
+        }
+        // System.out.printf("target I %f\n", targetI);
+        m_subsystem.setCurrent(targetI);
         Op op = m_subsystem.operatingPoint();
         m_summarizer.add(t, op.inputI(), op.inputV(), op.p());
     }
@@ -44,14 +55,15 @@ public class ConstantCurrentProtocol extends Command {
     @Override
     public boolean isFinished() {
         Op op = m_subsystem.operatingPoint();
+        // System.out.printf("isfinished op %s\n", op);
         return op.inputV() < m_v;
     }
 
     @Override
     public void end(boolean interrupted) {
         m_subsystem.off();
-        summary();
         m_summarizer.dump();
+        summary();
     }
 
     private void summary() {

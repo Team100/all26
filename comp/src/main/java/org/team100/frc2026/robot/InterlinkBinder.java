@@ -33,7 +33,7 @@ public class InterlinkBinder {
         ///
         /// CONTROLLER
         ///
-        InterLinkDX driver = new InterLinkDX(0);
+        InterLinkDX driver = new InterLinkDX(m_log, 0);
 
         ////////////////////////////////////////////////////
         ///

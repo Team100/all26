@@ -33,6 +33,13 @@ public interface RotaryPositionSensor {
     double getVelocityRad_S();
 
     /**
+     * Beware of noise due to double-differentiation.
+     * 
+     * @return counterclockwise positive rad/s^2
+     */
+    double getAccelerationRad_S2();
+
+    /**
      * For logging.
      */
     void periodic();

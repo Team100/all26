@@ -69,7 +69,7 @@ public class MoveWithTrajectorySE2 extends MoveAndHold {
         TrajectorySE2 trajectory = m_planner.restToRest(waypoints);
         TrajectoryReferenceSE2 reference = new TrajectoryReferenceSE2(m_log, trajectory);
         m_referenceController = new PositionReferenceControllerSE2(
-                m_log, m_arm, reference);
+                m_log, m_arm, 0.1, reference);
     }
 
     @Override

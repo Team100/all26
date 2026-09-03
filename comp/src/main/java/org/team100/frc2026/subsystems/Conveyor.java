@@ -7,11 +7,11 @@ import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.p.PDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX44Motor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.AccelLimitedVelocityProfileR1;
 import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
@@ -43,8 +43,8 @@ public class Conveyor extends SubsystemBase {
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
 
-        final BareMotor m1;
-        final BareMotor m2;
+        final Motor m1;
+        final Motor m2;
 
         switch (Identity.instance) {
             case TEST_BOARD_B0 -> {
@@ -61,8 +61,8 @@ public class Conveyor extends SubsystemBase {
                         CurrentLimits.CONVEYOR, friction, pid);
             }
             default -> {
-                m1 = new SimulatedBareMotor(log1, 600);
-                m2 = new SimulatedBareMotor(log2, 600);
+                m1 = new SimulatedMotor(log1, 600);
+                m2 = new SimulatedMotor(log2, 600);
             }
         }
         m_servo1 = OutboardLinearVelocityServo.make(

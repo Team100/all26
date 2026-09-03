@@ -44,6 +44,11 @@ public class HomingRotaryPositionSensor implements RotaryPositionSensor {
     }
 
     @Override
+    public double getAccelerationRad_S2() {
+        return m_sensor.getAccelerationRad_S2();
+    }
+
+    @Override
     public void periodic() {
         m_sensor.periodic();
     }

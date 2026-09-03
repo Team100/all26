@@ -8,7 +8,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.mechanism.LinearMechanism;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
 import org.team100.lib.state.ControlR1;
@@ -61,7 +61,7 @@ public class OutboardLinearPositionServo implements LinearPositionServo {
      */
     public static OutboardLinearPositionServo make(
             LoggerFactory log,
-            BareMotor motor,
+            Motor motor,
             PDynamics dyn,
             ReferenceR1 ref,
             double gearRatio,

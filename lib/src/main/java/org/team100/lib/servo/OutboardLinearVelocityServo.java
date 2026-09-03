@@ -1,6 +1,5 @@
 package org.team100.lib.servo;
 
-import org.team100.lib.coherence.Takt;
 import org.team100.lib.dynamics.p.PAcceleration;
 import org.team100.lib.dynamics.p.PDynamics;
 import org.team100.lib.dynamics.p.PEffort;
@@ -9,7 +8,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.VelocityControlR1Logger;
 import org.team100.lib.mechanism.LinearMechanism;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.state.VelocityControlR1;
 
@@ -33,11 +32,6 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
     private final DoubleLogger m_log_goal;
     private final VelocityControlR1Logger m_log_control;
     private final DoubleLogger m_log_velocity;
-
-    // For calculating acceleration
-    private double m_prevGoal = 0;
-    // For calculating acceleration
-    private double m_prevT = 0;
 
     private Double m_goal;
     /** Setpoints m/s and m/s^2 */
@@ -65,7 +59,7 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
      */
     public static OutboardLinearVelocityServo make(
             LoggerFactory log,
-            BareMotor motor,
+            Motor motor,
             PDynamics dynamics,
             VelocityReferenceR1 ref,
             double gearRatio,
@@ -122,17 +116,7 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
     /**
      * Passthrough to the outboard control.
      * Invalidates the current profile.
-     */
-    @Override
-    public void setVelocityDirect(double setpointM_S) {
-        setVelocityDirect(setpointM_S, accel(setpointM_S));
-    }
-
-    /**
-     * Passthrough to the outboard control.
-     * Invalidates the current profile.
      * Uses the same setpoint for "current" and "next".
-     * TODO: expose both setpoints here.
      */
     @Override
     public void setVelocityDirect(double setpointM_S, double setpointM_S2) {
@@ -166,7 +150,6 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
      */
     public double error() {
         if (m_goal == null) {
-            // TODO: no setpoint should yield null
             return 0;
         }
         return m_goal - m_mechanism.getVelocityM_S();
@@ -221,26 +204,5 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
     public void periodic() {
         m_mechanism.periodic();
         m_log_velocity.log(() -> getVelocity());
-    }
-
-    ////////////////////////////////////////////////
-
-    /**
-     * Acceleration from trailing difference in velocity.
-     * 
-     * Note: in simulation, if you pull the setpoint directly from the simulated
-     * joystick input, acceleration will be choppy: zero acceleration every other
-     * cycle, because the simulated inputs seem to be polled at only 10 hz.
-     * 
-     * To avoid this problem, use the SwerveLimiter.
-     */
-    private double accel(double setpoint) {
-        double t = Takt.get();
-        // TODO: experiment with fixed DT here, to reduce noise.
-        double dt = t - m_prevT;
-        m_prevT = t;
-        double accel = (setpoint - m_prevGoal) / dt;
-        m_prevGoal = setpoint;
-        return accel;
     }
 }

@@ -70,7 +70,6 @@ class SwerveDriveSubsystemTest implements Timeless {
 
         Experiments.instance.testOverride(Experiment.UseSwerveLimiter, false);
         SwerveDriveSubsystem drive = fixture.drive;
-        fixture.collection.reset();
         stepTime();
 
         drive.resetPose(new Pose2d(), IsotropicNoiseSE2.high());

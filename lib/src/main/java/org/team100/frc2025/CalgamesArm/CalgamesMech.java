@@ -37,7 +37,7 @@ import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.music.Music;
 import org.team100.lib.music.Player;
 import org.team100.lib.sensor.position.absolute.CombinedRotaryPositionSensor;
@@ -47,7 +47,7 @@ import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.sim.SimulatedRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.wpi.AS5048RotaryPositionSensor;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.sensor.position.incremental.ctre.Talon6Encoder;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.state.StateSE2;
@@ -171,7 +171,7 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
                         new CurrentLimit(100, 100),
                         new Friction(0.100, 0.100, 0.005, 0.5),
                         PIDConstants.makePositionPID(1));
-                IncrementalBareEncoder elevatorFrontEncoder = elevatorFrontMotor.encoder();
+                IncrementalEncoder elevatorFrontEncoder = elevatorFrontMotor.encoder();
 
                 m_elevatorFront = new LinearMechanism(
                         elevatorfrontLog, elevatorFrontMotor, elevatorFrontEncoder,
@@ -242,31 +242,31 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
                         2.1); // max
             }
             default -> {
-                SimulatedBareMotor elevatorMotorFront = new SimulatedBareMotor(
+                SimulatedMotor elevatorMotorFront = new SimulatedMotor(
                         elevatorfrontLog, 600);
-                IncrementalBareEncoder elevatorEncoderFront = elevatorMotorFront.encoder();
+                IncrementalEncoder elevatorEncoderFront = elevatorMotorFront.encoder();
                 m_elevatorFront = new LinearMechanism(
                         elevatorfrontLog, elevatorMotorFront, elevatorEncoderFront,
                         2, 0.05, 0, 2.2);
 
-                SimulatedBareMotor elevatorMotorBack = new SimulatedBareMotor(
+                SimulatedMotor elevatorMotorBack = new SimulatedMotor(
                         elevatorbackLog, 600);
-                IncrementalBareEncoder elevatorEncoderBack = elevatorMotorBack.encoder();
+                IncrementalEncoder elevatorEncoderBack = elevatorMotorBack.encoder();
                 m_elevatorBack = new LinearMechanism(
                         elevatorbackLog, elevatorMotorBack, elevatorEncoderBack,
                         2, 0.05, 0, 2.2);
 
-                SimulatedBareMotor shoulderMotor = new SimulatedBareMotor(
+                SimulatedMotor shoulderMotor = new SimulatedMotor(
                         shoulderLog, 600);
-                IncrementalBareEncoder shoulderEncoder = shoulderMotor.encoder();
+                IncrementalEncoder shoulderEncoder = shoulderMotor.encoder();
                 RotaryPositionSensor shoulderSensor = new SimulatedRotaryPositionSensor(
                         shoulderLog, shoulderEncoder, 100);
                 m_shoulder = new RotaryMechanism(
                         shoulderLog, shoulderMotor, shoulderSensor, 100, -3, 3);
 
-                SimulatedBareMotor wristMotor = new SimulatedBareMotor(
+                SimulatedMotor wristMotor = new SimulatedMotor(
                         wristLog, 600);
-                IncrementalBareEncoder wristEncoder = wristMotor.encoder();
+                IncrementalEncoder wristEncoder = wristMotor.encoder();
                 RotaryPositionSensor wristSensor = new SimulatedRotaryPositionSensor(
                         wristLog, wristEncoder, 58);
                 m_wrist = new RotaryMechanism(

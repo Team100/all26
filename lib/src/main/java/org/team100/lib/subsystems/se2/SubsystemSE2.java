@@ -9,7 +9,13 @@ import org.wpilib.command2.Subsystem;
  * group.
  */
 public interface SubsystemSE2 extends Subsystem {
-    /** State for the current Takt. */
+    /**
+     * State for the current Takt.
+     * 
+     * Because this measurement is often used for control (e.g. point from the
+     * current position to some target), it is important to minimize noise in the
+     * measurement.
+     */
     StateSE2 getState();
 
     /** Passthrough to motor stop. This is not "hold position", it is "disable". */

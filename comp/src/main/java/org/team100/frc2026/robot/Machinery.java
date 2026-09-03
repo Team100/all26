@@ -231,6 +231,15 @@ public class Machinery {
         }, m_drive);
     }
 
+    /** Force the pose to the origin. FOR TEST ONLY! */
+    public Command zeroPose() {
+        return Commands.runOnce(() -> {
+            Pose2d p = new Pose2d();
+            System.out.printf("*** ZERO POSE\n");
+            resetPose(p);
+        }, m_drive);
+    }
+
     /**
      * Nudge the rotation towards zero, like a camera would do.
      * The "nudge" in this case is quite firm.

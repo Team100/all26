@@ -8,11 +8,11 @@ import org.team100.lib.dynamics.p.PDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.LinearMechanism;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.MinionSparkMotor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.AccelLimitedVelocityProfileR1;
 import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
@@ -77,14 +77,14 @@ public class DualDrumShooterFactory {
     public DualDrumDutyCycleShooter makeDutyCycleShooter() {
         LoggerFactory logL = log.name("left");
         LoggerFactory logR = log.name("right");
-        Friction friction = new Friction( 0.0, 0.0, 0.0, 0.5);
+        Friction friction = new Friction(0.0, 0.0, 0.0, 0.5);
         PIDConstants pid = PIDConstants.makeVelocityPID(0.005);
 
-        BareMotor left = getMotor(
+        Motor left = getMotor(
                 limit, logL, currentLog, 600, canL,
                 MotorPhase.FORWARD, friction, pid);
 
-        BareMotor right = getMotor(
+        Motor right = getMotor(
                 limit, logR, currentLog, 600, canR,
                 MotorPhase.REVERSE, friction, pid);
 
@@ -134,7 +134,7 @@ public class DualDrumShooterFactory {
             PIDConstants pid,
             double freeSpeedRad_S,
             MotorPhase motorPhase) {
-        BareMotor motor = getMotor(
+        Motor motor = getMotor(
                 limit, log, currentLog, freeSpeedRad_S, canId,
                 motorPhase, friction, pid);
         LinearMechanism mech = new LinearMechanism(
@@ -143,10 +143,7 @@ public class DualDrumShooterFactory {
         return mech;
     }
 
-    /**
-     * TODO: verify the velocity averaging parameters
-     */
-    private static BareMotor getMotor(
+    private static Motor getMotor(
             CurrentLimit limit,
             LoggerFactory log,
             TotalCurrentLog currentLog,
@@ -155,15 +152,18 @@ public class DualDrumShooterFactory {
             MotorPhase phase,
             Friction friction,
             PIDConstants pid) {
+        // parameters for velocity control.
+        int averageDepth = 2;
+        int measurementPeriod = 4;
         return switch (Identity.instance) {
             case BLANK ->
-                new SimulatedBareMotor(log, freeSpeedRad_S);
+                new SimulatedMotor(log, freeSpeedRad_S);
             case DEMO_BOT -> new MinionSparkMotor(
                     log, currentLog, canId, NeutralMode100.BRAKE, phase,
-                    limit, friction, pid, 2, 4);
+                    limit, friction, pid, averageDepth, measurementPeriod);
             default -> new MinionSparkMotor(
                     log, currentLog, canId, NeutralMode100.BRAKE, phase,
-                    limit, friction, pid, 2, 4);
+                    limit, friction, pid, averageDepth, measurementPeriod);
         };
     }
 

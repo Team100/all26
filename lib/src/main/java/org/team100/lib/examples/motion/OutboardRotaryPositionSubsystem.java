@@ -8,17 +8,17 @@ import org.team100.lib.dynamics.r.RDynamicsAnalytic;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.RotaryMechanism;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.CANSparkMotor;
 import org.team100.lib.motor.rev.NeoCANSparkMotor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.util.CanId;
@@ -63,8 +63,8 @@ public class OutboardRotaryPositionSubsystem extends SubsystemBase {
         switch (Identity.instance) {
             case BLANK -> {
                 // simulation
-                SimulatedBareMotor motor = new SimulatedBareMotor(log, 600);
-                IncrementalBareEncoder encoder = motor.encoder();
+                SimulatedMotor motor = new SimulatedMotor(log, 600);
+                IncrementalEncoder encoder = motor.encoder();
                 return getMech(log, motor, encoder);
             }
             default -> {
@@ -80,13 +80,13 @@ public class OutboardRotaryPositionSubsystem extends SubsystemBase {
                         PIDConstants.makePositionPID(0.2),
                         0,
                         0);
-                IncrementalBareEncoder encoder = motor.encoder();
+                IncrementalEncoder encoder = motor.encoder();
                 return getMech(log, motor, encoder);
             }
         }
     }
 
-    private RotaryMechanism getMech(LoggerFactory log, BareMotor motor, IncrementalBareEncoder encoder) {
+    private RotaryMechanism getMech(LoggerFactory log, Motor motor, IncrementalEncoder encoder) {
         RotaryMechanism mech = new RotaryMechanism(log, motor,
                 encoder,
                 0, // initial position, rad

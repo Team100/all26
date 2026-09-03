@@ -8,8 +8,8 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.mechanism.RotaryMechanism;
-import org.team100.lib.motor.MockBareMotor;
-import org.team100.lib.sensor.position.incremental.MockIncrementalBareEncoder;
+import org.team100.lib.motor.MockMotor;
+import org.team100.lib.sensor.position.incremental.MockIncrementalEncoder;
 import org.team100.lib.testing.Timeless;
 
 class CombinedRotaryPositionSensorTest implements Timeless {
@@ -19,7 +19,7 @@ class CombinedRotaryPositionSensorTest implements Timeless {
     @Test
     void testZeroing() {
         Friction friction = new Friction(0.100, 0.100, 0.0, 0.1);
-        MockBareMotor motor = new MockBareMotor(friction);
+        MockMotor motor = new MockMotor(friction);
 
         // this is the "correct" value
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
@@ -28,7 +28,7 @@ class CombinedRotaryPositionSensorTest implements Timeless {
 
         // this value is the "incorrect" value, should be overwritten by the combined
         // encoder constructor.
-        MockIncrementalBareEncoder encoder = new MockIncrementalBareEncoder();
+        MockIncrementalEncoder encoder = new MockIncrementalEncoder();
         encoder.position = 0;
         assertEquals(0, encoder.getUnwrappedPositionRad(), DELTA);
 

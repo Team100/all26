@@ -116,7 +116,6 @@ public class FiveBarKinematics {
             Point P4 = new Point(x4, y4);
 
             double P4P2 = P4.distance(P2);
-            // TODO: explain this step.
             double P2Ph = Math100.isFinite((pow(scenario.a2, 2) - pow(scenario.a3, 2) + pow(P4P2, 2)) / (2 * P4P2));
             // Midpoint of the base of the P2-P4-P3 triangle.
             Point Ph = P2.plus((P4.minus(P2)).times((P2Ph / P4P2)));

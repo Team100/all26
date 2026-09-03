@@ -5,8 +5,8 @@ package org.team100.lib.config;
  * 
  * Applicable for motor feedforward.
  * 
- * These values describe the entire mechanism; the motor friction itself is
- * usually negligible.
+ * These values describe the entire mechanism, not just the motor, which is why
+ * it's not a property of the motor class.
  * 
  * @see https://mogi.bme.hu/TAMOP/robot_applications/ch07.html
  * @see https://en.wikipedia.org/wiki/Friction
@@ -24,13 +24,19 @@ public class Friction {
     private final double vS;
 
     /**
-     * @param kS  Static friction. Voltage to just barely get the mechanism moving
-     *            from a stop.
-     * @param kD  Dynamic friction. Voltage to just barely keep the mechanism
-     *            moving, independent of speed.
-     * @param kV  Viscous friction. Constant to compute voltage to keep moving at a
-     *            constant velocity. Units are Volt-sec/rad.
-     * @param vS  Velocity threshold for static friction, rad/s.
+     * @param kS Static friction. Voltage to just barely get the mechanism moving
+     *           from a stop. Measure this using any voltage control, literally
+     *           iterate to find the "just get started" voltage.
+     * @param kD Dynamic friction. Voltage to just barely keep the mechanism
+     *           moving, independent of speed. Measure the voltage intercept of the
+     *           V-vs-omega curve.
+     * @param kV Viscous friction. Constant to compute voltage to keep moving at a
+     *           constant velocity. Units are Volt-sec/rad. Measure this by plotting
+     *           the V-omega curve with the whole mechanism attached -- you'll find
+     *           a different slope than with the motor alone. The difference in
+     *           slope is kV.
+     * @param vS Velocity threshold for static friction, rad/s. This is very hard to
+     *           measure, just use a small number, like 0.5.
      */
     public Friction(
             double kS,

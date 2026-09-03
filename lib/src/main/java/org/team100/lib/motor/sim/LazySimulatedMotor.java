@@ -2,19 +2,19 @@ package org.team100.lib.motor.sim;
 
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.motor.BareMotor;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
-import org.team100.lib.sensor.position.incremental.sim.SimulatedBareEncoder;
+import org.team100.lib.motor.Motor;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
+import org.team100.lib.sensor.position.incremental.sim.SimulatedEncoder;
 
 /** A simulated motor that runs for awhile, and then stops. */
-public class LazySimulatedBareMotor implements BareMotor {
+public class LazySimulatedMotor implements Motor {
     private final LoggerFactory m_log;
-    private final BareMotor m_delegate;
+    private final Motor m_delegate;
     private final double m_timeout;
     private double m_startTime;
     private boolean m_running;
 
-    public LazySimulatedBareMotor(LoggerFactory parent, BareMotor delegate, double timeout) {
+    public LazySimulatedMotor(LoggerFactory parent, Motor delegate, double timeout) {
         m_log = parent.type(this);
         m_delegate = delegate;
         m_timeout = timeout;
@@ -50,6 +50,11 @@ public class LazySimulatedBareMotor implements BareMotor {
     }
 
     @Override
+    public void setCurrent(double current) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void setVelocity(double velocityRad_S, double torqueNm) {
         if (velocityRad_S < 1e-3) {
             m_running = false;
@@ -74,12 +79,17 @@ public class LazySimulatedBareMotor implements BareMotor {
     }
 
     @Override
+    public double getAccelerationRad_S2() {
+        return m_delegate.getAccelerationRad_S2();
+    }
+
+    @Override
     public double getUnwrappedPositionRad() {
         return m_delegate.getUnwrappedPositionRad();
     }
 
     @Override
-    public double getCurrent() {
+    public double getStatorCurrent() {
         // running means low current
         if (m_running)
             return 10;
@@ -98,23 +108,23 @@ public class LazySimulatedBareMotor implements BareMotor {
     }
 
     @Override
-    public double kROhms() {
-        return m_delegate.kROhms();
+    public double R() {
+        return m_delegate.R();
     }
 
     @Override
-    public double kTNm_amp() {
-        return m_delegate.kTNm_amp();
+    public double kT() {
+        return m_delegate.kT();
     }
 
     @Override
-    public double kFreeSpeedRPM() {
-        return m_delegate.kFreeSpeedRPM();
+    public double kE() {
+        return m_delegate.kE();
     }
 
     @Override
-    public IncrementalBareEncoder encoder() {
-        return new SimulatedBareEncoder(m_log, this);
+    public IncrementalEncoder encoder() {
+        return new SimulatedEncoder(m_log, this);
     }
 
     @Override

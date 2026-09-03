@@ -37,17 +37,18 @@ public class NeoCANSparkMotor extends CANSparkMotor {
     }
 
     @Override
-    public double kROhms() {
+    public double R() {
         return 0.114;
     }
 
     @Override
-    public double kTNm_amp() {
+    public double kT() {
         return 0.028;
     }
 
     @Override
-    public double kFreeSpeedRPM() {
-        return 5676;
+    public double kE() {
+        // 60 * 12 / (5676 * 2 * pi) volt-sec/rad
+        return 0.0201888;
     }
 }

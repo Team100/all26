@@ -1,5 +1,6 @@
 package org.team100.lib.subsystems.test;
 
+import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
 
 import org.wpilib.math.linalg.Vector;
@@ -15,8 +16,11 @@ public class OffsetUtil {
      * Cartesian components are always zero.
      */
     static VelocitySE2 omega(Vector<N3> r, Vector<N3> v) {
+        double norm = r.norm();
+        if (norm < 1e-6)
+            return VelocitySE2.ZERO;
         return VelocitySE2.fromVector(
-                Vector.cross(r, v).div(r.norm() * r.norm()));
+                Vector.cross(r, v).div(norm * norm));
     }
 
     /**
@@ -31,6 +35,11 @@ public class OffsetUtil {
             Vector<N3> omega, Vector<N3> r) {
         return VelocitySE2.fromVector(
                 Vector.cross(omega, r));
+    }
+
+    static AccelerationSE2 centripetalAcceleration(Vector<N3> omega, Vector<N3> r) {
+        double w = omega.get(2);
+        return AccelerationSE2.fromVector(r.times(-1.0 * w * w));
     }
 
     /**

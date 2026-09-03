@@ -43,9 +43,10 @@ public interface SixDofKinematics {
      * 
      * @param p         Tool point pose.
      * @param q1Default In case of base singularity.
+     * @param q2Default In case of shoulder singularity.
      * @param q4Default In case of wrst singularity.
      */
-    List<SixDofConfig> inverse(Pose3d p, Double q1Default, Double q4Default);
+    List<SixDofConfig> inverse(Pose3d p, Double q1Default, Double q2Default, Double q4Default);
 
     /**
      * Inverse velocity kinematics.

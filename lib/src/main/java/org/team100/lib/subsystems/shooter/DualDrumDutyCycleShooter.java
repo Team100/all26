@@ -1,7 +1,7 @@
 package org.team100.lib.subsystems.shooter;
 
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.motor.BareMotor;
+import org.team100.lib.motor.Motor;
 
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -12,14 +12,14 @@ import org.wpilib.command2.SubsystemBase;
 public class DualDrumDutyCycleShooter extends SubsystemBase implements DualDrumShooter {
     /** full output duty cycle */
     private final double m_fullDutyCycle;
-    private final BareMotor m_left;
-    private final BareMotor m_right;
+    private final Motor m_left;
+    private final Motor m_right;
 
     public DualDrumDutyCycleShooter(
             LoggerFactory log,
             double fullDutyCycle,
-            BareMotor left,
-            BareMotor right) {
+            Motor left,
+            Motor right) {
         m_fullDutyCycle = fullDutyCycle;
         m_left = left;
         m_right = right;

@@ -39,7 +39,6 @@ public class Targeter {
                         new FiringParameters(5.32, 19.00, 0.30, 1.032),
                         // whoops, when moving fast, longer range is required
                         // so just guess.
-                        // TODO: measure this
                         new FiringParameters(7, 21.00, 0.30, 1.4)
                 //
                 ));
@@ -59,8 +58,6 @@ public class Targeter {
      * Firing parameters for the specified range.
      * Empty if there is no valid solution for that range (e.g. it's too far or too
      * close)
-     * 
-     * TODO: extract target selection and shot type
      */
     public Optional<FiringParameters> forRange(double rangeM) {
         Translation2d p = m_position.get();

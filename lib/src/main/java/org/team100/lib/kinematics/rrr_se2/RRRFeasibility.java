@@ -11,9 +11,13 @@ public class RRRFeasibility {
     private static final boolean DEBUG = false;
 
     private final RRRKinematicsPoE m_k;
+    private final RRRConfig m_qMin;
+    private final RRRConfig m_qMax;
 
-    public RRRFeasibility(RRRKinematicsPoE k) {
+    public RRRFeasibility(RRRKinematicsPoE k, RRRConfig qMin, RRRConfig qMax) {
         m_k = k;
+        m_qMin = qMin;
+        m_qMax = qMax;
     }
 
     public List<RRRConfig> filter(List<RRRConfig> ql) {
@@ -32,21 +36,19 @@ public class RRRFeasibility {
 
     /**
      * True if the joints configurations are in their allowed ranges.
-     * 
-     * TODO: make this match the real mechanism.
      */
     boolean qRange(RRRConfig q) {
-        if (q.q1() < -Math.PI / 2 || q.q1() > Math.PI / 2) {
+        if (q.q1() < m_qMin.q1() || q.q1() > m_qMax.q1()) {
             if (DEBUG)
                 System.out.printf("q1 out of range %s\n", q.q1());
             return false;
         }
-        if (q.q2() < -3 || q.q2() > 3) {
+        if (q.q2() < m_qMin.q2() || q.q2() > m_qMax.q2()) {
             if (DEBUG)
                 System.out.printf("q2 out of range %s\n", q.q2());
             return false;
         }
-        if (q.q3() < -3 || q.q3() > 3) {
+        if (q.q3() < m_qMin.q3() || q.q3() > m_qMax.q3()) {
             if (DEBUG)
                 System.out.printf("q3 out of range %s\n", q.q3());
             return false;
@@ -56,8 +58,6 @@ public class RRRFeasibility {
 
     /**
      * True if the joint workspace positions are ok.
-     * 
-     * TODO: make a real work envelope
      */
     boolean xRange(RRRConfig q) {
         RRRPose x = m_k.forward(q);

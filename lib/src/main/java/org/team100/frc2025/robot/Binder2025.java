@@ -45,7 +45,7 @@ public class Binder2025 {
         ///
         /// CONTROLS
         ///
-        final DriverXboxControl driver = new DriverXboxControl(0);
+        final DriverXboxControl driver = new DriverXboxControl(log, 0);
         final OperatorXboxControl operator = new OperatorXboxControl(1);
         final Buttons2025 buttons = new Buttons2025(2);
 

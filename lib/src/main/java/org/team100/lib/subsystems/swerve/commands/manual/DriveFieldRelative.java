@@ -70,6 +70,7 @@ public class DriveFieldRelative extends Command {
 
     @Override
     public void execute() {
+        // TODO: avoid noise in this input
         Velocity clipped = m_twistSupplier.get().clip(1.0);
         VelocitySE2 scaled1 = VelocitySE2.scale(
                 clipped,

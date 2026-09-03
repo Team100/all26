@@ -15,21 +15,25 @@ public class ControlUtil {
      * @param fraction how much cubic to add, [0,1]
      */
     public static double expo(double input, double fraction) {
+        input = clamp(input, 1);
         return (1 - fraction) * input + fraction * input * input * input;
     }
 
+    /**
+     * Return 0 if near 0, scale to fit
+     */
     public static double deadband(double input, double threshold, double maxMagnitude) {
         return MathUtil.applyDeadband(input, threshold, maxMagnitude);
     }
 
-    public static double clamp(double input, double clamp) {
-        return Math.clamp(input, -clamp, clamp);
+    /**
+     * Clamp input to range
+     */
+    public static double clamp(double input, double range) {
+        return Math.clamp(input, -range, range);
     }
 
-    public static double clamp(double input, double low, double high) {
-        return Math.clamp(input, low, high);
-    }
-
+    /** Apply center correction and scale factors */
     public static double scale(double raw, double negScale, double center, double posScale) {
         double zeroed = raw - center;
         if (zeroed < 0)
@@ -39,7 +43,8 @@ public class ControlUtil {
 
     /**
      * Applies expo to the magnitude of the cartesian input. Appropriate for
-     * joysticks with round limits, like Xbox controllers.
+     * joysticks with round limits, like Xbox controllers. Not appropriate
+     * for controllers with square limits, like the Interlink.
      */
     public static Velocity velocity(
             DoubleSupplier rightYSupplier,

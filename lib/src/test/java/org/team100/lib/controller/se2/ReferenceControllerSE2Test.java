@@ -191,7 +191,7 @@ public class ReferenceControllerSE2Test implements Timeless {
             stepTime();
             drive.m_state = new StateSE2(pose, velocity.velocity());
             referenceController.execute();
-            velocity = drive.m_recentSetpoint;
+            velocity = drive.m_setpoint;
             pose = new Pose2d(
                     pose.getX() + velocity.x().v() * dt + velocity.x().a() * dt * dt / 2,
                     pose.getY() + velocity.y().v() * dt + velocity.y().a() * dt * dt / 2,
