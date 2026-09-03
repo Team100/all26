@@ -4,6 +4,12 @@ import static org.team100.lib.util.TriggerUtil.whileTrue;
 
 import org.team100.lib.commands.MoveAndHold;
 import org.team100.lib.geometry.se3.VelocitySE3;
+import org.team100.lib.profile.r1.ProfileR1;
+import org.team100.lib.profile.r1.WPITrapezoidProfileR1;
+import org.wpilib.command2.Commands;
+import org.wpilib.driverstation.Gamepad;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation3d;
 
 public class Binder {
 

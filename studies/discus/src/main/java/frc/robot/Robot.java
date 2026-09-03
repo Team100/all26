@@ -2,15 +2,10 @@ package frc.robot;
 
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.Takt;
-import org.team100.lib.subsystems.discus.setups.SetupServo;
+import org.team100.lib.subsystems.discus.setups.SetupBare;
 import org.wpilib.command2.CommandScheduler;
 import org.wpilib.framework.TimedRobot;
-
-import org.team100.lib.subsystems.discus.setups.SetupBare;
-
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.wpilib.networktables.NetworkTableInstance;
 
 
 public class Robot extends TimedRobot {
