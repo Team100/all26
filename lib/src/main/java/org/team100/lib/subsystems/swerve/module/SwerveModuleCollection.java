@@ -85,7 +85,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.MEDIUM,
                                 new CanId(2), // steer
                                 new CanId(1), // encoder
-                                0.109162,
+                                -0.993286,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getKrakenDriveKrakenSteerRedux(
@@ -94,7 +94,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.MEDIUM,
                                 new CanId(4), // steer
                                 new CanId(2), // encoder
-                                0.361342,
+                                0.000427,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getKrakenDriveKrakenSteerRedux(
@@ -103,7 +103,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.MEDIUM,
                                 new CanId(6), // steer
                                 new CanId(3), // encoder
-                                0.611814,
+                                -0.003967,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getKrakenDriveKrakenSteerRedux(
@@ -112,7 +112,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.MEDIUM,
                                 new CanId(8), // steer
                                 new CanId(4), // encoder
-                                0.279052,
+                                -0.001465,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
             case COMP_BOT:
@@ -257,7 +257,7 @@ public class SwerveModuleCollection implements Player {
                 SimulatedSwerveModule100.get(log));
     }
 
-    /////////////////////////////////////////////////
+    ///////////////////////////////////////////////
     //
     // Actuators
     //
@@ -306,7 +306,7 @@ public class SwerveModuleCollection implements Player {
         m_rearRight.stop();
     }
 
-    /////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////
     //
     // Observers
     //
@@ -329,7 +329,7 @@ public class SwerveModuleCollection implements Player {
                 m_rearRight.getState());
     }
 
-    ///////////////////////////////////////////
+    /////////////////////////////////////////
 
     public void close() {
         m_frontLeft.close();

@@ -116,10 +116,13 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 driveMotorCanId,
                 ratio);
         // this reads the steering angle directly.
+        LoggerFactory turnlog = parent.name("Turning");
         RotaryPositionSensor turningSensor = new ReduxPositionSensor(
-                turningEncoderChannel);
+                turnlog,
+                turningEncoderChannel,
+                turningOffset);
         RotaryMechanism steer = steerKraken(
-                parent.name("Turning"),
+                turnlog,
                 currentLog,
                 steerLimit,
                 turningMotorCanId,
