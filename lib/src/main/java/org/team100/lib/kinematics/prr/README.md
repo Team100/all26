@@ -6,13 +6,15 @@ Elevator - Shoulder - Wrist
 
 Used in Calgames 2025
 
-
 This package implements kinematics for the Prismatic-Revolute-Revolute ("PRR") mechanism used in Calgames 2025.
 
 Important classes here:
 
 * `PRRKinematics` relates joint configuration to cartesian end-effector pose and vice-versa.
 * `AnalyticalJacobian` relates joint velocities to cartesian velocities and vice-versa, and the same for acceleration.
+
+Note that the PRR planar linkage has __up to two postures__ for a given pose, one we call
+"reaching up" (closer to the x direction) and one called "reaching down" (closer to the negative x direction).
 
 The math, in brief:
 

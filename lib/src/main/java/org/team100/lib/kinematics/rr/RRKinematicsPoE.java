@@ -128,7 +128,7 @@ public class RRKinematicsPoE {
      */
     public List<RRConfig> inverse(Translation2d x, Double q1Default) {
         if (DEBUG)
-            System.out.printf("t %s\n", StrUtil.transStr(x));
+            System.out.printf("RRKinematicsPoE: x %s\n", StrUtil.transStr(x));
         // Use law of cosines.
         double r = x.getNorm();
         if (r < 1e-3) {

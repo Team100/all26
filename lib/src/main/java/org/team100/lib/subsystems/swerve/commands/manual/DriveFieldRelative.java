@@ -10,7 +10,7 @@ import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.hid.Velocity;
+import org.team100.lib.hid.DriverVelocity;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.VelocitySE2Logger;
@@ -32,7 +32,7 @@ public class DriveFieldRelative extends Command {
      * Velocity control in control units, [-1,1] on all axes. This needs to be
      * mapped to a feasible velocity control as early as possible.
      */
-    private final Supplier<Velocity> m_twistSupplier;
+    private final Supplier<DriverVelocity> m_twistSupplier;
     private final DoubleConsumer m_heedRadiusM;
     private final SwerveDriveSubsystem m_drive;
     private final SwerveLimiter m_limiter;
@@ -41,12 +41,13 @@ public class DriveFieldRelative extends Command {
     // LOGGERS
     private final VelocitySE2Logger m_log_scaled;
 
+    // for computing acceleration
     private VelocitySE2 m_v;
 
     public DriveFieldRelative(
             LoggerFactory parent,
             SwerveKinodynamics swerveKinodynamics,
-            Supplier<Velocity> twistSupplier,
+            Supplier<DriverVelocity> twistSupplier,
             DoubleConsumer heedRadiusM,
             SwerveDriveSubsystem drive,
             SwerveLimiter limiter) {
@@ -57,7 +58,6 @@ public class DriveFieldRelative extends Command {
         m_limiter = limiter;
         m_log_scaled = log.VelocitySE2Logger(Level.TRACE, "scaled");
         m_swerveKinodynamics = swerveKinodynamics;
-        m_v = VelocitySE2.ZERO;
         addRequirements(m_drive);
     }
 
@@ -66,12 +66,13 @@ public class DriveFieldRelative extends Command {
         m_heedRadiusM.accept(HEED_RADIUS_M);
         // make sure the limiter knows what we're doing
         m_limiter.updateSetpoint(m_drive.getVelocity());
+        m_v = VelocitySE2.ZERO;
     }
 
     @Override
     public void execute() {
         // TODO: avoid noise in this input
-        Velocity clipped = m_twistSupplier.get().clip(1.0);
+        DriverVelocity clipped = m_twistSupplier.get().clip(1.0);
         VelocitySE2 scaled1 = VelocitySE2.scale(
                 clipped,
                 m_swerveKinodynamics.getMaxDriveVelocityM_S(),

@@ -62,7 +62,7 @@ public class ProfileReferenceSE2 implements ReferenceSE2 {
         m_profile = profile;
         m_name = name;
         // this will keep polling until we stop it.
-        m_references = Cache.of(() -> refresh(m_next == null ? null : m_next.model()));
+        m_references = Cache.of(() -> refresh(m_next == null ? null : m_next.state()));
 
         m_log_current = m_log.StateSE2Logger(Level.TRACE, "current");
         m_log_next = m_log.controlSE2Logger(Level.TRACE, "next");

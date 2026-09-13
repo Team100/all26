@@ -283,11 +283,11 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
         // The estimator itself should have enough controls to make the estimate
         // arbitrarily smooth.
         // TODO: eliminate noise in this measurement
-        StateSE2 swerveModel = m_estimate.apply(now);
+        StateSE2 state = m_estimate.apply(now);
         if (DEBUG) {
-            System.out.printf("update() positions %s estimated pose: %s\n", positions, swerveModel);
+            System.out.printf("update() positions %s estimated pose: %s\n", positions, state);
         }
-        return swerveModel;
+        return state;
     }
 
 }

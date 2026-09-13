@@ -42,7 +42,7 @@ public class LowPassDerivativeTest {
         double stdDev = 0.1;
         // filter cutoff is twice the signal freq
         double T = 1 / (2 * Math.PI * 2 * freqHz);
-        // System.out.printf("T %f\n", T);
+        // System.out.printf("LowPassDerivativeTest: T %f\n", T);
         LinearFilter f0 = LinearFilter.singlePoleIIR(T, dt);
         LinearFilter f1 = LinearFilter.backwardFiniteDifference(1, 2, dt);
         LinearFilter f2 = LinearFilter.backwardFiniteDifference(1, 2, dt);

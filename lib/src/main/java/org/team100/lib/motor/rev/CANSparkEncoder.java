@@ -1,9 +1,8 @@
-package org.team100.lib.sensor.position.incremental.rev;
+package org.team100.lib.motor.rev;
 
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.motor.rev.CANSparkMotor;
 import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 
 /**
@@ -33,22 +32,26 @@ public class CANSparkEncoder implements IncrementalEncoder {
 
     @Override
     public double getUnwrappedPositionRad() {
-        return m_motor.getUnwrappedPositionRad();
+        // TODO: move the two REV things into the same package so this can be
+        // package-private.
+        return m_motor.m_position.getAsDouble();
     }
 
     @Override
     public double getVelocityRad_S() {
-        return m_motor.getVelocityRad_S();
+        return m_motor.m_velocity.getAsDouble();
     }
 
     @Override
     public double getAccelerationRad_S2() {
-        return m_motor.getAccelerationRad_S2();
+        return m_motor.m_acceleration.getAsDouble();
     }
 
     @Override
     public void setUnwrappedEncoderPositionRad(double motorPositionRad) {
-        m_motor.setUnwrappedEncoderPositionRad(motorPositionRad);
+        // TODO: move the two REV things into the same package so this can be
+        // package-private.
+        CANSparkMotor.warn(() -> m_motor.m_encoder.setPosition(motorPositionRad / (2.0 * Math.PI)));
     }
 
     @Override

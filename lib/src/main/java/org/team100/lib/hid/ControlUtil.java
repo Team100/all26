@@ -46,7 +46,7 @@ public class ControlUtil {
      * joysticks with round limits, like Xbox controllers. Not appropriate
      * for controllers with square limits, like the Interlink.
      */
-    public static Velocity velocity(
+    public static DriverVelocity velocity(
             DoubleSupplier rightYSupplier,
             DoubleSupplier rightXSupplier,
             DoubleSupplier leftXSupplier,
@@ -70,7 +70,7 @@ public class ControlUtil {
             dy = 0;
         }
         double dtheta = expo(deadband(-1.0 * clamp(leftX, 1), deadband, 1), expo);
-        return new Velocity(dx, dy, dtheta);
+        return new DriverVelocity(dx, dy, dtheta);
     }
 
     /**

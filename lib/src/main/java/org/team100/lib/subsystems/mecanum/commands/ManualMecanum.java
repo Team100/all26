@@ -7,7 +7,7 @@ import org.team100.lib.experiments.Experiments;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.hid.Velocity;
+import org.team100.lib.hid.DriverVelocity;
 import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.mecanum.MecanumDrive100;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
@@ -29,7 +29,7 @@ public class ManualMecanum extends Command {
         SQUASH
     }
 
-    private final Supplier<Velocity> m_velocity;
+    private final Supplier<DriverVelocity> m_velocity;
     private final double m_maxVX;
     private final double m_maxVY;
     private final double m_maxOmega;
@@ -40,7 +40,7 @@ public class ManualMecanum extends Command {
     private VelocitySE2 m_v;
 
     public ManualMecanum(
-            Supplier<Velocity> velocity,
+            Supplier<DriverVelocity> velocity,
             double maxVX,
             double maxVY,
             double maxOmega,
@@ -68,10 +68,10 @@ public class ManualMecanum extends Command {
     public void execute() {
         Rotation2d poseRotation = m_drive.getState().rotation();
         // Raw stick input.
-        Velocity input = m_velocity.get();
+        DriverVelocity input = m_velocity.get();
         // Clip the input to the diamond shape.
         double y_x = m_maxVY / m_maxVX;
-        Velocity clippedOrSquashed = switch (m_chooser.get()) {
+        DriverVelocity clippedOrSquashed = switch (m_chooser.get()) {
             case NONE -> input;
             case CLIP -> input.diamond(1, y_x, poseRotation);
             case SQUASH -> input.squashedDiamond(1, y_x, poseRotation);

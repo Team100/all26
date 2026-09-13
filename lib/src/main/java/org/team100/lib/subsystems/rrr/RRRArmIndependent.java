@@ -2,7 +2,6 @@ package org.team100.lib.subsystems.rrr;
 
 import java.util.List;
 
-import org.team100.lib.commands.MoveAndHold;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
@@ -25,28 +24,21 @@ import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.rev.Neo550CANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
-import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.state.StateR1;
 import org.team100.lib.state.StateSE2;
-import org.team100.lib.subsystems.rrr.commands.MoveManually;
-import org.team100.lib.subsystems.rrr.commands.MoveWithProfile;
-import org.team100.lib.subsystems.rrr.commands.MoveWithSpline;
-import org.team100.lib.subsystems.rrr.commands.MoveWithTrajectorySE2;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.StrUtil;
-import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
-import org.wpilib.driverstation.Gamepad;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.linalg.VecBuilder;
 
-
 /**
- * Planar RRR arm, for training.
+ * Planar RRR arm, for training, all motors independent (i.e. flying).
  */
 public class RRRArmIndependent extends SubsystemBase implements RRRArm {
+    // private static final double DT = TimedRobot100.LOOP_PERIOD_S;
     private final LoggerFactory m_log;
     private final TotalCurrentLog m_currentLog;
     final RRRKinematicsPoE m_kinematics;
@@ -113,6 +105,16 @@ public class RRRArmIndependent extends SubsystemBase implements RRRArm {
     }
 
     @Override
+    public RRRKinematicsPoE kinematics() {
+        return m_kinematics;
+    }
+
+    @Override
+    public RRRFeasibility feasibility() {
+        return m_feasibility;
+    }
+
+    @Override
     public void periodic() {
         m_q1.periodic();
         m_q2.periodic();
@@ -120,18 +122,10 @@ public class RRRArmIndependent extends SubsystemBase implements RRRArm {
     }
 
     @Override
-    public double l1() {
-        return m_kinematics.l1;
-    }
-
-    @Override
-    public double l2() {
-        return m_kinematics.l2;
-    }
-
-    @Override
-    public double l3() {
-        return m_kinematics.l3;
+    public void setZero() {
+        m_q1.setUnwrappedEncoderPositionRad(0);
+        m_q2.setUnwrappedEncoderPositionRad(0);
+        m_q3.setUnwrappedEncoderPositionRad(0);
     }
 
     @Override
@@ -146,25 +140,20 @@ public class RRRArmIndependent extends SubsystemBase implements RRRArm {
         m_q3.setUnwrappedPosition(q.q3(), qdot.q3dot(), f.t3());
     }
 
-    /**
-     * Choose the feasible config closest to the current config.
-     * 
-     * @param p tool center point pose
-     */
     @Override
     public RRRConfig config(Pose2d p) {
         RRRConfig q0 = getConfig();
         List<RRRConfig> qAll = m_kinematics.inverse(p, q0.q1());
         if (qAll.isEmpty()) {
-            System.out.println("no solution for pose " + StrUtil.poseStr(p));
+            System.out.println("RRRArmIndependent: no solution " + StrUtil.poseStr(p));
             return null;
         }
         List<RRRConfig> qFeasible = m_feasibility.filter(qAll);
         if (qFeasible.isEmpty()) {
-            System.out.println("infeasible pose " + StrUtil.poseStr(p));
+            System.out.println("RRRArmIndependent: infeasible " + StrUtil.poseStr(p));
             return null;
         }
-        return RRRConfig.getBest(qFeasible, q0);
+        return RRRConfig.nearest(qFeasible, q0);
     }
 
     public RRRVelocity qdot(RRRConfig q, VelocitySE2 xdot) {
@@ -175,7 +164,6 @@ public class RRRArmIndependent extends SubsystemBase implements RRRArm {
         return m_kinematics.inverse(q, xdot, xddot);
     }
 
-    /** Current measured configuration. */
     @Override
     public RRRConfig getConfig() {
         return new RRRConfig(
@@ -184,29 +172,12 @@ public class RRRArmIndependent extends SubsystemBase implements RRRArm {
                 m_q3.getUnwrappedPositionRad());
     }
 
-    /** Desired config, with limits applied. */
-    public RRRConfig getConfigWithinLimits() {
-        return new RRRConfig(
-                m_q1.getUnwrappedPositionWithinLimits(),
-                m_q2.getUnwrappedPositionWithinLimits(),
-                m_q3.getUnwrappedPositionWithinLimits());
-    }
-
-    /** Current velocity. */
+    @Override
     public RRRVelocity getVelocity() {
         return new RRRVelocity(
                 m_q1.getVelocityRad_S(),
                 m_q2.getVelocityRad_S(),
                 m_q3.getVelocityRad_S());
-    }
-
-    @Override
-    public Pose2d pose() {
-        return pose(getConfig());
-    }
-
-    public VelocitySE2 velocity() {
-        return velocity(getConfig(), getVelocity());
     }
 
     public Pose2d pose(RRRConfig q) {
@@ -224,27 +195,11 @@ public class RRRArmIndependent extends SubsystemBase implements RRRArm {
         m_q3.stop();
     }
 
-    // COMMANDS
-
-    public MoveAndHold moveProfiled(ProfileR1 profile, Pose2d goal) {
-        return new MoveWithProfile(this, profile, goal);
-    }
-
-    public MoveAndHold moveTrajSE2(Pose2d goal, double speed) {
-        return new MoveWithTrajectorySE2(m_log, this, goal, speed);
-    }
-
-    public MoveAndHold moveSplined(VelocitySE2 x0dot, Pose2d x1, VelocitySE2 x1dot) {
-        return new MoveWithSpline(m_log, this, x0dot, x1, x1dot);
-    }
-
-    public Command moveManually(Gamepad controller) {
-        return new MoveManually(this, controller);
-    }
-
     @Override
     public StateSE2 getState() {
-        return new StateSE2(pose(), velocity());
+        RRRConfig q = getConfig();
+        RRRVelocity qdot = getVelocity();
+        return new StateSE2(pose(q), velocity(q, qdot));
     }
 
     @Override

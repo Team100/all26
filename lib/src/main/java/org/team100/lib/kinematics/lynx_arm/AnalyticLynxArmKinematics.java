@@ -157,7 +157,7 @@ public class AnalyticLynxArmKinematics implements LynxArmKinematics {
         }
 
         // the 2d coordinates are inverted for convenience, so fix it here.
-        RRConfig rrConfig = RRConfig.getBest(
+        RRConfig rrConfig = RRConfig.nearest(
                 qFeasible,
                 new RRConfig(-config.boom(), -config.stick()));
         boom = -1.0 * rrConfig.q1();

@@ -51,22 +51,22 @@ public class TargetReferenceSE2 implements ReferenceSE2 {
         return m_delegate.goal();
     }
 
-    private StateSE2 override(StateSE2 model) {
+    private StateSE2 override(StateSE2 state) {
         if (!m_override.getAsBoolean())
-            return model;
+            return state;
         Optional<Translation2d> oTarget = FieldConstants2026.TARGET(
-                model.translation());
+                state.translation());
         if (oTarget.isEmpty())
-            return model;
+            return state;
         StateR2 target = new StateR2(oTarget.get(), VelocityR2.ZERO);
-        Optional<Solution> oSolution = m_solver.solve(model, target);
+        Optional<Solution> oSolution = m_solver.solve(state, target);
         if (oSolution.isEmpty())
-            return model;
+            return state;
         Solution solution = oSolution.get();
         StateR1 theta = new StateR1(
                 solution.azimuth().getRadians(),
                 solution.azimuthVelocity());
-        return new StateSE2(model.x(), model.y(), theta);
+        return new StateSE2(state.x(), state.y(), theta);
     }
 
     private ControlSE2 override(ControlSE2 control) {
@@ -77,7 +77,7 @@ public class TargetReferenceSE2 implements ReferenceSE2 {
         if (oTarget.isEmpty())
             return control;
         StateR2 target = new StateR2(oTarget.get(), VelocityR2.ZERO);
-        Optional<Solution> oSolution = m_solver.solve(control.model(), target);
+        Optional<Solution> oSolution = m_solver.solve(control.state(), target);
         if (oSolution.isEmpty())
             return control;
         Solution solution = oSolution.get();

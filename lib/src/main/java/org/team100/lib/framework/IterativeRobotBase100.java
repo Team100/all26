@@ -39,6 +39,8 @@ public abstract class IterativeRobotBase100 extends RobotBase {
      * @param period Period in seconds.
      */
     protected IterativeRobotBase100(double period) {
+        // We never use LiveWindow.
+        enableLiveWindowInTest(false);
         m_period = period;
         // m_watchdog = new Watchdog(period, this::printLoopOverrunMessage);
     }

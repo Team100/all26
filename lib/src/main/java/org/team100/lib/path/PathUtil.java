@@ -179,7 +179,7 @@ public class PathUtil {
                     StrUtil.vecStr(rprime), StrUtil.vecStr(rprimeprime));
         Vector<N> T = T(rprime);
         if (DEBUG)
-            System.out.printf("T %s\n", StrUtil.vecStr(T));
+            System.out.printf("PathUtil: T %s\n", StrUtil.vecStr(T));
         double rprimenorm = rprime.norm();
         // when rprimenorm is zero, curvature is meaningless, return zero.
         if (Math.abs(rprimenorm) < 1e-6) {

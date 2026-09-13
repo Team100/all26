@@ -11,13 +11,13 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
+import org.team100.lib.motor.ctre.Talon6Encoder;
 import org.team100.lib.sensor.position.absolute.CombinedRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.ReduxPositionSensor;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.wpi.AS5048RotaryPositionSensor;
-import org.team100.lib.sensor.position.incremental.ctre.Talon6Encoder;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
@@ -120,7 +120,8 @@ public class WCPSwerveModule100 extends SwerveModule100 {
         RotaryPositionSensor turningSensor = new ReduxPositionSensor(
                 turnlog,
                 turningEncoderChannel,
-                turningOffset);
+                turningOffset,
+                encoderDrive);
         RotaryMechanism steer = steerKraken(
                 turnlog,
                 currentLog,

@@ -76,8 +76,8 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
     public void reset() {
         m_nextUnwrappedSetpoint = null;
         ControlR1 measurement = new ControlR1(getWrappedPositionRad(), 0);
-        m_ref.setGoal(measurement.model());
-        m_ref.init(measurement.model());
+        m_ref.setGoal(measurement.state());
+        m_ref.init(measurement.state());
     }
 
     @Override
@@ -342,7 +342,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
         }
 
         // initialize with the setpoint, not the measurement, to avoid noise.
-        m_ref.init(m_nextUnwrappedSetpoint.model());
+        m_ref.init(m_nextUnwrappedSetpoint.state());
     }
 
 }

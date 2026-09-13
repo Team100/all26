@@ -122,14 +122,14 @@ class TrapezoidProfileR1Test implements Timeless {
         double feedback = 0;
         ControlR1 setpointControl = new ControlR1();
 
-        StateR1 setpointModel = initial;
+        StateR1 setpointState = initial;
         if (DEBUG)
             System.out.printf(" t,      x,      v,      a,      y,      ydot,  fb,   eta\n");
 
         // log initial state
         if (DEBUG)
             System.out.printf("%6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f\n",
-                    0.0, setpointModel.x(), setpointModel.v(), 0.0, sim.y, sim.yDot, 0.0, 0.0);
+                    0.0, setpointState.x(), setpointState.v(), 0.0, sim.y, sim.yDot, 0.0, 0.0);
 
         // eta to goal
         double etaS = 0;
@@ -151,13 +151,13 @@ class TrapezoidProfileR1Test implements Timeless {
 
             // compute feedback using the "previous" setpoint, which is for the current
             // instant
-            feedback = k1 * (setpointModel.x() - sim.y)
-                    + k2 * (setpointModel.v() - sim.yDot);
+            feedback = k1 * (setpointState.x() - sim.y)
+                    + k2 * (setpointState.v() - sim.yDot);
 
-            setpointControl = profile.calculate(0.02, setpointModel.control(), goal);
-            etaS = profile.simulateForETA(0.2, setpointModel.control(), goal);
+            setpointControl = profile.calculate(0.02, setpointState.control(), goal);
+            etaS = profile.simulateForETA(0.2, setpointState.control(), goal);
             // this is the setpoint for the next time step
-            setpointModel = setpointControl.model();
+            setpointState = setpointControl.state();
 
             // this is actuation for the next time step, using the feedback for the current
             // time, and feedforward for the next time step
@@ -1715,7 +1715,7 @@ class TrapezoidProfileR1Test implements Timeless {
             sample = profileX.calculate(0.02, sample, end);
             tt += 0.02;
             dump(tt, sample);
-            if (sample.model().near(end, 0.05))
+            if (sample.state().near(end, 0.05))
                 break;
 
             // if (profileX.isFinished())
@@ -1728,7 +1728,7 @@ class TrapezoidProfileR1Test implements Timeless {
             sample = profileX.calculate(0.02, sample, end);
             tt += 0.02;
             dump(tt, sample);
-            if (sample.model().near(end, 0.05))
+            if (sample.state().near(end, 0.05))
                 break;
             // if (profileX.isFinished())
             // break;

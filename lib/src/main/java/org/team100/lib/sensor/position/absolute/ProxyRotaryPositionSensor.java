@@ -61,6 +61,13 @@ public class ProxyRotaryPositionSensor implements RotaryPositionSensor {
     }
 
     @Override
+    public void setUnwrappedEncoderPositionRad(double x) {
+        // TODO: verify this works
+        // TODO: combine this with the similar method above
+        m_encoder.setUnwrappedEncoderPositionRad(x * m_gearRatio);
+    }
+
+    @Override
     public void periodic() {
         m_encoder.periodic();
     }

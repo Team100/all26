@@ -6,13 +6,15 @@ import java.util.List;
 import org.team100.lib.geometry.rrr.RRRConfig;
 import org.team100.lib.geometry.rrr.RRRPose;
 
+import edu.wpi.first.math.MathUtil;
+
 /** Selects feasible configurations. */
 public class RRRFeasibility {
     private static final boolean DEBUG = false;
 
     private final RRRKinematicsPoE m_k;
-    private final RRRConfig m_qMin;
-    private final RRRConfig m_qMax;
+    final RRRConfig m_qMin;
+    final RRRConfig m_qMax;
 
     public RRRFeasibility(RRRKinematicsPoE k, RRRConfig qMin, RRRConfig qMax) {
         m_k = k;
@@ -20,6 +22,17 @@ public class RRRFeasibility {
         m_qMax = qMax;
     }
 
+    /** Clamp each joint within its min and max. Ignores x limits. */
+    public RRRConfig clamp(RRRConfig q) {
+        return new RRRConfig(
+                MathUtil.clamp(q.q1(), m_qMin.q1(), m_qMax.q1()),
+                MathUtil.clamp(q.q2(), m_qMin.q2(), m_qMax.q2()),
+                MathUtil.clamp(q.q3(), m_qMin.q3(), m_qMax.q3()));
+    }
+
+    /**
+     * Return configs that are within the joint and workspace limits.
+     */
     public List<RRRConfig> filter(List<RRRConfig> ql) {
         List<RRRConfig> result = new ArrayList<>();
         for (RRRConfig q : ql) {

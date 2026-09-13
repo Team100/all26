@@ -49,7 +49,7 @@ public class SixDofArmTest implements Timeless {
         List<SixDofConfig> f1 = arm.m_feasibility.filter(all1);
         assertEquals(4, f1.size());
         SixDofConfig q0 = new SixDofConfig(0, 0, 0, 0, 0, 0);
-        SixDofConfig b1 = SixDofConfig.getBest(f1, q0);
+        SixDofConfig b1 = SixDofConfig.nearest(f1, q0);
         System.out.printf("b1 %s\n", b1);
 
         List<SixDofConfig> all2 = arm.m_kinematics.inverse(
@@ -62,7 +62,7 @@ public class SixDofArmTest implements Timeless {
         assertEquals(6, f2.size());
         // assertEquals(8, f2.size());
         // use previous pose to measure distance
-        SixDofConfig b2 = SixDofConfig.getBest(f2, b1);
+        SixDofConfig b2 = SixDofConfig.nearest(f2, b1);
         System.out.printf("b2 %s\n", b2);
     }
 

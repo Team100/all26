@@ -24,7 +24,7 @@ public class NoisyPose2d {
 
     @Override
     public String toString() {
-        return "NoisyPose2d [m_pose=" + StrUtil.pose2Str(m_pose) + ", m_noise=" + m_noise + "]";
+        return "NoisyPose2d [m_pose=" + StrUtil.poseStr(m_pose) + ", m_noise=" + m_noise + "]";
     }
 
 }

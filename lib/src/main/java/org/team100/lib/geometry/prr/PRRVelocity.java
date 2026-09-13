@@ -29,11 +29,21 @@ public record PRRVelocity(double q1dot, double q2dot, double q3dot) {
         return VecBuilder.fill(q1dot, q2dot, q3dot);
     }
 
-    public PRRAcceleration diff(PRRVelocity jv, double dt) {
+    /**
+     * a = (v1 - v0) / dt
+     */
+    public PRRAcceleration accel(PRRVelocity jv, double dt) {
         return new PRRAcceleration(
                 (q1dot - jv.q1dot) / dt,
                 (q2dot - jv.q2dot) / dt,
                 (q3dot - jv.q3dot) / dt);
+    }
+
+    /**
+     * v1 = v0 + a dt
+     */
+    public static PRRVelocity evolve(PRRVelocity v0, PRRAcceleration a, double dt) {
+        return PRRVelocity.fromVector(v0.toVector().plus(a.toVector().times(dt)));
     }
 
     public Vector<N3> div(PRRVelocity jv) {
@@ -50,6 +60,5 @@ public record PRRVelocity(double q1dot, double q2dot, double q3dot) {
     public PRRVelocity times(double s) {
         return new PRRVelocity(s * q1dot, s * q2dot, s * q3dot);
     }
-
 
 }

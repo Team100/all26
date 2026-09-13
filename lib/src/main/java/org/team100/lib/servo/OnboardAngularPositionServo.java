@@ -77,7 +77,7 @@ public class OnboardAngularPositionServo extends AngularPositionServoImpl {
         }
 
         StateR1 unwrappedMeasurement = m_mechanism.getUnwrappedMeasurement();
-        StateR1 currentUnwrappedSetpoint = unwrappedSetpoint.current().model();
+        StateR1 currentUnwrappedSetpoint = unwrappedSetpoint.current().state();
         ControlR1 nextUnwrappedSetpoint = unwrappedSetpoint.next();
 
         REffort t = m_dynamics.effort(

@@ -62,7 +62,7 @@ public class DriverXboxControl {
      * * right X (axis 4) is the field "Y" direction, to the left
      * * left X (axis 0) is rotation, counterclockwise
      */
-    public Velocity velocity() {
+    public DriverVelocity velocity() {
         return ControlUtil.velocity(
                 m_rightY,
                 m_rightX,

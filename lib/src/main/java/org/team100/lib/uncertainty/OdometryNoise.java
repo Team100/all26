@@ -1,7 +1,19 @@
 package org.team100.lib.uncertainty;
 
+import org.team100.lib.geometry.Metrics;
+
+import edu.wpi.first.math.geometry.Twist2d;
+
 /**
- * Methods governing odometry update uncertainties
+ * Uncertainty estimates for odometry, using kinda wild guesses.
+ * 
+ * Noise is generally zero when motionless, and superlinear with speed.
+ * 
+ * Note this isn't really *noise*, this is measurement error, which I think is
+ * actually unexplained bias. In 2024, we measured very carefully and got 5%
+ * bias in one direction, but the opposite in the opposite direction (so a
+ * round-trip wouldn't end up in the same place). We never figured out what the
+ * cause was, so, just call it 5% error. :-(
  */
 public class OdometryNoise {
 
@@ -9,6 +21,12 @@ public class OdometryNoise {
         double cartesian = cartesian(distanceM);
         double rotation = rotation(distanceM, rotationRad);
         return IsotropicNoiseSE2.fromStdDev(cartesian, rotation);
+    }
+
+    public static IsotropicNoiseSE2 get(Twist2d twist) {
+        double odometryDistanceM = Metrics.translationalNorm(twist);
+        double odometryRotationRad = twist.dtheta;
+        return get(odometryDistanceM, odometryRotationRad);
     }
 
     /**

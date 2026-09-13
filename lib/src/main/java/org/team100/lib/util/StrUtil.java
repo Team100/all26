@@ -16,13 +16,8 @@ import org.wpilib.math.geometry.Twist3d;
  */
 public class StrUtil {
 
-    public static String pose2Str(Pose2d p) {
-        return String.format("%6.3f, %6.3f, %6.3f",
-                p.getX(), p.getY(), p.getRotation().getRadians());
-    }
-
     public static String poseStr(Pose2d p) {
-        return String.format("%.8e, %.8e, %.8e",
+        return String.format("%6.3f, %6.3f, %6.3f",
                 p.getX(), p.getY(), p.getRotation().getRadians());
     }
 
@@ -61,12 +56,12 @@ public class StrUtil {
     }
 
     public static String transStr(Translation2d t) {
-        return String.format("%12.8f, %12.8f",
+        return String.format("%6.3f, %6.3f",
                 t.getX(), t.getY());
     }
 
     public static String transStr(Translation3d t) {
-        return String.format("%.8e, %.8e, %.8e",
+        return String.format("%6.3e, %6.3e, %6.3e",
                 t.getX(), t.getY(), t.getZ());
     }
 

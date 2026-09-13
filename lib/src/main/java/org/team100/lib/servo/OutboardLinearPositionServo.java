@@ -81,8 +81,8 @@ public class OutboardLinearPositionServo implements LinearPositionServo {
         ControlR1 measurement = new ControlR1(getPosition(), 0);
         m_nextSetpoint = measurement;
         // reference is initalized with measurement only here.
-        m_ref.setGoal(measurement.model());
-        m_ref.init(measurement.model());
+        m_ref.setGoal(measurement.state());
+        m_ref.init(measurement.state());
     }
 
     /** Resets the profile if necessary */
@@ -99,7 +99,7 @@ public class OutboardLinearPositionServo implements LinearPositionServo {
                 m_nextSetpoint = new ControlR1(getPosition(), 0);
             }
             // initialize with the setpoint, not the measurement, to avoid noise.
-            m_ref.init(m_nextSetpoint.model());
+            m_ref.init(m_nextSetpoint.state());
         }
         actuate(m_ref.get());
     }

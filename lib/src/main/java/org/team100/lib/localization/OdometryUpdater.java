@@ -6,9 +6,10 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import org.team100.lib.coherence.Takt;
+import org.team100.lib.experiments.Experiment;
+import org.team100.lib.experiments.Experiments;
 import org.team100.lib.fusion.CovarianceInflation;
 import org.team100.lib.fusion.Fusor;
-import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
@@ -43,7 +44,10 @@ public class OdometryUpdater {
     private final Gyro m_gyro;
     private final SwerveHistory m_history;
     private final Supplier<SwerveModulePositions> m_positions;
-    /** For simulation. For a real robot, supply UnaryOperator.identity(). */
+    /**
+     * Noise source for simulation.
+     * For a real robot, use UnaryOperator.identity().
+     */
     private final UnaryOperator<Twist2d> m_noise;
     /**
      * Minimum variance for this fusor represents the true bias noise, aka "bias
@@ -193,34 +197,91 @@ public class OdometryUpdater {
             double dt,
             Rotation2d gyroYaw,
             SwerveModulePositions positions) {
-
-        StateSE2 previousModel = previousState.state();
-
-        Pose2d previousPose = previousModel.pose();
         if (DEBUG) {
             System.out.printf("previous x %.6f y %.6f\n",
-                    previousPose.getX(), previousPose.getY());
+                    previousState.state().pose().getX(), previousState.state().pose().getY());
+        }
+        // The SE2 "twist" increment between the previous and current poses.
+        Twist2d twist = twistFromOdometry(positions, previousState.positions());
+
+        // The verbatim gyro increment, with an uncertainty estimate.
+        VariableR1 gyroIncrementRad = getGyroMeasurementRad(dt, gyroYaw, previousState.gyroYaw());
+
+        // Estimate for uncertainty in the odometry increment.
+        IsotropicNoiseSE2 odometryNoise = OdometryNoise.get(twist);
+
+        // Odometry-derived rotation increment, with uncertainty.
+        VariableR1 odometryRotationIncrementRad = VariableR1.fromStdDev(
+                twist.dtheta, odometryNoise.rotation());
+
+        // Gyro drift rate during this time step.
+        VariableR1 gyroBiasMeasurementRad_S = VariableR1.subtract(
+                gyroIncrementRad, odometryRotationIncrementRad).times(1 / dt);
+
+        // Fuse the previous and new bias estimates.
+        VariableR1 newGyroBiasEstimateRad_S = m_gyroBiasFusor.fuse(
+                previousState.gyroBias(), gyroBiasMeasurementRad_S);
+        if (m_debug)
+            System.out.printf("=== gyro bias previous %s measurement %s result %s\n",
+                    previousState.gyroBias(),
+                    gyroBiasMeasurementRad_S,
+                    newGyroBiasEstimateRad_S);
+
+        // Gyro increment without the drift increment.
+        VariableR1 correctedGyroIncrement = VariableR1.subtract(
+                gyroIncrementRad, newGyroBiasEstimateRad_S.times(dt));
+
+        // Fuse the odometry and gyro rotations.
+        VariableR1 fusedRotationIncrement = m_rotationFusor.fuse(
+                odometryRotationIncrementRad, correctedGyroIncrement);
+
+        if (Experiments.instance.enabled(Experiment.PerfectGyro)) {
+            // If we're trusting the gyro completely, use its verbatim increment
+            // instead of the fused one.
+            fusedRotationIncrement = gyroIncrementRad;
         }
 
-        IsotropicNoiseSE2 previousNoise = previousState.noise();
-        SwerveModulePositions previousPositions = previousState.positions();
-        Rotation2d previousGyroYaw = previousState.gyroYaw();
-        VariableR1 previousGyroBiasRad_S = previousState.gyroBias();
+        // Use the fused rotation increment with the odometry cartesian increment.
+        twist = new Twist2d(twist.dx, twist.dy, fusedRotationIncrement.mean());
 
-        SwerveModuleDeltas modulePositionDelta = SwerveModuleDeltas.modulePositionDelta(
-                previousPositions, positions);
-        if (DEBUG) {
-            System.out.printf("modulePositionDelta %s\n", modulePositionDelta);
-        }
+        // The new pose is just the twist applied to the old pose.
+        Pose2d newPose = previousState.state().pose().plus(twist.exp());
 
-        Twist2d twist = m_kinodynamics.getKinematics().forward(modulePositionDelta);
-        // add noise
-        twist = m_noise.apply(twist);
-        if (DEBUG) {
-            System.out.printf("twist %s\n", StrUtil.twistStr(twist));
-        }
+        // Compute a new velocity using backward finite difference.
+        VelocitySE2 velocity = VelocitySE2.velocity(previousState.state().pose(), newPose, dt);
 
-        // Gyro increment in this step, radians
+        StateSE2 newState = new StateSE2(newPose, velocity);
+
+        // Cartesian noise here can be zero, if we're not moving.
+        IsotropicNoiseSE2 n0 = IsotropicNoiseSE2.fromStdDev(
+                odometryNoise.cartesian(), fusedRotationIncrement.sigma());
+
+        // The variance of the sum of (independent) variables is
+        // just the sum of their variances. So if you drive around for
+        // awhile without seeing any tags, the variance will grow
+        // without bound.
+        IsotropicNoiseSE2 noise = previousState.noise().plus(n0);
+
+        m_log_prevNoise.log(() -> previousState.noise());
+        m_log_updateNoise.log(() -> n0);
+        m_log_newNoise.log(() -> noise);
+
+        // The result is the new state, with verbatim measurements (to use next time).
+        SwerveState swerveState = new SwerveState(
+                newState,
+                noise,
+                positions,
+                gyroYaw,
+                newGyroBiasEstimateRad_S);
+        return swerveState;
+    }
+
+    /**
+     * The raw gyro increment together with an estimate of its uncertainty, based
+     * on white noise in the rate.
+     */
+    private VariableR1 getGyroMeasurementRad(double dt, Rotation2d gyroYaw, Rotation2d previousGyroYaw) {
+        // Gyro raw measurement increment in this step, radians.
         double gyroStepRad = gyroYaw.minus(previousGyroYaw).getRadians();
 
         // Noise in the increment is the noise density times the sample time.
@@ -231,77 +292,28 @@ public class OdometryUpdater {
         double gyroStepWhiteNoise = m_gyro.white_noise() * Math.sqrt(dt);
 
         // Stddev is proportional to dt, usually the same.
-        VariableR1 gyroMeasurementRad = VariableR1.fromStdDev(gyroStepRad, gyroStepWhiteNoise);
+        VariableR1 gyroMeasurementRad = VariableR1.fromStdDev(
+                gyroStepRad, gyroStepWhiteNoise);
+        return gyroMeasurementRad;
+    }
 
-        // Cartesian distance in this step
-        final double distanceM = Metrics.translationalNorm(twist);
-        // Rotation in this step
-        final double rotationRad = twist.dtheta;
-
-        double odoDThetaRad = twist.dtheta;
-        IsotropicNoiseSE2 odoNoise = OdometryNoise.get(distanceM, rotationRad);
-        // This noise goes to zero when we're not moving.
-        double odoDThetaStdDev = odoNoise.rotation();
-
-        // This noise goes to zero when we're not moving.
-        VariableR1 odoRotationMeasurementRad = VariableR1.fromStdDev(
-                odoDThetaRad, odoDThetaStdDev);
-
-        // Gyro drift during this time step
-        VariableR1 gyroBiasMeasurementRad_S = VariableR1.subtract(
-                gyroMeasurementRad, odoRotationMeasurementRad).times(1 / dt);
-
-        // Gyro bias has a low minimum variance
-        VariableR1 newGyroBiasEstimateRad_S = m_gyroBiasFusor.fuse(
-                previousGyroBiasRad_S, gyroBiasMeasurementRad_S);
-        if (m_debug)
-            System.out.printf("=== gyro bias previous %s measurement %s result %s\n",
-                    previousGyroBiasRad_S,
-                    gyroBiasMeasurementRad_S,
-                    newGyroBiasEstimateRad_S);
-
-        // Gyro increment without the drift.
-        VariableR1 correctedGyroMeasurement = VariableR1.subtract(
-                gyroMeasurementRad, newGyroBiasEstimateRad_S.times(dt));
-
-        // Fuse the odometry and gyro rotations
-        VariableR1 fusedRotationMeasurement = m_rotationFusor.fuse(
-                odoRotationMeasurementRad, correctedGyroMeasurement);
-
-        // use the fused rotation as the step estimate
-        twist = new Twist2d(twist.dx, twist.dy, fusedRotationMeasurement.mean());
-
-        // The new pose is just the twist applied to the old pose.
-        Pose2d newPose = previousPose.plus(twist.exp());
-
-        // Compute a new velocity using backward finite difference.
-        VelocitySE2 velocity = VelocitySE2.velocity(previousPose, newPose, dt);
-
-        StateSE2 model = new StateSE2(newPose, velocity);
-
-        // Noise here can be zero, if we're not moving.
-        double cartesianNoise = odoNoise.cartesian();
-        IsotropicNoiseSE2 n0 = IsotropicNoiseSE2.fromStdDev(
-                cartesianNoise, fusedRotationMeasurement.sigma());
-
-        // The variance of the sum of (independent) variables is
-        // just the sum of their variances. So if you drive around for
-        // awhile without seeing any tags, the variance will grow
-        // without bound.
-        IsotropicNoiseSE2 noise = previousNoise.plus(n0);
-
-        m_log_prevNoise.log(() -> previousNoise);
-        m_log_updateNoise.log(() -> n0);
-        m_log_newNoise.log(() -> noise);
-
-        // gyro and position measurements are verbatim
-        SwerveState swerveState = new SwerveState(
-                model,
-                noise,
-                positions,
-                gyroYaw,
-                newGyroBiasEstimateRad_S);
-        return swerveState;
+    /**
+     * Use the difference in module positions to determine the SE2 "twist" between
+     * the previous and current poses.
+     */
+    private Twist2d twistFromOdometry(SwerveModulePositions positions, SwerveModulePositions previousPositions) {
+        SwerveModuleDeltas modulePositionDelta = SwerveModuleDeltas.modulePositionDelta(
+                previousPositions, positions);
+        if (DEBUG) {
+            System.out.printf("modulePositionDelta %s\n", modulePositionDelta);
+        }
+        Twist2d twist = m_kinodynamics.getKinematics().forward(modulePositionDelta);
+        // Add noise, if in simulation (otherwise, this is a no-op).
+        twist = m_noise.apply(twist);
+        if (DEBUG) {
+            System.out.printf("twist %s\n", StrUtil.twistStr(twist));
+        }
+        return twist;
     }
 
     /** Replay odometry after the sample time. */

@@ -36,7 +36,7 @@ public record ControlR1(double x, double v, double a) implements Interpolatable<
     /**
      * Return the model corresponding to this control, i.e. without acceleration.
      */
-    public StateR1 model() {
+    public StateR1 state() {
         return new StateR1(x, v);
     }
 

@@ -79,7 +79,7 @@ public class ProfileReferenceR1 implements ReferenceR1 {
     public boolean profileDone() {
         // the only way to tell if an incremental profile is done
         // is to compare the goal to the setpoint.
-        boolean done = m_currentSetpoint.current().model().near(
+        boolean done = m_currentSetpoint.current().state().near(
                 m_goal, m_positionTolerance, m_velocityTolerance);
         m_log_done.log(() -> done);
         return done;

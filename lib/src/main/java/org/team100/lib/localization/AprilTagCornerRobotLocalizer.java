@@ -122,7 +122,7 @@ public class AprilTagCornerRobotLocalizer extends CameraReader<BlipWithCorners> 
     /**
      * @param parent        logger
      * @param layout        map of apriltags
-     * @param history       f(timestamp) = swerve state, use SwerveModelHistory.
+     * @param history       f(timestamp) = swerve state
      * @param visionUpdater mutates history
      */
     public AprilTagCornerRobotLocalizer(

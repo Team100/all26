@@ -50,4 +50,19 @@ public record SixDofVelocity(
                 setpoint.get(4).v(),
                 setpoint.get(5).v());
     }
+
+    /**
+     * a = (v1 - v0) / dt
+     */
+    public SixDofAcceleration accel(SixDofVelocity prev, double dt) {
+        return SixDofAcceleration.fromVector(
+                toVector().minus(prev.toVector()).div(dt));
+    }
+
+    /**
+     * v1 = v0 + a dt
+     */
+    public static SixDofVelocity evolve(SixDofVelocity v0, SixDofAcceleration a, double dt) {
+        return SixDofVelocity.fromVector(v0.toVector().plus(a.toVector().times(dt)));
+    }
 }

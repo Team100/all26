@@ -126,7 +126,7 @@ public class DiscusMech extends SubsystemBase {
      * cycle (gently) to the end of travel before pushing the "home" button.
      */
     private void setHomePosition() {
-        m_motor.setUnwrappedEncoderPositionRad(0);
+        m_mech.setUnwrappedEncoderPositionRad(0);
     }
 
     ///////////////////////

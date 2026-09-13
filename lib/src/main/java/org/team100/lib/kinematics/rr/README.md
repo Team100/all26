@@ -22,6 +22,13 @@ c_{ij} &= cos(q_i + q_j)
 \end{align}
 ```
 
+There are two implementations here:
+
+* one analytic using the law of cosines
+* one using the product-of-exponentials method from Modern Robotics (really just as an exercise)
+
+
+
 ## Forward kinematics
 
 <img src="image.png" width=600/>
@@ -62,6 +69,9 @@ l_1 s_1 + l_2 s_{12}
 
 ## Inverse kinematics
 
+There are up to two "postures" for a given position, generally called "elbow up" and
+"elbow down".  
+
 ```math
 r = \|P2\|
 ```
@@ -69,15 +79,15 @@ r = \|P2\|
 \gamma = atan2(y_2, x_2)
 ```
 ```math
-\beta = acos\left(\frac{r^2 + l_1^2 - l_2^2}{2  r  l_1}\right)
+\beta = \pm \: acos\left(\frac{r^2 + l_1^2 - l_2^2}{2  r  l_1}\right)
 ```
 ```math
 \alpha = acos\left(\frac{l_1^2  + l_2^2 - r^2} {2 * l_1 * l_2}\right)
 ```
+
 ```math
 q_1 = \gamma + \beta
 ```
-
 ```math
 q_2 = \alpha + \pi
 ```

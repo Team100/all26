@@ -133,6 +133,12 @@ public class CombinedRotaryPositionSensor implements RotaryPositionSensor {
     }
 
     @Override
+    public void setUnwrappedEncoderPositionRad(double x) {
+        m_absolute.setUnwrappedEncoderPositionRad(x);
+        m_incremental.setUnwrappedEncoderPositionRad(x);
+    }
+
+    @Override
     public void close() {
         m_absolute.close();
         m_incremental.close();

@@ -6,6 +6,9 @@ import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.numbers.N1;
 import org.wpilib.math.numbers.N3;
 
+/**
+ * qdot in rad/s
+ */
 public record RRRVelocity(
         double q1dot,
         double q2dot,
@@ -23,6 +26,30 @@ public record RRRVelocity(
                 q1dot,
                 q2dot,
                 q3dot);
+    }
+
+    public RRRVelocity times(double a) {
+        return new RRRVelocity(a * q1dot, a * q2dot, a * q3dot);
+    }
+
+    /**
+     * a = (v1 - v0) / dt
+     */
+    public RRRAcceleration accel(RRRVelocity prev, double dt) {
+        return RRRAcceleration.fromVector(
+                toVector().minus(prev.toVector()).div(dt));
+    }
+
+    /**
+     * v1 = v0 + a dt
+     */
+    public static RRRVelocity evolve(RRRVelocity v0, RRRAcceleration a, double dt) {
+        return RRRVelocity.fromVector(v0.toVector().plus(a.toVector().times(dt)));
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%6.3f, %6.3f, %6.3f", q1dot, q2dot, q3dot);
     }
 
 }

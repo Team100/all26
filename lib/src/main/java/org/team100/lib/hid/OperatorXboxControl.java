@@ -17,7 +17,7 @@ public class OperatorXboxControl {
         m_controller = new Gamepad(port);
     }
 
-    public Velocity velocity() {
+    public DriverVelocity velocity() {
         return ControlUtil.velocity(
                 m_controller::getRightY,
                 m_controller::getRightX,

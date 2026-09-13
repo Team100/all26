@@ -37,6 +37,7 @@ import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
+import org.team100.lib.motor.ctre.Talon6Encoder;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.music.Music;
 import org.team100.lib.music.Player;
@@ -48,7 +49,6 @@ import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.sim.SimulatedRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.wpi.AS5048RotaryPositionSensor;
 import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
-import org.team100.lib.sensor.position.incremental.ctre.Talon6Encoder;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.prr.SubsystemPRR;
@@ -66,6 +66,7 @@ import org.wpilib.command2.SubsystemBase;
 public class CalgamesMech extends SubsystemBase implements Music, PositionSubsystemSE2, SubsystemPRR {
     private static final boolean DEBUG = false;
     private boolean DISABLED = false;
+
     ////////////////////////////////////////////////////////
     ///
     /// CANONICAL CONFIGS
@@ -329,7 +330,7 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
         ControlSE2 control = new ControlSE2(pose, v, a);
 
         PRRConfig q = getConfig();
-        PRRVelocity jv = m_kinematics.inverse(q, control.model());
+        PRRVelocity jv = m_kinematics.inverse(q, control.state());
         PRRAcceleration ja = m_kinematics.inverse(q, control);
         PRREffort jf = m_dynamics.forward(getConfig(), jv, ja);
 
@@ -357,13 +358,14 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
         // for now always use the "up" config.
         PRRConfig config = configs.get(0);
         if (DEBUG) {
-            System.out.printf("pose %s config %s\n", StrUtil.pose2Str(pose), config);
+            System.out.printf("pose %s config %s\n", StrUtil.poseStr(pose), config);
         }
-        PRRVelocity jv = m_kinematics.inverse(config, control.model());
+        PRRVelocity jv = m_kinematics.inverse(config, control.state());
         PRRAcceleration ja = m_kinematics.inverse(config, control);
         set(config, jv, ja);
     }
 
+    @Override
     public void set(PRRConfig c, PRRVelocity jv, PRRAcceleration ja) {
         PRREffort jf = m_dynamics.forward(c, jv, ja);
         set(c, jv, ja, jf);

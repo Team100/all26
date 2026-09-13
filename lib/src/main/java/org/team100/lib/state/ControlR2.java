@@ -37,8 +37,8 @@ public class ControlR2 {
         return new ControlR2(new ControlR1(), new ControlR1());
     }
 
-    public StateR2 model() {
-        return new StateR2(m_x.model(), m_y.model());
+    public StateR2 state() {
+        return new StateR2(m_x.state(), m_y.state());
     }
 
     /** Component-wise difference (not geodesic) */

@@ -65,8 +65,8 @@ public class ControlSE2 {
         return new ControlSE2(new ControlR1(), new ControlR1(), new ControlR1());
     }
 
-    public StateSE2 model() {
-        return new StateSE2(m_x.model(), m_y.model(), m_theta.model());
+    public StateSE2 state() {
+        return new StateSE2(m_x.state(), m_y.state(), m_theta.state());
     }
 
     /** Component-wise difference (not geodesic) */

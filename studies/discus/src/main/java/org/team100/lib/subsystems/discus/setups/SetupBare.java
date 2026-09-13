@@ -8,15 +8,16 @@ import org.team100.lib.visualization.ArmVisualization;
 import org.wpilib.command2.button.Trigger;
 import org.wpilib.driverstation.Gamepad;
 
+/** Low-level control: voltage, current. */
 public class SetupBare implements Runnable {
     private final DiscusBare m_discus;
     private final ArmVisualization m_viz;
 
-    public SetupBare() {
+    public SetupBare(TotalCurrentLog currentLog) {
         Logging logging = Logging.instance();
         LoggerFactory logger = logging.rootLogger;
-        TotalCurrentLog currentLog = new TotalCurrentLog(logger);
         Gamepad controller = new Gamepad(0);
+
         m_discus = new DiscusBare(logger, currentLog);
         m_viz = new ArmVisualization(m_discus::getPosition, "discus", 0);
         // m_discus.setDefaultCommand(m_discus.dutyCycle(

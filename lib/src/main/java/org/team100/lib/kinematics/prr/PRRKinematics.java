@@ -35,8 +35,7 @@ import org.wpilib.math.util.Nat;
  * I chose these coordinates so that none of the angles ever transit the
  * pi/-pi boundary, which makes control simpler.
  * 
- * To avoid discontinuity, this now always uses the "reach up" direction, never
- * the "reach down" direction.
+ * The inverse kinematics yield 0, 1, or 2 solutions.
  */
 
 public class PRRKinematics {

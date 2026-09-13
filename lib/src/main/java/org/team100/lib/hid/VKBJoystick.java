@@ -52,11 +52,11 @@ public class VKBJoystick {
      * The square response of this joystick should be clamped by the consumer.
      */
 
-    public Velocity velocity() {
+    public DriverVelocity velocity() {
         double dx = expo(deadband(-1.0 * clamp(axis(1), 1), DEADBAND, 1), EXPO);
         double dy = expo(deadband(-1.0 * clamp(axis(0), 1), DEADBAND, 1), EXPO);
         double dtheta = expo(deadband(clamp(axis(5), 1), DEADBAND, 1), EXPO);
-        return new Velocity(dx, dy, dtheta);
+        return new DriverVelocity(dx, dy, dtheta);
     }
 
     public Rotation2d desiredRotation() {

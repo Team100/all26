@@ -17,8 +17,7 @@ public class RobotLog {
     private final DoubleLogger m_log_voltage;
     private final TotalCurrentLog m_totalCurrentLog;
 
-    public RobotLog() {
-        LoggerFactory logger = Logging.instance().rootLogger;
+    public RobotLog(LoggerFactory logger) {
         LoggerFactory robotLogger = logger.name("Robot");
         m_jvmLogger = new JvmLogger(robotLogger);
         LoggerFactory dsLog = robotLogger.name("DriverStation");

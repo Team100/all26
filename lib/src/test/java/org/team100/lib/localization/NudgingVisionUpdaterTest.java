@@ -185,13 +185,13 @@ public class NudgingVisionUpdaterTest {
     @Test
     void testNewState1() {
         // history thinks we're at 0, but it's not sure.
-        StateSE2 sampleModel = new StateSE2();
+        StateSE2 sampleState = new StateSE2();
         IsotropicNoiseSE2 stateNoise = IsotropicNoiseSE2.fromStdDev(1, 1);
         SwerveModulePositions positions = SwerveModulePositions.kZero();
         Rotation2d yaw = new Rotation2d();
         VariableR1 bias = VariableR1.fromVariance(0, 0.001);
         SwerveState sample = new SwerveState(
-                sampleModel, stateNoise, positions, yaw, bias);
+                sampleState, stateNoise, positions, yaw, bias);
 
         // camera thinks we're at 1, and it's pretty sure.
         Pose2d visionPose = new Pose2d(1, 0, new Rotation2d());
@@ -211,13 +211,13 @@ public class NudgingVisionUpdaterTest {
     @Test
     void testNewState2() {
         // history thinks we're at 0, and it's pretty sure.
-        StateSE2 sampleModel = new StateSE2();
+        StateSE2 sampleState = new StateSE2();
         IsotropicNoiseSE2 stateNoise = IsotropicNoiseSE2.fromStdDev(0.01, 0.01);
         SwerveModulePositions positions = SwerveModulePositions.kZero();
         Rotation2d yaw = new Rotation2d();
         VariableR1 bias = VariableR1.fromVariance(0, 0.001);
         SwerveState sample = new SwerveState(
-                sampleModel, stateNoise, positions, yaw, bias);
+                sampleState, stateNoise, positions, yaw, bias);
 
         // camera thinks we're at 1, and it's pretty sure.
         Pose2d visionPose = new Pose2d(1, 0, new Rotation2d());

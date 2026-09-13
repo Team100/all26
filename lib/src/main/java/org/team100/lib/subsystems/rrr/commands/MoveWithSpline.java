@@ -5,7 +5,6 @@ import org.team100.lib.geometry.rn.WaypointRn;
 import org.team100.lib.geometry.rrr.RRRConfig;
 import org.team100.lib.geometry.rrr.RRRVelocity;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.reference.rn.PositionReferenceControllerRn;
 import org.team100.lib.reference.rn.SplineReferenceRn;
 import org.team100.lib.spline.rn.SplineRn;
@@ -35,8 +34,6 @@ import org.wpilib.math.util.Nat;
  */
 public class MoveWithSpline extends MoveAndHold {
     private static final boolean DEBUG = false;
-    @SuppressWarnings("unused")
-    private final LoggerFactory m_log;
     private final RRRArm m_arm;
     private final VelocitySE2 m_x0dot;
     private final Pose2d m_x1;
@@ -45,12 +42,10 @@ public class MoveWithSpline extends MoveAndHold {
     private PositionReferenceControllerRn<N3> m_referenceController;
 
     public MoveWithSpline(
-            LoggerFactory parent,
             RRRArm arm,
             VelocitySE2 x0dot,
             Pose2d x1,
             VelocitySE2 x1dot) {
-        m_log = parent.type(this);
         m_arm = arm;
         m_x0dot = x0dot;
         m_x1 = x1;
@@ -81,7 +76,8 @@ public class MoveWithSpline extends MoveAndHold {
 
         // duration respects joint distances.
         // double qdistance = Metrics.l1Norm(q0.toVector().minus(q1.toVector()));
-        double qdistance = q0.distance(q1);
+        double qdistance = q0.euclideanDistance(q1);
+        // TODO: why is this 0.5 here
         double duration = 0.5 * qdistance;
         if (DEBUG)
             System.out.printf("duration %f\n", duration);
@@ -111,6 +107,6 @@ public class MoveWithSpline extends MoveAndHold {
     public double toGo() {
         RRRConfig q0 = m_arm.getConfig();
         RRRConfig q1 = m_arm.config(m_x1);
-        return q0.distance(q1);
+        return q0.euclideanDistance(q1);
     }
 }

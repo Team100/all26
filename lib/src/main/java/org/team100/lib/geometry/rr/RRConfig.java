@@ -18,22 +18,30 @@ import org.wpilib.math.util.MathUtil;
 public record RRConfig(double q1, double q2) {
     // distance metric scale factors
     // shoulder movements are expensive
-    static final double s1 = 3.0;
+    private static final double s1 = 3.0;
     // elbow movements are less expensive
-    static final double s2 = 2.0;
+    private static final double s2 = 2.0;
 
     /**
-     * For now, euclidean with weights.
+     * Weighted Euclidean metric.
      * 
      * You can change these weights to change how configs are selected, based on
      * their "nearness" to the current pose.
      * 
      * See https://arxiv.org/pdf/1808.03891
      */
-    public double distance(RRConfig other) {
+    public double weightedDistance(RRConfig other) {
         double l2 = 0;
         l2 += s1 * Math.pow(q1 - other.q1, 2);
         l2 += s2 * Math.pow(q2 - other.q2, 2);
+        return Math.sqrt(l2);
+    }
+
+    /** The usual unweighted Euclidean L2 metric. */
+    public double euclideanDistance(RRConfig other) {
+        double l2 = 0;
+        l2 += Math.pow(q1 - other.q1, 2);
+        l2 += Math.pow(q2 - other.q2, 2);
         return Math.sqrt(l2);
     }
 
@@ -43,7 +51,7 @@ public record RRConfig(double q1, double q2) {
      * @param d measured using the distance metric.
      */
     public static RRConfig interpolate(RRConfig a, RRConfig b, double d) {
-        double s = d / a.distance(b);
+        double s = d / a.euclideanDistance(b);
         return new RRConfig(
                 MathUtil.lerp(a.q1(), b.q1(), s),
                 MathUtil.lerp(a.q2(), b.q2(), s));
@@ -54,7 +62,7 @@ public record RRConfig(double q1, double q2) {
      * The length of the vector is one, using the RRConfig distance metric.
      */
     public static Vector<N2> unit(RRConfig a, RRConfig b) {
-        return b.minus(a).toVector().div(a.distance(b));
+        return b.minus(a).toVector().div(a.euclideanDistance(b));
     }
 
     public Vector<N2> toVector() {
@@ -78,14 +86,13 @@ public record RRConfig(double q1, double q2) {
     }
 
     /**
-     * Choose config "closest" to q0, using the (non-Euclidean) config distance
-     * metric.
+     * Choose the config nearest to q0, using the distance metric above.
      */
-    public static RRConfig getBest(List<RRConfig> qAll, RRConfig q0) {
+    public static RRConfig nearest(List<RRConfig> qAll, RRConfig q0) {
         double closest = Double.POSITIVE_INFINITY;
         RRConfig best = qAll.get(0);
         for (RRConfig q : qAll) {
-            double d = q0.distance(q);
+            double d = q0.weightedDistance(q);
             if (d < closest) {
                 closest = d;
                 best = q;

@@ -29,5 +29,10 @@ public enum Experiment {
     /**
      * Use lateral dynamics, i.e. slip angle.
      */
-    SwerveDynamicsLateral
+    SwerveDynamicsLateral,
+    /**
+     * Use only the gyro for rotation. This is useful when there's no vision input
+     * to fix the gyro drift and/or odometry noise, e.g. for practice without tags.
+     */
+    PerfectGyro
 }

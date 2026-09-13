@@ -53,11 +53,11 @@ public abstract class JoystickControl {
      * Applies expo to each axis individually, works for "square" joysticks.
      * The square response of this joystick should be clamped by the consumer.
      */
-    public Velocity velocity() {
+    public DriverVelocity velocity() {
         double dx = expo(deadband(-1.0 * clamp(m_controller.getRawAxis(1), 1), DEADBAND, 1), EXPO);
         double dy = expo(deadband(-1.0 * clamp(m_controller.getRawAxis(0), 1), DEADBAND, 1), EXPO);
         double dtheta = expo(deadband(-1.0 * clamp(m_controller.getRawAxis(2), 1), DEADBAND, 1), EXPO);
-        Velocity velocity = new Velocity(dx, dy, dtheta);
+        DriverVelocity velocity = new DriverVelocity(dx, dy, dtheta);
         if (DEBUG) {
             System.out.printf("JoystickControl %s\n", velocity);
         }

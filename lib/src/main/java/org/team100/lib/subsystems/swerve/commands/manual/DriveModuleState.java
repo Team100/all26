@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.team100.lib.dynamics.swerve.SwerveEffort;
-import org.team100.lib.hid.Velocity;
+import org.team100.lib.hid.DriverVelocity;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
@@ -27,7 +27,7 @@ public class DriveModuleState extends Command {
      * Velocity control in control units, [-1,1] on all axes. This needs to be
      * mapped to a feasible velocity control as early as possible.
      */
-    private final Supplier<Velocity> m_twistSupplier;
+    private final Supplier<DriverVelocity> m_twistSupplier;
     private final SwerveDriveSubsystem m_drive;
     private final SwerveKinodynamics m_swerveKinodynamics;
     private final DoubleLogger m_log_speed;
@@ -36,7 +36,7 @@ public class DriveModuleState extends Command {
     public DriveModuleState(
             LoggerFactory parent,
             SwerveKinodynamics swerveKinodynamics,
-            Supplier<Velocity> twistSupplier,
+            Supplier<DriverVelocity> twistSupplier,
             SwerveDriveSubsystem drive) {
         LoggerFactory log = parent.type(this);
         m_twistSupplier = twistSupplier;
@@ -49,7 +49,7 @@ public class DriveModuleState extends Command {
 
     @Override
     public void execute() {
-        Velocity input = m_twistSupplier.get();
+        DriverVelocity input = m_twistSupplier.get();
         // dtheta is from [-1, 1], so angle is [-pi, pi]
         Optional<Rotation2d> angle = Optional.of(
                 Rotation2d.fromRadians(Math.PI * input.theta()));

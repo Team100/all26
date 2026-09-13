@@ -9,6 +9,7 @@ import org.wpilib.math.util.Num;
 
 /** Represents position in joint space ("Q") with N independent dimensions. */
 public interface PositionSubsystemRn<N extends Num> extends Subsystem {
+
     void setRn(List<ControlR1> setpoint);
 
     List<StateR1> getStateRn();

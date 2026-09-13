@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import org.team100.lib.geometry.se2.AccelerationSE2;
+import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.testing.TestUtil;
 
 import org.wpilib.math.geometry.Pose2d;
@@ -248,5 +250,22 @@ class GeometryUtilTest {
                 GeometryUtil.compose(
                         new Pose2d(1, 0, Rotation2d.kCCW_Pi_2),
                         new Pose2d(0, 1, Rotation2d.kCW_Pi_2)));
+    }
+
+    @Test
+    void testEvolve() {
+        // control interval is 1 second
+        double dt = 1;
+        // initially motionless
+        Pose2d x0 = new Pose2d();
+        VelocitySE2 v0 = new VelocitySE2(0, 0, 0);
+        // target velocity is 1 m/s
+        VelocitySE2 v1 = new VelocitySE2(1, 0, 0);
+        // accel from 0 to 1 in 1 sec => accel is 1 m/s/s.
+        AccelerationSE2 a = v1.accel(v0, dt);
+        TestUtil.verify(new AccelerationSE2(1, 0, 0), a);
+        // constant accel for 1 sec => x is 0.5 m.
+        Pose2d x1 = GeometryUtil.evolve(x0, v0, a, dt);
+        TestUtil.verify(new Pose2d(0.5, 0, Rotation2d.kZero), x1);
     }
 }

@@ -7,6 +7,9 @@ import org.team100.lib.state.StateR1;
 /**
  * This profile takes incremental steps from the setpoint towards the goal.
  * 
+ * The implementations should be stateless - the setpoint and goal can be
+ * arbitrary, i.e. discontinuous.
+ * 
  * Use the ETA to coordinate multiple dimensions.
  * 
  * NOTE: these profiles don't know anything about angle wrapping.
@@ -18,6 +21,11 @@ public interface ProfileR1 {
     /**
      * Return the control for dt in the future. The setpoint is a ControlR1 so that
      * we can regulate jerk.
+     * 
+     * @param dt       The interval for the returned control to be applied.
+     * @param setpoint The current control. For the first step, use the measurement.
+     *                 For subsequent steps, use the previous control.
+     * @param goal     The desired end state.
      */
     ControlR1 calculate(double dt, ControlR1 setpoint, StateR1 goal);
 
@@ -32,10 +40,10 @@ public interface ProfileR1 {
      */
     default double simulateForETA(double dt, ControlR1 initial, StateR1 goal) {
         double t = 0;
-        StateR1 sample = initial.model();
+        StateR1 sample = initial.state();
         while (!sample.near(goal, 0.01)) {
             ControlR1 c = calculate(dt, sample.control(), goal);
-            sample = c.model();
+            sample = c.state();
             t += dt;
             if (t > MAX_ETA)
                 return Double.POSITIVE_INFINITY;

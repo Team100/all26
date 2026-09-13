@@ -5,6 +5,7 @@ import org.team100.lib.logging.primitive.PrimitiveLogger;
 import org.team100.lib.util.NamedChooser;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.revrobotics.util.StatusLogger;
 
 import org.wpilib.smartdashboard.SendableChooser;
 import org.wpilib.smartdashboard.SmartDashboard;
@@ -42,8 +43,10 @@ public class Logging {
         fieldLogger = new LoggerFactory(this::getLevel, "field", ntLogger);
         fieldLogger.stringLogger(Level.COMP, ".type").log(() -> "Field2d");
         rootLogger = new LoggerFactory(this::getLevel, "log", ntLogger);
-        // turn off the CTRE log we never use
+        // Turn off the CTRE log we never use.
         SignalLogger.enableAutoLogging(false);
+        // Disable the REV log we never use.
+        StatusLogger.disableAutoLogging();
         SmartDashboard.putData(m_LevelChooser);
         m_LevelChooser.onChange(this::update);
     }
