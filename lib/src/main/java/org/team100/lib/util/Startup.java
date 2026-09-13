@@ -2,12 +2,10 @@ package org.team100.lib.util;
 
 import org.team100.lib.config.Identity;
 import org.team100.lib.experiments.Experiments;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.WPILibVersion;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.system.RobotController;
+import org.wpilib.system.WPILibVersion;
 
 /** Stuff we always do when the robot starts. */
 public class Startup {
@@ -27,8 +25,6 @@ public class Startup {
 
         // Only works on RoboRIO 2.0.
         RobotController.setBrownoutVoltage(5.5);
-        // Stop complaining in the log.
-        DriverStation.silenceJoystickConnectionWarning(true);
         // Show the experiment picker on glass.
         Experiments.instance.show();
         // Show what the scheduler is doing.

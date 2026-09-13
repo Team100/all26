@@ -15,10 +15,9 @@ import org.team100.lib.state.ControlRRR;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.state.StateR1;
 import org.team100.lib.util.StrUtil;
-
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.numbers.N3;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N3;
 
 /**
  * This is a "helper" class for controllers that use SE2 goals.

@@ -15,10 +15,9 @@ import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.rrr.RRRArm;
 import org.team100.lib.subsystems.rrr.RRRProfile;
 import org.team100.lib.util.StrUtil;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Translation2d;
 
 /**
  * Control SE2 velocity directly, and apply using joint profiles, which means

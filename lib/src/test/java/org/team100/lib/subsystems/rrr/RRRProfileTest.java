@@ -19,12 +19,11 @@ import org.team100.lib.state.ControlRRR;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.testing.TestUtil;
 import org.team100.lib.util.StrUtil;
-
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.numbers.N3;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N3;
 
 public class RRRProfileTest {
     @Test

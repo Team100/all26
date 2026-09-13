@@ -8,8 +8,7 @@ import org.team100.lib.geometry.rrr.RRRConfig;
 import org.team100.lib.geometry.rrr.RRRVelocity;
 import org.team100.lib.hid.DriverVelocity;
 import org.team100.lib.subsystems.rrr.RRRArm;
-
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
 
 /**
  * Control joint velocity directly.

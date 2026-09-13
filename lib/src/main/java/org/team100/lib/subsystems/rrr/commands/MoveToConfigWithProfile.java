@@ -9,9 +9,8 @@ import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.StateR1;
 import org.team100.lib.subsystems.rrr.RRRArm;
-
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.numbers.N3;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N3;
 
 /**
  * Use a 1d profile to coordinate all axes to the goal config.
