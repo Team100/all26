@@ -9,6 +9,11 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.RobotLog;
 import org.team100.lib.subsystems.discus.setups.SetupBare;
+import org.team100.lib.subsystems.discus.setups.SetupMech;
+import org.team100.lib.subsystems.discus.setups.SetupServo;
+import org.team100.lib.util.Startup;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.networktables.NetworkTableInstance;
 
 public class Robot extends TimedRobot100 {
     private enum Setup {

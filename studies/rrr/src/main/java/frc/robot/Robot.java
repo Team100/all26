@@ -4,6 +4,16 @@ import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
+import org.team100.lib.framework.TimedRobot100;
+import org.team100.lib.logging.LoggerFactory;
+import org.team100.lib.logging.Logging;
+import org.team100.lib.logging.RobotLog;
+import org.team100.lib.util.Startup;
+import org.team100.rrr.auton.Autons;
+import org.team100.rrr.robot.Binder;
+import org.team100.rrr.robot.Machinery;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.networktables.NetworkTableInstance;
 
 public class Robot extends TimedRobot100 {
     private final RobotLog m_robotLog;

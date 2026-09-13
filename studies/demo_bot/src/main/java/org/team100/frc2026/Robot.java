@@ -26,6 +26,13 @@ import org.team100.lib.subsystems.tank.TankDriveFactory;
 import org.team100.lib.subsystems.tank.commands.TankManual;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
+import org.team100.lib.util.Startup;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.command2.Commands;
+import org.wpilib.command2.button.Trigger;
+import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.util.Color;
 
 public class Robot extends TimedRobot100 {
     private static final ShooterType SHOOTER = ShooterType.VELOCITY;
