@@ -36,4 +36,14 @@ public record PRRAcceleration(double q1ddot, double q2ddot, double q3ddot) {
     public PRRAcceleration times(double s) {
         return new PRRAcceleration(s * q1ddot, s * q2ddot, s * q3ddot);
     }
+
+    /**
+     * Find the accel to get to x1 given initial x0 and v1.
+     * 
+     * a = 2 * (x1 - x0 - v0dt)/dt^2
+     */
+    public  static PRRAcceleration solve(PRRConfig x0, PRRConfig x1, PRRVelocity v0, double dt) {
+        return PRRAcceleration.fromVector(
+                x1.toVector().minus(x0.toVector()).minus(v0.toVector().times(dt)).times(2 / (dt * dt)));
+    }
 }

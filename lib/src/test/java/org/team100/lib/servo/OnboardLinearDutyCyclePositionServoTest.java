@@ -41,9 +41,8 @@ public class OnboardLinearDutyCyclePositionServoTest implements Timeless {
             s.setPositionProfiled(1);
             stepTime();
             if (DEBUG)
-                System.out.printf("%f, %f, %f, %f, %f\n",
+                System.out.printf("%f, %f, %f, %f\n",
                         t,
-                        driveMotor.getVelocityRad_S(),
                         driveEncoder.getVelocityRad_S(),
                         driveEncoder.getUnwrappedPositionRad(),
                         mech.getPositionM());

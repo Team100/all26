@@ -28,6 +28,7 @@ public class BallR2 implements Ball {
 
     // null when contained in robot.
     Translation2d m_location;
+    /** Velocity is constant during flight. */
     VelocityR2 m_velocity;
 
     /**
@@ -61,7 +62,8 @@ public class BallR2 implements Ball {
 
     @Override
     public void fly() {
-        m_location = m_velocity.integrate(m_location, DT);
+        // velocity is constant during flight so this works.
+        m_location = m_velocity.evolve(m_location, DT);
     }
 
     @Override

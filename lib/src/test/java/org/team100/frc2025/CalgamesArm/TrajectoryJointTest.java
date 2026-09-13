@@ -74,7 +74,7 @@ public class TrajectoryJointTest {
             AccelerationSE2 a = m.acceleration();
             List<PRRConfig> qs = k.inverse(p);
             PRRConfig q = qs.get(0);
-            PRRVelocity jv = k.inverse(q, m.model());
+            PRRVelocity jv = k.inverse(q, m.state());
             PRRAcceleration ja = k.inverse(q, m);
             if (DEBUG) {
                 System.out.printf(

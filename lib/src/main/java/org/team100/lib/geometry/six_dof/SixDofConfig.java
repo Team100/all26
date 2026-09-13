@@ -116,10 +116,9 @@ public record SixDofConfig(double q1, double q2, double q3, double q4, double q5
     }
 
     /**
-     * Choose config "closest" to q0, using the (non-Euclidean) config distance
-     * metric.
+     * Choose the config nearest to q0, using the distance metric above.
      */
-    public static SixDofConfig getBest(List<SixDofConfig> qAll, SixDofConfig q0) {
+    public static SixDofConfig nearest(List<SixDofConfig> qAll, SixDofConfig q0) {
         double closest = Double.POSITIVE_INFINITY;
         SixDofConfig best = qAll.get(0);
         for (SixDofConfig q : qAll) {

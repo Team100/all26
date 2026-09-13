@@ -27,7 +27,7 @@ class ControlUtilTest {
     void testVelocity() {
         // squashes the input to a circle.  This should only be used
         // for controls with circular envelopes.
-        Velocity v = ControlUtil.velocity(
+        DriverVelocity v = ControlUtil.velocity(
                 () -> 1.0,
                 () -> 1.0,
                 () -> 0.0,

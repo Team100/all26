@@ -12,7 +12,7 @@ import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.hid.Velocity;
+import org.team100.lib.hid.DriverVelocity;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
@@ -44,7 +44,7 @@ public class DriveMovingTargetLock extends Command {
     /**
      * Velocity control in control units, [-1,1] on all axes.
      */
-    private final Supplier<Velocity> m_twistSupplier;
+    private final Supplier<DriverVelocity> m_twistSupplier;
     private final DoubleConsumer m_heedRadiusM;
     private final SwerveLimiter m_limiter;
     private final CachedSolution m_solver;
@@ -59,7 +59,7 @@ public class DriveMovingTargetLock extends Command {
             LoggerFactory parent,
             SwerveKinodynamics swerveKinodynamics,
             AzimuthController aim,
-            Supplier<Velocity> twistSupplier,
+            Supplier<DriverVelocity> twistSupplier,
             DoubleConsumer heedRadiusM,
             SwerveLimiter limiter,
             CachedSolution solver,

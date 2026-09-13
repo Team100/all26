@@ -10,7 +10,7 @@ import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.hid.Velocity;
+import org.team100.lib.hid.DriverVelocity;
 import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
@@ -42,7 +42,7 @@ public class DriveBargeAssist extends Command {
      * Velocity control in control units, [-1,1] on all axes. This needs to be
      * mapped to a feasible velocity control as early as possible.
      */
-    private final Supplier<Velocity> m_twistSupplier;
+    private final Supplier<DriverVelocity> m_twistSupplier;
     private final DoubleConsumer m_heedRadiusM;
     private final SwerveDriveSubsystem m_drive;
     private final SwerveLimiter m_limiter;
@@ -55,7 +55,7 @@ public class DriveBargeAssist extends Command {
     public DriveBargeAssist(
             SwerveKinodynamics swerveKinodynamics,
             Supplier<Pose2d> pose,
-            Supplier<Velocity> twistSupplier,
+            Supplier<DriverVelocity> twistSupplier,
             DoubleConsumer heedRadiusM,
             SwerveDriveSubsystem drive,
             SwerveLimiter limiter) {
@@ -91,12 +91,12 @@ public class DriveBargeAssist extends Command {
     public void execute() {
 
         // input in [-1,1] control units
-        Velocity input = m_twistSupplier.get();
+        DriverVelocity input = m_twistSupplier.get();
 
         // clip the input to the unit circle
-        Velocity clipped = input.clip(1.0);
+        DriverVelocity clipped = input.clip(1.0);
 
-        Velocity avoidBarge = avoidBarge(clipped);
+        DriverVelocity avoidBarge = avoidBarge(clipped);
 
         VelocitySE2 scaled = VelocitySE2.scale(
                 avoidBarge,
@@ -121,13 +121,13 @@ public class DriveBargeAssist extends Command {
 
     }
 
-    private Velocity avoidBarge(Velocity clipped) {
+    private DriverVelocity avoidBarge(DriverVelocity clipped) {
         if (clipped.x() <= 0)
             return clipped;
         // moving towards the barge
         double distance = BARGE_X - m_pose.get().getX();
         double vx = vx(distance);
-        return new Velocity(vx, clipped.y(), clipped.theta());
+        return new DriverVelocity(vx, clipped.y(), clipped.theta());
     }
 
     private double vx(double distance) {

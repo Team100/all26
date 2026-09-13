@@ -2,6 +2,7 @@ package org.team100.lib.geometry;
 
 import java.util.Optional;
 
+import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.DirectionSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.geometry.se2.WaypointSE2;
@@ -481,6 +482,34 @@ public class GeometryUtil {
                 0, -z, y, //
                 z, 0, -x, //
                 -y, x, 0);
+    }
+
+    /**
+     * Evolve the position using the *INITIAL* velocity and the
+     * *FINAL* acceleration, which is assumed to be constant during
+     * the time interval. The velocity is assumed to be linear
+     * during the time interval, which may not match the actuation
+     * result: real motors don't control velocity that way.
+     */
+    public static Pose2d evolve(Pose2d x0, VelocitySE2 v0, AccelerationSE2 a, double dt) {
+        return new Pose2d(
+                x0.getX() + v0.x() * dt + a.x() * dt * dt / 2,
+                x0.getY() + v0.y() * dt + a.y() * dt * dt / 2,
+                x0.getRotation().plus(new Rotation2d(
+                        v0.theta() * dt + a.theta() * dt * dt / 2)));
+    }
+
+    /**
+     * Evolve the position using the average velocity, which is the same as
+     * deriving the acceleration from the two velocities and applying that
+     * as above.
+     */
+    public static Pose2d evolve(Pose2d x0, VelocitySE2 v0, VelocitySE2 v1, double dt) {
+        VelocitySE2 v = v0.plus(v1).div(2);
+        return new Pose2d(
+                x0.getX() + v.x() * dt,
+                x0.getY() + v.y() * dt,
+                x0.getRotation().plus(new Rotation2d(v.theta() * dt)));
     }
 
     /////////////////////////////////////////////////////////////////

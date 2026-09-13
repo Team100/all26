@@ -13,7 +13,6 @@ import org.team100.lib.kinematics.five_bar.Scenario;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.RotaryMechanism;
-import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
@@ -48,9 +47,6 @@ public class FiveBarMech extends SubsystemBase {
     /** Right motor, "P5" in the diagram. */
     private final RotaryMechanism m_mechP5;
 
-    private final Motor m_motorP1;
-    private final Motor m_motorP5;
-
     /**
      * There's no absolute encoder in the apparatus, so we use a homing sensor.
      */
@@ -69,8 +65,6 @@ public class FiveBarMech extends SubsystemBase {
             case SWERVE_TWO -> {
                 Falcon500Motor motorP1 = makeMotor(loggerP1, currentLog, new CanId(1));
                 Falcon500Motor motorP5 = makeMotor(loggerP5, currentLog, new CanId(5));
-                m_motorP1 = motorP1;
-                m_motorP5 = motorP5;
 
                 m_sensorP1 = new HomingRotaryPositionSensor(
                         new ProxyRotaryPositionSensor(motorP1.encoder(), 1.0));
@@ -95,8 +89,6 @@ public class FiveBarMech extends SubsystemBase {
             default -> {
                 SimulatedMotor motorP1 = new SimulatedMotor(loggerP1, 600);
                 SimulatedMotor motorP5 = new SimulatedMotor(loggerP5, 600);
-                m_motorP1 = motorP1;
-                m_motorP5 = motorP5;
 
                 m_sensorP1 = new HomingRotaryPositionSensor(
                         new ProxyRotaryPositionSensor(
@@ -215,8 +207,8 @@ public class FiveBarMech extends SubsystemBase {
      * cycle (gently) to the end of travel before pushing the "home" button.
      */
     private void setHomePosition() {
-        m_motorP1.setUnwrappedEncoderPositionRad(Q1_MAX);
-        m_motorP5.setUnwrappedEncoderPositionRad(Q5_MIN);
+        m_mechP1.setUnwrappedEncoderPositionRad(Q1_MAX);
+        m_mechP1.setUnwrappedEncoderPositionRad(Q5_MIN);
     }
 
     ///////////////////////

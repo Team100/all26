@@ -55,7 +55,7 @@ public class MoveWithProfile extends MoveAndHold {
     public void initialize() {
         m_start = m_arm.getConfig();
         m_configGoal = m_arm.config(m_goal);
-        double distance = m_start.distance(m_configGoal);
+        double distance = m_start.euclideanDistance(m_configGoal);
         m_unit = RRConfig.unit(m_start, m_configGoal);
         if (m_configGoal == null)
             throw new IllegalArgumentException(
@@ -90,7 +90,7 @@ public class MoveWithProfile extends MoveAndHold {
 
     @Override
     public double toGo() {
-        return m_arm.getConfig().distance(m_configGoal);
+        return m_arm.getConfig().euclideanDistance(m_configGoal);
     }
 
 }

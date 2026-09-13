@@ -14,6 +14,7 @@ import org.team100.lib.geometry.rr.RRVelocity;
 import org.team100.lib.kinematics.rr.RRFeasibility;
 import org.team100.lib.kinematics.rr.RRKinematics;
 import org.team100.lib.logging.LoggerFactory;
+import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.ProfileR1;
@@ -41,20 +42,25 @@ public class RRArm extends SubsystemBase
     final RRKinematics m_kinematics;
     final RRDynamics m_dynamics;
     final RRFeasibility m_feasibility;
-    private final Motor m_q1;
-    private final Motor m_q2;
+    private final RotaryMechanism m_q1;
+    private final RotaryMechanism m_q2;
 
     public RRArm(LoggerFactory parent) {
         m_log = parent.type(this);
         m_kinematics = new RRKinematics(0.3, 0.3);
         m_dynamics = new RRDynamicsAnalytic(
                 0.1, 0.1, 0.3, 0.3, 0.15, 0.15, 0.1, 0.1);
-        m_feasibility = new RRFeasibility(
-                m_kinematics,
-                new RRConfig(-Math.PI / 2, -3),
-                new RRConfig(Math.PI / 2, 3));
-        m_q1 = new SimulatedMotor(m_log.name("q1"), 600);
-        m_q2 = new SimulatedMotor(m_log.name("q2"), 600);
+        RRConfig qMin = new RRConfig(-Math.PI / 2, -3);
+        RRConfig qMax = new RRConfig(Math.PI / 2, 3);
+        m_feasibility = new RRFeasibility(m_kinematics, qMin, qMax);
+        LoggerFactory q1 = m_log.name("q1");
+        LoggerFactory q2 = m_log.name("q2");
+        Motor m1 = new SimulatedMotor(q1, 600);
+        Motor m2 = new SimulatedMotor(q2, 600);
+        m_q1 = new RotaryMechanism(
+                q1, m1, m1.encoder(), 0, 1, qMin.q1(), qMax.q1());
+        m_q2 = new RotaryMechanism(
+                q2, m2, m2.encoder(), 0, 1, qMin.q2(), qMax.q2());
     }
 
     @Override
@@ -82,15 +88,15 @@ public class RRArm extends SubsystemBase
         RRConfig q0 = getConfig();
         List<RRConfig> qAll = m_kinematics.inverse(p, q0.q1());
         if (qAll.isEmpty()) {
-            System.out.println("no solution for pose " + StrUtil.transStr(p));
+            System.out.println("RRArm: no solution " + StrUtil.transStr(p));
             return null;
         }
         List<RRConfig> qFeasible = m_feasibility.filter(qAll);
         if (qFeasible.isEmpty()) {
-            System.out.println("infeasible pose " + StrUtil.transStr(p));
+            System.out.println("RRArm: infeasible " + StrUtil.transStr(p));
             return null;
         }
-        return RRConfig.getBest(qFeasible, q0);
+        return RRConfig.nearest(qFeasible, q0);
     }
 
     public RRVelocity qdot(RRConfig q, VelocityR2 xdot) {

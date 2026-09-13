@@ -54,7 +54,8 @@ public record VelocityR2(double x, double y) {
         return x * other.getX() + y * other.getY();
     }
 
-    public Translation2d integrate(Translation2d start, double dt) {
+    /** NOTE! Only valid for constant velocity. */
+    public Translation2d evolve(Translation2d start, double dt) {
         return new Translation2d(start.getX() + x * dt, start.getY() + y * dt);
     }
 

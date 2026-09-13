@@ -92,15 +92,15 @@ public class LynxArmTwoDof extends SubsystemBase implements AutoCloseable {
         RRConfig q0 = getMeasuredConfig();
         List<RRConfig> qAll = m_kinematics.inverse(end, q0.q1());
         if (qAll.isEmpty()) {
-            System.out.println("no solution for pose " + StrUtil.transStr(end));
+            System.out.println("LynxArmTwoDof: no solution for " + StrUtil.transStr(end));
             return;
         }
         List<RRConfig> qFeasible = m_feasibility.filter(qAll);
         if (qFeasible.isEmpty()) {
-            System.out.println("infeasible pose " + StrUtil.transStr(end));
+            System.out.println("LynxArmTwoDof: infeasible " + StrUtil.transStr(end));
             return;
         }
-        RRConfig q = RRConfig.getBest(qFeasible, q0);
+        RRConfig q = RRConfig.nearest(qFeasible, q0);
         // the joint coordinates use the 3d convention which is inverted
         // from the 2d one, so fix it here.
         m_boom.set(-1.0 * q.q1());

@@ -15,6 +15,7 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
  */
 public class FieldRelativeCapsizeLimiter {
     private static final boolean DEBUG = false;
+    private static final double DT = TimedRobot100.LOOP_PERIOD_S;
 
     private final DoubleLogger m_log_scale;
     private final AccelerationSE2Logger m_log_accel;
@@ -40,9 +41,7 @@ public class FieldRelativeCapsizeLimiter {
         m_log_prev.log(() -> prev);
         m_log_target.log(() -> target);
         // Acceleration required to achieve the target.
-        AccelerationSE2 accel = target.accel(
-                prev,
-                TimedRobot100.LOOP_PERIOD_S);
+        AccelerationSE2 accel = target.accel(prev, DT);
         m_log_accel.log(() -> accel);
         double a = accel.norm();
         if (a < 1e-6) {
@@ -51,7 +50,8 @@ public class FieldRelativeCapsizeLimiter {
         }
         double scale = scale(a);
         m_log_scale.log(() -> scale);
-        VelocitySE2 result = prev.plus(accel.times(scale).integrate(TimedRobot100.LOOP_PERIOD_S));
+        // v1 = v0 + a dt
+        VelocitySE2 result = accel.times(scale).evolve(prev, DT);
         if (DEBUG) {
             System.out.printf("FieldRelativeCapsizeLimiter prev %s target %s accel %s scale %5.2f result %s\n",
                     prev, target, accel, scale, result);

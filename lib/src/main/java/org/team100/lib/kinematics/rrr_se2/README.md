@@ -4,6 +4,10 @@ A serial planar linkage of three revolute joints.
 
 <img src="image.png" width=400 />
 
-An implementation of URDF, with numeric inverse.
+There are two implementations here
 
-TODO: do this analytically.
+* one using the URDF implementation from last year, with iterative inverse.
+* one using the new product-of-exponentials method from Modern Robotics, which uses an analytic inverse.
+
+The planar RRR linkage has up to __two possible "postures"__ for a given pose, generally called
+"elbow up" and "elbow down" (see diagram).

@@ -16,8 +16,8 @@ public class RRConfigTest {
     void test0() {
         RRConfig x = new RRConfig(1, 2);
         RRConfig y = new RRConfig(3, 4);
-        double d = x.distance(y);
-        assertEquals(4.472, d, 1e-3);
+        double d = x.euclideanDistance(y);
+        assertEquals(2.828, d, 1e-3);
         // at zero, you get the starting point
         RRConfig x0 = RRConfig.interpolate(x, y, 0);
         TestUtil.verify(x, x0);
@@ -30,7 +30,7 @@ public class RRConfigTest {
 
         // interpolation can also be done by scaling the unit vector
         Vector<N2> unit = RRConfig.unit(x, y);
-        TestUtil.verify(VecBuilder.fill(0.447, 0.447), unit);
+        TestUtil.verify(VecBuilder.fill(0.707, 0.707), unit);
         RRConfig x00 = RRConfig.fromVector(x.toVector().plus(unit.times(0)));
         TestUtil.verify(x, x00);
         RRConfig y00 = RRConfig.fromVector(x.toVector().plus(unit.times(d)));
@@ -43,18 +43,16 @@ public class RRConfigTest {
     void test1() {
         RRConfig x = new RRConfig(0, 0);
         RRConfig y = new RRConfig(1, 0);
-        double d = x.distance(y);
-        // s1 is 3, so this is sqrt(3)
-        assertEquals(1.732, d, 1e-3);
+        double d = x.euclideanDistance(y);
+        assertEquals(1, d, 1e-3);
     }
 
     @Test
     void test2() {
         RRConfig x = new RRConfig(0, 0);
         RRConfig y = new RRConfig(0, 1);
-        double d = x.distance(y);
-        // s1 is 2, so this is sqrt(2)
-        assertEquals(1.414, d, 1e-3);
+        double d = x.euclideanDistance(y);
+        assertEquals(1, d, 1e-3);
     }
 
 }

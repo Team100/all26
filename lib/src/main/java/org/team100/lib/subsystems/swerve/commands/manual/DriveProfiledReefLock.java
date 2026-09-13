@@ -12,7 +12,7 @@ import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.hid.Velocity;
+import org.team100.lib.hid.DriverVelocity;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
@@ -55,7 +55,7 @@ public class DriveProfiledReefLock extends Command {
      * Velocity control in control units, [-1,1] on all axes. This needs to be
      * mapped to a feasible velocity control as early as possible.
      */
-    private final Supplier<Velocity> m_twistSupplier;
+    private final Supplier<DriverVelocity> m_twistSupplier;
     private final DoubleConsumer m_heedRadiusM;
     private final SwerveDriveSubsystem m_drive;
     private final SwerveLimiter m_limiter;
@@ -95,7 +95,7 @@ public class DriveProfiledReefLock extends Command {
             Supplier<Boolean> lockToReef,
             FeedbackR1 thetaController,
             Supplier<Translation2d> robotLocation,
-            Supplier<Velocity> twistSupplier,
+            Supplier<DriverVelocity> twistSupplier,
             DoubleConsumer heedRadiusM,
             SwerveDriveSubsystem drive,
             SwerveLimiter limiter) {
@@ -138,7 +138,7 @@ public class DriveProfiledReefLock extends Command {
 
         // input in [-1,1] control units
         // TODO: control noise in this input
-        Velocity t = m_twistSupplier.get();
+        DriverVelocity t = m_twistSupplier.get();
         // TODO: control noise in this input
         StateSE2 s = m_drive.getState();
 
@@ -162,8 +162,8 @@ public class DriveProfiledReefLock extends Command {
 
     public VelocitySE2 apply(
             final StateSE2 state,
-            final Velocity twist1_1) {
-        final Velocity clipped = twist1_1.clip(1.0);
+            final DriverVelocity twist1_1) {
+        final DriverVelocity clipped = twist1_1.clip(1.0);
         final VelocitySE2 control = VelocitySE2.scale(
                 clipped,
                 m_swerveKinodynamics.getMaxDriveVelocityM_S(),
@@ -183,7 +183,7 @@ public class DriveProfiledReefLock extends Command {
         }
 
         // feedback uses the current setpoint, which was set previously
-        final double thetaFB = m_thetaFeedback.calculate(state.theta(), m_thetaSetpoint.model());
+        final double thetaFB = m_thetaFeedback.calculate(state.theta(), m_thetaSetpoint.state());
 
         final double yawMeasurement = state.theta().x();
         // take the short path

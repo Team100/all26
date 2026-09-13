@@ -107,6 +107,7 @@ public class RRRKinematicsPoE {
                 Jdot.times(qdot.toVector()).plus(J.times(qddot.toVector())));
     }
 
+    /** Returns zero, one, or two solutions. */
     public List<RRRConfig> inverse(Pose2d x, Double q1Default) {
         Translation2d t = x.getTranslation();
         // Tool rotation.
@@ -116,10 +117,11 @@ public class RRRKinematicsPoE {
         // Wrist origin = start at tool point, walk backwards along tool.
         Translation2d w = t.minus(b);
         if (DEBUG)
-            System.out.printf("t %s w %s\n", StrUtil.transStr(t), StrUtil.transStr(w));
+            System.out.printf("RRRKinematicsPoE: t %s w %s\n", StrUtil.transStr(t), StrUtil.transStr(w));
         List<RRConfig> rrs = rrk.inverse(w, q1Default);
         if (rrs.isEmpty()) {
-            System.out.printf("no RR solution for wrist %s\n", StrUtil.transStr(w));
+            if (DEBUG)
+                System.out.printf("RRRKinematicsPoE: no RR solution %s\n", StrUtil.transStr(w));
         }
         List<RRRConfig> result = new ArrayList<>();
         for (RRConfig rr : rrs) {
@@ -132,11 +134,21 @@ public class RRRKinematicsPoE {
         return result;
     }
 
+    /**
+     * Inverse velocity kinematics.
+     * 
+     * \dot{q} = J^{-1} \dot{x}
+     */
     public RRRVelocity inverse(RRRConfig q, VelocitySE2 xdot) {
         Matrix<N3, N3> Jinv = Jinv(q);
         return RRRVelocity.fromVector(Jinv.times(xdot.toVector()));
     }
 
+    /**
+     * Inverse acceleration kinematics.
+     * 
+     * \ddot{q} = J^{-1}(\ddot{x} - \dot{J} J^{-1} \dot{x})
+     */
     public RRRAcceleration inverse(RRRConfig q, VelocitySE2 xdot, AccelerationSE2 xddot) {
         Matrix<N3, N3> Jinv = Jinv(q);
         RRRVelocity qdot = RRRVelocity.fromVector(Jinv.times(xdot.toVector()));
@@ -256,6 +268,9 @@ public class RRRKinematicsPoE {
      */
     Matrix<N3, N3> Jinv(RRRConfig q) {
         Matrix<N3, N3> J = J(q);
-        return new Matrix<>(J.getStorage().pseudoInverse());
+        Matrix<N3, N3> Jinv = new Matrix<>(J.getStorage().pseudoInverse());
+        if (DEBUG)
+            System.out.printf("RRRKinematicsPOE: Jinv %s\n", StrUtil.matStr(Jinv));
+        return Jinv;
     }
 }

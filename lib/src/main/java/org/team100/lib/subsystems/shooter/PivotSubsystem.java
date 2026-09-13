@@ -13,6 +13,7 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.Neo550CANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.util.CanId;
 
 import org.wpilib.command2.Command;
@@ -24,6 +25,7 @@ import org.wpilib.command2.SubsystemBase;
 public class PivotSubsystem extends SubsystemBase {
 
     private final Motor m_pivot;
+    private final IncrementalEncoder m_encoder;
     private final DoubleLogger m_log_angle;
 
     public PivotSubsystem(
@@ -47,6 +49,7 @@ public class PivotSubsystem extends SubsystemBase {
                     0,
                     0);
         });
+        m_encoder = m_pivot.encoder();
     }
 
     public void dutyCycle(double set) {
@@ -54,11 +57,11 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public double getAngleRad() {
-        return m_pivot.getUnwrappedPositionRad();
+        return m_encoder.getUnwrappedPositionRad();
     }
 
     public void setEncoderPosition(double positionRad) {
-        m_pivot.setUnwrappedEncoderPositionRad(positionRad);
+        m_encoder.setUnwrappedEncoderPositionRad(positionRad);
     }
 
     public void setTorqueLimit(double value) {

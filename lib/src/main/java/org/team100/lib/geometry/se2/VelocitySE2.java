@@ -2,7 +2,7 @@ package org.team100.lib.geometry.se2;
 
 import java.util.Optional;
 
-import org.team100.lib.hid.Velocity;
+import org.team100.lib.hid.DriverVelocity;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -65,18 +65,12 @@ public record VelocitySE2(double x, double y, double theta) {
         return new VelocitySE2(x - other.x, y - other.y, theta - other.theta);
     }
 
-    /** Integrate the velocity from the initial pose for time dt */
-    public Pose2d integrate(Pose2d initial, double dt) {
-        return new Pose2d(
-                initial.getX() + x * dt,
-                initial.getY() + y * dt,
-                initial.getRotation().plus(new Rotation2d(theta * dt)));
-    }
-
     /**
      * Simple backwards finite difference, componentwise.
      * Centrifugal force is not relevant here, because the inputs
      * are field-relative velocities.
+     * 
+     * a = (v1 - v0) / dt
      */
     public AccelerationSE2 accel(VelocitySE2 previous, double dt) {
         VelocitySE2 v = minus(previous).div(dt);
@@ -120,7 +114,7 @@ public record VelocitySE2(double x, double y, double theta) {
 
     @Override
     public String toString() {
-        return String.format("(%5.2f, %5.2f, %5.2f)", x, y, theta);
+        return String.format("%7.4f, %7.4f, %7.4f", x, y, theta);
     }
 
     public static VelocitySE2 fromVector(Vector<N3> v) {
@@ -163,7 +157,7 @@ public record VelocitySE2(double x, double y, double theta) {
      * @param maxRot   radians per second
      * @return meters and rad per second as specified by speed limits
      */
-    public static VelocitySE2 scale(Velocity twist, double maxSpeed, double maxRot) {
+    public static VelocitySE2 scale(DriverVelocity twist, double maxSpeed, double maxRot) {
         return new VelocitySE2(
                 maxSpeed * Math.clamp(twist.x(), -1, 1),
                 maxSpeed * Math.clamp(twist.y(), -1, 1),

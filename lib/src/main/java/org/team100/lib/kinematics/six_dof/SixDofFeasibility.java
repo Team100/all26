@@ -11,16 +11,13 @@ import org.team100.lib.util.StrUtil;
 public class SixDofFeasibility {
     private static final boolean DEBUG = false;
     private final SixDofKinematics m_k;
+    private final SixDofConfig qMin;
+    private final SixDofConfig qMax;
 
-    private final SixDofConfig l = new SixDofConfig(
-            -Math.PI, 0, -Math.PI,
-            -Math.PI, -Math.PI / 2, -Math.PI);
-    private final SixDofConfig u = new SixDofConfig(
-            Math.PI, Math.PI, Math.PI,
-            Math.PI, Math.PI / 2, Math.PI);
-
-    public SixDofFeasibility(SixDofKinematics k) {
+    public SixDofFeasibility(SixDofKinematics k, SixDofConfig qmin, SixDofConfig qmax) {
         m_k = k;
+        qMin = qmin;
+        qMax = qmax;
     }
 
     /** Return the list without infeasible configurations. */
@@ -46,32 +43,32 @@ public class SixDofFeasibility {
      * True if the joints configurations are in their allowed ranges.
      */
     boolean qRange(SixDofConfig q) {
-        if (q.q1() < l.q1() || q.q1() > u.q1()) {
+        if (q.q1() < qMin.q1() || q.q1() > qMax.q1()) {
             if (DEBUG)
                 System.out.println("swing limit exceeded: " + q.q1());
             return false;
         }
-        if (q.q2() < l.q2() || q.q2() > u.q2()) {
+        if (q.q2() < qMin.q2() || q.q2() > qMax.q2()) {
             if (DEBUG)
                 System.out.println("shoulder limit exceeded: " + q.q2());
             return false;
         }
-        if (q.q3() < l.q3() || q.q3() > u.q3()) {
+        if (q.q3() < qMin.q3() || q.q3() > qMax.q3()) {
             if (DEBUG)
                 System.out.println("elbow limit exceeded: " + q.q3());
             return false;
         }
-        if (q.q4() < l.q4() || q.q4() > u.q4()) {
+        if (q.q4() < qMin.q4() || q.q4() > qMax.q4()) {
             if (DEBUG)
                 System.out.println("wrist roll limit exceeded: " + q.q4());
             return false;
         }
-        if (q.q5() < l.q5() || q.q5() > u.q5()) {
+        if (q.q5() < qMin.q5() || q.q5() > qMax.q5()) {
             if (DEBUG)
                 System.out.println("pitch limit exceeded: " + q.q5());
             return false;
         }
-        if (q.q6() < l.q6() || q.q6() > u.q6()) {
+        if (q.q6() < qMin.q6() || q.q6() > qMax.q6()) {
             if (DEBUG)
                 System.out.println("tool roll limit exceeded: " + q.q6());
             return false;

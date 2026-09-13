@@ -29,6 +29,12 @@ public class MockRotaryPositionSensor implements RotaryPositionSensor {
     }
 
     @Override
+    public void setUnwrappedEncoderPositionRad(double x) {
+        // TODO: is this the right thing to do here?
+        angle = x;
+    }
+
+    @Override
     public void periodic() {
     }
 
@@ -36,4 +42,5 @@ public class MockRotaryPositionSensor implements RotaryPositionSensor {
     public void close() {
         //
     }
+
 }

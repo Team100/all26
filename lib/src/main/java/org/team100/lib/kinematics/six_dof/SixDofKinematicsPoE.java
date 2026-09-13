@@ -168,7 +168,7 @@ public class SixDofKinematicsPoE implements SixDofKinematics {
             Double q1Default, Double q2Default, Double q4Default) {
         Translation3d t = p.getTranslation();
         if (DEBUG)
-            System.out.printf("t %s\n", StrUtil.transStr(t));
+            System.out.printf("SixDofKinematicsPoE: t %s\n", StrUtil.transStr(t));
 
         // Wrist rotation is tool rotation.
         Rotation3d R = p.getRotation();

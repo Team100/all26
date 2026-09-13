@@ -50,4 +50,9 @@ public record SixDofAcceleration(
                 setpoint.get(4).a(),
                 setpoint.get(5).a());
     }
+
+    public static SixDofAcceleration solve(SixDofConfig x0, SixDofConfig x1, SixDofVelocity v0, double dt) {
+        return SixDofAcceleration.fromVector(
+                x1.toVector().minus(x0.toVector()).minus(v0.toVector().times(dt)).times(2 / (dt * dt)));
+    }
 }

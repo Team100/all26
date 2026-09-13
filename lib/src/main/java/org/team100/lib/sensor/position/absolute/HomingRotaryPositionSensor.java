@@ -24,7 +24,13 @@ public class HomingRotaryPositionSensor implements RotaryPositionSensor {
      * You should call this at the "homing position".
      */
     public void setPosition(double x) {
+        // TODO: replace this method with the one below
         m_offset = x - m_sensor.getWrappedPositionRad();
+    }
+
+    @Override
+    public void setUnwrappedEncoderPositionRad(double x) {
+        setPosition(x);
     }
 
     @Override

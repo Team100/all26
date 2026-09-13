@@ -20,7 +20,6 @@ public abstract class RoboRioRotaryPositionSensor implements RotaryPositionSenso
     private static final boolean DEBUG = false;
     private static final double TWO_PI = 2.0 * Math.PI;
 
-    private final double m_positionOffset;
     private final EncoderDrive m_drive;
     private final Supplier<Integer> m_turns;
     // LOGGERS
@@ -28,15 +27,16 @@ public abstract class RoboRioRotaryPositionSensor implements RotaryPositionSenso
     private final DoubleLogger m_log_position_turns;
     private final DoubleLogger m_log_position_turns_offset;
 
+    private double m_positionOffsetTurns;
     private int m_turnCount;
     private double m_prevWrappedPositionRad;
 
     protected RoboRioRotaryPositionSensor(
             LoggerFactory parent,
-            double inputOffset,
+            double inputOffsetTurns,
             EncoderDrive drive) {
         LoggerFactory log = parent.type(this);
-        m_positionOffset = Math100.throwIfOutOfRange(inputOffset, 0.0, 1.0);
+        m_positionOffsetTurns = Math100.throwIfOutOfRange(inputOffsetTurns, 0.0, 1.0);
         m_drive = drive;
 
         m_turns = Cache.of(this::wrap);
@@ -77,7 +77,7 @@ public abstract class RoboRioRotaryPositionSensor implements RotaryPositionSenso
     }
 
     public double getUnwrappedPositionRad() {
-        return getWrappedPositionRad() + 2 * Math.PI * getTurns();
+        return getWrappedPositionRad() + TWO_PI * getTurns();
     }
 
     /** This should be nearly cached. */
@@ -112,7 +112,7 @@ public abstract class RoboRioRotaryPositionSensor implements RotaryPositionSenso
         double posTurns = mapSensorRange(ratio, sensorMin(), sensorMax());
         m_log_position_turns.log(() -> posTurns);
 
-        double turnsMinusOffset = posTurns - m_positionOffset;
+        double turnsMinusOffset = posTurns - m_positionOffsetTurns;
         m_log_position_turns_offset.log(() -> turnsMinusOffset);
 
         switch (m_drive) {
@@ -123,6 +123,19 @@ public abstract class RoboRioRotaryPositionSensor implements RotaryPositionSenso
             default:
                 throw new IllegalArgumentException();
         }
+    }
+
+    @Override
+    public void setUnwrappedEncoderPositionRad(double x) {
+        // fractional turns
+        double posTurns = mapSensorRange(
+                getRatio(), sensorMin(), sensorMax());
+        double newturns = x / TWO_PI;
+        int newwraps = (int) (newturns - posTurns);
+        double newpos = posTurns + newwraps;
+        double newoffset = newpos - newturns;
+        m_positionOffsetTurns = newoffset;
+        m_turnCount = newwraps;
     }
 
     /**

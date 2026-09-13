@@ -109,7 +109,6 @@ dispersion of updates, is what is implemented in the `Covariance Inflation` meth
 The gyro can be modeled with two random variables:
 
 * **Bias**, radians/sec.  This is the "drift rate," a slow random walk.
-It's the product of imbalance in the differential sensors.
 In reality, it is temperature-dependent, but we ignore that.
 * **Noise**, radians.  This is the integral of the (Gaussian) sensor noise,
 which turns out to also be Gaussian.  

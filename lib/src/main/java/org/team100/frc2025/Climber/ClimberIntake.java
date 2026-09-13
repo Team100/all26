@@ -12,6 +12,7 @@ import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.LazySimulatedMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.util.CanId;
 
 import org.wpilib.command2.Command;
@@ -20,6 +21,7 @@ import org.wpilib.command2.SubsystemBase;
 public class ClimberIntake extends SubsystemBase {
 
     private final Motor m_motor;
+    private final IncrementalEncoder m_encoder;
     private int count;
 
     public ClimberIntake(LoggerFactory parent, TotalCurrentLog currentLog, CanId canID) {
@@ -39,6 +41,7 @@ public class ClimberIntake extends SubsystemBase {
                         log, new SimulatedMotor(log, 600), 1.5);
             }
         }
+        m_encoder = m_motor.encoder();
     }
 
     @Override
@@ -47,7 +50,7 @@ public class ClimberIntake extends SubsystemBase {
     }
 
     public boolean isSlow() {
-        return m_motor.getVelocityRad_S() < 1;
+        return m_encoder.getVelocityRad_S() < 1;
     }
 
     public boolean intaking() {

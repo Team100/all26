@@ -81,9 +81,9 @@ public class SwerveHistory implements DoubleFunction<StateSE2> {
             double timestampSeconds,
             Rotation2d gyroYaw,
             VariableR1 gyroBias) {
-        StateSE2 model = new StateSE2(pose, VelocitySE2.ZERO);
+        StateSE2 newState = new StateSE2(pose, VelocitySE2.ZERO);
         SwerveState state = new SwerveState(
-                model,
+                newState,
                 noise,
                 modulePositions,
                 gyroYaw,
@@ -99,7 +99,7 @@ public class SwerveHistory implements DoubleFunction<StateSE2> {
      */
     void put(
             double timestamp,
-            StateSE2 model,
+            StateSE2 state,
             IsotropicNoiseSE2 noise,
             SwerveModulePositions positions,
             Rotation2d gyroYaw,
@@ -108,7 +108,7 @@ public class SwerveHistory implements DoubleFunction<StateSE2> {
         m_poseBuffer.put(
                 timestamp,
                 new SwerveState(
-                        model,
+                        state,
                         noise,
                         positions,
                         gyroYaw,

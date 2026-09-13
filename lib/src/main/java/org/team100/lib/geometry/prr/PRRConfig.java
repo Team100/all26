@@ -21,15 +21,15 @@ public record PRRConfig(double q1, double q2, double q3) {
     }
 
     /**
-     * Apply the velocity for period dt.
+     * Apply the velocity and accel for period dt.
      * 
-     * x = x0 + v dt
+     * Use the *previous* velocity here.
+     * 
+     * x = x0 + v0 dt + 1/2 a dt^2
      */
-    public PRRConfig integrate(PRRVelocity jv, double dt) {
-        return new PRRConfig(
-                q1 + jv.q1dot() * dt,
-                q2 + jv.q2dot() * dt,
-                q3 + jv.q3dot() * dt);
+    public PRRConfig evolve(PRRVelocity jv, PRRAcceleration ja, double dt) {
+        return PRRConfig.fromVector(
+                toVector().plus(jv.toVector().times(dt).plus(ja.toVector().times(dt * dt / 2))));
     }
 
     /**

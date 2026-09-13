@@ -80,9 +80,9 @@ public class OnboardLinearDutyCyclePositionServo implements LinearPositionServo 
         // return;
         ControlR1 measurement = new ControlR1(getPosition(), 0);
         m_setpoint = measurement;
-        m_ref.setGoal(measurement.model());
+        m_ref.setGoal(measurement.state());
         // reference is initalized with measurement only here.
-        m_ref.init(measurement.model());
+        m_ref.init(measurement.state());
         // m_controller.init(m_setpoint.model());
         m_feedback.reset();
     }
@@ -102,7 +102,7 @@ public class OnboardLinearDutyCyclePositionServo implements LinearPositionServo 
             m_goal = goal;
             m_ref.setGoal(goal);
             // initialize with the setpoint, not the measurement, to avoid noise.
-            m_ref.init(m_setpoint.model());
+            m_ref.init(m_setpoint.state());
         }
         actuate(m_ref.get());
     }
@@ -135,7 +135,7 @@ public class OnboardLinearDutyCyclePositionServo implements LinearPositionServo 
         final StateR1 measurement = new StateR1(position, velocity);
 
         final double u_FF = m_kV * m_setpoint.v() + m_kT * t.f();
-        final double u_FB = m_feedback.calculate(measurement, setpoints.current().model());
+        final double u_FB = m_feedback.calculate(measurement, setpoints.current().state());
         final double u_TOTAL = Math.clamp(u_FF + u_FB, -1.0, 1.0);
 
         m_mechanism.setDutyCycle(u_TOTAL);

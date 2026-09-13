@@ -10,7 +10,7 @@ import org.team100.lib.logging.LoggerFactory.AccelerationSE2Logger;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 
 /**
- * Limits cartesian  and rotational acceleration.
+ * Limits cartesian and rotational acceleration.
  * 
  * The limit is applied to the entire holonomic acceleration together, not to
  * the individual components, so if you exceed the rotational limit, both
@@ -18,6 +18,7 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
  */
 public class FieldRelativeAccelerationLimiter {
     private static final boolean DEBUG = false;
+    private static final double DT = TimedRobot100.LOOP_PERIOD_S;
 
     private final DoubleLogger m_log_scale;
     private final AccelerationSE2Logger m_log_accel;
@@ -48,15 +49,14 @@ public class FieldRelativeAccelerationLimiter {
             VelocitySE2 prev,
             VelocitySE2 target) {
         // Acceleration required to achieve the target.
-        AccelerationSE2 accel = target.accel(
-                prev,
-                TimedRobot100.LOOP_PERIOD_S);
+        AccelerationSE2 accel = target.accel(prev, DT);
         m_log_accel.log(() -> accel);
         double cartesianScale = cartesianScale(prev, target, accel);
         double alphaScale = alphaScale(accel);
         double scale = Math.min(cartesianScale, alphaScale);
         m_log_scale.log(() -> scale);
-        VelocitySE2 result = prev.plus(accel.times(scale).integrate(TimedRobot100.LOOP_PERIOD_S));
+        // v1 = v0 + a dt
+        VelocitySE2 result = accel.times(scale).evolve(prev, DT);
         if (DEBUG) {
             System.out.printf(
                     "FieldRelativeAccelerationLimiter prev %s target %s accel %s cartesian scale %5.2f alpha scale %5.2f total scale %5.2f result %s\n",

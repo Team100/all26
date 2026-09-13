@@ -27,6 +27,21 @@ public record RRVelocity(double q1dot, double q2dot) {
     }
 
     public double norm() {
-        return Math.sqrt(RRConfig.s1 * q1dot * q1dot + RRConfig.s2 * q2dot * q2dot);
+        return Math.sqrt(q1dot * q1dot + q2dot * q2dot);
+    }
+
+    /**
+     * a = (v1 - v0) / dt
+     */
+    public RRAcceleration accel(RRVelocity prev, double dt) {
+        return RRAcceleration.fromVector(
+                toVector().minus(prev.toVector()).div(dt));
+    }
+
+    /**
+     * v1 = v0 + a dt
+     */
+    public static RRVelocity evolve(RRVelocity v0, RRAcceleration a, double dt) {
+        return RRVelocity.fromVector(v0.toVector().plus(a.toVector().times(dt)));
     }
 }

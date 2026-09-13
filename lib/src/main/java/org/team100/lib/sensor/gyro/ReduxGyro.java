@@ -20,6 +20,14 @@ import org.wpilib.math.geometry.Rotation2d;
  * CAN packet being sent, and the CAN latency is quite low, but the CAN packet
  * might be received sometime before the RoboRIO interrupt fires; the logic
  * here corrects for that difference.
+ * 
+ * NOTE: the Redux config app is hosted by the rio/systemcore here
+ * 
+ * http://robot.local:7244/
+ * 
+ * Read about how to use it here:
+ * 
+ * https://docs.reduxrobotics.com/configurator
  */
 @SuppressWarnings("unused")
 public class ReduxGyro implements Gyro {

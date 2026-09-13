@@ -100,7 +100,7 @@ public class PathSE2Point {
     public String toString() {
         return String.format(
                 "pose %s course %s, K %s",
-                StrUtil.pose2Str(m_waypoint.pose()),
+                StrUtil.poseStr(m_waypoint.pose()),
                 m_waypoint.course(),
                 StrUtil.vecStr(m_K));
     }

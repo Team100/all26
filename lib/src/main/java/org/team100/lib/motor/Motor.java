@@ -106,7 +106,10 @@ public interface Motor extends Player, TotalCurrentLog.Reporter {
             double velocityRad_S,
             double torqueNm);
 
-    /** This is not "hold position" this is "torque off". */
+    /**
+     * Stop the motor. Depending on the brake mode of the motor, this may be a
+     * "zero torque" condition, or a "braking" condition.
+     */
     void stop();
 
     /////////////////////////////////////////////////////////////
@@ -114,36 +117,8 @@ public interface Motor extends Player, TotalCurrentLog.Reporter {
     /// MEASUREMENTS
     ///
 
-    /**
-     * "Unwrapped" angular motor shaft position, i.e. the measurement
-     * domain continues beyond +/- pi. May be filtered.
-     * 
-     * Value should be updated in Robot.robotPeriodic().
-     */
-    double getUnwrappedPositionRad();
-
-    /**
-     * Motor shaft speed. May be filtered.
-     * 
-     * Value should be updated in Robot.robotPeriodic().
-     */
-    double getVelocityRad_S();
-
-    /**
-     * Motor shaft acceleration. May be filtered.
-     * 
-     * Value should be updated in Robot.robotPeriodic().
-     */
-    double getAccelerationRad_S2();
-
     /** Motor stator current in amps. */
     double getStatorCurrent();
-
-    /**
-     * This is the "unwrapped" position, i.e. the domain is infinite, not cyclical
-     * within +/- pi.
-     */
-    void setUnwrappedEncoderPositionRad(double positionRad);
 
     /////////////////////////////////////////////////////////
     ///

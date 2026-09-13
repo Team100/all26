@@ -42,7 +42,7 @@ public class TrajectorySE2ToVectorSeries {
             double dy = m_scale * heading.getSin();
             s.add(x, y, dx, dy);
             if (DEBUG)
-                System.out.printf("t %f pp %s\n", time, pp);
+                System.out.printf("TrajectorySE2ToVectorSeries: t %f pp %s\n", time, pp);
         }
         return List.of(s);
     }

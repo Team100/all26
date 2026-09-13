@@ -81,7 +81,8 @@ public class MoveWithSpline extends MoveAndHold {
 
         // duration respects joint distances.
         // double qdistance = Metrics.l1Norm(q0.toVector().minus(q1.toVector()));
-        double qdistance = q0.distance(q1);
+        double qdistance = q0.euclideanDistance(q1);
+        // TODO: why is this 0.5 here?
         double duration = 0.5 * qdistance;
         if (DEBUG)
             System.out.printf("duration %f\n", duration);
@@ -111,6 +112,6 @@ public class MoveWithSpline extends MoveAndHold {
     public double toGo() {
         RRConfig q0 = m_arm.getConfig();
         RRConfig q1 = m_arm.config(m_x1);
-        return q0.distance(q1);
+        return q0.euclideanDistance(q1);
     }
 }

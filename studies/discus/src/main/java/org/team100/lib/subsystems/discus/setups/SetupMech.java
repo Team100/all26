@@ -8,15 +8,15 @@ import org.team100.lib.visualization.ArmVisualization;
 import org.wpilib.command2.button.Trigger;
 import org.wpilib.driverstation.Gamepad;
 
+/** Adds gearing, friction, and PID. */
 public class SetupMech implements Runnable {
     private final double CONTROL_SCALE = 1;
     private final DiscusMech m_discus;
     private final ArmVisualization m_viz;
 
-    public SetupMech() {
+    public SetupMech(TotalCurrentLog currentLog) {
         final Logging logging = Logging.instance();
         final LoggerFactory logger = logging.rootLogger;
-        TotalCurrentLog currentLog = new TotalCurrentLog(logger);
         Gamepad controller = new Gamepad(0);
 
         m_discus = new DiscusMech(logger, currentLog);

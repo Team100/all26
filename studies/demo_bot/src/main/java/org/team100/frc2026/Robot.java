@@ -24,15 +24,14 @@ import org.team100.lib.subsystems.shooter.ShooterIndexer;
 import org.team100.lib.subsystems.tank.TankDrive;
 import org.team100.lib.subsystems.tank.TankDriveFactory;
 import org.team100.lib.subsystems.tank.commands.TankManual;
-import org.team100.lib.util.Banner;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
+import org.team100.lib.util.Startup;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.CommandScheduler;
 import org.wpilib.command2.Commands;
 import org.wpilib.command2.button.Trigger;
 import org.wpilib.networktables.NetworkTableInstance;
-import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.util.Color;
 
 public class Robot extends TimedRobot100 {
@@ -76,16 +75,12 @@ public class Robot extends TimedRobot100 {
     private final PivotSubsystem m_pivot;
 
     public Robot() {
-        Banner.printBanner();
-        Experiments.instance.show();
-        SmartDashboard.putData(CommandScheduler.getInstance());
-
-        m_robotLog = new RobotLog();
-        TotalCurrentLog m_currentLog = m_robotLog.totalCurrentLog();
-
+        Startup.start();
         Logging logging = Logging.instance();
-        LoggerFactory fieldLogger = logging.fieldLogger;
         LoggerFactory logger = logging.rootLogger;
+        LoggerFactory fieldLogger = logging.fieldLogger;
+        m_robotLog = new RobotLog(logger);
+        TotalCurrentLog m_currentLog = m_robotLog.totalCurrentLog();
 
         DriverXboxControl xbox = new DriverXboxControl(logger, 0);
 

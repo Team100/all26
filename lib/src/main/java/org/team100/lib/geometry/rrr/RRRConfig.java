@@ -26,18 +26,30 @@ public record RRRConfig(double q1, double q2, double q3) {
     private static final double s3 = 1.0;
 
     /**
-     * Euclidean distance in joint space, with weights.
+     * Weighted Euclidean distance in joint space.
      * 
      * You can change these weights to change how configs are selected, based on
      * their "nearness" to the current pose.
      * 
+     * This is probably not useful for any other purpose, e.g. planning paths,
+     * because it makes the idea of "velocity" really confusing.
+     * 
      * See https://arxiv.org/pdf/1808.03891
      */
-    public double distance(RRRConfig other) {
+    public double weightedDistance(RRRConfig other) {
         double l2 = 0;
         l2 += s1 * Math.pow(q1 - other.q1, 2);
         l2 += s2 * Math.pow(q2 - other.q2, 2);
         l2 += s3 * Math.pow(q3 - other.q3, 2);
+        return Math.sqrt(l2);
+    }
+
+    /** The usual unweighted Euclidean L2 metric. */
+    public double euclideanDistance(RRRConfig other) {
+        double l2 = 0;
+        l2 += Math.pow(q1 - other.q1, 2);
+        l2 += Math.pow(q2 - other.q2, 2);
+        l2 += Math.pow(q3 - other.q3, 2);
         return Math.sqrt(l2);
     }
 
@@ -66,7 +78,7 @@ public record RRRConfig(double q1, double q2, double q3) {
      * The length of the vector is one, using the RRConfig distance metric.
      */
     public static Vector<N3> unit(RRRConfig a, RRRConfig b) {
-        return b.minus(a).toVector().div(a.distance(b));
+        return b.minus(a).toVector().div(a.euclideanDistance(b));
     }
 
     public RRRConfig plus(RRRConfig other) {
@@ -78,20 +90,29 @@ public record RRRConfig(double q1, double q2, double q3) {
     }
 
     /**
-     * Choose config "closest" to q0, using the (non-Euclidean) config distance
-     * metric.
+     * Choose the config nearest to q0, using the distance metric above.
      */
-    public static RRRConfig getBest(List<RRRConfig> qAll, RRRConfig q0) {
+    public static RRRConfig nearest(List<RRRConfig> qAll, RRRConfig q0) {
         double closest = Double.POSITIVE_INFINITY;
         RRRConfig best = qAll.get(0);
         for (RRRConfig q : qAll) {
-            double d = q0.distance(q);
+            double d = q0.weightedDistance(q);
             if (d < closest) {
                 closest = d;
                 best = q;
             }
         }
         return best;
+    }
+
+    public RRRConfig evolve(RRRVelocity v0, RRRAcceleration a, double dt) {
+        return RRRConfig.fromVector(
+                toVector().plus(v0.toVector().times(dt).plus(a.toVector().times(dt * dt / 2))));
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%6.3f, %6.3f, %6.3f", q1, q2, q3);
     }
 
 }

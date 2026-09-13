@@ -58,7 +58,7 @@ class ProfileCoordinationTest implements Timeless {
             s1 = p1.calculate(DT, s1, g1);
             total_time += DT;
             max_v = Math.max(max_v, s1.v());
-            if (s1.model().near(g1, 0.01)) {
+            if (s1.state().near(g1, 0.01)) {
                 if (PRINT)
                     System.out.println("at goal at t " + total_time);
                 break;
@@ -80,7 +80,7 @@ class ProfileCoordinationTest implements Timeless {
             s2 = p2.calculate(DT, s2, g2);
             total_time += DT;
             max_v = Math.max(max_v, s2.v());
-            if (s2.model().near(g2, 0.01)) {
+            if (s2.state().near(g2, 0.01)) {
                 if (PRINT)
                     System.out.println("at goal at t " + total_time);
                 break;
@@ -121,7 +121,7 @@ class ProfileCoordinationTest implements Timeless {
             s1 = p1.calculate(DT, s1, g1);
             total_time += DT;
             max_v = Math.max(max_v, s1.v());
-            if (s1.model().near(g1, 0.01)) {
+            if (s1.state().near(g1, 0.01)) {
                 if (PRINT)
                     System.out.println("at goal at t " + total_time);
                 break;
@@ -143,7 +143,7 @@ class ProfileCoordinationTest implements Timeless {
             s2 = p2.calculate(DT, s2, g2);
             total_time += DT;
             max_v = Math.max(max_v, s2.v());
-            if (s2.model().near(g2, 0.01)) {
+            if (s2.state().near(g2, 0.01)) {
                 if (PRINT)
                     System.out.println("at goal at t " + total_time);
                 break;
@@ -259,7 +259,7 @@ class ProfileCoordinationTest implements Timeless {
             total_time += DT;
             stateX = px.calculate(DT, stateX, gx);
             stateY = py.calculate(DT, stateY, gy);
-            if (stateX.model().near(gx, PROFILE_TOLERANCE) && stateY.model().near(gy, PROFILE_TOLERANCE)) {
+            if (stateX.state().near(gx, PROFILE_TOLERANCE) && stateY.state().near(gy, PROFILE_TOLERANCE)) {
                 if (PRINT)
                     System.out.println("at goal at t " + total_time);
                 break;

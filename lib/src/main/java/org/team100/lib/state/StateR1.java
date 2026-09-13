@@ -6,7 +6,7 @@ import org.wpilib.math.interpolation.Interpolatable;
 import org.wpilib.math.util.MathUtil;
 
 /**
- * One-dimensional system state, used for system modeling. The model only
+ * One-dimensional system state, used for system modeling. The state only
  * contains position and velocity, there's no measurement of acceleration.
  * 
  * The usual state-space representation would be X = (x,v) and Xdot = (v,a).

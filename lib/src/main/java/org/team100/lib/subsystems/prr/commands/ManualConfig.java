@@ -2,25 +2,27 @@ package org.team100.lib.subsystems.prr.commands;
 
 import java.util.function.Supplier;
 
+import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.prr.PRRAcceleration;
 import org.team100.lib.geometry.prr.PRRConfig;
 import org.team100.lib.geometry.prr.PRRVelocity;
-import org.team100.lib.hid.Velocity;
+import org.team100.lib.hid.DriverVelocity;
 import org.team100.lib.subsystems.prr.SubsystemPRR;
 
 import org.wpilib.command2.Command;
 
 /** Use the operator control to "fly" the arm around in config space. */
 public class ManualConfig extends Command {
+    private static final double DT = TimedRobot100.LOOP_PERIOD_S;
 
-    private final Supplier<Velocity> m_input;
+    private final Supplier<DriverVelocity> m_input;
     private final SubsystemPRR m_subsystem;
 
     private PRRConfig m_config;
-    private PRRVelocity m_prev;
+    private PRRVelocity m_prevJv;
 
     public ManualConfig(
-            Supplier<Velocity> input,
+            Supplier<DriverVelocity> input,
             SubsystemPRR subsystem) {
         m_input = input;
         m_subsystem = subsystem;
@@ -30,14 +32,13 @@ public class ManualConfig extends Command {
     @Override
     public void initialize() {
         m_config = m_subsystem.getConfig();
-        m_prev = new PRRVelocity(0, 0, 0);
+        m_prevJv = new PRRVelocity(0, 0, 0);
     }
 
     @Override
     public void execute() {
         // input is [-1, 1]
-        Velocity input = m_input.get();
-        final double dt = 0.02;
+        DriverVelocity input = m_input.get();
         // control is velocity.
         // velocity in m/s and rad/s
         // we want full scale to be about 0.5 m/s and 0.5 rad/s
@@ -45,7 +46,9 @@ public class ManualConfig extends Command {
                 input.x() * 1.5,
                 input.y() * 3,
                 input.theta() * 3);
-        PRRConfig newC = m_config.integrate(jv, dt);
+        PRRAcceleration ja = jv.accel(m_prevJv, DT);
+
+        PRRConfig newC = m_config.evolve(m_prevJv, ja, DT);
 
         // impose limits; see CalgamesMech for more limits.
         if (newC.q1() < 0 || newC.q1() > 1.7) {
@@ -59,12 +62,12 @@ public class ManualConfig extends Command {
         }
 
         // recompute velocity and accel
-        PRRVelocity newJv = newC.diff(m_config, dt);
-        PRRAcceleration ja = newJv.diff(m_prev, dt);
+        ja = PRRAcceleration.solve(m_config, newC, m_prevJv, DT);
+        jv = PRRVelocity.evolve(m_prevJv, ja, DT);
 
         // m_subsystem.set(newC, newJv, ja);
-        m_subsystem.set(newC, newJv, ja);
+        m_subsystem.set(newC, jv, ja);
         m_config = newC;
-        m_prev = newJv;
+        m_prevJv = jv;
     }
 }

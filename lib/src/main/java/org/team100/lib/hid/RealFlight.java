@@ -52,18 +52,18 @@ public class RealFlight {
      * The square response of this joystick should be clamped by the consumer.
      */
 
-    public Velocity velocity() {
+    public DriverVelocity velocity() {
         final double dx = expo(deadband(-1.0 * clamp(scaled(1), 1), DEADBAND, 1), EXPO);
         final double dy = expo(deadband(-1.0 * clamp(scaled(0), 1), DEADBAND, 1), EXPO);
         final double dtheta = expo(deadband(-1.0 * clamp(scaled(4), 1), DEADBAND, 1), EXPO);
 
         // left = SLOW
         if (hid.getRawButton(2))
-            return new Velocity(SLOW * dx, SLOW * dy, SLOW * dtheta);
+            return new DriverVelocity(SLOW * dx, SLOW * dy, SLOW * dtheta);
         // right = MEDIUM
         if (hid.getRawButton(3))
-            return new Velocity(MEDIUM * dx, MEDIUM * dy, MEDIUM * dtheta);
-        return new Velocity(dx, dy, dtheta);
+            return new DriverVelocity(MEDIUM * dx, MEDIUM * dy, MEDIUM * dtheta);
+        return new DriverVelocity(dx, dy, dtheta);
     }
 
     public boolean resetRotation0() {

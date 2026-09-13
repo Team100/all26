@@ -11,7 +11,7 @@ The spherical wrist (left) compared with an
 offset design (right):
 <img src="compare.png" width=400/>
 
-This design allows us to decouple the kinematics
+This design permits __"kinematic decoupling,"__ dividing the
 problem into a "postional part", solving for the
 translation of the wrist center, and an "orientation
 part", solving for the rotation of the wrist.
@@ -156,7 +156,8 @@ and move the other).
 
 ## Multiple Solutions
 
-The six-DOF arm inverse kinematics produces up to eight solutions:
+The six-DOF arm inverse kinematics produces up to eight solutions,
+which we call __"postures."__ (There seems to be no standard name for this concept; this is our name.)
 
 * base alternatives
   * base ("non-flip") case, arm reaching "forward"
@@ -168,13 +169,11 @@ The six-DOF arm inverse kinematics produces up to eight solutions:
   * base case
   * opposite roll, opposite pitch, opposite tool angle
 
-Putting these three together, there are eight combinations.
+Putting these three pairs together, there are eight combinations, so, 2 * 2 * 2 = up
+to eight postures for a given pose.
 
 Many of these options may be outside the range of one or more of the
 joints.
-
-The IK code should enumerate all the solutions, and then there
-should be a "filter" that discards out-of-bounds solutions.
 
 
 ## Singularities

@@ -113,6 +113,7 @@ class Blobs(ColorAnalysis):
             # Insures that range_1 always has a value
             range_1 = 0
 
+            # Avoid divide by zero with this check
             if area >= min_pixels:
                 range_1 = math.sqrt(k_area/area)
             

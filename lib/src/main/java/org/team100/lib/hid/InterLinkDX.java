@@ -106,7 +106,7 @@ public class InterLinkDX {
         m_log_leftX = log.doubleLogger(Level.DEBUG, "left X");
     }
 
-    public Velocity velocity() {
+    public DriverVelocity velocity() {
         double dx = expo(deadband(
                 clamp(scale(m_rightY.getAsDouble(), 0.836, 0.031, 0.900), 1),
                 DEADBAND, 1),
@@ -120,8 +120,8 @@ public class InterLinkDX {
                 DEADBAND, 1),
                 EXPO);
         if (button(1))
-            return new Velocity(SLOW * dx, SLOW * dy, SLOW * dtheta);
-        return new Velocity(dx, dy, dtheta);
+            return new DriverVelocity(SLOW * dx, SLOW * dy, SLOW * dtheta);
+        return new DriverVelocity(dx, dy, dtheta);
     }
 
     public void periodic() {

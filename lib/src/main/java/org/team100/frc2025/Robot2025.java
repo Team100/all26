@@ -6,18 +6,16 @@ import org.team100.frc2025.robot.Machinery2025;
 import org.team100.frc2025.robot.Prewarmer2025;
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.Takt;
-import org.team100.lib.config.Identity;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
-import org.team100.lib.framework.SerialNumber;
 import org.team100.lib.framework.TimedRobot100;
+import org.team100.lib.logging.LoggerFactory;
+import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.RobotLog;
-import org.team100.lib.util.Banner;
+import org.team100.lib.util.Startup;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.CommandScheduler;
 import org.wpilib.networktables.NetworkTableInstance;
-import org.wpilib.smartdashboard.SmartDashboard;
-import org.wpilib.system.WPILibVersion;
 
 public class Robot2025 extends TimedRobot100 {
 
@@ -27,31 +25,13 @@ public class Robot2025 extends TimedRobot100 {
     private final Binder2025 m_binder;
 
     public Robot2025() {
-        Banner.printBanner();
-
-        // We want the CommandScheduler, not LiveWindow.
-        enableLiveWindowInTest(false);
-
-        // This is for setting up LaserCAN devices.
-        // CanBridge.runTCP();
-
-        System.out.printf("WPILib Version: %s\n", WPILibVersion.Version);
-        System.out.printf("RoboRIO serial number: %s\n", SerialNumber.get());
-        System.out.printf("Identity: %s\n", Identity.instance.name());
-        // RobotController.setBrownoutVoltage(5.5);
-        // DriverStation.silenceJoystickConnectionWarning(true);
-        Experiments.instance.show();
-
-        // Log what the scheduler is doing. Use "withName()".
-        SmartDashboard.putData(CommandScheduler.getInstance());
-
-        m_robotLog = new RobotLog();
-
+        Startup.start();
+        LoggerFactory log = Logging.instance().rootLogger;
+        m_robotLog = new RobotLog(log);
         m_machinery = new Machinery2025(m_robotLog.totalCurrentLog());
         m_allAutons = new AllAutons2025(m_machinery);
         m_binder = new Binder2025(m_machinery);
         m_binder.bind();
-
         Prewarmer2025.init(m_machinery);
     }
 
@@ -71,7 +51,7 @@ public class Robot2025 extends TimedRobot100 {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////
     //
     // INITIALIZERS, DO NOT CHANGE THESE
     //
@@ -96,7 +76,7 @@ public class Robot2025 extends TimedRobot100 {
         m_allAutons.close();
     }
 
-    /////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
     //
     // LEAVE ALL THESE EMPTY
     //

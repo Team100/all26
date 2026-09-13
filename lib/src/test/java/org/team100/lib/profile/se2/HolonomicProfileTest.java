@@ -46,7 +46,7 @@ class HolonomicProfileTest implements Timeless {
         hp.solve(i, g);
         ControlSE2 s = i.control();
         for (double t = 0; t < 10; t += 0.02) {
-            s = hp.calculate(s.model(), g);
+            s = hp.calculate(s.state(), g);
             if (DEBUG)
                 System.out.printf("%.2f %.3f %.3f\n", t, s.x().x(), s.y().x());
         }
@@ -64,7 +64,7 @@ class HolonomicProfileTest implements Timeless {
         hp.solve(i, g);
         ControlSE2 s = i.control();
         for (double t = 0; t < 10; t += 0.02) {
-            s = hp.calculate(s.model(), g);
+            s = hp.calculate(s.state(), g);
             if (DEBUG)
                 System.out.printf("%.2f %.3f %.3f\n", t, s.x().x(), s.y().x());
         }
@@ -78,7 +78,7 @@ class HolonomicProfileTest implements Timeless {
         hp.solve(i, g);
         ControlSE2 s = i.control();
         for (double t = 0; t < 10; t += 0.02) {
-            s = hp.calculate(s.model(), g);
+            s = hp.calculate(s.state(), g);
             if (DEBUG)
                 System.out.printf("%.2f %.3f %.3f\n", t, s.x().x(), s.y().x());
         }

@@ -45,7 +45,7 @@ public class TrajectoryReferenceSE2 implements ReferenceSE2 {
 
     @Override
     public StateSE2 current() {
-        StateSE2 current = sample(progress()).model();
+        StateSE2 current = sample(progress()).state();
         m_log_current.log(() -> current);
         return current;
     }
@@ -68,7 +68,7 @@ public class TrajectoryReferenceSE2 implements ReferenceSE2 {
     public StateSE2 goal() {
         TrajectorySE2Entry entry = m_trajectory.getLastPoint();
         TrajectorySE2Point point = entry.point();
-        StateSE2 goal = point.control().model();
+        StateSE2 goal = point.control().state();
         m_log_goal.log(() -> goal);
         return goal;
     }

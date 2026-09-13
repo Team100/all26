@@ -102,26 +102,26 @@ public class NudgingVisionUpdater implements VisionUpdater {
             SwerveState sample, NoisyPose2d noisyMeasurement) {
 
         // Nudge the sample pose towards the measurement.
-        StateSE2 sampleModel = sample.state();
+        StateSE2 sampleState = sample.state();
 
         NoisyPose2d noisySample = new NoisyPose2d(
-                sampleModel.pose(), sample.noise());
+                sampleState.pose(), sample.noise());
 
         NoisyPose2d nudged = nudge(noisySample, noisyMeasurement);
 
         // Velocity is unchanged.
-        StateSE2 model = new StateSE2(nudged.pose(), sampleModel.velocity());
+        StateSE2 newState = new StateSE2(nudged.pose(), sampleState.velocity());
 
         IsotropicNoiseSE2 noise = nudged.noise();
 
         // Odometry and gyro measurements are unchanged.
-        SwerveState newState = new SwerveState(
-                model,
+        SwerveState swerveState = new SwerveState(
+                newState,
                 noise,
                 sample.positions(),
                 sample.gyroYaw(),
                 sample.gyroBias());
-        return newState;
+        return swerveState;
     }
 
     /**

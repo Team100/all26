@@ -24,4 +24,10 @@ public record RRAcceleration(double q1ddot, double q2ddot) {
     public Vector<N2> toVector() {
         return VecBuilder.fill(q1ddot, q2ddot);
     }
+
+    public static RRAcceleration solve(RRConfig x0, RRConfig x1, RRVelocity v0, double dt) {
+        return RRAcceleration.fromVector(
+                x1.toVector().minus(x0.toVector()).minus(v0.toVector().times(dt)).times(2 / (dt * dt)));
+    }
+
 }

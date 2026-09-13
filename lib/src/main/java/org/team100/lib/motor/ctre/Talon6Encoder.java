@@ -1,9 +1,8 @@
-package org.team100.lib.sensor.position.incremental.ctre;
+package org.team100.lib.motor.ctre;
 
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.motor.ctre.Talon6Motor;
 import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 
 public class Talon6Encoder implements IncrementalEncoder {
@@ -18,19 +17,23 @@ public class Talon6Encoder implements IncrementalEncoder {
         m_log_velocity = log.doubleLogger(Level.TRACE, "velocity (rad_s)");
     }
 
+    /**
+     * Latency-compensated, represents the current Takt.
+     */
     @Override
     public double getUnwrappedPositionRad() {
-        return m_motor.getUnwrappedPositionRad();
+        // TODO: Move motor and encoder to the same package
+        return m_motor.m_position.getAsDouble();
     }
 
     @Override
     public double getVelocityRad_S() {
-        return m_motor.getVelocityRad_S();
+        return m_motor.m_velocity.getAsDouble();
     }
 
     @Override
     public double getAccelerationRad_S2() {
-        return m_motor.getAccelerationRad_S2();
+        return m_motor.m_acceleration.getAsDouble();
     }
 
     @Override
@@ -45,8 +48,10 @@ public class Talon6Encoder implements IncrementalEncoder {
      * at startup.
      */
     @Override
-    public void setUnwrappedEncoderPositionRad(double motorPositionRad) {
-        m_motor.setUnwrappedEncoderPositionRad(motorPositionRad);
+    public void setUnwrappedEncoderPositionRad(double positionRad) {
+        // TODO: move motor and encoder to the same package.
+        System.out.println("WARNING: Setting CTRE encoder position is very slow!");
+        Talon6Motor.warn(() -> m_motor.m_motor.setPosition(positionRad / (2.0 * Math.PI), 1));
     }
 
     @Override
