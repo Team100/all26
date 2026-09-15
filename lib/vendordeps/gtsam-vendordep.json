@@ -1,0 +1,32 @@
+{
+    "fileName": "gtsam-vendordep.json",
+    "name": "GTSAM Vendor Dependency",
+    "version": "0.0.4",
+    "wpilibYear": "2027_alpha5",
+    "uuid": "cd883302-12b7-4fb5-8831-4b4c7337d0b7",
+    "mavenUrls": [
+        "https://truher.github.io/repo/"
+    ],
+    "jsonUrl": "",
+    "javaDependencies": [
+        {
+            "groupId": "org.team100.gtsam-vendordep",
+            "artifactId": "gtsam-vendordep-java",
+            "version": "0.0.4"
+        }
+    ],
+    "jniDependencies": [
+        {
+            "groupId": "org.team100.gtsam-vendordep",
+            "artifactId": "gtsam-vendordep-driver",
+            "version": "0.0.4",
+            "skipInvalidPlatforms": true,
+            "isJar": false,
+            "validPlatforms": [
+                "linuxx86-64"
+            ]
+        }
+    ],
+    "cppDependencies": [
+    ]
+}
