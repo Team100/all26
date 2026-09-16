@@ -115,6 +115,7 @@ public class Robot extends TimedRobot100 {
 
     @Override
     public void disabledExit() {
+        // only show the auton when disabled
         m_autoViz.clear();
     }
 
@@ -133,7 +134,8 @@ public class Robot extends TimedRobot100 {
 
     @Override
     public void disabledInit() {
-
+        // show the auton again when disabling.
+        m_autoViz.show(m_autons.getAnnotated());
     }
 
     @Override
