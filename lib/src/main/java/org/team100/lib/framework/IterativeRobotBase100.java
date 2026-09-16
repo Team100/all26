@@ -1,36 +1,25 @@
 package org.team100.lib.framework;
 
-import java.util.ConcurrentModificationException;
-
+import org.wpilib.driverstation.DriverStationErrors;
 import org.wpilib.driverstation.internal.DriverStationBackend;
 import org.wpilib.framework.RobotBase;
 import org.wpilib.hardware.hal.ControlWord;
 import org.wpilib.hardware.hal.DriverStationJNI;
 import org.wpilib.hardware.hal.HAL;
+import org.wpilib.hardware.hal.RobotMode;
 import org.wpilib.networktables.NetworkTableInstance;
 import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.system.Watchdog;
 
 /**
- * Copy of {@link edu.wpi.first.wpilibj.IterativeRobotBase} in an effort to
- * reduce log spam.
- * 
- * TODO: redo this from 2027
+ * Copy of {@link edu.wpi.first.wpilibj.IterativeRobotBase} but with the
+ * watchdog disabled, because it spews too much into the log.
  */
 public abstract class IterativeRobotBase100 extends RobotBase {
-    private enum Mode {
-        kNone,
-        kDisabled,
-        kAutonomous,
-        kTeleop,
-        kTest
-    }
-
     private final ControlWord m_word = new ControlWord();
-    private Mode m_lastMode = Mode.kNone;
+    private RobotMode m_lastMode;
     private final double m_period;
     // private final Watchdog m_watchdog;
-    private boolean m_ntFlushEnabled = true;
-    private boolean m_lwEnabledInTest;
     private boolean m_calledDsConnected;
 
     /**
@@ -39,8 +28,6 @@ public abstract class IterativeRobotBase100 extends RobotBase {
      * @param period Period in seconds.
      */
     protected IterativeRobotBase100(double period) {
-        // We never use LiveWindow.
-        enableLiveWindowInTest(false);
         m_period = period;
         // m_watchdog = new Watchdog(period, this::printLoopOverrunMessage);
     }
@@ -50,22 +37,6 @@ public abstract class IterativeRobotBase100 extends RobotBase {
     public abstract void startCompetition();
 
     /* ----------- Overridable initialization code ----------------- */
-
-    /**
-     * Robot-wide initialization code should go here.
-     *
-     * <p>
-     * Users should override this method for default Robot-wide initialization which
-     * will be called
-     * when the robot is first powered on. It will be called exactly one time.
-     *
-     * <p>
-     * Note: This method is functionally identical to the class constructor so that
-     * should be used
-     * instead.
-     */
-    public void robotInit() {
-    }
 
     /**
      * Code that needs to know the DS state should go here.
@@ -86,7 +57,7 @@ public abstract class IterativeRobotBase100 extends RobotBase {
      * initialization
      * which will be called when the robot is first started. It will be called
      * exactly one time after
-     * RobotInit is called only when the robot is in simulation.
+     * the robot class constructor is called only when the robot is in simulation.
      */
     public void simulationInit() {
     }
@@ -125,14 +96,14 @@ public abstract class IterativeRobotBase100 extends RobotBase {
     }
 
     /**
-     * Initialization code for test mode should go here.
+     * Initialization code for utility mode should go here.
      *
      * <p>
      * Users should override this method for initialization code which will be
      * called each time the
-     * robot enters test mode.
+     * robot enters utility mode.
      */
-    public void testInit() {
+    public void utilityInit() {
     }
 
     /* ----------- Overridable periodic code ----------------- */
@@ -194,10 +165,10 @@ public abstract class IterativeRobotBase100 extends RobotBase {
 
     private boolean m_tmpFirstRun = true;
 
-    /** Periodic code for test mode should go here. */
-    public void testPeriodic() {
+    /** Periodic code for utility mode should go here. */
+    public void utilityPeriodic() {
         if (m_tmpFirstRun) {
-            System.out.println("Default testPeriodic() method... Override me!");
+            System.out.println("Default utilityPeriodic() method... Override me!");
             m_tmpFirstRun = false;
         }
     }
@@ -236,57 +207,14 @@ public abstract class IterativeRobotBase100 extends RobotBase {
     }
 
     /**
-     * Exit code for test mode should go here.
+     * Exit code for utility mode should go here.
      *
      * <p>
      * Users should override this method for code which will be called each time the
      * robot exits
-     * test mode.
+     * utility mode.
      */
-    public void testExit() {
-    }
-
-    /**
-     * Enables or disables flushing NetworkTables every loop iteration. By default,
-     * this is enabled.
-     *
-     * @param enabled True to enable, false to disable
-     * @deprecated Deprecated without replacement.
-     */
-    @Deprecated(forRemoval = true, since = "2025")
-    public void setNetworkTablesFlushEnabled(boolean enabled) {
-        m_ntFlushEnabled = enabled;
-    }
-
-    @SuppressWarnings("unused")
-    private boolean m_reportedLw;
-
-    /**
-     * Sets whether LiveWindow operation is enabled during test mode. Calling
-     *
-     * @param testLW True to enable, false to disable. Defaults to false.
-     * @throws ConcurrentModificationException if this is called during test mode.
-     */
-    public void enableLiveWindowInTest(boolean testLW) {
-        // if (isTestEnabled()) {
-        // throw new ConcurrentModificationException("Can't configure test mode while in
-        // test mode!");
-        // }
-        // if (!m_reportedLw && testLW) {
-        // HAL.report(tResourceType.kResourceType_SmartDashboard,
-        // tInstances.kSmartDashboard_LiveWindow);
-        // m_reportedLw = true;
-        // }
-        // m_lwEnabledInTest = testLW;
-    }
-
-    /**
-     * Whether LiveWindow operation is enabled during test mode.
-     *
-     * @return whether LiveWindow should be enabled in test mode.
-     */
-    public boolean isLiveWindowEnabledInTest() {
-        return m_lwEnabledInTest;
+    public void utilityExit() {
     }
 
     /**
@@ -299,24 +227,14 @@ public abstract class IterativeRobotBase100 extends RobotBase {
     }
 
     /** Loop function. */
-    protected void loopFunc() {
+    protected final void loopFunc() {
         DriverStationBackend.refreshData();
+        DriverStationBackend.refreshControlWordFromCache(m_word);
         // m_watchdog.reset();
 
-        // m_word.refresh();
-
-        // Get current mode
-        Mode mode = Mode.kNone;
-        if // (m_word.isDisabled()) {
-        // mode = Mode.kDisabled;
-        // } else if
-        (m_word.isAutonomous()) {
-            mode = Mode.kAutonomous;
-        } else if (m_word.isTeleop()) {
-            mode = Mode.kTeleop;
-            // } else if (m_word.isTest()) {
-            // mode = Mode.kTest;
-        }
+        // Get current mode; treat disabled as unknown
+        boolean enabled = m_word.isEnabled();
+        RobotMode mode = enabled ? m_word.getRobotMode() : RobotMode.UNKNOWN;
 
         if (!m_calledDsConnected && m_word.isDSAttached()) {
             m_calledDsConnected = true;
@@ -325,44 +243,36 @@ public abstract class IterativeRobotBase100 extends RobotBase {
 
         // If mode changed, call mode exit and entry functions
         if (m_lastMode != mode) {
-            // Call last mode's exit function
-            switch (m_lastMode) {
-                case kDisabled -> disabledExit();
-                case kAutonomous -> autonomousExit();
-                case kTeleop -> teleopExit();
-                case kTest -> {
-                    if (m_lwEnabledInTest) {
-                        // LiveWindow.setEnabled(false);
-                        // Shuffleboard.disableActuatorWidgets();
+            if (m_lastMode != null) {
+                // Call last mode's exit function
+                switch (m_lastMode) {
+                    case UNKNOWN -> disabledExit();
+                    case AUTONOMOUS -> autonomousExit();
+                    case TELEOPERATED -> teleopExit();
+                    case UTILITY -> utilityExit();
+                    default -> {
+                        // NOP
                     }
-                    testExit();
-                }
-                default -> {
-                    // NOP
                 }
             }
 
             // Call current mode's entry function
             switch (mode) {
-                case kDisabled -> {
+                case UNKNOWN -> {
                     disabledInit();
                     // m_watchdog.addEpoch("disabledInit()");
                 }
-                case kAutonomous -> {
+                case AUTONOMOUS -> {
                     autonomousInit();
                     // m_watchdog.addEpoch("autonomousInit()");
                 }
-                case kTeleop -> {
+                case TELEOPERATED -> {
                     teleopInit();
                     // m_watchdog.addEpoch("teleopInit()");
                 }
-                case kTest -> {
-                    if (m_lwEnabledInTest) {
-                        // LiveWindow.setEnabled(true);
-                        // Shuffleboard.enableActuatorWidgets();
-                    }
-                    testInit();
-                    // m_watchdog.addEpoch("testInit()");
+                case UTILITY -> {
+                    utilityInit();
+                    // m_watchdog.addEpoch("utilityInit()");
                 }
                 default -> {
                     // NOP
@@ -375,21 +285,21 @@ public abstract class IterativeRobotBase100 extends RobotBase {
         // Call the appropriate function depending upon the current robot mode
         DriverStationJNI.observeUserProgram(m_word.getNative());
         switch (mode) {
-            case kDisabled -> {
+            case UNKNOWN -> {
                 disabledPeriodic();
                 // m_watchdog.addEpoch("disabledPeriodic()");
             }
-            case kAutonomous -> {
+            case AUTONOMOUS -> {
                 autonomousPeriodic();
                 // m_watchdog.addEpoch("autonomousPeriodic()");
             }
-            case kTeleop -> {
+            case TELEOPERATED -> {
                 teleopPeriodic();
                 // m_watchdog.addEpoch("teleopPeriodic()");
             }
-            case kTest -> {
-                testPeriodic();
-                // m_watchdog.addEpoch("testPeriodic()");
+            case UTILITY -> {
+                utilityPeriodic();
+                // m_watchdog.addEpoch("utilityPeriodic()");
             }
             default -> {
                 // NOP
@@ -401,10 +311,6 @@ public abstract class IterativeRobotBase100 extends RobotBase {
 
         SmartDashboard.updateValues();
         // m_watchdog.addEpoch("SmartDashboard.updateValues()");
-        // LiveWindow.updateValues();
-        // m_watchdog.addEpoch("LiveWindow.updateValues()");
-        // Shuffleboard.update();
-        // m_watchdog.addEpoch("Shuffleboard.update()");
 
         if (isSimulation()) {
             HAL.simPeriodicBefore();
@@ -416,9 +322,7 @@ public abstract class IterativeRobotBase100 extends RobotBase {
         // m_watchdog.disable();
 
         // Flush NetworkTables
-        if (m_ntFlushEnabled) {
-            NetworkTableInstance.getDefault().flushLocal();
-        }
+        NetworkTableInstance.getDefault().flushLocal();
 
         // Warn on loop time overruns
         // if (m_watchdog.isExpired()) {
@@ -430,9 +334,9 @@ public abstract class IterativeRobotBase100 extends RobotBase {
     // public void printWatchdogEpochs() {
     // m_watchdog.printEpochs();
     // }
-
+    //
     // private void printLoopOverrunMessage() {
-    // DriverStation.reportWarning("Loop time of " + m_period + "s overrun\n",
+    // DriverStationErrors.reportWarning("Loop time of " + m_period + "s overrun\n",
     // false);
     // }
 }

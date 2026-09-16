@@ -1,54 +1,31 @@
 {
-  "FMS": {
-    "window": {
-      "visible": false
-    }
-  },
-  "Joysticks": {
-    "window": {
-      "visible": false
-    }
-  },
-  "System Joysticks": {
-    "window": {
-      "enabled": false
-    }
-  },
-  "keyboardJoysticks": [
-    {
-      "axisConfig": [
-        {
-          "decKey": 81,
-          "incKey": 69
-        },
-        {},
-        {
-          "decKey": 74,
-          "incKey": 76
-        },
-        {},
-        {
-          "decKey": 87,
-          "incKey": 83
-        },
-        {
-          "decKey": 68,
-          "incKey": 65
-        }
-      ],
-      "axisCount": 6,
-      "buttonCount": 7,
-      "buttonKeys": [
-        49,
-        50,
-        51,
-        52,
-        53,
-        54,
-        55
-      ],
-      "povConfig": [
-        {
+      "FMS": {"window": {"visible": false}},
+      "Joysticks": {"window": {"visible": false}},
+      "System Joysticks": {"window": {"enabled": false}},
+      "keyboardJoysticks": [{
+        "axisConfig": [{
+          "decKey": 549,
+          "incKey": 546
+        }, {
+          "decKey": 564,
+          "incKey": 568
+        }, {
+          "decKey": 550,
+          "incKey": 562
+        }, {
+          "decKey": 554,
+          "incKey": 556
+        }, {
+          "decKey": 557,
+          "incKey": 555
+        }, {
+          "decKey": 560,
+          "incKey": 566
+        }],
+        "axisCount": 6,
+        "buttonCount": 9,
+        "buttonKeys": [571, 569, 548, 567, 547, 559, 558, 597, 599],
+        "povConfig": [{
           "key0": 265,
           "key180": 264,
           "key270": 263,
