@@ -8,12 +8,13 @@ import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.RotaryMechanism;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
-import org.team100.lib.sensor.position.absolute.HomingRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
+import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -31,7 +32,7 @@ public class DiscusMech extends SubsystemBase {
 
     private final RotaryMechanism m_mech;
 
-    private final HomingRotaryPositionSensor m_sensor;
+    private final RotaryPositionSensor m_sensor;
 
     public DiscusMech(LoggerFactory parent, TotalCurrentLog currentLog) {
         LoggerFactory logger = parent.type(this);
@@ -40,9 +41,9 @@ public class DiscusMech extends SubsystemBase {
         PIDConstants pid = PIDConstants.makePositionPID(0.5, 0, 0.1); // 2.0
 
         Friction friction = new Friction(0.16, 0.15, 0, 0);
-
+        Motor motor;
         if (RobotBase.isReal()) {
-            Falcon500Motor motor = new Falcon500Motor(
+            motor = new Falcon500Motor(
                     logger,
                     currentLog,
                     new CanId(36),
@@ -51,28 +52,17 @@ public class DiscusMech extends SubsystemBase {
                     new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
                     friction,
                     pid);
-            m_sensor = new HomingRotaryPositionSensor(
-                    new ProxyRotaryPositionSensor(motor.encoder(), 1.0));
-            m_mech = new RotaryMechanism(
-                    logger,
-                    motor,
-                    m_sensor,
-                    1.0,
-                    -100.0,
-                    100.0);
         } else {
-            SimulatedMotor motor = new SimulatedMotor(logger, 600);
-            m_sensor = new HomingRotaryPositionSensor(
-                    new ProxyRotaryPositionSensor(
-                            motor.encoder(), 1.0));
-            m_mech = new RotaryMechanism(
-                    logger,
-                    motor,
-                    m_sensor,
-                    1.0,
-                    -100.0,
-                    100.0);
+            motor = new SimulatedMotor(logger, 600);
         }
+        m_sensor = new ProxyRotaryPositionSensor(motor.encoder(), 1.0);
+        m_mech = new RotaryMechanism(
+                logger,
+                motor,
+                m_sensor,
+                1.0,
+                -100.0,
+                100.0);
     }
 
     /** Update position by adding. */
