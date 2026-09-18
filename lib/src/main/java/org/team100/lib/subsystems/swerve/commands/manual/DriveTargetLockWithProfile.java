@@ -128,7 +128,6 @@ public class DriveTargetLockWithProfile extends Command {
 
     @Override
     public void execute() {
-        // TODO: control noise in this input
         StateSE2 state = m_drive.getState();
 
         // Feedback based on the current state and the previous setpoint.

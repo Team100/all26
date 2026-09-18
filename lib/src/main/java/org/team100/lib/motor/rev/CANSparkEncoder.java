@@ -32,8 +32,6 @@ public class CANSparkEncoder implements IncrementalEncoder {
 
     @Override
     public double getUnwrappedPositionRad() {
-        // TODO: move the two REV things into the same package so this can be
-        // package-private.
         return m_motor.m_position.getAsDouble();
     }
 
@@ -49,8 +47,6 @@ public class CANSparkEncoder implements IncrementalEncoder {
 
     @Override
     public void setUnwrappedEncoderPositionRad(double motorPositionRad) {
-        // TODO: move the two REV things into the same package so this can be
-        // package-private.
         CANSparkMotor.warn(() -> m_motor.m_encoder.setPosition(motorPositionRad / (2.0 * Math.PI)));
     }
 

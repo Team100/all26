@@ -69,7 +69,6 @@ public class SimulatedRotaryPositionSensor implements RotaryPositionSensor {
     public void setUnwrappedEncoderPositionRad(double x) {
         // since this integrates the underlying sensor, we can just
         // force the "current measurement" and it should just work?
-        // TODO: make sure this works.
         m_positionRad = x;
     }
 

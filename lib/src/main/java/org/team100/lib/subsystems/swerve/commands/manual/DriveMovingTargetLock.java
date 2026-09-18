@@ -107,8 +107,6 @@ public class DriveMovingTargetLock extends Command {
     /**
      * Null to skip override.
      * 
-     * TODO: control omega noise
-     * 
      * @param omega override. avoid noise in this input.
      */
     private void actuate(Double omega) {

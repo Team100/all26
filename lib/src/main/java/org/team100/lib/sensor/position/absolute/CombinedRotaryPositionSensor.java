@@ -94,7 +94,7 @@ public class CombinedRotaryPositionSensor implements RotaryPositionSensor {
 
         double absolutePosition = Math.atan2(sin, cos);
 
-        m_incremental.setEncoderPosition(absolutePosition);
+        m_incremental.setUnwrappedEncoderPositionRad(absolutePosition);
         m_synchronized = true;
     }
 

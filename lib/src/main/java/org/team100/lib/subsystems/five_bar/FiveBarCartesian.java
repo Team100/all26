@@ -184,8 +184,8 @@ public class FiveBarCartesian extends SubsystemBase {
      */
     private void resetEncoderPosition() {
         // these match the real apparatus, more or less.
-        m_sensorP1.setEncoderPosition(-0.35);
-        m_sensorP5.setEncoderPosition(1.22);
+        m_sensorP1.setUnwrappedEncoderPositionRad(-0.35);
+        m_sensorP5.setUnwrappedEncoderPositionRad(1.22);
     }
 
     /////////////////////
