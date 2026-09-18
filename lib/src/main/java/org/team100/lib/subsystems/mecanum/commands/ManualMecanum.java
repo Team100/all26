@@ -80,7 +80,7 @@ public class ManualMecanum extends Command {
         VelocitySE2 scaled = VelocitySE2.scale(
                 clippedOrSquashed, m_maxVX, m_maxOmega);
         // Apply field-relative limits.
-        if (Experiments.instance.enabled(Experiment.UseSwerveLimiter)) {
+        if (Experiments.INSTANCE.enabled(Experiment.UseSwerveLimiter)) {
             scaled = m_limiter.apply(scaled);
         }
         // Compute field-relative accel from backwards finite difference.

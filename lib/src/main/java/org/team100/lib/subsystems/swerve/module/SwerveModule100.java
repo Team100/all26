@@ -3,7 +3,6 @@ package org.team100.lib.subsystems.swerve.module;
 import java.util.List;
 import java.util.Optional;
 
-import org.team100.lib.config.Identity;
 import org.team100.lib.dynamics.swerve.SwerveEffort.ModuleEffort;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
@@ -16,7 +15,7 @@ import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.music.Player;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleState100;
-
+import org.wpilib.framework.RobotBase;
 import org.wpilib.math.geometry.Rotation2d;
 
 /**
@@ -144,15 +143,9 @@ public abstract class SwerveModule100 implements Player {
     SwerveModulePosition100 getPosition() {
         double driveM = m_drive.getPositionM();
         double unwrappedAngleRad = m_steer.getUnwrappedPositionRad();
-        switch (Identity.instance) {
-            case SWERVE_ONE:
-            case SWERVE_TWO:
-            case COMP_BOT:
-                driveM = correctPositionForSteering(driveM, unwrappedAngleRad);
-                break;
-            case BLANK:
-            default:
-                break;
+        if (RobotBase.isReal()) {
+            // Simulation does not have drive/steer coupling.
+            driveM = correctPositionForSteering(driveM, unwrappedAngleRad);
         }
         return new SwerveModulePosition100(
                 driveM,
@@ -183,7 +176,7 @@ public abstract class SwerveModule100 implements Player {
             throw new IllegalArgumentException("actuation needs a real angle");
         final Rotation2d nextWrappedAngle;
         if (effort.angle().isPresent()
-                && Experiments.instance.enabled(
+                && Experiments.INSTANCE.enabled(
                         Experiment.SwerveDynamicsLateral)) {
             // use the slip angle from dynamics.
             nextWrappedAngle = effort.angle().get();
@@ -200,7 +193,7 @@ public abstract class SwerveModule100 implements Player {
         double nextSpeed = correctSpeedForSteering(
                 nextWrapped.speed(), nextOmega);
         m_log_speed.log(() -> nextSpeed);
-        if (Experiments.instance.enabled(Experiment.SwerveDynamicsLongitudinal)) {
+        if (Experiments.INSTANCE.enabled(Experiment.SwerveDynamicsLongitudinal)) {
             // add the force from dynamics.
             m_drive.setVelocity(nextSpeed, effort.f());
         } else {
@@ -209,7 +202,7 @@ public abstract class SwerveModule100 implements Player {
         }
         // Steering omega may be a source of noise, so optionally ignore it.
         double omega = nextOmega;
-        if (Experiments.instance.enabled(Experiment.SteerWithoutVelocity)) {
+        if (Experiments.INSTANCE.enabled(Experiment.SteerWithoutVelocity)) {
             omega = 0;
         }
 
@@ -231,7 +224,7 @@ public abstract class SwerveModule100 implements Player {
         m_previousDesiredWrappedAngle = nextWrappedAngle;
     }
 
-    /////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////
 
     /**
      * Correct the desired speed for steering coupling.

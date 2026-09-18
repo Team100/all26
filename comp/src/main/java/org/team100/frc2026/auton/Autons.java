@@ -29,94 +29,26 @@ public class Autons {
         LoggerFactory log = Logging.instance().rootLogger.name("Auton");
         m_autonChooser.add(new JustShoot(machinery));
         m_autonChooser.add(new DoNothing());
-        // m_autonChooser.add(new RightTrenchLeave(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
-        // m_autonChooser.add(new LeftSequenceExample(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
-        // m_autonChooser.add(new AutonTest(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
-        // m_autonChooser.add(new AutonTest2(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
 
-        // m_autonChooser.add(new Auton2(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // // machinery));
-        // m_autonChooser.add(new LeftBumpPreloadedAuton(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
-        // m_autonChooser.add(new LeftBumpFullSweepAuton(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
-        // m_autonChooser.add(new LeftBumpHalfSweepAuton(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
-        // m_autonChooser.add(new LeftLobAuton(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
-        // m_autonChooser.add(new CenterPreloadedAuton(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
-        // m_autonChooser.add(new CenterFullSweepAuton(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
-        // m_autonChooser.add(new CenterHalfSweepAuton(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
+        // These are for training, see
+        // https://docs.google.com/document/d/1sSncYjKAp9Fh6xd_zrAt39hOhBcCyGkcvSjClX0NMxk
+        m_autonChooser.add(new AheadTwoMeters(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+        m_autonChooser.add(new AheadTwoMetersWithRotation(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+        m_autonChooser.add(new UTurnWithRotation(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
 
-        // m_autonChooser.add(new RightBumpPreloadedAuton(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
-        // m_autonChooser.add(new RightBumpFullSweepAuton(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
-        // m_autonChooser.add(new RightBumpHalfSweepAuton(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
-        // m_autonChooser.add(new RightBumpDisruptAuton(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery));
-        // m_autonChooser.add(new DoubleCircleAuton(
-        // log,
-        // machinery.m_swerveKinodynamics,
-        // controller,
-        // machinery.m_solver,
-        // machinery));
+        // The following were from CVE in 2026
         m_autonChooser.add(new ScallopLobAuton(
                 log,
                 machinery.m_swerveKinodynamics,

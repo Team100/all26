@@ -2,8 +2,8 @@ package org.team100.frc2026.auton;
 
 import org.junit.jupiter.api.Test;
 import org.team100.frc2026.robot.Machinery;
-import org.team100.lib.controller.se2.ControllerFactorySE2;
 import org.team100.lib.controller.se2.ControllerSE2;
+import org.team100.lib.controller.se2.FullStateControllerSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -16,7 +16,7 @@ public class DoubleCircleAutonTest {
     private static final LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
     private static final TotalCurrentLog currentLog = new TotalCurrentLog(log);
     private static final SwerveKinodynamics dynamics = SwerveKinodynamicsFactory.get();
-    private static final ControllerSE2 controller = ControllerFactorySE2.byIdentity(log);
+    private static final ControllerSE2 controller = new FullStateControllerSE2(log, 3.0, 3.5, 0, 0, 0.01, 0.01, 0.01, 0.01);
     private static final Machinery machinery = new Machinery(currentLog);
 
     @Test

@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         Banner.printBanner();
-        Experiments.instance.show();
+        Experiments.INSTANCE.show();
         Logging log = Logging.instance();
         LoggerFactory fieldLogger = log.fieldLogger;
         LoggerFactory rootLogger = log.rootLogger;

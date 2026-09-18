@@ -52,7 +52,7 @@ public class Robot extends TimedRobot100 {
         m_setup.run();
         m_robotLog.periodic();
 
-        if (Experiments.instance.enabled(Experiment.FlushOften)) {
+        if (Experiments.INSTANCE.enabled(Experiment.FlushOften)) {
             NetworkTableInstance.getDefault().flush();
         }
     }

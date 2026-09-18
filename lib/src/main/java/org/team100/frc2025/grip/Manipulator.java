@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
@@ -21,10 +20,9 @@ import org.team100.lib.music.Music;
 import org.team100.lib.music.Player;
 import org.team100.lib.sensor.distance.LaserCan100;
 import org.team100.lib.util.CanId;
-
-// import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
+import org.wpilib.framework.RobotBase;
 
 /**
  * The manipulator from the Calgames robot in 2025
@@ -53,59 +51,57 @@ public class Manipulator extends SubsystemBase implements Music {
         LoggerFactory leftMotorLog = log.name("left");
         LoggerFactory rightMotorLog = log.name("right");
         coralLogger = log.booleanLogger(Level.TRACE, "Coral Detection");
-        switch (Identity.instance) {
-            case COMP_BOT -> {
-                // Set specific parameters for the competition robot
-                KrakenX60Motor leftMotor = new KrakenX60Motor(
-                        leftMotorLog, currentLog, new CanId(19),
-                        NeutralMode100.COAST,
-                        MotorPhase.FORWARD,
-                        new CurrentLimit(40, 40),
-                        new Friction(0.900, 0.900, 0.0, 0.5),
-                        PIDConstants.zero());
-                KrakenX60Motor rightMotor = new KrakenX60Motor(
-                        rightMotorLog, currentLog, new CanId(20), NeutralMode100.COAST,
-                        MotorPhase.REVERSE,
-                        new CurrentLimit(40, 40),
-                        new Friction(0.900, 0.900, 0.0, 0.5),
-                        PIDConstants.zero());
-                KrakenX60Motor algaeMotor = new KrakenX60Motor(
-                        algaeMotorLog, currentLog, new CanId(21), NeutralMode100.COAST,
-                        MotorPhase.FORWARD,
-                        new CurrentLimit(120, 120),
-                        new Friction(0.900, 0.900, 0.0, 0.5),
-                        PIDConstants.zero());
-                algaeMotor.setTorqueLimit(4);
-                m_algaeMotor = algaeMotor;
-                m_rightLaser = new LaserCan100(new CanId(17));
-                m_frontLaser = new LaserCan100(new CanId(16));
-                m_backLaser = new LaserCan100(new CanId(18));
-                m_leftLaser = new LaserCan100(new CanId(15));
-                m_leftMech = new LinearMechanism(leftMotorLog, leftMotor, leftMotor.encoder(),
-                        16, 0.1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_rightMech = new LinearMechanism(rightMotorLog, rightMotor, rightMotor.encoder(),
-                        16, 0.1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_algaeMech = new LinearMechanism(algaeMotorLog, algaeMotor, algaeMotor.encoder(),
-                        16, 0.1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-            }
-            default -> {
-                SimulatedMotor leftMotor = new SimulatedMotor(log, 600);
-                SimulatedMotor rightMotor = new SimulatedMotor(log, 600);
-                // simulated algae motor gets overloaded 2 sec after starting
-                LazySimulatedMotor algaeMotor = new LazySimulatedMotor(
-                        log, new SimulatedMotor(log, 600), 2);
-                m_algaeMotor = algaeMotor;
-                m_leftMech = new LinearMechanism(log, leftMotor, leftMotor.encoder(),
-                        1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_rightMech = new LinearMechanism(log, rightMotor, rightMotor.encoder(),
-                        1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_algaeMech = new LinearMechanism(log, algaeMotor, algaeMotor.encoder(),
-                        1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_rightLaser = new LaserCan100();
-                m_frontLaser = new LaserCan100();
-                m_backLaser = new LaserCan100();
-                m_leftLaser = new LaserCan100();
-            }
+        if (RobotBase.isReal()) {
+            // Set specific parameters for the competition robot
+            KrakenX60Motor leftMotor = new KrakenX60Motor(
+                    leftMotorLog, currentLog, new CanId(19),
+                    NeutralMode100.COAST,
+                    MotorPhase.FORWARD,
+                    new CurrentLimit(40, 40),
+                    new Friction(0.900, 0.900, 0.0, 0.5),
+                    PIDConstants.zero());
+            KrakenX60Motor rightMotor = new KrakenX60Motor(
+                    rightMotorLog, currentLog, new CanId(20), NeutralMode100.COAST,
+                    MotorPhase.REVERSE,
+                    new CurrentLimit(40, 40),
+                    new Friction(0.900, 0.900, 0.0, 0.5),
+                    PIDConstants.zero());
+            KrakenX60Motor algaeMotor = new KrakenX60Motor(
+                    algaeMotorLog, currentLog, new CanId(21), NeutralMode100.COAST,
+                    MotorPhase.FORWARD,
+                    new CurrentLimit(120, 120),
+                    new Friction(0.900, 0.900, 0.0, 0.5),
+                    PIDConstants.zero());
+            algaeMotor.setTorqueLimit(4);
+            m_algaeMotor = algaeMotor;
+            m_rightLaser = new LaserCan100(new CanId(17));
+            m_frontLaser = new LaserCan100(new CanId(16));
+            m_backLaser = new LaserCan100(new CanId(18));
+            m_leftLaser = new LaserCan100(new CanId(15));
+            m_leftMech = new LinearMechanism(leftMotorLog, leftMotor, leftMotor.encoder(),
+                    16, 0.1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_rightMech = new LinearMechanism(rightMotorLog, rightMotor, rightMotor.encoder(),
+                    16, 0.1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_algaeMech = new LinearMechanism(algaeMotorLog, algaeMotor, algaeMotor.encoder(),
+                    16, 0.1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        } else {
+            SimulatedMotor leftMotor = new SimulatedMotor(log, 600);
+            SimulatedMotor rightMotor = new SimulatedMotor(log, 600);
+            // simulated algae motor gets overloaded 2 sec after starting
+            LazySimulatedMotor algaeMotor = new LazySimulatedMotor(
+                    log, new SimulatedMotor(log, 600), 2);
+            m_algaeMotor = algaeMotor;
+            m_leftMech = new LinearMechanism(log, leftMotor, leftMotor.encoder(),
+                    1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_rightMech = new LinearMechanism(log, rightMotor, rightMotor.encoder(),
+                    1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_algaeMech = new LinearMechanism(log, algaeMotor, algaeMotor.encoder(),
+                    1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_rightLaser = new LaserCan100();
+            m_frontLaser = new LaserCan100();
+            m_backLaser = new LaserCan100();
+            m_leftLaser = new LaserCan100();
+
         }
         m_players = List.of(m_leftMech, m_rightMech, m_algaeMech);
 
@@ -141,9 +137,10 @@ public class Manipulator extends SubsystemBase implements Music {
     }
 
     public boolean hasCoral() {
-        if (Identity.instance.equals(Identity.BLANK))
+        if (RobotBase.isReal()) {
+            // return coralIsClose(m_backLaser);
             return false;
-        // return coralIsClose(m_backLaser);
+        }
         return false;
     }
 
@@ -166,11 +163,11 @@ public class Manipulator extends SubsystemBase implements Music {
         } else {
             m_algaeMech.setDutyCycle(-1);
             // if (coralIsClose(m_leftLaser)) {
-            //     m_leftMech.setDutyCycle(0.5);
-            //     m_rightMech.setDutyCycle(-0.5);
+            // m_leftMech.setDutyCycle(0.5);
+            // m_rightMech.setDutyCycle(-0.5);
             // } else {
-            //     m_leftMech.setDutyCycle(-0.5);
-            //     m_rightMech.setDutyCycle(0.5);
+            // m_leftMech.setDutyCycle(-0.5);
+            // m_rightMech.setDutyCycle(0.5);
             // }
         }
     }
@@ -203,7 +200,7 @@ public class Manipulator extends SubsystemBase implements Music {
         return m_algaeMotor.getStatorCurrent() > 50;
     }
 
-    ////////////////////////////////////////////////
+    /////////////////////////////////////////////
     //
     // COMMANDS
 
@@ -245,7 +242,7 @@ public class Manipulator extends SubsystemBase implements Music {
         return run(this::ejectCenterBack);
     }
 
-    /////////////////////////////////////////////////
+    //////////////////////////////////////////////
 
     /**
      * Set high current limits.
@@ -285,7 +282,7 @@ public class Manipulator extends SubsystemBase implements Music {
         m_algaeMotor.periodic();
         coralLogger.log(this::hasCoral);
     }
-    //////////////////////////////////////////////
+    ///////////////////////////////////////////
 
     // private static boolean coralIsClose(LaserCan100 sensor) {
     // Measurement m = sensor.getMeasurement();

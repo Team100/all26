@@ -4,12 +4,10 @@ import java.util.function.DoubleSupplier;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.RotaryMechanism;
-import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
@@ -19,6 +17,7 @@ import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
+import org.wpilib.framework.RobotBase;
 
 /**
  * Discus version that uses the "mechanism" abstraction,
@@ -32,8 +31,6 @@ public class DiscusMech extends SubsystemBase {
 
     private final RotaryMechanism m_mech;
 
-    private final Motor m_motor;
-
     private final HomingRotaryPositionSensor m_sensor;
 
     public DiscusMech(LoggerFactory parent, TotalCurrentLog currentLog) {
@@ -44,49 +41,37 @@ public class DiscusMech extends SubsystemBase {
 
         Friction friction = new Friction(0.16, 0.15, 0, 0);
 
-        switch (Identity.instance) {
-            case TEAM100_2018 -> {
-                Falcon500Motor motor = new Falcon500Motor(
-                        logger,
-                        currentLog,
-                        new CanId(36),
-                        NeutralMode100.COAST,
-                        MotorPhase.REVERSE,
-                        new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
-                        friction,
-                        pid);
-
-                m_motor = motor;
-
-                m_sensor = new HomingRotaryPositionSensor(
-                        new ProxyRotaryPositionSensor(motor.encoder(), 1.0));
-
-                m_mech = new RotaryMechanism(
-                        logger,
-                        motor,
-                        m_sensor,
-                        1.0,
-                        -100.0,
-                        100.0);
-
-            }
-            default -> {
-                SimulatedMotor motor = new SimulatedMotor(logger, 600);
-                m_motor = motor;
-
-                m_sensor = new HomingRotaryPositionSensor(
-                        new ProxyRotaryPositionSensor(
-                                motor.encoder(), 1.0));
-
-                m_mech = new RotaryMechanism(
-                        logger,
-                        motor,
-                        m_sensor,
-                        1.0,
-                        -100.0,
-                        100.0);
-
-            }
+        if (RobotBase.isReal()) {
+            Falcon500Motor motor = new Falcon500Motor(
+                    logger,
+                    currentLog,
+                    new CanId(36),
+                    NeutralMode100.COAST,
+                    MotorPhase.REVERSE,
+                    new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
+                    friction,
+                    pid);
+            m_sensor = new HomingRotaryPositionSensor(
+                    new ProxyRotaryPositionSensor(motor.encoder(), 1.0));
+            m_mech = new RotaryMechanism(
+                    logger,
+                    motor,
+                    m_sensor,
+                    1.0,
+                    -100.0,
+                    100.0);
+        } else {
+            SimulatedMotor motor = new SimulatedMotor(logger, 600);
+            m_sensor = new HomingRotaryPositionSensor(
+                    new ProxyRotaryPositionSensor(
+                            motor.encoder(), 1.0));
+            m_mech = new RotaryMechanism(
+                    logger,
+                    motor,
+                    m_sensor,
+                    1.0,
+                    -100.0,
+                    100.0);
         }
     }
 
@@ -114,7 +99,7 @@ public class DiscusMech extends SubsystemBase {
         return m_mech.getWrappedPositionRad();
     }
 
-    //////////////////////
+    ////////////////////
 
     /** For homing; ignores feasibility and limits. */
     private void setDutyCycle(double p) {
@@ -129,7 +114,7 @@ public class DiscusMech extends SubsystemBase {
         m_mech.setUnwrappedEncoderPositionRad(0);
     }
 
-    ///////////////////////
+    /////////////////////
     //
     // Commands
 

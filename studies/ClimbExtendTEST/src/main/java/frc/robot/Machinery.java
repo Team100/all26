@@ -178,7 +178,7 @@ public class Machinery {
         //
         // CONTROLLER
         //
-        m_holonomicController = ControllerFactorySE2.byIdentity(driveLog);
+        m_holonomicController = ControllerFactorySE2.fieldRelativeGoodPIDF(driveLog);
     }
 
     /**

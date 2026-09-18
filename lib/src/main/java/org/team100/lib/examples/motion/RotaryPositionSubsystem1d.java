@@ -2,7 +2,6 @@ package org.team100.lib.examples.motion;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.FullStateFeedback;
@@ -27,9 +26,9 @@ import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OnboardAngularPositionServo;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
-
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
+import org.wpilib.framework.RobotBase;
 
 /**
  * Demonstrates how to assemble a one-dimensional subsystem with positional
@@ -87,48 +86,39 @@ public class RotaryPositionSubsystem1d extends SubsystemBase {
                 positionTolerance,
                 velocityTolerance);
 
-        /*
-         * Here we use the Team 100 "Identity" mechanism to allow different
-         * configurations for different hardware. The most important distinction here is
-         * for simulation.
-         */
-        switch (Identity.instance) {
-            case COMP_BOT -> {
-                // these constants only apply to the COMP_BOT case.
-                // note the pattern here: using a variable is a way to label the thing
-                // without needing to write a comment.
-                int supplyLimit = 60;
-                int statorLimit = 90;
-                double inputOffset = 0.135541;
-                PIDConstants pid = PIDConstants.makeVelocityPID(0.05);
-                Friction friction = new Friction(0.100, 0.100, 0.0, 0.1);
-                KrakenX60Motor motor = new KrakenX60Motor(
-                        log, currentLog, new CanId(1),
-                        NeutralMode100.COAST, MotorPhase.REVERSE,
-                        new CurrentLimit(statorLimit, supplyLimit), friction, pid);
-                RotaryPositionSensor sensor = new AS5048RotaryPositionSensor(
-                        log, new RoboRioChannel(5), inputOffset, EncoderDrive.DIRECT);
-                RotaryMechanism mech = new RotaryMechanism(
-                        log, motor, sensor, GEAR_RATIO, MIN_POSITION, MAX_POSITION);
-                m_servo = new OnboardAngularPositionServo(
-                        log, mech, dynamics, ref, feedback);
-                m_servo.reset();
-            }
-            default -> {
-                SimulatedMotor motor = new SimulatedMotor(log, 600);
-                IncrementalEncoder encoder = motor.encoder();
-                SimulatedRotaryPositionSensor sensor = new SimulatedRotaryPositionSensor(
-                        log, encoder, GEAR_RATIO);
-                RotaryMechanism mech = new RotaryMechanism(
-                        log, motor, sensor, GEAR_RATIO, MIN_POSITION, MAX_POSITION);
-                m_servo = new OnboardAngularPositionServo(
-                        log, mech, dynamics, ref, feedback);
-                m_servo.reset();
-            }
+        if (RobotBase.isReal()) {
+            // note the pattern here: using a variable is a way to label the thing
+            // without needing to write a comment.
+            int supplyLimit = 60;
+            int statorLimit = 90;
+            double inputOffset = 0.135541;
+            PIDConstants pid = PIDConstants.makeVelocityPID(0.05);
+            Friction friction = new Friction(0.100, 0.100, 0.0, 0.1);
+            KrakenX60Motor motor = new KrakenX60Motor(
+                    log, currentLog, new CanId(1),
+                    NeutralMode100.COAST, MotorPhase.REVERSE,
+                    new CurrentLimit(statorLimit, supplyLimit), friction, pid);
+            RotaryPositionSensor sensor = new AS5048RotaryPositionSensor(
+                    log, new RoboRioChannel(5), inputOffset, EncoderDrive.DIRECT);
+            RotaryMechanism mech = new RotaryMechanism(
+                    log, motor, sensor, GEAR_RATIO, MIN_POSITION, MAX_POSITION);
+            m_servo = new OnboardAngularPositionServo(
+                    log, mech, dynamics, ref, feedback);
+            m_servo.reset();
+        } else {
+            SimulatedMotor motor = new SimulatedMotor(log, 600);
+            IncrementalEncoder encoder = motor.encoder();
+            SimulatedRotaryPositionSensor sensor = new SimulatedRotaryPositionSensor(
+                    log, encoder, GEAR_RATIO);
+            RotaryMechanism mech = new RotaryMechanism(
+                    log, motor, sensor, GEAR_RATIO, MIN_POSITION, MAX_POSITION);
+            m_servo = new OnboardAngularPositionServo(
+                    log, mech, dynamics, ref, feedback);
+            m_servo.reset();
         }
     }
 
-    ///////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
     //
     // ACTIONS
     //
@@ -142,7 +132,7 @@ public class RotaryPositionSubsystem1d extends SubsystemBase {
         m_servo.setPositionDirect(goal, 0);
     }
 
-    ///////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
     //
     // COMMANDS
     //

@@ -2,7 +2,6 @@ package frc.robot;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.r.RDynamics;
 import org.team100.lib.dynamics.r.RDynamicsAnalytic;
@@ -25,6 +24,7 @@ import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.FunctionalCommand;
 import org.wpilib.command2.SubsystemBase;
+import org.wpilib.framework.RobotBase;
 
 public class Climber extends SubsystemBase {
     private final Motor m_motor;
@@ -45,55 +45,51 @@ public class Climber extends SubsystemBase {
         double gearRatio = 28;
         double initialPosition = 0;
 
-        switch (Identity.instance) {
-            case COMP_BOT, TEST_BOARD_B0 -> {
-                CurrentLimit limit = new CurrentLimit(40, 60);
-                Friction friction = new Friction(0, 0, 0, 0);
-                PIDConstants pid = new PIDConstants(1, 0, 0, 0, 0, 0);
-                m_motor = new KrakenX60Motor(
-                        log1,
-                        currentLog,
-                        new CanId(18),
-                        NeutralMode100.BRAKE,
-                        MotorPhase.FORWARD,
-                        limit,
-                        friction,
-                        pid);
-                IncrementalEncoder encoder = m_motor.encoder();
-                RotaryMechanism climberMech = new RotaryMechanism(
-                        log1, m_motor, encoder, initialPosition, gearRatio,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_servo = new OutboardAngularPositionServo(log1, climberMech, dyn, ref);
-                m_motor2 = new KrakenX60Motor(
-                        log2,
-                        currentLog,
-                        new CanId(19),
-                        NeutralMode100.BRAKE,
-                        MotorPhase.FORWARD,
-                        limit,
-                        friction,
-                        pid);
-                IncrementalEncoder encoder2 = m_motor2.encoder();
-                RotaryMechanism climberMech2 = new RotaryMechanism(
-                        log2, m_motor2, encoder2, initialPosition, gearRatio,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_servo2 = new OutboardAngularPositionServo(log2, climberMech2, dyn, ref);
-            }
-
-            default -> {
-                m_motor = new SimulatedMotor(log1, 600);
-                IncrementalEncoder encoder = m_motor.encoder();
-                RotaryMechanism climberMech = new RotaryMechanism(
-                        log1, m_motor, encoder, initialPosition, gearRatio,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_motor2 = new SimulatedMotor(log2, 600);
-                IncrementalEncoder encoder2 = m_motor2.encoder();
-                RotaryMechanism climberMech2 = new RotaryMechanism(
-                        log2, m_motor2, encoder2, initialPosition, gearRatio,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_servo = new OutboardAngularPositionServo(log1, climberMech, dyn, ref);
-                m_servo2 = new OutboardAngularPositionServo(log2, climberMech2, dyn, ref);
-            }
+        if (RobotBase.isReal()) {
+            CurrentLimit limit = new CurrentLimit(40, 60);
+            Friction friction = new Friction(0, 0, 0, 0);
+            PIDConstants pid = new PIDConstants(1, 0, 0, 0, 0, 0);
+            m_motor = new KrakenX60Motor(
+                    log1,
+                    currentLog,
+                    new CanId(18),
+                    NeutralMode100.BRAKE,
+                    MotorPhase.FORWARD,
+                    limit,
+                    friction,
+                    pid);
+            IncrementalEncoder encoder = m_motor.encoder();
+            RotaryMechanism climberMech = new RotaryMechanism(
+                    log1, m_motor, encoder, initialPosition, gearRatio,
+                    Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_servo = new OutboardAngularPositionServo(log1, climberMech, dyn, ref);
+            m_motor2 = new KrakenX60Motor(
+                    log2,
+                    currentLog,
+                    new CanId(19),
+                    NeutralMode100.BRAKE,
+                    MotorPhase.FORWARD,
+                    limit,
+                    friction,
+                    pid);
+            IncrementalEncoder encoder2 = m_motor2.encoder();
+            RotaryMechanism climberMech2 = new RotaryMechanism(
+                    log2, m_motor2, encoder2, initialPosition, gearRatio,
+                    Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_servo2 = new OutboardAngularPositionServo(log2, climberMech2, dyn, ref);
+        } else {
+            m_motor = new SimulatedMotor(log1, 600);
+            IncrementalEncoder encoder = m_motor.encoder();
+            RotaryMechanism climberMech = new RotaryMechanism(
+                    log1, m_motor, encoder, initialPosition, gearRatio,
+                    Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_motor2 = new SimulatedMotor(log2, 600);
+            IncrementalEncoder encoder2 = m_motor2.encoder();
+            RotaryMechanism climberMech2 = new RotaryMechanism(
+                    log2, m_motor2, encoder2, initialPosition, gearRatio,
+                    Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_servo = new OutboardAngularPositionServo(log1, climberMech, dyn, ref);
+            m_servo2 = new OutboardAngularPositionServo(log2, climberMech2, dyn, ref);
         }
     }
 
