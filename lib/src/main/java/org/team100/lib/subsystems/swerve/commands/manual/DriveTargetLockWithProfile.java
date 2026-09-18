@@ -178,7 +178,7 @@ public class DriveTargetLockWithProfile extends Command {
         scaled = GeometryUtil.scale(scaled, DriverSkill.level().scale());
 
         // Apply field-relative limits.
-        if (Experiments.instance.enabled(Experiment.UseSwerveLimiter)) {
+        if (Experiments.INSTANCE.enabled(Experiment.UseSwerveLimiter)) {
             scaled = m_limiter.apply(scaled);
         }
 

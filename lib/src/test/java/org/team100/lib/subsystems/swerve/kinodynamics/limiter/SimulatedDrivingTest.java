@@ -178,7 +178,7 @@ public class SimulatedDrivingTest implements Timeless {
      */
     @Test
     void testVeering() {
-        Experiments.instance.testOverride(Experiment.UseSwerveLimiter, true);
+        Experiments.INSTANCE.override(Experiment.UseSwerveLimiter, true);
         // +x and spinning. course is always zero.
         VelocityControlSE2 input = new VelocityControlSE2(2, 0, 3.5);
         for (int i = 0; i < 50; ++i) {

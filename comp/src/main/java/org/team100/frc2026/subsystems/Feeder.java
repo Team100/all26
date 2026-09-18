@@ -2,7 +2,6 @@ package org.team100.frc2026.subsystems;
 
 import org.team100.frc2026.robot.CurrentLimits;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.p.PDynamics;
 import org.team100.lib.logging.LoggerFactory;
@@ -20,6 +19,7 @@ import org.team100.lib.servo.OutboardLinearVelocityServo;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
+import org.wpilib.framework.RobotBase;
 
 public class Feeder extends SubsystemBase {
     public static final CanId canID1 = new CanId(8);
@@ -46,29 +46,27 @@ public class Feeder extends SubsystemBase {
                 log, () -> profile, 1);
         final Motor m1;
         final Motor m2;
-        switch (Identity.instance) {
-            case TEST_BOARD_B0 -> {
-                // friction test 3/12/26
-                Friction friction = new Friction(0.9, 0.9, 0.0, 0.5);
-                // tuned 3/12/26
-                PIDConstants pid = PIDConstants.makeVelocityPID(0.05);
+        if (RobotBase.isReal()) {
+            // friction test 3/12/26
+            Friction friction = new Friction(0.9, 0.9, 0.0, 0.5);
+            // tuned 3/12/26
+            PIDConstants pid = PIDConstants.makeVelocityPID(0.05);
 
-                m1 = new KrakenX44Motor(
-                        log1, currentLog, canID1, NeutralMode100.COAST, MotorPhase.FORWARD,
-                        CurrentLimits.FEEDER, friction, pid);
-                m2 = new KrakenX44Motor(
-                        log2, currentLog, canID2, NeutralMode100.COAST, MotorPhase.FORWARD,
-                        CurrentLimits.FEEDER, friction, pid);
-            }
-            default -> {
-                m1 = new SimulatedMotor(log1, 600);
-                m2 = new SimulatedMotor(log2, 600);
-            }
+            m1 = new KrakenX44Motor(
+                    log1, currentLog, canID1, NeutralMode100.COAST, MotorPhase.FORWARD,
+                    CurrentLimits.FEEDER, friction, pid);
+            m2 = new KrakenX44Motor(
+                    log2, currentLog, canID2, NeutralMode100.COAST, MotorPhase.FORWARD,
+                    CurrentLimits.FEEDER, friction, pid);
+        } else {
+            m1 = new SimulatedMotor(log1, 600);
+            m2 = new SimulatedMotor(log2, 600);
         }
-        m_servo1 = OutboardLinearVelocityServo.make(
-                log1, m1, dynamics, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
-        m_servo2 = OutboardLinearVelocityServo.make(
-                log2, m2, dynamics, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
+        m_servo1 = OutboardLinearVelocityServo.make(log1, m1, dynamics, ref, GEAR_RATIO, WHEEL_DIAMETER_M,
+                TOLERANCE_M_S);
+        m_servo2 = OutboardLinearVelocityServo.make(log2, m2, dynamics, ref, GEAR_RATIO, WHEEL_DIAMETER_M,
+                TOLERANCE_M_S);
+
     }
 
     @Override
@@ -146,7 +144,7 @@ public class Feeder extends SubsystemBase {
                 .withName("set velocity");
     }
 
-    //////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////
 
     private void reset() {
         m_servo1.reset();

@@ -30,7 +30,7 @@ public class SwerveKinodynamicsFactory {
     public static SwerveKinodynamics get() {
         System.out.printf("Swerve Kinodynamics Factory using Identity %s\n", Identity.instance);
         switch (Identity.instance) {
-            case COMP_BOT:
+            case LAUNDRY_BOT:
                 // these numbers are a guess based on the betabot numbers.
                 // the comp bot uses the "fast" ratio and FOC falcons
                 // so should be a bit higher top speed and less acceleration.

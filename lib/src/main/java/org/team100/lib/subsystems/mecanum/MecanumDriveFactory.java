@@ -2,7 +2,6 @@ package org.team100.lib.subsystems.mecanum;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.kinematics.mecanum.MecanumKinematics100.Slip;
 import org.team100.lib.logging.LoggerFactory;
@@ -16,6 +15,7 @@ import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.gyro.Gyro;
 import org.team100.lib.sensor.gyro.ReduxGyro;
 import org.team100.lib.util.CanId;
+import org.wpilib.framework.RobotBase;
 
 public class MecanumDriveFactory {
 
@@ -85,28 +85,30 @@ public class MecanumDriveFactory {
         // parameters for velocity control
         int averageDepth = 2;
         int measurementPeriod = 4;
-        return switch (Identity.instance) {
-            case BLANK -> new SimulatedMotor(log, 600);
-            default -> new NeoCANSparkMotor(
+        if (RobotBase.isReal()) {
+            return new NeoCANSparkMotor(
                     log, currentLog, can, NeutralMode100.BRAKE, phase,
                     limit, friction, pid, averageDepth, measurementPeriod);
-        };
+        } else {
+            return new SimulatedMotor(log, 600);
+        }
     }
 
     static Gyro gyro(LoggerFactory log, CanId gyroId) {
         if (gyroId == null)
             return null;
-        return switch (Identity.instance) {
-            case BLANK -> null;
-            default -> new ReduxGyro(log, gyroId);
-        };
+        if (RobotBase.isReal()) {
+            return new ReduxGyro(log, gyroId);
+        }
+        return null;
     }
 
     static Slip slip(Slip slip) {
-        return switch (Identity.instance) {
-            case BLANK -> new Slip(1, 1, 1);// sim does not slip;
-            default -> slip;
-        };
+        if (RobotBase.isReal()) {
+            return slip;
+        }
+        // sim does not slip
+        return new Slip(1, 1, 1);
     }
 
 }
