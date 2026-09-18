@@ -12,7 +12,6 @@ THICKNESS = 1
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-
 class DisplayUtil:
     """Methods for manipulating images for display."""
 
@@ -20,7 +19,7 @@ class DisplayUtil:
     def note(image: MatLike, contour: MatLike, c_x: int, c_y: int) -> None:
         """Draw the contour with a circle at the center (c_x, c_y)."""
         cv2.drawContours(image, [contour], -1, (0, 255, 0), 3)
-        cv2.circle(image, (c_x, c_y), 7, (0, 0, 0), -1)
+        cv2.circle(image, (c_x, c_y), 7, (255, 0,0 ), -1)
 
     @staticmethod
     def text(image: MatLike, msg: str, loc: tuple[int, int], row: int) -> None:
@@ -56,3 +55,13 @@ class DisplayUtil:
         DisplayUtil.text(image, f"X: {t.z:5.2f}", (c_x, c_y), 0)
         DisplayUtil.text(image, f"Y: {-t.x:5.2f}", (c_x, c_y), 1)
         DisplayUtil.text(image, f"Z: {-t.y:5.2f}", (c_x, c_y), 2)
+
+    @staticmethod
+    def rectangle(image: MatLike, loc: tuple[int, int], size: tuple[int, int], color: tuple[int, int, int]) -> None:
+        """Draws a rectangle around loc of size size"""
+        x, y = loc
+        w, l = size
+        vertex_1 = (x - w//2, y - l//2)
+        vertex_2 = (x + w//2, y + l//2)
+        cv2.rectangle(image, vertex_1, vertex_2, color)
+
