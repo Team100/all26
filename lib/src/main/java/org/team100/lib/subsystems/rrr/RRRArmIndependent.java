@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.rrr.RRRDynamicsNewtonEuler;
 import org.team100.lib.dynamics.rrr.RRREffort;
@@ -31,6 +30,7 @@ import org.team100.lib.state.StateSE2;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.StrUtil;
 import org.wpilib.command2.SubsystemBase;
+import org.wpilib.framework.RobotBase;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.linalg.VecBuilder;
 
@@ -72,8 +72,7 @@ public class RRRArmIndependent extends SubsystemBase implements RRRArm {
         final Motor m1;
         final Motor m2;
         final Motor m3;
-        if (Identity.instance.equals(Identity.TEST_BOARD_B0)
-                || Identity.instance.equals(Identity.TEAM100_2018)) {
+        if (RobotBase.isReal()) {
             m1 = new Falcon500Motor(
                     q1, m_currentLog, new CanId(5),
                     NeutralMode100.COAST, MotorPhase.FORWARD,

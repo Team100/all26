@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.kinematics.five_bar.ActuatorAngles;
 import org.team100.lib.kinematics.five_bar.FiveBarKinematics;
@@ -25,10 +24,10 @@ import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.subsystems.five_bar.commands.Move;
 import org.team100.lib.util.CanId;
-
-import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
+import org.wpilib.framework.RobotBase;
+import org.wpilib.math.geometry.Translation2d;
 
 /**
  * Cartesian control using inverse kinematics, and without profiling.
@@ -76,31 +75,28 @@ public class FiveBarCartesian extends SubsystemBase {
 
         Motor motorP1;
         Motor motorP5;
-        switch (Identity.instance) {
-            case SWERVE_TWO -> {
-                motorP1 = new Falcon500Motor(
-                        loggerP1,
-                        currentLog,
-                        new CanId(1),
-                        NeutralMode100.COAST,
-                        MotorPhase.REVERSE,
-                        new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
-                        friction,
-                        pid);
-                motorP5 = new Falcon500Motor(
-                        loggerP5,
-                        currentLog,
-                        new CanId(5),
-                        NeutralMode100.COAST,
-                        MotorPhase.REVERSE,
-                        new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
-                        friction,
-                        pid);
-            }
-            default -> {
-                motorP1 = new SimulatedMotor(loggerP1, 600);
-                motorP5 = new SimulatedMotor(loggerP5, 600);
-            }
+        if (RobotBase.isReal()) {
+            motorP1 = new Falcon500Motor(
+                    loggerP1,
+                    currentLog,
+                    new CanId(1),
+                    NeutralMode100.COAST,
+                    MotorPhase.REVERSE,
+                    new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
+                    friction,
+                    pid);
+            motorP5 = new Falcon500Motor(
+                    loggerP5,
+                    currentLog,
+                    new CanId(5),
+                    NeutralMode100.COAST,
+                    MotorPhase.REVERSE,
+                    new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
+                    friction,
+                    pid);
+        } else {
+            motorP1 = new SimulatedMotor(loggerP1, 600);
+            motorP5 = new SimulatedMotor(loggerP5, 600);
         }
 
         m_sensorP1 = new ProxyRotaryPositionSensor(motorP1.encoder(), 1.0);
@@ -175,7 +171,7 @@ public class FiveBarCartesian extends SubsystemBase {
             m_log_position.log(() -> p.get());
     }
 
-    //////////////////////
+    ////////////////////
 
     private void setDutyCycle(double p1, double p5) {
         m_mechP1.setDutyCycle(p1);
@@ -188,11 +184,11 @@ public class FiveBarCartesian extends SubsystemBase {
      */
     private void resetEncoderPosition() {
         // these match the real apparatus, more or less.
-        m_sensorP1.setEncoderPosition(-0.35);
-        m_sensorP5.setEncoderPosition(1.22);
+        m_sensorP1.setUnwrappedEncoderPositionRad(-0.35);
+        m_sensorP5.setUnwrappedEncoderPositionRad(1.22);
     }
 
-    ///////////////////////
+    /////////////////////
     //
     // Commands
 

@@ -235,7 +235,7 @@ public class OdometryUpdater {
         VariableR1 fusedRotationIncrement = m_rotationFusor.fuse(
                 odometryRotationIncrementRad, correctedGyroIncrement);
 
-        if (Experiments.instance.enabled(Experiment.PerfectGyro)) {
+        if (Experiments.INSTANCE.enabled(Experiment.PerfectGyro)) {
             // If we're trusting the gyro completely, use its verbatim increment
             // instead of the fused one.
             fusedRotationIncrement = gyroIncrementRad;

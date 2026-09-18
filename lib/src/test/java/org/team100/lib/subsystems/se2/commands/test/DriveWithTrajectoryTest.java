@@ -154,7 +154,7 @@ public class DriveWithTrajectoryTest implements Timeless {
 
         // this test depends on the behavior of the setpoint generator, so make sure
         // it's on (otherwise it's in whatever state the previous test left it)
-        Experiments.instance.testOverride(Experiment.UseSwerveLimiter, true);
+        Experiments.INSTANCE.override(Experiment.UseSwerveLimiter, true);
         // 1m along +x, no rotation.
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest();
         SwerveModuleCollection collection = SwerveModuleCollection.get(

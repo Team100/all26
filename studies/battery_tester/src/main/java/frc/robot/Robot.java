@@ -32,7 +32,7 @@ public class Robot extends TimedRobot100 {
 
     public Robot() {
         Banner.printBanner();
-        Experiments.instance.show();
+        Experiments.INSTANCE.show();
         RobotController.setBrownoutVoltage(6.3); // RoboRIO 1.0 value
         Logging log = Logging.instance();
         LoggerFactory robotLog = log.rootLogger;

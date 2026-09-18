@@ -18,7 +18,6 @@ import org.wpilib.command2.CommandScheduler;
 import org.wpilib.networktables.NetworkTableInstance;
 
 public class Robot2025 extends TimedRobot100 {
-
     private final RobotLog m_robotLog;
     private final Machinery2025 m_machinery;
     private final AllAutons2025 m_allAutons;
@@ -45,7 +44,7 @@ public class Robot2025 extends TimedRobot100 {
         CommandScheduler.getInstance().run();
         m_machinery.periodic();
         m_robotLog.periodic();
-        if (Experiments.instance.enabled(Experiment.FlushOften)) {
+        if (Experiments.INSTANCE.enabled(Experiment.FlushOften)) {
             // StrUtil.warn("FLUSHING EVERY LOOP, DO NOT USE IN COMP");
             NetworkTableInstance.getDefault().flush();
         }
@@ -82,19 +81,11 @@ public class Robot2025 extends TimedRobot100 {
     //
 
     @Override
-    public void robotInit() {
-    }
-
-    @Override
     public void simulationInit() {
     }
 
     @Override
     public void disabledInit() {
-    }
-
-    @Override
-    public void testInit() {
     }
 
     @Override
@@ -112,9 +103,4 @@ public class Robot2025 extends TimedRobot100 {
     @Override
     public void teleopPeriodic() {
     }
-
-    @Override
-    public void testPeriodic() {
-    }
-
 }

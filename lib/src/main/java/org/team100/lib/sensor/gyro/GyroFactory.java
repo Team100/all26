@@ -15,11 +15,12 @@ public class GyroFactory {
             LoggerFactory parent,
             SwerveKinodynamics kinodynamics,
             SwerveModuleCollection collection) {
+
         switch (Identity.instance) {
             case SYSTEMCORE:
                 return new SystemcoreGyro(parent);
             case SWERVE_ONE:
-            case COMP_BOT:
+            case LAUNDRY_BOT:
             case BETA_BOT:
                 return new ReduxGyro(parent, new CanId(60));
             default:
@@ -30,6 +31,7 @@ public class GyroFactory {
                 // a bit more realistic, though still high.
                 double driftRateRad_S = 0.05;
                 return new SimulatedGyro(parent, kinodynamics, collection, driftRateRad_S);
+
         }
     }
 

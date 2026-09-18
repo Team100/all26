@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 
 import org.team100.frc2026.robot.CurrentLimits;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.r.RDynamics;
 import org.team100.lib.dynamics.r.RDynamicsAnalytic;
@@ -23,9 +22,9 @@ import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.state.StateR1;
 import org.team100.lib.util.CanId;
-
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
+import org.wpilib.framework.RobotBase;
 
 /**
  * Shooter hood must be at the minimum position at startup.
@@ -56,23 +55,16 @@ public class ShooterHood extends SubsystemBase {
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
 
         final Motor motor;
-        switch (Identity.instance) {
-            case TEST_BOARD_B0 -> {
-
-                Friction friction = new Friction(0.350, 0.350, 0.0, 0.5);
-                // tuned 3/12/26
-                PIDConstants pid = PIDConstants.makePositionPID(1.0);
-
-                motor = new NeoVortexCANSparkMotor(
-                        log, currentLog, CAN_ID, NeutralMode100.COAST, MotorPhase.REVERSE,
-                        CurrentLimits.SHOOTER_HOOD, friction, pid, 0, 0);
-
-            }
-            default -> {
-                motor = new SimulatedMotor(log, 600);
-            }
+        if (RobotBase.isReal()) {
+            Friction friction = new Friction(0.350, 0.350, 0.0, 0.5);
+            // tuned 3/12/26
+            PIDConstants pid = PIDConstants.makePositionPID(1.0);
+            motor = new NeoVortexCANSparkMotor(
+                    log, currentLog, CAN_ID, NeutralMode100.COAST, MotorPhase.REVERSE,
+                    CurrentLimits.SHOOTER_HOOD, friction, pid, 0, 0);
+        } else {
+            motor = new SimulatedMotor(log, 600);
         }
-
         m_servo = OutboardAngularPositionServo.make(
                 log, motor, dynamics, ref, GEAR_RATIO,
                 MIN_POSITION_RAD, MIN_POSITION_RAD, MAX_POSITION_RAD);
@@ -167,7 +159,7 @@ public class ShooterHood extends SubsystemBase {
                 .withName("set position");
     }
 
-    /////////////////////////////////////////
+    ///////////////////////////////////////
 
     /** For testing. */
     double getUnwrappedPositionRad() {

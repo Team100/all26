@@ -15,7 +15,6 @@ import org.wpilib.framework.RobotBase;
  * 
  * Note that the ID string may change when you reflash the RoboRIO.
  */
-
 public enum Identity {
     // from the fallback
     SYSTEMCORE("35af8fca4c12ad8e"),
@@ -29,14 +28,13 @@ public enum Identity {
     SQUAREBOT("031e31e3"),
     SWERVE_TWO("0317f285"),
 
-    COMP_BOT("03238232"),
+    LAUNDRY_BOT("03238232"), // Amy changed from COMP_BOT 9/16
     SWERVE_ONE("032363AC"),
 
     DISABLED("disabled"), // for mechanisms which don't exist
     BLANK(""), // e.g. test default or simulation
     UNKNOWN(null);
-    // FRC_100_ea4("03238232"),
-    // COMP_BOT("0306cea4");
+
 
     private static final Map<String, Identity> identities = new HashMap<>();
 
@@ -47,8 +45,6 @@ public enum Identity {
     }
 
     public static final Identity instance = get();
-    // for testing
-    // public static final Identity instance = BETA_BOT;
 
     private final String m_serialNumber;
 

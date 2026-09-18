@@ -2,7 +2,6 @@ package org.team100.frc2026.subsystems;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.p.PDynamics;
 import org.team100.lib.logging.LoggerFactory;
@@ -19,9 +18,9 @@ import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.LinearPositionServo;
 import org.team100.lib.servo.OutboardLinearPositionServo;
 import org.team100.lib.util.CanId;
-
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
+import org.wpilib.framework.RobotBase;
 
 public class ClimberExtension extends SubsystemBase {
     public static final double WHEEL_DIAMETER_M = 0.001275;
@@ -38,19 +37,16 @@ public class ClimberExtension extends SubsystemBase {
         PDynamics dyn = new PDynamics(0);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
         final Motor motor;
-        switch (Identity.instance) {
-            case TEST_BOARD_6B -> {
-                CurrentLimit limit = new CurrentLimit(40, 40);
-                Friction friction = new Friction(0, 0, 0, 0);
-                PIDConstants pid = new PIDConstants(1, 0, 0, 0, 0, 0);
-                motor = new NeoVortexCANSparkMotor(
-                        log, currentLog, new CanId(2),
-                        NeutralMode100.BRAKE, MotorPhase.FORWARD,
-                        limit, friction, pid, 0, 0);
-            }
-            default -> {
-                motor = new SimulatedMotor(log, 600);
-            }
+        if (RobotBase.isReal()) {
+            CurrentLimit limit = new CurrentLimit(40, 40);
+            Friction friction = new Friction(0, 0, 0, 0);
+            PIDConstants pid = new PIDConstants(1, 0, 0, 0, 0, 0);
+            motor = new NeoVortexCANSparkMotor(
+                    log, currentLog, new CanId(2),
+                    NeutralMode100.BRAKE, MotorPhase.FORWARD,
+                    limit, friction, pid, 0, 0);
+        } else {
+            motor = new SimulatedMotor(log, 600);
         }
         m_servo = OutboardLinearPositionServo.make(
                 log, motor, dyn, ref, GEAR_RATIO, WHEEL_DIAMETER_M);
@@ -73,7 +69,7 @@ public class ClimberExtension extends SubsystemBase {
         m_servo.periodic();
     }
 
-    ///////////////////////////////////////////
+    //////////////////////////////////////////
 
     private void reset() {
         m_servo.reset();

@@ -1,6 +1,6 @@
 package org.team100.lib.subsystems.swerve;
 
-import org.team100.lib.config.Identity;
+import org.wpilib.framework.RobotBase;
 
 /**
  * Corrects the tendency of the swerve drive to veer in the direction of
@@ -30,14 +30,8 @@ public class VeeringCorrection {
      * delay represented by the 20ms control period.
      * 
      * The value below is from preseason simulation, and it's probably too short.
-     * 
-     * In simulation, shouldn't this be zero? If I set it to zero, the sim veers a
-     * lot. Why?
-     * 
-     * The setpoint generator seems to cause a lot of it.
      */
-    // private static final double VEERING_CORRECTION = 0.025;
-    private static final double VEERING_CORRECTION = byIdentity();
+    private static final double VEERING_CORRECTION = get();
 
     /**
      * Extrapolates the rotation based on the current angular velocity.
@@ -50,17 +44,13 @@ public class VeeringCorrection {
         return gyroRateRad_S * VEERING_CORRECTION;
     }
 
-    private static double byIdentity() {
-        switch (Identity.instance) {
-            /** TODO: THIS MUST BE CALIBRATED! */
-            case COMP_BOT:
-            case SWERVE_ONE:
-            case SWERVE_TWO:
-                return 0.025;
-
-            /** Simulation and testing don't need it. */
-            default:
-                return 0.0;
+    private static double get() {
+        if (RobotBase.isReal()) {
+            // TODO: THIS MUST BE CALIBRATED!
+            return 0.025;
+        } else {
+            // Simulation and testing don't need it.
+            return 0.0;
         }
     }
 

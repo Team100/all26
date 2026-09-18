@@ -2,7 +2,6 @@ package org.team100.frc2026.subsystems;
 
 import org.team100.frc2026.robot.CurrentLimits;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.p.PDynamics;
 import org.team100.lib.logging.LoggerFactory;
@@ -20,13 +19,14 @@ import org.team100.lib.servo.OutboardLinearPositionServo;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
+import org.wpilib.framework.RobotBase;
 import org.wpilib.math.util.MathUtil;
 
 /** Intake must be retracted at startup. */
 public class IntakeExtend extends SubsystemBase {
     private static final CanId CAN_ID = new CanId(19);
     private static final CanId CAN_ID2 = new CanId(17);
-    private static final double gearRatio = 50.0/18.0;
+    private static final double gearRatio = 50.0 / 18.0;
     private static final double gearDiameter = 0.025;
     private static final double RETRACTED_POSITION = 0;
     // seems fine, 3/12/26
@@ -47,32 +47,29 @@ public class IntakeExtend extends SubsystemBase {
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.1, 0.05);
         final Motor motor;
         final Motor motor2;
-        switch (Identity.instance) {
-            case TEST_BOARD_B0, COMP_BOT -> {
-                // friction test 3/12/26
-                Friction friction = new Friction(0.32, 0.32, 0.0, 0.5);
-                // tuned 3/12/26
-                PIDConstants pid = PIDConstants.makePositionPID(1);
-                motor = new KrakenX44Motor(
-                        log1, currentLog, CAN_ID,
-                        NeutralMode100.COAST, MotorPhase.REVERSE,
-                        CurrentLimits.INTAKE_EXTEND,
-                        friction, pid);
-                motor2 = new KrakenX44Motor(
-                        log2, currentLog, CAN_ID2,
-                        NeutralMode100.COAST, MotorPhase.FORWARD,
-                        CurrentLimits.INTAKE_EXTEND,
-                        friction, pid);
-            }
-            default -> {
-                motor = new SimulatedMotor(log1, 600);
-                motor2 = new SimulatedMotor(log2, 600);
-            }
+        if (RobotBase.isReal()) {
+            // friction test 3/12/26
+            Friction friction = new Friction(0.32, 0.32, 0.0, 0.5);
+            // tuned 3/12/26
+            PIDConstants pid = PIDConstants.makePositionPID(1);
+            motor = new KrakenX44Motor(
+                    log1, currentLog, CAN_ID,
+                    NeutralMode100.COAST, MotorPhase.REVERSE,
+                    CurrentLimits.INTAKE_EXTEND,
+                    friction, pid);
+            motor2 = new KrakenX44Motor(
+                    log2, currentLog, CAN_ID2,
+                    NeutralMode100.COAST, MotorPhase.FORWARD,
+                    CurrentLimits.INTAKE_EXTEND,
+                    friction, pid);
+        } else {
+            motor = new SimulatedMotor(log1, 600);
+            motor2 = new SimulatedMotor(log2, 600);
         }
         m_servo = OutboardLinearPositionServo.make(
-                log1, motor, dynamics, ref, gearRatio,gearDiameter);
+                log1, motor, dynamics, ref, gearRatio, gearDiameter);
         m_Servo2 = OutboardLinearPositionServo.make(
-                log2, motor2, dynamics, ref, gearRatio,gearDiameter);
+                log2, motor2, dynamics, ref, gearRatio, gearDiameter);
     }
 
     @Override
@@ -142,13 +139,13 @@ public class IntakeExtend extends SubsystemBase {
 
     // /** For testing friction only */
     // public Command setVelocity(double rad_S) {
-    //     return startRun(
-    //             this::reset,
-    //             () -> {
-    //                 m_servo.setVelocity(rad_S);
-    //                 m_Servo2.setVelocity(rad_S);
-    //             })
-    //             .withName("set velocity");
+    // return startRun(
+    // this::reset,
+    // () -> {
+    // m_servo.setVelocity(rad_S);
+    // m_Servo2.setVelocity(rad_S);
+    // })
+    // .withName("set velocity");
     // }
 
     public Command setPosition(double rad) {
@@ -161,7 +158,7 @@ public class IntakeExtend extends SubsystemBase {
                 .withName("set position");
     }
 
-    /////////////////////////////////////////
+    ////////////////////////////////////////
 
     private void stopServo() {
         m_servo.stop();

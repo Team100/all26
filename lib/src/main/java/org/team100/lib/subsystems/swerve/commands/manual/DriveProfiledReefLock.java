@@ -54,6 +54,7 @@ public class DriveProfiledReefLock extends Command {
     /**
      * Velocity control in control units, [-1,1] on all axes. This needs to be
      * mapped to a feasible velocity control as early as possible.
+     * Must be smoothed.
      */
     private final Supplier<DriverVelocity> m_twistSupplier;
     private final DoubleConsumer m_heedRadiusM;
@@ -135,18 +136,14 @@ public class DriveProfiledReefLock extends Command {
 
     @Override
     public void execute() {
-
-        // input in [-1,1] control units
-        // TODO: control noise in this input
         DriverVelocity t = m_twistSupplier.get();
-        // TODO: control noise in this input
         StateSE2 s = m_drive.getState();
 
         // scale for driver skill.
         VelocitySE2 scaled = GeometryUtil.scale(apply(s, t), DriverSkill.level().scale());
 
         // Apply field-relative limits.
-        if (Experiments.instance.enabled(Experiment.UseSwerveLimiter)) {
+        if (Experiments.INSTANCE.enabled(Experiment.UseSwerveLimiter)) {
             scaled = m_limiter.apply(scaled);
         }
 

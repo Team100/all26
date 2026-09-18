@@ -21,7 +21,6 @@ import org.wpilib.command2.CommandScheduler;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.networktables.NetworkTableInstance;
 
-
 /**
  * This is the main robot class, which wires up events from TimedRobot100.
  */
@@ -35,6 +34,8 @@ public class Robot extends TimedRobot100 {
 
     public Robot() {
         Startup.start();
+        System.out.printf("Robot class: %s\n",
+                this.getClass().getName());
         Logging logging = Logging.instance();
         LoggerFactory log = logging.rootLogger;
         LoggerFactory fieldLogger = logging.fieldLogger;
@@ -62,12 +63,12 @@ public class Robot extends TimedRobot100 {
         m_machinery.periodic();
         m_binder.periodic();
         m_robotLog.periodic();
-        if (Experiments.instance.enabled(Experiment.FlushOften)) {
+        if (Experiments.INSTANCE.enabled(Experiment.FlushOften)) {
             NetworkTableInstance.getDefault().flush();
         }
     }
 
-    /////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////
     //
     // INITIALIZERS, DO NOT CHANGE THESE
     //
@@ -91,14 +92,17 @@ public class Robot extends TimedRobot100 {
     @Override
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
+        // don't show the auton in teleop
+        m_autoViz.clear();
     }
 
-    @Override
-    public void testInit() {
-        System.out.println("*************************************");
-        System.out.println("TEST MODE!");
-        System.out.println("To run tests, hold down 'a' and 'b'");
-    }
+    // TODO: revive test mode for 2027
+    // @Override
+    // public void testInit() {
+    // System.out.println("*************************************");
+    // System.out.println("TEST MODE!");
+    // System.out.println("To run tests, hold down 'a' and 'b'");
+    // }
 
     @Override
     public void close() {
@@ -108,24 +112,19 @@ public class Robot extends TimedRobot100 {
         m_binder.close();
     }
 
-    /////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////
     //
     // EXIT: CLEAN UP
     //
 
     @Override
     public void disabledExit() {
-        m_autoViz.clear();
     }
 
-    //////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////
     //
     // LEAVE ALL THESE EMPTY
     //
-
-    @Override
-    public void robotInit() {
-    }
 
     @Override
     public void simulationInit() {
@@ -133,7 +132,8 @@ public class Robot extends TimedRobot100 {
 
     @Override
     public void disabledInit() {
-
+        // show the auton again when disabling.
+        m_autoViz.show(m_autons.getAnnotated());
     }
 
     @Override
@@ -153,19 +153,10 @@ public class Robot extends TimedRobot100 {
     }
 
     @Override
-    public void testPeriodic() {
-    }
-
-    @Override
     public void autonomousExit() {
     }
 
     @Override
     public void teleopExit() {
     }
-
-    @Override
-    public void testExit() {
-    }
-
 }

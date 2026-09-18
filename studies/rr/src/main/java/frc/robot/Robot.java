@@ -2,15 +2,9 @@ package frc.robot;
 
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.Takt;
-import org.team100.lib.config.Identity;
-import org.team100.lib.experiments.Experiments;
-import org.team100.lib.util.Banner;
+import org.team100.lib.util.Startup;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
@@ -19,15 +13,7 @@ public class Robot extends TimedRobot {
     private final Autons m_autons;
 
     public Robot() {
-        Banner.printBanner();
-        enableLiveWindowInTest(false);
-        System.out.printf("WPILib Version: %s\n", WPILibVersion.Version);
-        System.out.printf("RoboRIO serial number: %s\n", RobotController.getSerialNumber());
-        System.out.printf("Identity: %s\n", Identity.instance.name());
-        DriverStation.silenceJoystickConnectionWarning(true);
-        Experiments.instance.show();
-        SmartDashboard.putData(CommandScheduler.getInstance());
-        CommandScheduler.getInstance().setPeriod(100);
+        Startup.start();
         m_machinery = new Machinery();
         m_binder = new Binder(m_machinery);
         m_autons = new Autons(m_machinery);
