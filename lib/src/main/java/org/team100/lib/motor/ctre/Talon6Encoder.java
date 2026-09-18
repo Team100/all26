@@ -22,7 +22,6 @@ public class Talon6Encoder implements IncrementalEncoder {
      */
     @Override
     public double getUnwrappedPositionRad() {
-        // TODO: Move motor and encoder to the same package
         return m_motor.m_position.getAsDouble();
     }
 
@@ -49,7 +48,6 @@ public class Talon6Encoder implements IncrementalEncoder {
      */
     @Override
     public void setUnwrappedEncoderPositionRad(double positionRad) {
-        // TODO: move motor and encoder to the same package.
         System.out.println("WARNING: Setting CTRE encoder position is very slow!");
         Talon6Motor.warn(() -> m_motor.m_motor.setPosition(positionRad / (2.0 * Math.PI), 1));
     }

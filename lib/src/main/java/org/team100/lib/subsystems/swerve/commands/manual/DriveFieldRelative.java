@@ -31,6 +31,7 @@ public class DriveFieldRelative extends Command {
     /**
      * Velocity control in control units, [-1,1] on all axes. This needs to be
      * mapped to a feasible velocity control as early as possible.
+     * Must be smoothed.
      */
     private final Supplier<DriverVelocity> m_twistSupplier;
     private final DoubleConsumer m_heedRadiusM;
@@ -71,7 +72,6 @@ public class DriveFieldRelative extends Command {
 
     @Override
     public void execute() {
-        // TODO: avoid noise in this input
         DriverVelocity clipped = m_twistSupplier.get().clip(1.0);
         VelocitySE2 scaled1 = VelocitySE2.scale(
                 clipped,
