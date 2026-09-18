@@ -12,8 +12,7 @@ public class SimulatedEncoder implements IncrementalEncoder {
     private final DoubleLogger m_log_velocity;
     private final DoubleLogger m_log_accel;
 
-    // TODO: move the encoder and motor to the same package.
-    public double m_offset;
+    double m_offset;
 
     public SimulatedEncoder(
             LoggerFactory parent,
@@ -33,8 +32,6 @@ public class SimulatedEncoder implements IncrementalEncoder {
      */
     @Override
     public double getUnwrappedPositionRad() {
-        // TODO: move the encoder and motor to the same package.
-
         // offset is subtracted in order to be consistent with the roborio sensor
         double positionRad = m_motor.m_stateCache.get().x() - m_offset;
         if (Double.isNaN(positionRad))
@@ -65,16 +62,9 @@ public class SimulatedEncoder implements IncrementalEncoder {
     public void setUnwrappedEncoderPositionRad(double positionRad) {
         if (Double.isNaN(positionRad))
             throw new IllegalArgumentException("motor set position");
-
-        // this now just affects the offset (!)
-        // the ground-truth position does not change
+        // Updates the offset, the ground-truth position does not change.
         double gt = m_motor.m_stateCache.get().x();
         m_offset = gt - positionRad;
-
-        // TODO: move the motor and encoder into the same package so this can be
-        // package-private.
-        // m_motor.m_state = new StateR1(positionRad, 0);
-        // m_motor.m_stateCache.reset();
     }
 
     @Override

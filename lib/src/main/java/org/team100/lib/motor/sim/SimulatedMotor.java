@@ -103,7 +103,6 @@ public class SimulatedMotor implements Motor {
     @Override
     public void setCurrent(double current) {
         // NOTE: this is a ridiculous hack.
-        // TODO: a better simulated current control
         if (m_velocityInput == null) {
             setVelocity(0.1, 0);
         } else {

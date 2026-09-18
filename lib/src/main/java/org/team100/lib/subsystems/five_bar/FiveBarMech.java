@@ -16,8 +16,8 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
-import org.team100.lib.sensor.position.absolute.HomingRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
+import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -49,8 +49,8 @@ public class FiveBarMech extends SubsystemBase {
     /**
      * There's no absolute encoder in the apparatus, so we use a homing sensor.
      */
-    private final HomingRotaryPositionSensor m_sensorP1;
-    private final HomingRotaryPositionSensor m_sensorP5;
+    private final RotaryPositionSensor m_sensorP1;
+    private final RotaryPositionSensor m_sensorP5;
 
     public FiveBarMech(LoggerFactory parent, TotalCurrentLog currentLog, Scenario scenario) {
         LoggerFactory logger = parent.type(this);
@@ -64,10 +64,8 @@ public class FiveBarMech extends SubsystemBase {
             Falcon500Motor motorP1 = makeMotor(loggerP1, currentLog, new CanId(1));
             Falcon500Motor motorP5 = makeMotor(loggerP5, currentLog, new CanId(5));
 
-            m_sensorP1 = new HomingRotaryPositionSensor(
-                    new ProxyRotaryPositionSensor(motorP1.encoder(), 1.0));
-            m_sensorP5 = new HomingRotaryPositionSensor(
-                    new ProxyRotaryPositionSensor(motorP5.encoder(), 1.0));
+            m_sensorP1 = new ProxyRotaryPositionSensor(motorP1.encoder(), 1.0);
+            m_sensorP5 = new ProxyRotaryPositionSensor(motorP5.encoder(), 1.0);
 
             m_mechP1 = new RotaryMechanism(
                     loggerP1,
@@ -87,12 +85,8 @@ public class FiveBarMech extends SubsystemBase {
             SimulatedMotor motorP1 = new SimulatedMotor(loggerP1, 600);
             SimulatedMotor motorP5 = new SimulatedMotor(loggerP5, 600);
 
-            m_sensorP1 = new HomingRotaryPositionSensor(
-                    new ProxyRotaryPositionSensor(
-                            motorP1.encoder(), 1.0));
-            m_sensorP5 = new HomingRotaryPositionSensor(
-                    new ProxyRotaryPositionSensor(
-                            motorP5.encoder(), 1.0));
+            m_sensorP1 = new ProxyRotaryPositionSensor(motorP1.encoder(), 1.0);
+            m_sensorP5 = new ProxyRotaryPositionSensor(motorP5.encoder(), 1.0);
 
             m_mechP1 = new RotaryMechanism(
                     loggerP1,
