@@ -44,7 +44,7 @@ public class Robot2025 extends TimedRobot100 {
         CommandScheduler.getInstance().run();
         m_machinery.periodic();
         m_robotLog.periodic();
-        if (Experiments.instance.enabled(Experiment.FlushOften)) {
+        if (Experiments.INSTANCE.enabled(Experiment.FlushOften)) {
             // StrUtil.warn("FLUSHING EVERY LOOP, DO NOT USE IN COMP");
             NetworkTableInstance.getDefault().flush();
         }

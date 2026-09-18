@@ -49,6 +49,7 @@ public class Binder {
                 () -> m_machinery.m_viz.setT(manual::getT))
                 .andThen(manual));
         // Right bumper (button 6, "n" in sim) is "joint" mode.
+        // This mode moves the three motors independently as shoulder, elbow, or hand joint
         whileTrue(m_driver::rightBumper, Commands.runOnce(
                 () -> m_machinery.m_viz.setT(null))
                 .andThen(joints));

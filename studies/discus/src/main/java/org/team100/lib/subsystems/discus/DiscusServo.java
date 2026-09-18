@@ -4,7 +4,6 @@ import java.util.function.DoubleSupplier;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.r.Disc;
 import org.team100.lib.dynamics.r.RDynamics;
@@ -26,6 +25,7 @@ import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
+import org.wpilib.framework.RobotBase;
 
 /**
  * Discus version that uses the "servo" abstraction, which
@@ -57,21 +57,18 @@ public class DiscusServo extends SubsystemBase {
         RDynamics dyn = new Disc(0.1);
 
         Motor motor;
-        switch (Identity.instance) {
-            case TEAM100_2018 -> {
-                motor = new Falcon500Motor(
-                        logger,
-                        currentLog,
-                        new CanId(36),
-                        NeutralMode100.COAST,
-                        MotorPhase.REVERSE,
-                        new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
-                        friction,
-                        pid);
-            }
-            default -> {
-                motor = new SimulatedMotor(logger, 600);
-            }
+        if (RobotBase.isReal()) {
+            motor = new Falcon500Motor(
+                    logger,
+                    currentLog,
+                    new CanId(36),
+                    NeutralMode100.COAST,
+                    MotorPhase.REVERSE,
+                    new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
+                    friction,
+                    pid);
+        } else {
+            motor = new SimulatedMotor(logger, 600);
         }
         m_sensor = new ProxyRotaryPositionSensor(motor.encoder(), 1.0);
 
@@ -105,7 +102,7 @@ public class DiscusServo extends SubsystemBase {
         m_servo.periodic();
     }
 
-    //////////////////////
+    ////////////////////
 
     private void setDutyCycle(double p) {
         m_servo.setDutyCycle(p);
@@ -115,7 +112,7 @@ public class DiscusServo extends SubsystemBase {
         m_sensor.setEncoderPosition(0);
     }
 
-    ///////////////////////
+    /////////////////////
     //
     // Commands
 

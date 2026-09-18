@@ -1,6 +1,5 @@
 package org.team100.lib.controller.se2;
 
-import org.team100.lib.config.Identity;
 import org.team100.lib.logging.LoggerFactory;
 
 /**
@@ -8,69 +7,69 @@ import org.team100.lib.logging.LoggerFactory;
  */
 public class ControllerFactorySE2 {
 
-    /** For real robots. */
-    public static ControllerSE2 byIdentity(LoggerFactory log) {
-        switch (Identity.instance) {
-            case COMP_BOT -> {
-                return new FullStateControllerSE2(log,
-                        2.9, // P for x/y
-                        3.5, // P for theta
-                        0.025, // P for v
-                        0.01, // P for omega
-                        0.02, // x tolerance
-                        0.3, // theta tolerance
-                        1, // v tolerance
-                        1);// omega tolerance
-            }
-            case SWERVE_ONE -> {
-                return new FullStateControllerSE2(log,
-                        2, // P for x/y
-                        2, // P for theta
-                        0.01, // P for v
-                        0, // P for omega
-                        0.001, // x tolerance
-                        0.01, // theta tolerance
-                        1, // v tolerance
-                        1);// omega tolerance
-            }
-            case SWERVE_TWO -> {
-                return new FullStateControllerSE2(log,
-                        4, // P for x/y
-                        4, // P for theta
-                        0.25, // P for v
-                        0.25, // P for omega
-                        0.01, // x tolerance
-                        0.02, // theta tolerance
-                        0.01, // v tolerance
-                        0.02); // omega tolerance
-            }
-            case ROOKIE_BOT -> {
-                return new FullStateControllerSE2(log,
-                        3, // P for x/y
-                        3.5, // P for theta
-                        0.05, // P for v
-                        0, // P for omega
-                        0.01, // x tolerance
-                        0.01, // theta tolerance
-                        1, // v tolerance
-                        1); // omega tolerance
-            }
-            case BETA_BOT -> {
-                return new FullStateControllerSE2(log,
-                        3, // for x/y
-                        3.5, // P for theta
-                        0.05, // P for v
-                        0, // P for omega
-                        0.025, // x tolerance
-                        0.025, // theta tolerance
-                        1, // v tolerance
-                        1); // omega tolerance
-            }
-            default -> {
-                // this is for simulation, don't use these values
-                return new FullStateControllerSE2(log, 3.0, 3.5, 0.05, 0, 0.05, 0.05, 1, 1);
-            }
-        }
+    public static FullStateControllerSE2 compbot(LoggerFactory log) {
+        return new FullStateControllerSE2(log,
+                2.9, // P for x/y
+                3.5, // P for theta
+                0.025, // P for v
+                0.01, // P for omega
+                0.02, // x tolerance
+                0.3, // theta tolerance
+                1, // v tolerance
+                1);// omega tolerance
+    }
+
+    public static FullStateControllerSE2 swerve1(LoggerFactory log) {
+        return new FullStateControllerSE2(log,
+                2, // P for x/y
+                2, // P for theta
+                0.01, // P for v
+                0, // P for omega
+                0.001, // x tolerance
+                0.01, // theta tolerance
+                1, // v tolerance
+                1);// omega tolerance
+    }
+
+    public static FullStateControllerSE2 swerve2(LoggerFactory log) {
+        return new FullStateControllerSE2(log,
+                4, // P for x/y
+                4, // P for theta
+                0.25, // P for v
+                0.25, // P for omega
+                0.01, // x tolerance
+                0.02, // theta tolerance
+                0.01, // v tolerance
+                0.02); // omega tolerance
+    }
+
+    public static FullStateControllerSE2 rookiebot(LoggerFactory log) {
+        return new FullStateControllerSE2(log,
+                3, // P for x/y
+                3.5, // P for theta
+                0.05, // P for v
+                0, // P for omega
+                0.01, // x tolerance
+                0.01, // theta tolerance
+                1, // v tolerance
+                1); // omega tolerance
+    }
+
+    public static FullStateControllerSE2 betabot(LoggerFactory log) {
+        return new FullStateControllerSE2(log,
+                3, // for x/y
+                3.5, // P for theta
+                0.05, // P for v
+                0, // P for omega
+                0.025, // x tolerance
+                0.025, // theta tolerance
+                1, // v tolerance
+                1); // omega tolerance
+    }
+
+    public static FullStateControllerSE2 sim(LoggerFactory log) {
+        // this is for simulation, don't use these values
+        return new FullStateControllerSE2(log, 3.0, 3.5, 0.05, 0, 0.05, 0.05, 1, 1);
     }
 
     public static FullStateControllerSE2 ridiculous(LoggerFactory log) {

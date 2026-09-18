@@ -1,6 +1,5 @@
 package org.team100.lib.framework;
 
-import org.wpilib.driverstation.DriverStationErrors;
 import org.wpilib.driverstation.internal.DriverStationBackend;
 import org.wpilib.framework.RobotBase;
 import org.wpilib.hardware.hal.ControlWord;
@@ -9,7 +8,6 @@ import org.wpilib.hardware.hal.HAL;
 import org.wpilib.hardware.hal.RobotMode;
 import org.wpilib.networktables.NetworkTableInstance;
 import org.wpilib.smartdashboard.SmartDashboard;
-import org.wpilib.system.Watchdog;
 
 /**
  * Copy of {@link edu.wpi.first.wpilibj.IterativeRobotBase} but with the

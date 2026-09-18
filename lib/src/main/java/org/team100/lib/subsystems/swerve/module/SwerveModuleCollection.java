@@ -115,45 +115,6 @@ public class SwerveModuleCollection implements Player {
                                 -0.001465,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
-            case COMP_BOT:
-                System.out.println("************** WCP MODULES w/Duty-Cycle Encoders **************");
-                return new SwerveModuleCollection(
-                        WCPSwerveModule100.getKrakenDriveKrakenSteer(
-                                frontLeftLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(1), // drive
-                                DriveRatio.MEDIUM,
-                                new CanId(3), // steer
-                                new RoboRioChannel(8),
-                                0.109162,
-                                kinodynamics,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
-                        WCPSwerveModule100.getKrakenDriveKrakenSteer(
-                                frontRightLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(22), // drive
-                                DriveRatio.MEDIUM,
-                                new CanId(18), // steer
-                                new RoboRioChannel(6),
-                                0.361342,
-                                kinodynamics,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
-                        WCPSwerveModule100.getKrakenDriveKrakenSteer(
-                                rearLeftLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(8), // drive
-                                DriveRatio.MEDIUM,
-                                new CanId(7), // steer
-                                new RoboRioChannel(7),
-                                0.611814,
-                                kinodynamics,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
-                        WCPSwerveModule100.getKrakenDriveKrakenSteer(
-                                rearRightLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(23), // drive
-                                DriveRatio.MEDIUM,
-                                new CanId(21), // steer
-                                new RoboRioChannel(9),
-                                0.279052,
-                                kinodynamics,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
             case SWERVE_ONE:
                 System.out.println("************** WCP MODULES w/Duty-Cycle Encoders **************");
                 return new SwerveModuleCollection(
@@ -193,7 +154,7 @@ public class SwerveModuleCollection implements Player {
                                 0.029534,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
-            case BETA_BOT:
+            case BETA_BOT, LAUNDRY_BOT:
                 System.out.println("************** WCP MODULES w/Duty-Cycle Encoders **************");
                 return new SwerveModuleCollection(
                         WCPSwerveModule100.getKrakenDriveKrakenSteer(
@@ -201,7 +162,7 @@ public class SwerveModuleCollection implements Player {
                                 new CanId(3), // drive
                                 DriveRatio.MEDIUM,
                                 new CanId(44), // steer
-                                new RoboRioChannel(3),
+                                new RoboRioChannel(8),
                                 0.228237,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
@@ -210,7 +171,7 @@ public class SwerveModuleCollection implements Player {
                                 new CanId(8), // drive
                                 DriveRatio.MEDIUM,
                                 new CanId(7), // steer
-                                new RoboRioChannel(2),
+                                new RoboRioChannel(6),
                                 0.817243,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
@@ -219,7 +180,7 @@ public class SwerveModuleCollection implements Player {
                                 new CanId(2), // drive
                                 DriveRatio.MEDIUM,
                                 new CanId(50), // steer
-                                new RoboRioChannel(1),
+                                new RoboRioChannel(7),
                                 0.147507,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
@@ -229,7 +190,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.MEDIUM,
                                 new CanId(62), // steer
                                 new RoboRioChannel(0),
-                                0.853782,
+                                0.835573,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
 
@@ -257,7 +218,7 @@ public class SwerveModuleCollection implements Player {
                 SimulatedSwerveModule100.get(log));
     }
 
-    ///////////////////////////////////////////////
+    ////////////////////////////////////////////
     //
     // Actuators
     //
@@ -306,7 +267,7 @@ public class SwerveModuleCollection implements Player {
         m_rearRight.stop();
     }
 
-    ///////////////////////////////////////////////////
+    ////////////////////////////////////////////////
     //
     // Observers
     //
@@ -329,7 +290,7 @@ public class SwerveModuleCollection implements Player {
                 m_rearRight.getState());
     }
 
-    /////////////////////////////////////////
+    //////////////////////////////////////
 
     public void close() {
         m_frontLeft.close();

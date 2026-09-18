@@ -37,10 +37,10 @@ public class MoveJointsManually extends Command {
         DriverVelocity v = m_v.get();
         // This is a sort of arbitrary mapping of "velocity"
         // fields to joints.
-        double q1dot = -15.0 * v.theta(); // axis 0
-        double q2dot = -5.0 * v.y(); // axis 4
-        double q3dot = -5.0 * v.x(); // axis 5
-        // Desired velocity in rad/s.
+        double q1dot = -1* v.theta(); // axis 0
+        double q2dot = -1 * v.y(); // axis 4
+        double q3dot = -1 * v.x(); // axis 5
+        // Desired velocity in rad/s
         RRRVelocity qdot = new RRRVelocity(q1dot, q2dot, q3dot);
         // Desired accel in rad/s/s.
         RRRAcceleration qddot = qdot.accel(m_qdot, DT);
