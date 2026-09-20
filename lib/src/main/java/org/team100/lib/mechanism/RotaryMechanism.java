@@ -258,6 +258,13 @@ public class RotaryMechanism implements Player {
         m_motor.stop();
     }
 
+    /**
+     * Force the encoder measurement.
+     */
+    public void setUnwrappedEncoderPositionRad(double x) {
+        m_sensor.setUnwrappedEncoderPositionRad(x);
+    }
+
     public void close() {
         m_motor.close();
         m_sensor.close();

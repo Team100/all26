@@ -2,7 +2,6 @@ package org.team100.lib.examples.motion;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.r.RDynamicsAnalytic;
 import org.team100.lib.logging.LoggerFactory;
@@ -23,6 +22,7 @@ import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -60,30 +60,28 @@ public class OutboardRotaryPositionSubsystem extends SubsystemBase {
     }
 
     private RotaryMechanism mech(LoggerFactory log, TotalCurrentLog currentLog) {
-        switch (Identity.instance) {
-            case BLANK -> {
-                // simulation
-                SimulatedMotor motor = new SimulatedMotor(log, 600);
-                IncrementalEncoder encoder = motor.encoder();
-                return getMech(log, motor, encoder);
-            }
-            default -> {
-                // real robot
-                CANSparkMotor motor = new NeoCANSparkMotor(
-                        log,
-                        currentLog,
-                        new CanId(0),
-                        NeutralMode100.BRAKE,
-                        MotorPhase.FORWARD,
-                        new CurrentLimit(10, 10), // Stator current limit, amps
-                        new Friction( 0.5, 0.5, 0.0, 0.5),
-                        PIDConstants.makePositionPID(0.2),
-                        0,
-                        0);
-                IncrementalEncoder encoder = motor.encoder();
-                return getMech(log, motor, encoder);
-            }
+        if (RobotBase.isReal()) {
+            // real robot
+            CANSparkMotor motor = new NeoCANSparkMotor(
+                    log,
+                    currentLog,
+                    new CanId(0),
+                    NeutralMode100.BRAKE,
+                    MotorPhase.FORWARD,
+                    new CurrentLimit(10, 10), // Stator current limit, amps
+                    new Friction(0.5, 0.5, 0.0, 0.5),
+                    PIDConstants.makePositionPID(0.2),
+                    0,
+                    0);
+            IncrementalEncoder encoder = motor.encoder();
+            return getMech(log, motor, encoder);
+        } else {
+            // simulation
+            SimulatedMotor motor = new SimulatedMotor(log, 600);
+            IncrementalEncoder encoder = motor.encoder();
+            return getMech(log, motor, encoder);
         }
+
     }
 
     private RotaryMechanism getMech(LoggerFactory log, Motor motor, IncrementalEncoder encoder) {

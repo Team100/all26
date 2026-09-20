@@ -2,7 +2,6 @@ package org.team100.frc2025.Climber;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -12,33 +11,34 @@ import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.LazySimulatedMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimberIntake extends SubsystemBase {
 
     private final Motor m_motor;
+    private final IncrementalEncoder m_encoder;
     private int count;
 
     public ClimberIntake(LoggerFactory parent, TotalCurrentLog currentLog, CanId canID) {
         LoggerFactory log = parent.type(this);
         count = 0;
-        switch (Identity.instance) {
-            case COMP_BOT -> {
-                m_motor = new KrakenX60Motor(
-                        log, currentLog,
-                        canID, NeutralMode100.COAST, MotorPhase.REVERSE,
-                        new CurrentLimit(20, 20),
-                        new Friction(0.26, 0.26, 0.006, 0.5),
-                        PIDConstants.zero());
-            }
-            default -> {
-                m_motor = new LazySimulatedMotor(
-                        log, new SimulatedMotor(log, 600), 1.5);
-            }
+        if (RobotBase.isReal()) {
+            m_motor = new KrakenX60Motor(
+                    log, currentLog,
+                    canID, NeutralMode100.COAST, MotorPhase.REVERSE,
+                    new CurrentLimit(20, 20),
+                    new Friction(0.26, 0.26, 0.006, 0.5),
+                    PIDConstants.zero());
+        } else {
+            m_motor = new LazySimulatedMotor(
+                    log, new SimulatedMotor(log, 600), 1.5);
         }
+        m_encoder = m_motor.encoder();
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ClimberIntake extends SubsystemBase {
     }
 
     public boolean isSlow() {
-        return m_motor.getVelocityRad_S() < 1;
+        return m_encoder.getVelocityRad_S() < 1;
     }
 
     public boolean intaking() {

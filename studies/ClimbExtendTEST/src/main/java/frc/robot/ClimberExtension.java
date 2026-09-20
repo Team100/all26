@@ -2,7 +2,6 @@ package frc.robot;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.p.PDynamics;
 import org.team100.lib.logging.LoggerFactory;
@@ -21,6 +20,7 @@ import org.team100.lib.servo.LinearPositionServo;
 import org.team100.lib.servo.OutboardLinearPositionServo;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -38,37 +38,33 @@ public class ClimberExtension extends SubsystemBase {
         int gearRatio = 1;
         PDynamics dyn = new PDynamics(0);
 
-        switch (Identity.instance) {
-            case COMP_BOT -> {
-                CurrentLimit limit = new CurrentLimit(40, 40);
-                NeoVortexCANSparkMotor m_motor = new NeoVortexCANSparkMotor(
-                        log,
-                        currentLog,
-                        new CanId(2),
-                        NeutralMode100.BRAKE,
-                        MotorPhase.FORWARD,
-                        limit,
-                        new Friction(0, 0, 0, 0),
-                        new PIDConstants(1, 0, 0, 0, 0, 0),
-                        0,
-                        0);
-                IncrementalEncoder encoder = m_motor.encoder();
-                LinearMechanism climberMech = new LinearMechanism(
-                        log, m_motor, encoder, gearRatio, wheelDiameterM,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_servo = new OutboardLinearPositionServo(
-                        log, climberMech, dyn, ref, 0.01, 0.01);
-            }
-
-            default -> {
-                SimulatedMotor m_motor = new SimulatedMotor(log, 600);
-                IncrementalEncoder encoder = m_motor.encoder();
-                LinearMechanism climberMech = new LinearMechanism(
-                        log, m_motor, encoder, gearRatio, wheelDiameterM,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_servo = new OutboardLinearPositionServo(
-                        log, climberMech, dyn, ref, 0.01, 0.01);
-            }
+        if (RobotBase.isReal()) {
+            CurrentLimit limit = new CurrentLimit(40, 40);
+            NeoVortexCANSparkMotor m_motor = new NeoVortexCANSparkMotor(
+                    log,
+                    currentLog,
+                    new CanId(2),
+                    NeutralMode100.BRAKE,
+                    MotorPhase.FORWARD,
+                    limit,
+                    new Friction(0, 0, 0, 0),
+                    new PIDConstants(1, 0, 0, 0, 0, 0),
+                    0,
+                    0);
+            IncrementalEncoder encoder = m_motor.encoder();
+            LinearMechanism climberMech = new LinearMechanism(
+                    log, m_motor, encoder, gearRatio, wheelDiameterM,
+                    Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_servo = new OutboardLinearPositionServo(
+                    log, climberMech, dyn, ref, 0.01, 0.01);
+        } else {
+            SimulatedMotor m_motor = new SimulatedMotor(log, 600);
+            IncrementalEncoder encoder = m_motor.encoder();
+            LinearMechanism climberMech = new LinearMechanism(
+                    log, m_motor, encoder, gearRatio, wheelDiameterM,
+                    Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_servo = new OutboardLinearPositionServo(
+                    log, climberMech, dyn, ref, 0.01, 0.01);
         }
     }
 

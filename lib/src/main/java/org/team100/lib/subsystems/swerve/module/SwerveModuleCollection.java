@@ -76,7 +76,7 @@ public class SwerveModuleCollection implements Player {
         LoggerFactory rearRightLogger = collectionLogger.name("Rear Right");
 
         switch (Identity.instance) {
-            case COMP_BOT:
+            case SQUAREBOT:
                 System.out.println("************** WCP MODULES w/Duty-Cycle Encoders **************");
                 return new SwerveModuleCollection(
                         WCPSwerveModule100.getKrakenDriveKrakenSteer(
@@ -111,7 +111,7 @@ public class SwerveModuleCollection implements Player {
                                 new CanId(23), // drive
                                 DriveRatio.MEDIUM,
                                 new CanId(21), // steer
-                                new RoboRioChannel(9),
+                                new RoboRioChannel(0),
                                 0.279052,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
@@ -154,7 +154,7 @@ public class SwerveModuleCollection implements Player {
                                 0.029534,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
-            case BETA_BOT:
+            case BETA_BOT, LAUNDRY_BOT:
                 System.out.println("************** WCP MODULES w/Duty-Cycle Encoders **************");
                 return new SwerveModuleCollection(
                         WCPSwerveModule100.getKrakenDriveKrakenSteer(
@@ -162,7 +162,7 @@ public class SwerveModuleCollection implements Player {
                                 new CanId(3), // drive
                                 DriveRatio.MEDIUM,
                                 new CanId(44), // steer
-                                new RoboRioChannel(3),
+                                new RoboRioChannel(8),
                                 0.228237,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
@@ -171,7 +171,7 @@ public class SwerveModuleCollection implements Player {
                                 new CanId(8), // drive
                                 DriveRatio.MEDIUM,
                                 new CanId(7), // steer
-                                new RoboRioChannel(2),
+                                new RoboRioChannel(6),
                                 0.817243,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
@@ -180,7 +180,7 @@ public class SwerveModuleCollection implements Player {
                                 new CanId(2), // drive
                                 DriveRatio.MEDIUM,
                                 new CanId(50), // steer
-                                new RoboRioChannel(1),
+                                new RoboRioChannel(7),
                                 0.147507,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
@@ -190,7 +190,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.MEDIUM,
                                 new CanId(62), // steer
                                 new RoboRioChannel(0),
-                                0.853782,
+                                0.835573,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
 

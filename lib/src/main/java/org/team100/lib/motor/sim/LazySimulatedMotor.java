@@ -4,18 +4,15 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.Motor;
 import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
-import org.team100.lib.sensor.position.incremental.sim.SimulatedEncoder;
 
 /** A simulated motor that runs for awhile, and then stops. */
 public class LazySimulatedMotor implements Motor {
-    private final LoggerFactory m_log;
     private final Motor m_delegate;
     private final double m_timeout;
     private double m_startTime;
     private boolean m_running;
 
     public LazySimulatedMotor(LoggerFactory parent, Motor delegate, double timeout) {
-        m_log = parent.type(this);
         m_delegate = delegate;
         m_timeout = timeout;
     }
@@ -74,32 +71,12 @@ public class LazySimulatedMotor implements Motor {
     }
 
     @Override
-    public double getVelocityRad_S() {
-        return m_delegate.getVelocityRad_S();
-    }
-
-    @Override
-    public double getAccelerationRad_S2() {
-        return m_delegate.getAccelerationRad_S2();
-    }
-
-    @Override
-    public double getUnwrappedPositionRad() {
-        return m_delegate.getUnwrappedPositionRad();
-    }
-
-    @Override
     public double getStatorCurrent() {
         // running means low current
         if (m_running)
             return 10;
         // not running because the torque (thus current) required is higher
         return 100;
-    }
-
-    @Override
-    public void setUnwrappedEncoderPositionRad(double positionRad) {
-        m_delegate.setUnwrappedEncoderPositionRad(positionRad);
     }
 
     @Override
@@ -124,7 +101,7 @@ public class LazySimulatedMotor implements Motor {
 
     @Override
     public IncrementalEncoder encoder() {
-        return new SimulatedEncoder(m_log, this);
+        return m_delegate.encoder();
     }
 
     @Override

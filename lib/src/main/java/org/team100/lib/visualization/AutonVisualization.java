@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Pose2d;
  * Shows positions and trajectories.
  */
 public class AutonVisualization {
+    private static final boolean DEBUG = false;
     private final DoubleArrayLogger m_log_poses;
     private final DoubleArrayLogger m_log_paths;
 
@@ -31,18 +32,25 @@ public class AutonVisualization {
     }
 
     public void show(AnnotatedCommand cmd) {
-        if (cmd == null)
+        if (cmd == null) {
+            if (DEBUG)
+                System.out.println("AutonVisualization: no command");
             return;
+        }
         List<Pose2d> ps = new ArrayList<>();
         Pose2d p = cmd.start();
         if (p == null) {
             clear();
+            if (DEBUG)
+                System.out.println("AutonVisualization: no start");
             return;
         }
         ps.add(p);
         List<Function<Pose2d, TrajectorySE2>> tfns = cmd.trajectoryFns();
         if (tfns.isEmpty()) {
             clear();
+            if (DEBUG)
+                System.out.println("AutonVisualization: no trajectory fns");
             return;
         }
         List<TrajectorySE2> ts = new ArrayList<>();
@@ -53,7 +61,10 @@ public class AutonVisualization {
             ps.add(p);
             // show a few samples
             for (double time = 0; time < t.duration(); time += 0.25) {
-                ps.add(t.sample(time).point().point().waypoint().pose());
+                Pose2d pose = t.sample(time).point().point().waypoint().pose();
+                ps.add(pose);
+                if (DEBUG)
+                    System.out.printf("AutonVisualization: sample %f %s\n", time, pose);
             }
         }
         double[] points = ts.stream()

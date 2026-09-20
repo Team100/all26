@@ -57,7 +57,6 @@ public class VelocityReferenceControllerSE2 {
      */
     public void execute() {
         try {
-            // TODO: control noise in this measurement
             StateSE2 measurement = m_subsystem.getState();
             StateSE2 current = m_reference.current();
             ControlSE2 next = m_reference.next();

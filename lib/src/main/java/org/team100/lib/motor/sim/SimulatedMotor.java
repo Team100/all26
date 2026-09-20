@@ -8,7 +8,6 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.StateR1Logger;
 import org.team100.lib.motor.Motor;
-import org.team100.lib.sensor.position.incremental.sim.SimulatedEncoder;
 import org.team100.lib.state.StateR1;
 import org.team100.lib.util.LowPassDerivative;
 import org.team100.lib.util.Math100;
@@ -27,36 +26,34 @@ public class SimulatedMotor implements Motor {
     private final double m_freeSpeedRad_S;
 
     private final LoggerFactory m_log;
+    private final SimulatedEncoder m_encoder;
     private final DoubleLogger m_log_duty;
     private final DoubleLogger m_log_velocityInput;
     private final DoubleLogger m_log_positionInput;
     private final DoubleLogger m_log_torqueInput;
     private final StateR1Logger m_log_state;
-    private final DoubleLogger m_log_unwrapped_position;
-    private final DoubleLogger m_log_velocity;
-    private final DoubleLogger m_log_accel;
-    private final ObjectCache<StateR1> m_stateCache;
-    private final LowPassDerivative m_smoothDerivative;
+    /** Ground-truth state. */
+    final ObjectCache<StateR1> m_stateCache;
+    final LowPassDerivative m_smoothDerivative;
 
-    // just like in a real motor, the inputs remain until zeroed by the watchdog.
-    // nullable; only one (velocity or position) is used at a time.
+    // Just like in a real motor, the inputs remain until zeroed by the watchdog.
+    // Nullable; only one (velocity or position) is used at a time.
     private Double m_velocityInput;
+    /** Ground-truth position input, with offset applied */
     private Double m_positionInput;
     private Double m_torqueInput;
-
+    /** Ground-truth state. */
     private StateR1 m_state = new StateR1();
 
     public SimulatedMotor(LoggerFactory parent, double freeSpeedRad_S) {
         m_log = parent.type(this);
         m_freeSpeedRad_S = freeSpeedRad_S;
+        m_encoder = new SimulatedEncoder(m_log, this);
         m_log_duty = m_log.doubleLogger(Level.DEBUG, "duty_cycle");
         m_log_velocityInput = m_log.doubleLogger(Level.DEBUG, "velocity input");
         m_log_positionInput = m_log.doubleLogger(Level.DEBUG, "position input");
         m_log_torqueInput = m_log.doubleLogger(Level.DEBUG, "torque input");
         m_log_state = m_log.StateR1Logger(Level.DEBUG, "state");
-        m_log_unwrapped_position = m_log.doubleLogger(Level.DEBUG, "unwrapped position (rad)");
-        m_log_velocity = m_log.doubleLogger(Level.DEBUG, "velocity (rad_s)");
-        m_log_accel = m_log.doubleLogger(Level.DEBUG, "accel (rad_s2)");
         m_stateCache = Cache.of(this::update);
         m_smoothDerivative = new LowPassDerivative();
     }
@@ -108,7 +105,6 @@ public class SimulatedMotor implements Motor {
     @Override
     public void setCurrent(double current) {
         // NOTE: this is a ridiculous hack.
-        // TODO: a better simulated current control
         if (m_velocityInput == null) {
             setVelocity(0.1, 0);
         } else {
@@ -131,9 +127,13 @@ public class SimulatedMotor implements Motor {
         m_positionInput = null;
     }
 
-    /** ignores velocity and torque */
+    /**
+     * Set the motor position, immediately, applying the encoder offset.
+     * Ignores velocity and torque
+     */
     @Override
     public void setUnwrappedPosition(double position, double velocity, double torque) {
+        position += m_encoder.m_offset;
         if (DEBUG) {
             System.out.printf("motor %s set position %6.3f\n", m_log.getRoot(), position);
         }
@@ -162,7 +162,7 @@ public class SimulatedMotor implements Motor {
 
     @Override
     public SimulatedEncoder encoder() {
-        return new SimulatedEncoder(m_log, this);
+        return m_encoder;
     }
 
     @Override
@@ -176,48 +176,15 @@ public class SimulatedMotor implements Motor {
     }
 
     @Override
-    public double getVelocityRad_S() {
-        return m_stateCache.get().v();
-    }
-
-    @Override
-    public double getAccelerationRad_S2() {
-        // this is computed in update
-        return m_smoothDerivative.lastValue();
-    }
-
-    @Override
     public double getStatorCurrent() {
         // this is totally wrong
-        return getVelocityRad_S() / 10.0;
+        return m_stateCache.get().v() / 10.0;
     }
 
     @Override
     public double getSupplyCurrent() {
         // no current measurement
         return 0;
-    }
-
-    @Override
-    public double getUnwrappedPositionRad() {
-        double pos = m_stateCache.get().x();
-        if (Double.isNaN(pos))
-            throw new IllegalArgumentException("motor pos");
-        return pos;
-    }
-
-    /**
-     * Set the state directly. Also zeros velocity; if you reset the
-     * position while in motion you shouldn't expect it to work anyway.
-     * 
-     * resets the caches, so the new value is immediately available.
-     */
-    @Override
-    public void setUnwrappedEncoderPositionRad(double positionRad) {
-        if (Double.isNaN(positionRad))
-            throw new IllegalArgumentException("motor set position");
-        m_state = new StateR1(positionRad, 0);
-        m_stateCache.reset();
     }
 
     @Override
@@ -233,9 +200,6 @@ public class SimulatedMotor implements Motor {
             m_log_velocityInput.log(() -> m_velocityInput);
         if (m_torqueInput != null)
             m_log_torqueInput.log(() -> m_torqueInput);
-        m_log_unwrapped_position.log(this::getUnwrappedPositionRad);
-        m_log_velocity.log(this::getVelocityRad_S);
-        m_log_accel.log(this::getAccelerationRad_S2);
     }
 
     /** resets the caches, so the new value is immediately available. */

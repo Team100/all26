@@ -11,12 +11,13 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
+import org.team100.lib.motor.ctre.Talon6Encoder;
 import org.team100.lib.sensor.position.absolute.CombinedRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
+import org.team100.lib.sensor.position.absolute.ReduxPositionSensor;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.wpi.AS5048RotaryPositionSensor;
-import org.team100.lib.sensor.position.incremental.ctre.Talon6Encoder;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
@@ -75,16 +76,60 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 driveLimit,
                 driveMotorCanId,
                 ratio);
+        // this reads the steering angle directly.
+        RotaryPositionSensor turningSensor = new AS5048RotaryPositionSensor(
+                parent,
+                turningEncoderChannel,
+                turningOffset,
+                encoderDrive);
         RotaryMechanism steer = steerKraken(
                 parent.name("Turning"),
                 currentLog,
                 steerLimit,
                 turningMotorCanId,
-                turningEncoderChannel,
-                turningOffset,
+                turningSensor,
                 STEERING_RATIO,
                 kinodynamics,
-                encoderDrive,
+                neutral,
+                motorPhase);
+        return new WCPSwerveModule100(parent, drive, steer, ratio);
+    }
+
+    public static WCPSwerveModule100 getKrakenDriveKrakenSteerRedux(
+            LoggerFactory parent,
+            TotalCurrentLog currentLog,
+            CurrentLimit driveLimit,
+            CurrentLimit steerLimit,
+            CanId driveMotorCanId,
+            DriveRatio ratio,
+            CanId turningMotorCanId,
+            CanId turningEncoderChannel,
+            double turningOffset,
+            SwerveKinodynamics kinodynamics,
+            EncoderDrive encoderDrive,
+            NeutralMode100 neutral,
+            MotorPhase motorPhase) {
+        LinearMechanism drive = driveKraken(
+                parent.name("Drive"),
+                currentLog,
+                driveLimit,
+                driveMotorCanId,
+                ratio);
+        // this reads the steering angle directly.
+        LoggerFactory turnlog = parent.name("Turning");
+        RotaryPositionSensor turningSensor = new ReduxPositionSensor(
+                turnlog,
+                turningEncoderChannel,
+                turningOffset,
+                encoderDrive);
+        RotaryMechanism steer = steerKraken(
+                turnlog,
+                currentLog,
+                steerLimit,
+                turningMotorCanId,
+                turningSensor,
+                STEERING_RATIO,
+                kinodynamics,
                 neutral,
                 motorPhase);
         return new WCPSwerveModule100(parent, drive, steer, ratio);
@@ -256,7 +301,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
         ProxyRotaryPositionSensor proxy = new ProxyRotaryPositionSensor(builtInEncoder, gearRatio);
         CombinedRotaryPositionSensor combined = new CombinedRotaryPositionSensor(parent, turningSensor, proxy);
 
-        return new RotaryMechanism(     
+        return new RotaryMechanism(
                 parent, turningMotor, combined, gearRatio,
                 Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
@@ -266,11 +311,9 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             TotalCurrentLog currentLog,
             CurrentLimit limit,
             CanId turningMotorCanId,
-            RoboRioChannel turningEncoderChannel,
-            double turningOffset,
+            RotaryPositionSensor turningSensor,
             double gearRatio,
             SwerveKinodynamics kinodynamics,
-            EncoderDrive drive,
             NeutralMode100 neutral,
             MotorPhase motorPhase) {
         Friction friction = new Friction(0.100, 0.100, 0.005, 0.5);
@@ -289,13 +332,6 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 limit,
                 friction,
                 pid);
-
-        // this reads the steering angle directly.
-        RotaryPositionSensor turningSensor = new AS5048RotaryPositionSensor(
-                parent,
-                turningEncoderChannel,
-                turningOffset,
-                drive);
 
         Talon6Encoder builtInEncoder = turningMotor.encoder();
 

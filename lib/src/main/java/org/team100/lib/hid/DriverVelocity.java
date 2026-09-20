@@ -4,7 +4,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * This represents driver's velocity command, usually mapped to three axes in
- * the control, so the ranges are [-1,1]
+ * the control, so the ranges are [-1,1].
+ * Usually this input should be SMOOTHED.  See DriverXboxControl.
  */
 public record DriverVelocity(double x, double y, double theta) {
 

@@ -24,17 +24,7 @@ public class ProxyRotaryPositionSensor implements RotaryPositionSensor {
             double gearRatio,
             double initialPosition) {
         this(encoder, gearRatio);
-        setEncoderPosition(initialPosition);
-    }
-
-    /**
-     * Sets the incremental encoder position. This is only used to "zero" it, and
-     * only done by the CombinedRotaryPositionSensor.
-     * 
-     * It is very slow: call it only on startup.
-     */
-    public void setEncoderPosition(double positionRad) {
-        m_encoder.setUnwrappedEncoderPositionRad(positionRad * m_gearRatio);
+        setUnwrappedEncoderPositionRad(initialPosition);
     }
 
     @Override
@@ -58,6 +48,11 @@ public class ProxyRotaryPositionSensor implements RotaryPositionSensor {
     @Override
     public double getAccelerationRad_S2() {
         return m_encoder.getAccelerationRad_S2() / m_gearRatio;
+    }
+
+    @Override
+    public void setUnwrappedEncoderPositionRad(double x) {
+        m_encoder.setUnwrappedEncoderPositionRad(x * m_gearRatio);
     }
 
     @Override

@@ -2,7 +2,6 @@ package org.team100.lib.examples.motion;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -13,6 +12,7 @@ import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -34,25 +34,18 @@ public class OpenLoopSubsystem extends SubsystemBase {
 
     public OpenLoopSubsystem(LoggerFactory parent, TotalCurrentLog currentLog) {
         LoggerFactory log = parent.type(this);
-        /*
-         * Here we use the Team 100 "Identity" mechanism to allow different
-         * configurations for different hardware. The most important distinction here is
-         * for simulation.
-         */
-        switch (Identity.instance) {
-            case COMP_BOT -> {
-                CanId canId = new CanId(1);
-                CurrentLimit limit = new CurrentLimit(90, 60);
-                PIDConstants pid = PIDConstants.makeVelocityPID(0.05);
-                Friction friction = new Friction( 0.100, 0.100, 0.0, 0.1);
-                m_motor = new Falcon500Motor(
-                        log, currentLog, canId,
-                        NeutralMode100.COAST, MotorPhase.FORWARD,
-                        limit, friction, pid);
-            }
-            default -> {
-                m_motor = new SimulatedMotor(log, 600);
-            }
+        if (RobotBase.isReal()) {
+            CanId canId = new CanId(1);
+            CurrentLimit limit = new CurrentLimit(90, 60);
+            PIDConstants pid = PIDConstants.makeVelocityPID(0.05);
+            Friction friction = new Friction(0.100, 0.100, 0.0, 0.1);
+            m_motor = new Falcon500Motor(
+                    log, currentLog, canId,
+                    NeutralMode100.COAST, MotorPhase.FORWARD,
+                    limit, friction, pid);
+        } else {
+            m_motor = new SimulatedMotor(log, 600);
+
         }
     }
 

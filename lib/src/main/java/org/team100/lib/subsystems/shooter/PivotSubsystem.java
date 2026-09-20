@@ -2,7 +2,6 @@ package org.team100.lib.subsystems.shooter;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
@@ -13,8 +12,10 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.Neo550CANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
+import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class PivotSubsystem extends SubsystemBase {
 
     private final Motor m_pivot;
+    private final IncrementalEncoder m_encoder;
     private final DoubleLogger m_log_angle;
 
     public PivotSubsystem(
@@ -33,10 +35,8 @@ public class PivotSubsystem extends SubsystemBase {
             CanId canId) {
         LoggerFactory logger = parent.type(this);
         m_log_angle = logger.doubleLogger(Level.TRACE, "Angle (rad)");
-        m_pivot = (switch (Identity.instance) {
-            case BLANK ->
-                new SimulatedMotor(logger, 600);
-            default -> new Neo550CANSparkMotor(
+        if (RobotBase.isReal()) {
+            m_pivot = new Neo550CANSparkMotor(
                     logger,
                     currentLog,
                     canId,
@@ -46,7 +46,11 @@ public class PivotSubsystem extends SubsystemBase {
                     PIDConstants.zero(),
                     0,
                     0);
-        });
+        } else {
+            m_pivot = new SimulatedMotor(logger, 600);
+        }
+
+        m_encoder = m_pivot.encoder();
     }
 
     public void dutyCycle(double set) {
@@ -54,11 +58,11 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public double getAngleRad() {
-        return m_pivot.getUnwrappedPositionRad();
+        return m_encoder.getUnwrappedPositionRad();
     }
 
     public void setEncoderPosition(double positionRad) {
-        m_pivot.setUnwrappedEncoderPositionRad(positionRad);
+        m_encoder.setUnwrappedEncoderPositionRad(positionRad);
     }
 
     public void setTorqueLimit(double value) {

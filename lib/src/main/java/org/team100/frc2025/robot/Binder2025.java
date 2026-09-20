@@ -10,6 +10,7 @@ import org.team100.frc2025.CommandGroups.MoveToAlgaePosition;
 import org.team100.frc2025.Swerve.Auto.BigLoop;
 import org.team100.lib.controller.se2.ControllerFactorySE2;
 import org.team100.lib.controller.se2.ControllerSE2;
+import org.team100.lib.controller.se2.FullStateControllerSE2;
 import org.team100.lib.hid.Buttons2025;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.hid.OperatorXboxControl;
@@ -179,7 +180,7 @@ public class Binder2025 {
         final LoggerFactory coralSequence = rootLogger.name("Coral Sequence");
         // final ProfileSE2 profile = HolonomicProfileFactory.get(
         // coralSequence, m_machinery.m_swerveKinodynamics, 1, 0.5, 1, 0.2);
-        final ControllerSE2 holonomicController = ControllerFactorySE2.byIdentity(coralSequence);
+        final ControllerSE2 holonomicController = new FullStateControllerSE2(coralSequence, 3.0, 3.5, 0, 0, 0.01, 0.01, 0.01, 0.01);
 
         // Drive to a scoring location at the reef and score.
         whileTrue(driver::b, m_machinery.m_manipulator.centerEject());

@@ -50,7 +50,7 @@ class DriveWithTrajectoryListFunctionTest implements Timeless {
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         // this initial step is required since the timebase is different?
         stepTime();
-        Experiments.instance.testOverride(Experiment.UseSwerveLimiter, true);
+        Experiments.INSTANCE.override(Experiment.UseSwerveLimiter, true);
         ControllerSE2 control = ControllerFactorySE2.test(logger);
         DriveWithTrajectoryListFunction c = new DriveWithTrajectoryListFunction(
                 logger,

@@ -4,7 +4,6 @@ import java.util.function.DoubleSupplier;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -14,10 +13,11 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
-import org.team100.lib.sensor.position.absolute.HomingRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
+import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -33,9 +33,7 @@ public class DiscusMech extends SubsystemBase {
 
     private final RotaryMechanism m_mech;
 
-    private final Motor m_motor;
-
-    private final HomingRotaryPositionSensor m_sensor;
+    private final RotaryPositionSensor m_sensor;
 
     public DiscusMech(LoggerFactory parent, TotalCurrentLog currentLog) {
         LoggerFactory logger = parent.type(this);
@@ -44,51 +42,28 @@ public class DiscusMech extends SubsystemBase {
         PIDConstants pid = PIDConstants.makePositionPID(0.5, 0, 0.1); // 2.0
 
         Friction friction = new Friction(0.16, 0.15, 0, 0);
-
-        switch (Identity.instance) {
-            case TEAM100_2018 -> {
-                Falcon500Motor motor = new Falcon500Motor(
-                        logger,
-                        currentLog,
-                        new CanId(36),
-                        NeutralMode100.COAST,
-                        MotorPhase.REVERSE,
-                        new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
-                        friction,
-                        pid);
-
-                m_motor = motor;
-
-                m_sensor = new HomingRotaryPositionSensor(
-                        new ProxyRotaryPositionSensor(motor.encoder(), 1.0));
-
-                m_mech = new RotaryMechanism(
-                        logger,
-                        motor,
-                        m_sensor,
-                        1.0,
-                        -100.0,
-                        100.0);
-
-            }
-            default -> {
-                SimulatedMotor motor = new SimulatedMotor(logger, 600);
-                m_motor = motor;
-
-                m_sensor = new HomingRotaryPositionSensor(
-                        new ProxyRotaryPositionSensor(
-                                motor.encoder(), 1.0));
-
-                m_mech = new RotaryMechanism(
-                        logger,
-                        motor,
-                        m_sensor,
-                        1.0,
-                        -100.0,
-                        100.0);
-
-            }
+        Motor motor;
+        if (RobotBase.isReal()) {
+            motor = new Falcon500Motor(
+                    logger,
+                    currentLog,
+                    new CanId(36),
+                    NeutralMode100.COAST,
+                    MotorPhase.REVERSE,
+                    new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
+                    friction,
+                    pid);
+        } else {
+            motor = new SimulatedMotor(logger, 600);
         }
+        m_sensor = new ProxyRotaryPositionSensor(motor.encoder(), 1.0);
+        m_mech = new RotaryMechanism(
+                logger,
+                motor,
+                m_sensor,
+                1.0,
+                -100.0,
+                100.0);
     }
 
     /** Update position by adding. */
@@ -127,7 +102,7 @@ public class DiscusMech extends SubsystemBase {
      * cycle (gently) to the end of travel before pushing the "home" button.
      */
     private void setHomePosition() {
-        m_motor.setUnwrappedEncoderPositionRad(0);
+        m_mech.setUnwrappedEncoderPositionRad(0);
     }
 
     ///////////////////////

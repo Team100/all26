@@ -10,8 +10,8 @@ import org.team100.frc2026.subsystems.IntakeExtend;
 import org.team100.frc2026.subsystems.Shooter;
 import org.team100.frc2026.targeting.Targeter;
 import org.team100.lib.coherence.Takt;
-import org.team100.lib.controller.se2.ControllerFactorySE2;
 import org.team100.lib.controller.se2.ControllerSE2;
+import org.team100.lib.controller.se2.FullStateControllerSE2;
 import org.team100.lib.indicator.Beeper;
 import org.team100.lib.localization.AddOdometryNoise;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
@@ -209,7 +209,15 @@ public class Machinery {
         //
         // CONTROLLER
         //
-        m_holonomicController = ControllerFactorySE2.byIdentity(driveLog);
+        m_holonomicController = new FullStateControllerSE2(driveLog,
+                2.9, // P for x/y
+                3.5, // P for theta
+                0.025, // P for v
+                0.01, // P for omega
+                0.02, // x tolerance
+                0.3, // theta tolerance
+                1, // v tolerance
+                1);// omega tolerance
     }
 
     /**

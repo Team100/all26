@@ -107,8 +107,6 @@ public class DriveMovingTargetLock extends Command {
     /**
      * Null to skip override.
      * 
-     * TODO: control omega noise
-     * 
      * @param omega override. avoid noise in this input.
      */
     private void actuate(Double omega) {
@@ -122,7 +120,7 @@ public class DriveMovingTargetLock extends Command {
         scaled = GeometryUtil.scale(scaled, DriverSkill.level().scale());
 
         // Apply field-relative limits.
-        if (Experiments.instance.enabled(Experiment.UseSwerveLimiter)) {
+        if (Experiments.INSTANCE.enabled(Experiment.UseSwerveLimiter)) {
             scaled = m_limiter.apply(scaled);
         }
 

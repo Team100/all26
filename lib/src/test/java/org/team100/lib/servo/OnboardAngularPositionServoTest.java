@@ -109,7 +109,6 @@ public class OnboardAngularPositionServoTest implements Timeless {
         }
 
         // start motionless at -3
-        assertEquals(0, motor.getVelocityRad_S(), DELTA);
         assertEquals(-3, encoder.getUnwrappedPositionRad(), DELTA);
         assertEquals(0, encoder.getVelocityRad_S(), DELTA);
         assertEquals(0, mech.getVelocityRad_S(), DELTA);
@@ -123,7 +122,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
             stepTime();
             if (DEBUG)
                 System.out.printf("i: %d position: %5.3f velocity: %5.3f\n",
-                        i, motor.getUnwrappedPositionRad(), motor.getVelocityRad_S());
+                        i, encoder.getUnwrappedPositionRad(), encoder.getVelocityRad_S());
         }
         // heading towards -pi
         assertEquals(-3.115, servo.getWrappedPositionRad(), 0.001);
@@ -134,7 +133,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
             stepTime();
             if (DEBUG)
                 System.out.printf("i: %d position: %5.3f %5.3f\n",
-                        i, motor.getUnwrappedPositionRad(), motor.getVelocityRad_S());
+                        i, encoder.getUnwrappedPositionRad(), encoder.getVelocityRad_S());
         }
         // now the wrapped angle is what we asked for
         assertEquals(3, servo.getWrappedPositionRad(), 0.001);
@@ -175,7 +174,6 @@ public class OnboardAngularPositionServoTest implements Timeless {
         }
 
         // start motionless at -3
-        assertEquals(0, motor.getVelocityRad_S(), DELTA);
         assertEquals(-3, encoder.getUnwrappedPositionRad(), DELTA);
         assertEquals(0, encoder.getVelocityRad_S(), DELTA);
         assertEquals(0, mech.getVelocityRad_S(), DELTA);
@@ -189,7 +187,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
             stepTime();
             if (DEBUG)
                 System.out.printf("i: %d position: %5.3f velocity: %5.3f\n",
-                        i, motor.getUnwrappedPositionRad(), motor.getVelocityRad_S());
+                        i, encoder.getUnwrappedPositionRad(), encoder.getVelocityRad_S());
         }
         // passing through zero
         assertEquals(0, servo.getWrappedPositionRad(), 0.001);
@@ -200,7 +198,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
             stepTime();
             if (DEBUG)
                 System.out.printf("i: %d position: %5.3f %5.3f\n",
-                        i, motor.getUnwrappedPositionRad(), motor.getVelocityRad_S());
+                        i, encoder.getUnwrappedPositionRad(), encoder.getVelocityRad_S());
         }
         // now the wrapped angle is what we asked for
         assertEquals(3, servo.getWrappedPositionRad(), 0.001);
@@ -226,7 +224,6 @@ public class OnboardAngularPositionServoTest implements Timeless {
         servo.periodic();
         stepTime();
 
-        assertEquals(0, motor.getVelocityRad_S(), DELTA);
         assertEquals(0, encoder.getUnwrappedPositionRad(), DELTA);
         assertEquals(0, encoder.getVelocityRad_S(), DELTA);
         assertEquals(0, sensor.getWrappedPositionRad(), DELTA);
@@ -238,7 +235,6 @@ public class OnboardAngularPositionServoTest implements Timeless {
             stepTime();
         }
 
-        assertEquals(0, motor.getVelocityRad_S(), DELTA);
         assertEquals(1, encoder.getUnwrappedPositionRad(), DELTA);
         assertEquals(0, encoder.getVelocityRad_S(), DELTA);
         assertEquals(0, mech.getVelocityRad_S(), DELTA);
@@ -266,7 +262,6 @@ public class OnboardAngularPositionServoTest implements Timeless {
         servo.periodic();
         stepTime();
 
-        assertEquals(0, motor.getVelocityRad_S(), DELTA);
         assertEquals(0, encoder.getUnwrappedPositionRad(), DELTA);
         assertEquals(0, encoder.getVelocityRad_S(), DELTA);
         assertEquals(0, sensor.getWrappedPositionRad(), DELTA);
@@ -279,7 +274,6 @@ public class OnboardAngularPositionServoTest implements Timeless {
             stepTime();
         }
 
-        assertEquals(0, motor.getVelocityRad_S(), DELTA);
         assertEquals(-3, encoder.getUnwrappedPositionRad(), DELTA);
         assertEquals(0, encoder.getVelocityRad_S(), DELTA);
         assertEquals(0, mech.getVelocityRad_S(), DELTA);
@@ -296,7 +290,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
             stepTime();
             if (DEBUG)
                 System.out.printf("i: %d position: %5.3f %5.3f\n",
-                        i, motor.getUnwrappedPositionRad(), motor.getVelocityRad_S());
+                        i, encoder.getUnwrappedPositionRad(), encoder.getVelocityRad_S());
         }
         // wrapped angle has crossed over
         assertEquals(3.12, servo.getWrappedPositionRad(), 0.001);
@@ -308,7 +302,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
             stepTime();
             if (DEBUG)
                 System.out.printf("i: %d position: %5.3f %5.3f\n",
-                        i, motor.getUnwrappedPositionRad(), motor.getVelocityRad_S());
+                        i, encoder.getUnwrappedPositionRad(), encoder.getVelocityRad_S());
         }
         // feedback overshoots a little
         assertEquals(3.002, servo.getWrappedPositionRad(), 0.001);
@@ -345,7 +339,6 @@ public class OnboardAngularPositionServoTest implements Timeless {
         }
 
         // start motionless at -3
-        assertEquals(0, motor.getVelocityRad_S(), DELTA);
         assertEquals(-3, encoder.getUnwrappedPositionRad(), DELTA);
         assertEquals(0, encoder.getVelocityRad_S(), DELTA);
         assertEquals(0, mech.getVelocityRad_S(), DELTA);
@@ -364,7 +357,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
             stepTime();
             if (DEBUG)
                 System.out.printf("i: %d position: %5.3f %5.3f\n",
-                        i, motor.getUnwrappedPositionRad(), motor.getVelocityRad_S());
+                        i, encoder.getUnwrappedPositionRad(), encoder.getVelocityRad_S());
         }
         // going around uses the profile which is much slower
         assertEquals(-0.16, servo.getWrappedPositionRad(), 0.001);
@@ -375,7 +368,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
             stepTime();
             if (DEBUG)
                 System.out.printf("i: %d position: %5.3f %5.3f\n",
-                        i, motor.getUnwrappedPositionRad(), motor.getVelocityRad_S());
+                        i, encoder.getUnwrappedPositionRad(), encoder.getVelocityRad_S());
         }
         assertEquals(3, servo.getWrappedPositionRad(), 0.001);
         assertEquals(3, servo.getUnwrappedPositionRad(), 0.001);

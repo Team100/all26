@@ -145,26 +145,6 @@ public class TalonSRXMotor implements Motor {
     }
 
     @Override
-    public double getVelocityRad_S() {
-        throw new UnsupportedOperationException("TalonSRX sensing is not supported.");
-    }
-
-    @Override
-    public double getAccelerationRad_S2() {
-        throw new UnsupportedOperationException("TalonSRX sensing is not supported.");
-    }
-
-    @Override
-    public double getUnwrappedPositionRad() {
-        throw new UnsupportedOperationException("TalonSRX sensing is not supported.");
-    }
-
-    @Override
-    public void setUnwrappedEncoderPositionRad(double positionRad) {
-        throw new UnsupportedOperationException("TalonSRX sensing is not supported.");
-    }
-
-    @Override
     public void setUnwrappedPosition(double positionRad, double velocityRad_S, double torqueNm) {
         throw new UnsupportedOperationException("TalonSRX sensing is not supported.");
     }

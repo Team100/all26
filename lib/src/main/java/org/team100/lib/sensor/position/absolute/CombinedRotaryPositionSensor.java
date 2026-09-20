@@ -94,7 +94,7 @@ public class CombinedRotaryPositionSensor implements RotaryPositionSensor {
 
         double absolutePosition = Math.atan2(sin, cos);
 
-        m_incremental.setEncoderPosition(absolutePosition);
+        m_incremental.setUnwrappedEncoderPositionRad(absolutePosition);
         m_synchronized = true;
     }
 
@@ -130,6 +130,12 @@ public class CombinedRotaryPositionSensor implements RotaryPositionSensor {
     @Override
     public double getAccelerationRad_S2() {
         return m_incremental.getAccelerationRad_S2();
+    }
+
+    @Override
+    public void setUnwrappedEncoderPositionRad(double x) {
+        m_absolute.setUnwrappedEncoderPositionRad(x);
+        m_incremental.setUnwrappedEncoderPositionRad(x);
     }
 
     @Override

@@ -62,7 +62,7 @@ public class Robot extends TimedRobot100 {
         m_machinery.periodic();
         m_binder.periodic();
         m_robotLog.periodic();
-        if (Experiments.instance.enabled(Experiment.FlushOften)) {
+        if (Experiments.INSTANCE.enabled(Experiment.FlushOften)) {
             NetworkTableInstance.getDefault().flush();
         }
     }
@@ -115,6 +115,7 @@ public class Robot extends TimedRobot100 {
 
     @Override
     public void disabledExit() {
+        // only show the auton when disabled
         m_autoViz.clear();
     }
 
@@ -133,7 +134,8 @@ public class Robot extends TimedRobot100 {
 
     @Override
     public void disabledInit() {
-
+        // show the auton again when disabling.
+        m_autoViz.show(m_autons.getAnnotated());
     }
 
     @Override

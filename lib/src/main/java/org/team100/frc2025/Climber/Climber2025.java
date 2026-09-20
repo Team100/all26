@@ -4,7 +4,6 @@ import java.util.function.DoubleSupplier;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.controller.r1.PIDFeedback;
 import org.team100.lib.dynamics.r.RDynamicsAnalytic;
@@ -29,6 +28,7 @@ import org.team100.lib.servo.OnboardAngularPositionServo;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -44,38 +44,34 @@ public class Climber2025 extends SubsystemBase {
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
         PIDFeedback feedback = new PIDFeedback(log, 5, 0, 0, false, 0.05, 0.1);
 
-        switch (Identity.instance) {
-            case COMP_BOT -> {
-                Falcon500Motor motor = new Falcon500Motor(
-                        log, currentLog, canID, NeutralMode100.BRAKE, MotorPhase.REVERSE,
-                        new CurrentLimit(20, 20),
-                        new Friction(0.100, 0.065, 0.0, 0.5),
-                        PIDConstants.makePositionPID(0.2));
+        if (RobotBase.isReal()) {
+            Falcon500Motor motor = new Falcon500Motor(
+                    log, currentLog, canID, NeutralMode100.BRAKE, MotorPhase.REVERSE,
+                    new CurrentLimit(20, 20),
+                    new Friction(0.100, 0.065, 0.0, 0.5),
+                    PIDConstants.makePositionPID(0.2));
 
-                double inputOffset = 0.440602;
-                RotaryPositionSensor sensor = new AS5048RotaryPositionSensor(
-                        log, new RoboRioChannel(0), inputOffset, EncoderDrive.DIRECT);
-                double gearRatio = 5 * 5 * 4 * 20;
+            double inputOffset = 0.440602;
+            RotaryPositionSensor sensor = new AS5048RotaryPositionSensor(
+                    log, new RoboRioChannel(0), inputOffset, EncoderDrive.DIRECT);
+            double gearRatio = 5 * 5 * 4 * 20;
 
-                RotaryMechanism rotaryMechanism = new RotaryMechanism(
-                        log, motor, sensor, gearRatio,
-                        0, Math.PI / 2);
+            RotaryMechanism rotaryMechanism = new RotaryMechanism(
+                    log, motor, sensor, gearRatio,
+                    0, Math.PI / 2);
 
-                m_servo = new OnboardAngularPositionServo(log, rotaryMechanism, dyn, ref, feedback);
-            }
+            m_servo = new OnboardAngularPositionServo(log, rotaryMechanism, dyn, ref, feedback);
+        } else {
+            SimulatedMotor climberMotor = new SimulatedMotor(log, 600);
 
-            default -> {
-                SimulatedMotor climberMotor = new SimulatedMotor(log, 600);
+            IncrementalEncoder encoder = climberMotor.encoder();
+            SimulatedRotaryPositionSensor sensor = new SimulatedRotaryPositionSensor(log, encoder, 1);
 
-                IncrementalEncoder encoder = climberMotor.encoder();
-                SimulatedRotaryPositionSensor sensor = new SimulatedRotaryPositionSensor(log, encoder, 1);
+            RotaryMechanism climberMech = new RotaryMechanism(
+                    log, climberMotor, sensor, 1,
+                    Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
-                RotaryMechanism climberMech = new RotaryMechanism(
-                        log, climberMotor, sensor, 1,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-                m_servo = new OnboardAngularPositionServo(log, climberMech, dyn, ref, feedback);
-            }
+            m_servo = new OnboardAngularPositionServo(log, climberMech, dyn, ref, feedback);
         }
     }
 

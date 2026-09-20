@@ -2,7 +2,6 @@ package org.team100.lib.subsystems.tank;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.differential.DifferentialDriveDynamics;
 import org.team100.lib.logging.LoggerFactory;
@@ -12,9 +11,10 @@ import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.Neo550CANSparkMotor;
-import org.team100.lib.motor.rev.NeoCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.util.CanId;
+
+import edu.wpi.first.wpilibj.RobotBase;
 
 public class TankDriveFactory {
 
@@ -76,14 +76,12 @@ public class TankDriveFactory {
         // parameters for velocity control.
         int averageDepth = 2;
         int measurementPeriod = 4;
-        return switch (Identity.instance) {
-            case BLANK -> new SimulatedMotor(log, freeSpeedRad_S);
-            case DEMO_BOT -> new Neo550CANSparkMotor(
+        if (RobotBase.isReal()) {
+            return new Neo550CANSparkMotor(
                     log, currentLog, can, NeutralMode100.BRAKE, phase,
                     limit, friction, pid, averageDepth, measurementPeriod);
-            default -> new NeoCANSparkMotor(
-                    log, currentLog, can, NeutralMode100.BRAKE, phase,
-                    limit, friction, pid, averageDepth, measurementPeriod);
-        };
+        } else {
+            return new SimulatedMotor(log, freeSpeedRad_S);
+        }
     }
 }

@@ -2,7 +2,6 @@ package org.team100.frc2026.subsystems;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.r.RDynamics;
 import org.team100.lib.dynamics.r.RDynamicsAnalytic;
@@ -21,6 +20,7 @@ import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -44,26 +44,23 @@ public class Climber extends SubsystemBase {
         double initialPosition = 0;
         final Motor m1;
         final Motor m2;
-        switch (Identity.instance) {
-            case TEST_BOARD_B0 -> {
-                CurrentLimit limit = new CurrentLimit(60, 40);
-                Friction friction = new Friction(0, 0, 0, 0);
-                PIDConstants pid = new PIDConstants(1, 0, 0, 0, 0, 0);
-                m1 = new KrakenX60Motor(
-                        log1, currentLog, new CanId(6),
-                        NeutralMode100.BRAKE, MotorPhase.FORWARD,
-                        limit,
-                        friction, pid);
-                m2 = new KrakenX60Motor(
-                        log2, currentLog, new CanId(7),
-                        NeutralMode100.BRAKE, MotorPhase.FORWARD,
-                        limit,
-                        friction, pid);
-            }
-            default -> {
-                m1 = new SimulatedMotor(log1, 600);
-                m2 = new SimulatedMotor(log2, 600);
-            }
+        if (RobotBase.isReal()) {
+            CurrentLimit limit = new CurrentLimit(60, 40);
+            Friction friction = new Friction(0, 0, 0, 0);
+            PIDConstants pid = new PIDConstants(1, 0, 0, 0, 0, 0);
+            m1 = new KrakenX60Motor(
+                    log1, currentLog, new CanId(6),
+                    NeutralMode100.BRAKE, MotorPhase.FORWARD,
+                    limit,
+                    friction, pid);
+            m2 = new KrakenX60Motor(
+                    log2, currentLog, new CanId(7),
+                    NeutralMode100.BRAKE, MotorPhase.FORWARD,
+                    limit,
+                    friction, pid);
+        } else {
+            m1 = new SimulatedMotor(log1, 600);
+            m2 = new SimulatedMotor(log2, 600);
         }
         m_servo1 = OutboardAngularPositionServo.make(
                 log1, m1, dynamics, ref, GEAR_RATIO, initialPosition, 0, 100);

@@ -117,36 +117,8 @@ public interface Motor extends Player, TotalCurrentLog.Reporter {
     /// MEASUREMENTS
     ///
 
-    /**
-     * "Unwrapped" angular motor shaft position, i.e. the measurement
-     * domain continues beyond +/- pi. May be filtered.
-     * 
-     * Value should be updated in Robot.robotPeriodic().
-     */
-    double getUnwrappedPositionRad();
-
-    /**
-     * Motor shaft speed. May be filtered.
-     * 
-     * Value should be updated in Robot.robotPeriodic().
-     */
-    double getVelocityRad_S();
-
-    /**
-     * Motor shaft acceleration. May be filtered.
-     * 
-     * Value should be updated in Robot.robotPeriodic().
-     */
-    double getAccelerationRad_S2();
-
     /** Motor stator current in amps. */
     double getStatorCurrent();
-
-    /**
-     * This is the "unwrapped" position, i.e. the domain is infinite, not cyclical
-     * within +/- pi.
-     */
-    void setUnwrappedEncoderPositionRad(double positionRad);
 
     /////////////////////////////////////////////////////////
     ///

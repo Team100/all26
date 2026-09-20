@@ -5,7 +5,6 @@ import java.util.function.DoubleSupplier;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.kinematics.five_bar.FiveBarKinematics;
 import org.team100.lib.kinematics.five_bar.JointPositions;
@@ -13,15 +12,15 @@ import org.team100.lib.kinematics.five_bar.Scenario;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.RotaryMechanism;
-import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
-import org.team100.lib.sensor.position.absolute.HomingRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
+import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -48,14 +47,11 @@ public class FiveBarMech extends SubsystemBase {
     /** Right motor, "P5" in the diagram. */
     private final RotaryMechanism m_mechP5;
 
-    private final Motor m_motorP1;
-    private final Motor m_motorP5;
-
     /**
      * There's no absolute encoder in the apparatus, so we use a homing sensor.
      */
-    private final HomingRotaryPositionSensor m_sensorP1;
-    private final HomingRotaryPositionSensor m_sensorP5;
+    private final RotaryPositionSensor m_sensorP1;
+    private final RotaryPositionSensor m_sensorP5;
 
     public FiveBarMech(LoggerFactory parent, TotalCurrentLog currentLog, Scenario scenario) {
         LoggerFactory logger = parent.type(this);
@@ -65,61 +61,48 @@ public class FiveBarMech extends SubsystemBase {
 
         m_kinematics = new FiveBarKinematics(logger);
 
-        switch (Identity.instance) {
-            case SWERVE_TWO -> {
-                Falcon500Motor motorP1 = makeMotor(loggerP1, currentLog, new CanId(1));
-                Falcon500Motor motorP5 = makeMotor(loggerP5, currentLog, new CanId(5));
-                m_motorP1 = motorP1;
-                m_motorP5 = motorP5;
+        if (RobotBase.isReal()) {
+            Falcon500Motor motorP1 = makeMotor(loggerP1, currentLog, new CanId(1));
+            Falcon500Motor motorP5 = makeMotor(loggerP5, currentLog, new CanId(5));
 
-                m_sensorP1 = new HomingRotaryPositionSensor(
-                        new ProxyRotaryPositionSensor(motorP1.encoder(), 1.0));
-                m_sensorP5 = new HomingRotaryPositionSensor(
-                        new ProxyRotaryPositionSensor(motorP5.encoder(), 1.0));
+            m_sensorP1 = new ProxyRotaryPositionSensor(motorP1.encoder(), 1.0);
+            m_sensorP5 = new ProxyRotaryPositionSensor(motorP5.encoder(), 1.0);
 
-                m_mechP1 = new RotaryMechanism(
-                        loggerP1,
-                        motorP1,
-                        m_sensorP1,
-                        1.0,
-                        -100.0,
-                        100.0);
-                m_mechP5 = new RotaryMechanism(
-                        loggerP5,
-                        motorP5,
-                        m_sensorP5,
-                        1.0,
-                        -100.0,
-                        100.0);
-            }
-            default -> {
-                SimulatedMotor motorP1 = new SimulatedMotor(loggerP1, 600);
-                SimulatedMotor motorP5 = new SimulatedMotor(loggerP5, 600);
-                m_motorP1 = motorP1;
-                m_motorP5 = motorP5;
+            m_mechP1 = new RotaryMechanism(
+                    loggerP1,
+                    motorP1,
+                    m_sensorP1,
+                    1.0,
+                    -100.0,
+                    100.0);
+            m_mechP5 = new RotaryMechanism(
+                    loggerP5,
+                    motorP5,
+                    m_sensorP5,
+                    1.0,
+                    -100.0,
+                    100.0);
+        } else {
+            SimulatedMotor motorP1 = new SimulatedMotor(loggerP1, 600);
+            SimulatedMotor motorP5 = new SimulatedMotor(loggerP5, 600);
 
-                m_sensorP1 = new HomingRotaryPositionSensor(
-                        new ProxyRotaryPositionSensor(
-                                motorP1.encoder(), 1.0));
-                m_sensorP5 = new HomingRotaryPositionSensor(
-                        new ProxyRotaryPositionSensor(
-                                motorP5.encoder(), 1.0));
+            m_sensorP1 = new ProxyRotaryPositionSensor(motorP1.encoder(), 1.0);
+            m_sensorP5 = new ProxyRotaryPositionSensor(motorP5.encoder(), 1.0);
 
-                m_mechP1 = new RotaryMechanism(
-                        loggerP1,
-                        motorP1,
-                        m_sensorP1,
-                        1.0,
-                        -100.0,
-                        100.0);
-                m_mechP5 = new RotaryMechanism(
-                        loggerP5,
-                        motorP5,
-                        m_sensorP5,
-                        1.0,
-                        -100.0,
-                        100.0);
-            }
+            m_mechP1 = new RotaryMechanism(
+                    loggerP1,
+                    motorP1,
+                    m_sensorP1,
+                    1.0,
+                    -100.0,
+                    100.0);
+            m_mechP5 = new RotaryMechanism(
+                    loggerP5,
+                    motorP5,
+                    m_sensorP5,
+                    1.0,
+                    -100.0,
+                    100.0);
         }
     }
 
@@ -215,8 +198,8 @@ public class FiveBarMech extends SubsystemBase {
      * cycle (gently) to the end of travel before pushing the "home" button.
      */
     private void setHomePosition() {
-        m_motorP1.setUnwrappedEncoderPositionRad(Q1_MAX);
-        m_motorP5.setUnwrappedEncoderPositionRad(Q5_MIN);
+        m_mechP1.setUnwrappedEncoderPositionRad(Q1_MAX);
+        m_mechP1.setUnwrappedEncoderPositionRad(Q5_MIN);
     }
 
     ///////////////////////

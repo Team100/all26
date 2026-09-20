@@ -54,4 +54,9 @@ public interface RRRArm extends PositionSubsystemSE2, PositionSubsystemRn<N3> {
      * "zero torque" condition, or a "braking" condition.
      */
     void stop();
+
+    /**
+     * Force all axis encoders to zero.
+     */
+    void setZero();
 }

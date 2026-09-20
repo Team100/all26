@@ -27,14 +27,17 @@ public class DriverXboxControl {
     /**
      * Controls are sampled at half the main clock rate,
      * which makes the "acceleration" computation return zero
-     * half the time. So this smooths it out.
+     * half the time. These filters smooth the input slightly.
      */
     private final LinearFilter m_filterRightY;
     private final LinearFilter m_filterRightX;
     private final LinearFilter m_filterLeftX;
 
+    /** Cache of smoothed input */
     private final DoubleCache m_rightY;
+    /** Cache of smoothed input */
     private final DoubleCache m_rightX;
+    /** Cache of smoothed input */
     private final DoubleCache m_leftX;
 
     private final DoubleLogger m_log_rightY;
@@ -77,17 +80,17 @@ public class DriverXboxControl {
         m_log_leftX.log(m_leftX);
     }
 
-    /** Axis 5 */
+    /** Axis 5, filtered */
     public double rightY() {
         return m_filterRightY.calculate(m_controller.getRightY());
     }
 
-    /** Axis 4 */
+    /** Axis 4, filtered */
     public double rightX() {
         return m_filterRightX.calculate(m_controller.getRightX());
     }
 
-    /** Axis 0 */
+    /** Axis 0, filtered */
     public double leftX() {
         return m_filterLeftX.calculate(m_controller.getLeftX());
     }

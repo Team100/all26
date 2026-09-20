@@ -14,7 +14,6 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
-import org.team100.lib.sensor.position.incremental.rev.CANSparkEncoder;
 import org.team100.lib.util.LowPassDerivative;
 
 import com.revrobotics.REVLibError;
@@ -63,18 +62,18 @@ public abstract class CANSparkMotor implements Motor {
     private final RevConfigurator m_configurator;
     private final SparkLimitSwitch m_forLimitSwitch;
     private final SparkLimitSwitch m_revLimitSwitch;
-    private final RelativeEncoder m_encoder;
+    final RelativeEncoder m_encoder;
     private final SparkClosedLoopController m_pidController;
     private final LowPassDerivative m_smoothDerivative;
 
     // CACHES
 
     /** radians */
-    private final DoubleCache m_position;
+    final DoubleCache m_position;
     /** radians per second */
-    private final DoubleCache m_velocity;
+    final DoubleCache m_velocity;
     /** radians per second squared */
-    private final DoubleCache m_acceleration;
+    final DoubleCache m_acceleration;
     /** amps */
     private final DoubleCache m_statorCurrent;
     /** volts */
@@ -266,24 +265,6 @@ public abstract class CANSparkMotor implements Motor {
         m_log_torque_FF.log(() -> torqueFFVolts);
     }
 
-    /** Value is updated in Robot.robotPeriodic(). */
-    @Override
-    public double getUnwrappedPositionRad() {
-        return m_position.getAsDouble();
-    }
-
-    /** Value is updated in Robot.robotPeriodic(). */
-    @Override
-    public double getVelocityRad_S() {
-        return m_velocity.getAsDouble();
-    }
-
-    /** Value is updated in Robot.robotPeriodic(). */
-    @Override
-    public double getAccelerationRad_S2() {
-        return m_acceleration.getAsDouble();
-    }
-
     @Override
     public double getStatorCurrent() {
         return m_statorCurrent.getAsDouble();
@@ -293,11 +274,6 @@ public abstract class CANSparkMotor implements Motor {
     public double getSupplyCurrent() {
         // NOTE: REV does not provide supply current.
         return 0;
-    }
-
-    @Override
-    public void setUnwrappedEncoderPositionRad(double positionRad) {
-        warn(() -> m_encoder.setPosition(positionRad / (2.0 * Math.PI)));
     }
 
     @Override
@@ -350,7 +326,7 @@ public abstract class CANSparkMotor implements Motor {
         m_log_supplyVoltage.log(m_supplyVoltage);
     }
 
-    private static void warn(Supplier<REVLibError> s) {
+    public static void warn(Supplier<REVLibError> s) {
         REVLibError errorCode = s.get();
         if (errorCode != REVLibError.kOk) {
             System.out.println("WARNING: " + errorCode.name());

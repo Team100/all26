@@ -206,7 +206,7 @@ public class Robot extends TimedRobot100 {
         Cache.refresh();
         CommandScheduler.getInstance().run();
         m_robotLog.periodic();
-        if (Experiments.instance.enabled(Experiment.FlushOften)) {
+        if (Experiments.INSTANCE.enabled(Experiment.FlushOften)) {
             NetworkTableInstance.getDefault().flush();
         }
     }

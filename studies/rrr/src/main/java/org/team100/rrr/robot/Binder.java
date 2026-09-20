@@ -1,5 +1,6 @@
 package org.team100.rrr.robot;
 
+import static org.team100.lib.util.TriggerUtil.onTrue;
 import static org.team100.lib.util.TriggerUtil.whileTrue;
 
 import org.team100.lib.commands.MoveAndHold;
@@ -44,11 +45,12 @@ public class Binder {
         // default stops the arm
         m_machinery.m_arm.setDefaultCommand(m_machinery.m_arm.run(m_machinery.m_arm::stop));
 
-        // Left bumper (button 5) is "pose" mode
+        // Left bumper (button 5, "b" in sim) is "pose" mode
         whileTrue(m_driver::leftBumper, Commands.runOnce(
                 () -> m_machinery.m_viz.setT(manual::getT))
                 .andThen(manual));
-        // Right bumper (button 6) is "joint" mode.
+        // Right bumper (button 6, "n" in sim) is "joint" mode.
+        // This mode moves the three motors independently as shoulder, elbow, or hand joint
         whileTrue(m_driver::rightBumper, Commands.runOnce(
                 () -> m_machinery.m_viz.setT(null))
                 .andThen(joints));
@@ -57,10 +59,16 @@ public class Binder {
         ProfileR1 profile = new TrapezoidProfileR1(3, 6, 0.01);
 
         // Force the arm back to the home position without kinematics, to escape a
-        // kinematic trap. (button 8)
+        // kinematic trap. (button 8, comma in sim)
         whileTrue(m_driver::start,
                 new MoveToConfigWithProfile(
                         m_machinery.m_arm, profile, new RRRConfig(0, 0, 0)));
+
+        // Force the encoder values to zero.  Move the apparatus to
+        // fully extended before running this, if you want the zero
+        // to be in the right place.  :-) (button 7, "m" in sim)
+        onTrue(m_driver::back,
+                m_machinery.m_arm.run(m_machinery.m_arm::setZero));
 
         // profiles in joint space make kinda circular paths in workspace
         MoveAndHold move1 = new MoveWithProfile(

@@ -166,6 +166,13 @@ public class LinearMechanism implements Player {
         m_motor.stop();
     }
 
+    /**
+     * Force the encoder to zero.
+     */
+    public void setZero() {
+        m_encoder.setUnwrappedEncoderPositionRad(0);
+    }
+
     public void close() {
         m_motor.close();
         m_encoder.close();

@@ -2,7 +2,6 @@ package org.team100.frc2026.subsystems;
 
 import org.team100.frc2026.robot.CurrentLimits;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.r.RDynamics;
 import org.team100.lib.dynamics.r.RDynamicsAnalytic;
@@ -21,6 +20,7 @@ import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.util.CanId;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -48,27 +48,24 @@ public class IntakeExtend extends SubsystemBase {
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.1, 0.05);
         final Motor motor;
         final Motor motor2;
-        switch (Identity.instance) {
-            case TEST_BOARD_B0, COMP_BOT -> {
-                // friction test 3/12/26
-                Friction friction = new Friction(0.32, 0.32, 0.0, 0.5);
-                // tuned 3/12/26
-                PIDConstants pid = PIDConstants.makePositionPID(1);
-                motor = new KrakenX44Motor(
-                        log1, currentLog, CAN_ID,
-                        NeutralMode100.COAST, MotorPhase.REVERSE,
-                        CurrentLimits.INTAKE_EXTEND,
-                        friction, pid);
-                motor2 = new KrakenX44Motor(
-                        log2, currentLog, CAN_ID2,
-                        NeutralMode100.COAST, MotorPhase.FORWARD,
-                        CurrentLimits.INTAKE_EXTEND,
-                        friction, pid);
-            }
-            default -> {
-                motor = new SimulatedMotor(log1, 600);
-                motor2 = new SimulatedMotor(log2, 600);
-            }
+        if (RobotBase.isReal()) {
+            // friction test 3/12/26
+            Friction friction = new Friction(0.32, 0.32, 0.0, 0.5);
+            // tuned 3/12/26
+            PIDConstants pid = PIDConstants.makePositionPID(1);
+            motor = new KrakenX44Motor(
+                    log1, currentLog, CAN_ID,
+                    NeutralMode100.COAST, MotorPhase.REVERSE,
+                    CurrentLimits.INTAKE_EXTEND,
+                    friction, pid);
+            motor2 = new KrakenX44Motor(
+                    log2, currentLog, CAN_ID2,
+                    NeutralMode100.COAST, MotorPhase.FORWARD,
+                    CurrentLimits.INTAKE_EXTEND,
+                    friction, pid);
+        } else {
+            motor = new SimulatedMotor(log1, 600);
+            motor2 = new SimulatedMotor(log2, 600);
         }
         m_servo = OutboardAngularPositionServo.make(
                 log1, motor, dynamics, ref, gearRatio,

@@ -29,27 +29,8 @@ public class AbstractMotor implements Motor {
     }
 
     @Override
-    public double getUnwrappedPositionRad() {
-        return 0;
-    }
-
-    @Override
-    public double getVelocityRad_S() {
-        return 0;
-    }
-
-    @Override
-    public double getAccelerationRad_S2() {
-        return 0;
-    }
-
-    @Override
     public double getStatorCurrent() {
         return 0;
-    }
-
-    @Override
-    public void setUnwrappedEncoderPositionRad(double positionRad) {
     }
 
     @Override

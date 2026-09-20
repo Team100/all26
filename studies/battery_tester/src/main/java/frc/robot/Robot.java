@@ -33,7 +33,7 @@ public class Robot extends TimedRobot100 {
 
     public Robot() {
         Banner.printBanner();
-        Experiments.instance.show();
+        Experiments.INSTANCE.show();
         DriverStation.silenceJoystickConnectionWarning(true);
         RobotController.setBrownoutVoltage(6.3); // RoboRIO 1.0 value
         Logging log = Logging.instance();

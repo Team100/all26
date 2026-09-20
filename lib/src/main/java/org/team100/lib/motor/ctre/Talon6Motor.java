@@ -15,7 +15,6 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
-import org.team100.lib.sensor.position.incremental.ctre.Talon6Encoder;
 import org.team100.lib.util.CanId;
 
 import com.ctre.phoenix6.StatusCode;
@@ -47,7 +46,7 @@ public abstract class Talon6Motor implements Motor {
     private final LoggerFactory m_log;
     private static final boolean DEBUG = false;
 
-    private final TalonFX m_motor;
+    final TalonFX m_motor;
     private final PhoenixConfigurator m_configurator;
     private final Friction m_friction;
 
@@ -56,11 +55,11 @@ public abstract class Talon6Motor implements Motor {
     // and also the supplier
 
     /** radians, latency-compensated. */
-    protected final DoubleCache m_position;
+    final DoubleCache m_position;
     /** radians per second */
-    protected final DoubleCache m_velocity;
+    final DoubleCache m_velocity;
     /** radians per second squared */
-    protected final DoubleCache m_acceleration;
+    final DoubleCache m_acceleration;
     protected final DoubleCache m_dutyCycle;
     protected final DoubleCache m_error;
     protected final DoubleCache m_supplyCurrent;
@@ -327,30 +326,6 @@ public abstract class Talon6Motor implements Motor {
         m_totalFeedForward.log(() -> FFVolts);
     }
 
-    /**
-     * This is the "unwrapped" position, i.e. the domain is infinite, not cyclical
-     * within +/- pi.
-     * 
-     * Latency-compensated, represents the current Takt.
-     * Updated in `Robot.robotPeriodic()`.
-     */
-    @Override
-    public double getUnwrappedPositionRad() {
-        return m_position.getAsDouble();
-    }
-
-    /** Not latency-compensated, not filtered. Updated in Robot.robotPeriodic(). */
-    @Override
-    public double getVelocityRad_S() {
-        return m_velocity.getAsDouble();
-    }
-
-    /** Not latency-compensated, not filtered. Updated in Robot.robotPeriodic(). */
-    @Override
-    public double getAccelerationRad_S2() {
-        return m_acceleration.getAsDouble();
-    }
-
     @Override
     public Talon6Encoder encoder() {
         return new Talon6Encoder(m_log, this);
@@ -372,21 +347,6 @@ public abstract class Talon6Motor implements Motor {
         m_motor.close();
     }
 
-    /**
-     * Set integrated sensor position in radians.
-     * 
-     * This is the "unwrapped" position, i.e. the domain is infinite, not cyclical
-     * within +/- pi.
-     * 
-     * Note this takes **FOREVER**, like tens of milliseconds, so you can only do it
-     * at startup.
-     */
-    @Override
-    public void setUnwrappedEncoderPositionRad(double positionRad) {
-        System.out.println("WARNING: Setting CTRE encoder position is very slow!");
-        warn(() -> m_motor.setPosition(positionRad / (2.0 * Math.PI), 1));
-    }
-
     @Override
     public void periodic() {
         log();
@@ -406,7 +366,7 @@ public abstract class Talon6Motor implements Motor {
         m_log_temp.log(m_temp);
     }
 
-    private static void warn(Supplier<StatusCode> s) {
+    public static void warn(Supplier<StatusCode> s) {
         StatusCode statusCode = s.get();
         if (statusCode.isError()) {
             System.out.println("WARNING: " + statusCode.toString());

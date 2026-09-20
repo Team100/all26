@@ -4,7 +4,6 @@ import java.util.function.DoubleSupplier;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.r.Disc;
 import org.team100.lib.dynamics.r.RDynamics;
@@ -25,6 +24,7 @@ import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -58,21 +58,18 @@ public class DiscusServo extends SubsystemBase {
         RDynamics dyn = new Disc(0.1);
 
         Motor motor;
-        switch (Identity.instance) {
-            case TEAM100_2018 -> {
-                motor = new Falcon500Motor(
-                        logger,
-                        currentLog,
-                        new CanId(36),
-                        NeutralMode100.COAST,
-                        MotorPhase.REVERSE,
-                        new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
-                        friction,
-                        pid);
-            }
-            default -> {
-                motor = new SimulatedMotor(logger, 600);
-            }
+        if (RobotBase.isReal()) {
+            motor = new Falcon500Motor(
+                    logger,
+                    currentLog,
+                    new CanId(36),
+                    NeutralMode100.COAST,
+                    MotorPhase.REVERSE,
+                    new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
+                    friction,
+                    pid);
+        } else {
+            motor = new SimulatedMotor(logger, 600);
         }
         m_sensor = new ProxyRotaryPositionSensor(motor.encoder(), 1.0);
 
@@ -113,7 +110,7 @@ public class DiscusServo extends SubsystemBase {
     }
 
     private void resetEncoderPosition() {
-        m_sensor.setEncoderPosition(0);
+        m_sensor.setUnwrappedEncoderPositionRad(0);
     }
 
     ///////////////////////
