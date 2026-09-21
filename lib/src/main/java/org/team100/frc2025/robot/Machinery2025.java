@@ -13,8 +13,8 @@ import org.team100.frc2025.indicator.LEDIndicator;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.indicator.Beeper;
+import org.team100.lib.localization.AprilTagCornerRobotLocalizer;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
-import org.team100.lib.localization.AprilTagRobotLocalizer;
 import org.team100.lib.localization.NudgingVisionUpdater;
 import org.team100.lib.localization.OdometryUpdater;
 import org.team100.lib.localization.SimulatedTagDetector;
@@ -62,7 +62,7 @@ public class Machinery2025 {
     private final Runnable m_combinedViz;
     private final Runnable m_climberViz;
     private final SwerveModuleCollection m_modules;
-    private final Runnable m_simulatedTagDetector;
+    private final SimulatedTagDetector m_simulatedTagDetector;
     private final Runnable m_targetSimulator;
     private final LEDIndicator m_leds;
 
@@ -72,7 +72,8 @@ public class Machinery2025 {
     final ClimberIntake m_climberIntake;
     final TrajectoryVisualization m_trajectoryViz;
     final SwerveKinodynamics m_swerveKinodynamics;
-    final AprilTagRobotLocalizer m_localizer;
+    // final AprilTagRobotLocalizer m_localizer;
+    final AprilTagCornerRobotLocalizer m_localizer;
     final Targets m_targets;
     final SwerveDriveSubsystem m_drive;
     final Beeper m_beeper;
@@ -126,7 +127,7 @@ public class Machinery2025 {
                 Takt.get());
         final OdometryUpdater odometryUpdater = new OdometryUpdater(
                 driveLog, m_swerveKinodynamics, gyro, history, m_modules::positions,
-                UnaryOperator.identity());
+                UnaryOperator.identity(), false);
         odometryUpdater.reset(Pose2d.kZero, IsotropicNoiseSE2.high());
         final NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(
                 driveLog, history, odometryUpdater);
@@ -137,7 +138,14 @@ public class Machinery2025 {
         //
         final AprilTagFieldLayoutWithCorrectOrientation layout = getLayout();
 
-        m_localizer = new AprilTagRobotLocalizer(
+        // m_localizer = new AprilTagRobotLocalizer(
+        // driveLog,
+        // fieldLogger,
+        // layout,
+        // history,
+        // visionUpdater,
+        // DriverStation::getAlliance);
+        m_localizer = new AprilTagCornerRobotLocalizer(
                 driveLog,
                 fieldLogger,
                 layout,

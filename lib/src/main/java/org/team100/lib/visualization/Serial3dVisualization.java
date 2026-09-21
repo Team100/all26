@@ -14,13 +14,12 @@ import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.MatOfPoint3f;
 import org.opencv.core.Point;
 import org.opencv.core.Point3;
+import org.team100.lib.geometry.OpenCVUtil;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation3d;
 import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.geometry.Translation3d;
 import org.wpilib.math.linalg.MatBuilder;
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.numbers.N3;
 import org.wpilib.math.util.Nat;
 import org.wpilib.math.util.Pair;
 import org.wpilib.smartdashboard.Mechanism2d;
@@ -177,11 +176,10 @@ public class Serial3dVisualization {
 
     Pair<MatOfPoint2f, List<Color>> project(
             Pose3d cameraPose, List<Pose3d> tList, Color link) {
-        // the extrinsic matrix is the inverse of the camera pose.
-        Transform3d extrinsic = new Transform3d(Pose3d.kZero, cameraPose).inverse();
+        Transform3d extrinsic = OpenCVUtil.extrinsic(cameraPose);
 
-        Mat rvec = getRvec(extrinsic);
-        Mat tVec = getTVec(extrinsic);
+        Mat rvec = OpenCVUtil.getRvec(extrinsic);
+        Mat tVec = OpenCVUtil.getTVec(extrinsic);
         Mat kMat = getKMat();
 
         MatOfDouble dMat = new MatOfDouble(0, 0, 0, 0, 0);
@@ -192,13 +190,6 @@ public class Serial3dVisualization {
         return new Pair<>(imagePts2f, objectPts.getSecond());
     }
 
-    private Mat getTVec(Transform3d extrinsic) {
-        Translation3d t = extrinsic.getTranslation();
-        Mat tVec = Mat.zeros(3, 1, CvType.CV_64F);
-        tVec.put(0, 0, t.getX(), t.getY(), t.getZ());
-        return tVec;
-    }
-
     private Mat getKMat() {
         Mat kMat = Mat.zeros(3, 3, CvType.CV_64F);
         kMat.put(0, 0,
@@ -206,23 +197,6 @@ public class Serial3dVisualization {
                 0.0, 100.0, 50.0,
                 0.0, 0.0, 1.0);
         return kMat;
-    }
-
-    private Mat getRvec(Transform3d extrinsic) {
-        Matrix<N3, N3> r = extrinsic.getRotation().toMatrix();
-        Mat rmat = new Mat(3, 3, CvType.CV_64F);
-        rmat.put(0, 0, r.get(0, 0));
-        rmat.put(0, 1, r.get(0, 1));
-        rmat.put(0, 2, r.get(0, 2));
-        rmat.put(1, 0, r.get(1, 0));
-        rmat.put(1, 1, r.get(1, 1));
-        rmat.put(1, 2, r.get(1, 2));
-        rmat.put(2, 0, r.get(2, 0));
-        rmat.put(2, 1, r.get(2, 1));
-        rmat.put(2, 2, r.get(2, 2));
-        Mat rvec = new Mat(3, 1, CvType.CV_64F);
-        Calib3d.Rodrigues(rmat, rvec);
-        return rvec;
     }
 
     /**
@@ -235,7 +209,7 @@ public class Serial3dVisualization {
         for (Pose3d p : tList) {
             Translation3d t = p.getTranslation();
             Rotation3d R = p.getRotation();
-            pList.add(point(t));
+            pList.add(OpenCVUtil.point(t));
             cList.add(link);
             // Show the basis vectors
             basis(pList, cList, t, R, new Translation3d(1, 0, 0), Color.RED);
@@ -255,15 +229,12 @@ public class Serial3dVisualization {
             Color basis) {
         Translation3d a2 = new Translation3d(yt.rotateBy(R).toVector()).times(0.03);
         // A point on the end of the basis vector.
-        pList.add(point(t.plus(a2)));
+        pList.add(OpenCVUtil.point(t.plus(a2)));
         cList.add(basis);
         // Back to the origin.
-        pList.add(point(t));
+        pList.add(OpenCVUtil.point(t));
         cList.add(basis);
 
     }
 
-    private Point3 point(Translation3d t) {
-        return new Point3(t.getX(), t.getY(), t.getZ());
-    }
 }

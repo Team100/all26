@@ -26,28 +26,33 @@ public class Experiments {
     public static final Experiments INSTANCE = new Experiments(Identity.instance);
 
     /** These experiments are enabled by default. */
-    private final Set<Experiment> m_defaults = Set.of(
-            Experiment.HeedVision);
+    private final Set<Experiment> m_defaults = Set.of();
 
     /** Key = experiment, value = enabled. */
     private final Map<Experiment, Boolean> m_enabled;
 
     private Experiments(Identity identity) {
         m_enabled = new EnumMap<>(Experiment.class);
+        System.out.println("===============================================================");
+        System.out.println("== EXPERIMENTS");
         for (Experiment e : Experiment.values()) {
             SendableChooser<Boolean> widget = ExperimentChooser.get(e.name());
+            System.out.printf("== %s (%s): ", e.name(), e.description);
             if (m_defaults.contains(e)) {
                 widget.setDefaultOption(on(e), true);
                 widget.addOption(off(e), false);
                 m_enabled.put(e, true);
+                System.out.println("ON");
             } else {
                 widget.addOption(on(e), true);
                 widget.setDefaultOption(off(e), false);
                 m_enabled.put(e, false);
+                System.out.println("OFF");
             }
             widget.onChange(selected -> m_enabled.put(e, selected));
             SmartDashboard.putData(widget);
         }
+        System.out.println("===============================================================");
     }
 
     /** Load the experiments class and thus the chooser. */

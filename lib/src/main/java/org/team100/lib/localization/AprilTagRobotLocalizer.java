@@ -246,7 +246,7 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
             ///
             /// Should we use this update?
             ///
-            if (!Experiments.INSTANCE.enabled(Experiment.HeedVision)) {
+            if (Experiments.INSTANCE.enabled(Experiment.IgnoreVision)) {
                 if (DEBUG)
                     System.out.println("Drop update, vision is off.");
                 continue;

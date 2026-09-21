@@ -1,6 +1,6 @@
 package org.team100.lib.subsystems.swerve;
 
-import org.team100.lib.localization.AprilTagRobotLocalizer;
+import org.team100.lib.localization.AprilTagCornerRobotLocalizer;
 import org.team100.lib.localization.FreshSwerveEstimate;
 import org.team100.lib.localization.OdometryUpdater;
 import org.team100.lib.localization.SwerveHistory;
@@ -17,7 +17,8 @@ public class SwerveDriveFactory {
     public static SwerveDriveSubsystem get(
             LoggerFactory driveLog,
             SwerveKinodynamics swerveKinodynamics,
-            AprilTagRobotLocalizer localizer,
+            // AprilTagRobotLocalizer localizer,
+            AprilTagCornerRobotLocalizer localizer,
             OdometryUpdater odometryUpdater,
             SwerveHistory history,
             SwerveModuleCollection modules) {

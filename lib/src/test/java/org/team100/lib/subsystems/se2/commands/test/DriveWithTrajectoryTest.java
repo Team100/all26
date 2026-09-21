@@ -183,7 +183,8 @@ public class DriveWithTrajectoryTest implements Timeless {
                 IsotropicNoiseSE2.high(),
                 0); // initial time is zero here for testing
         OdometryUpdater odometryUpdater = new OdometryUpdater(
-                logger, swerveKinodynamics, gyro, history, collection::positions, UnaryOperator.identity());
+                logger, swerveKinodynamics, gyro, history,
+                collection::positions, UnaryOperator.identity(), true);
         odometryUpdater.reset(Pose2d.kZero, IsotropicNoiseSE2.high(), 0);
 
         NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(
@@ -193,8 +194,9 @@ public class DriveWithTrajectoryTest implements Timeless {
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
                 logger, fieldLogger, layout, history, visionUpdater,MatchState::getAlliance);
+
         FreshSwerveEstimate estimate = new FreshSwerveEstimate(
-            localizer::update, odometryUpdater::update, history);
+                localizer::update, odometryUpdater::update, history);
         SwerveLocal swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
 
         SwerveDriveSubsystem drive = new SwerveDriveSubsystem(

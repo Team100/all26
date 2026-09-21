@@ -75,7 +75,8 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
                 0);
         positions = p(0);
         OdometryUpdater ou = new OdometryUpdater(
-            logger, kinodynamics, gyro, history, () -> positions, UnaryOperator.identity());
+                logger, kinodynamics, gyro, history,
+                () -> positions, UnaryOperator.identity(), true);
         ou.reset(Pose2d.kZero, IsotropicNoiseSE2.high(), 0);
         NudgingVisionUpdater vu = new NudgingVisionUpdater(logger, history, ou);
 
