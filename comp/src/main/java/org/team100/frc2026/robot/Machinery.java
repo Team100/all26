@@ -14,8 +14,8 @@ import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.controller.se2.FullStateControllerSE2;
 import org.team100.lib.indicator.Beeper;
 import org.team100.lib.localization.AddOdometryNoise;
+import org.team100.lib.localization.AprilTagCornerRobotLocalizer;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
-import org.team100.lib.localization.AprilTagRobotLocalizer;
 import org.team100.lib.localization.GroundTruth;
 import org.team100.lib.localization.NudgingVisionUpdater;
 import org.team100.lib.localization.OdometryUpdater;
@@ -73,7 +73,8 @@ public class Machinery {
     public final TrajectoryVisualization m_trajectoryViz;
     public final SwerveKinodynamics m_swerveKinodynamics;
     public final NudgingVisionUpdater m_visionUpdater;
-    public final AprilTagRobotLocalizer m_localizer;
+    // public final AprilTagRobotLocalizer m_localizer;
+    public final AprilTagCornerRobotLocalizer m_localizer;
     public final SwerveLimiter m_limiter;
     public final SwerveDriveSubsystem m_drive;
     public final Beeper m_beeper;
@@ -128,7 +129,8 @@ public class Machinery {
                 gyro,
                 history,
                 m_modules::positions,
-                odometryNoise);
+                odometryNoise,
+                false);
         // odometryUpdater.m_debug = true;
         odometryUpdater.reset(Pose2d.kZero, IsotropicNoiseSE2.high());
         m_visionUpdater = new NudgingVisionUpdater(
@@ -139,7 +141,14 @@ public class Machinery {
         // CAMERA READERS
         //
         AprilTagFieldLayoutWithCorrectOrientation layout = AprilTagFieldLayoutWithCorrectOrientation.getLayout();
-        m_localizer = new AprilTagRobotLocalizer(
+        // m_localizer = new AprilTagRobotLocalizer(
+        // driveLog,
+        // fieldLogger,
+        // layout,
+        // history,
+        // m_visionUpdater,
+        // DriverStation::getAlliance);
+        m_localizer = new AprilTagCornerRobotLocalizer(
                 driveLog,
                 fieldLogger,
                 layout,

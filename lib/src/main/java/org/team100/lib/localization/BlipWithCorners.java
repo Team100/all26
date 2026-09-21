@@ -68,9 +68,8 @@ public class BlipWithCorners {
 
     public static BlipWithCorners fromXForward(
             long timestamp, int id, float[] corners, Transform3d pose) {
-        return new BlipWithCorners(timestamp, id, corners, new Transform3d(
-                GeometryUtil.xForwardToZForward(pose.getTranslation()),
-                GeometryUtil.xForwardToZForward(pose.getRotation())));
+        return new BlipWithCorners(
+                timestamp, id, corners, GeometryUtil.xForwardToZForward(pose));
     }
 
     /**
@@ -128,7 +127,11 @@ public class BlipWithCorners {
         return y3;
     }
 
-    /** Pixel corners of the tag. */
+    /**
+     * Pixel corners of the tag.
+     * 
+     * Lower left first,then counter-clockwise.
+     */
     public float[] getCorners() {
         return new float[] { x0, y0, x1, y1, x2, y2, x3, y3 };
     }

@@ -33,7 +33,8 @@ public class OdometryUpdaterTest {
         MockGyro gyro = new MockGyro();
         positions = SwerveModulePositions.kZero();
         OdometryUpdater ou = new OdometryUpdater(
-                log, kinodynamics, gyro, null, () -> positions, UnaryOperator.identity());
+                log, kinodynamics, gyro, null,
+                () -> positions, UnaryOperator.identity(), true);
         // previous state is at zero, but uncertain
         StateSE2 sampleState = new StateSE2();
         IsotropicNoiseSE2 stateNoise = IsotropicNoiseSE2.fromStdDev(1, 1);
@@ -83,7 +84,8 @@ public class OdometryUpdaterTest {
         MockGyro gyro = new MockGyro();
         positions = SwerveModulePositions.kZero();
         OdometryUpdater ou = new OdometryUpdater(
-                log, kinodynamics, gyro, null, () -> positions, UnaryOperator.identity());
+                log, kinodynamics, gyro, null,
+                () -> positions, UnaryOperator.identity(), true);
 
         // previous state is at zero, pretty sure.
         StateSE2 sampleState = new StateSE2();
@@ -120,7 +122,8 @@ public class OdometryUpdaterTest {
         MockGyro gyro = new MockGyro();
         positions = SwerveModulePositions.kZero();
         OdometryUpdater ou = new OdometryUpdater(
-                log, kinodynamics, gyro, null, () -> positions, UnaryOperator.identity());
+                log, kinodynamics, gyro, null,
+                () -> positions, UnaryOperator.identity(), true);
 
         // previous state is at zero, pretty sure.
         StateSE2 sampleState = new StateSE2();
@@ -176,7 +179,8 @@ public class OdometryUpdaterTest {
         MockGyro gyro = new MockGyro();
         positions = SwerveModulePositions.kZero();
         OdometryUpdater ou = new OdometryUpdater(
-                log, kinodynamics, gyro, null, () -> positions, UnaryOperator.identity());
+                log, kinodynamics, gyro, null,
+                () -> positions, UnaryOperator.identity(), true);
 
         // previous state is at zero, pretty sure.
         StateSE2 sampleState = new StateSE2();

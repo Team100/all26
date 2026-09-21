@@ -72,7 +72,8 @@ public class SimulatedDrivingTest implements Timeless {
                 IsotropicNoiseSE2.high(),
                 0);
         odometryUpdater = new OdometryUpdater(
-                logger, swerveKinodynamics, gyro, history, collection::positions, UnaryOperator.identity());
+                logger, swerveKinodynamics, gyro, history,
+                collection::positions, UnaryOperator.identity(), true);
         odometryUpdater.reset(Pose2d.kZero, IsotropicNoiseSE2.high(), 0);
 
         NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(

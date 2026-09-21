@@ -410,6 +410,15 @@ public class GeometryUtil {
                 zForwardToXForward(zForward.getRotation()));
     }
 
+    /**
+     * Transform the NWU x-forward transform to camera-coord z-forward.
+     */
+    public static Transform3d xForwardToZForward(Transform3d xForward) {
+        return new Transform3d(
+                xForwardToZForward(xForward.getTranslation()),
+                xForwardToZForward(xForward.getRotation()));
+    }
+
     public static Vector<N3> toVec(Pose2d p) {
         return VecBuilder.fill(p.getX(), p.getY(), p.getRotation().getRadians());
     }

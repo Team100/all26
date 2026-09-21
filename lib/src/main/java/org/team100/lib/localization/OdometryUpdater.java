@@ -50,6 +50,10 @@ public class OdometryUpdater {
      */
     private final UnaryOperator<Twist2d> m_noise;
     /**
+     * Use the module positions all the time: for ground truth.
+     */
+    private final boolean m_alwaysUpdate;
+    /**
      * Minimum variance for this fusor represents the true bias noise, aka "bias
      * instability," which is quite low.
      */
@@ -69,13 +73,15 @@ public class OdometryUpdater {
             Gyro gyro,
             SwerveHistory estimator,
             Supplier<SwerveModulePositions> positions,
-            UnaryOperator<Twist2d> noise) {
+            UnaryOperator<Twist2d> noise,
+            boolean alwaysUpdate) {
         LoggerFactory log = parent.type(this);
         m_kinodynamics = kinodynamics;
         m_gyro = gyro;
         m_history = estimator;
         m_positions = positions;
         m_noise = noise;
+        m_alwaysUpdate = alwaysUpdate;
         m_gyroBiasFusor = new CovarianceInflation(0.02, gyro.bias_noise());
         m_rotationFusor = new CovarianceInflation(0.02, 0.003);
         m_logState = log.swerveStateLogger(Level.TRACE, "state");
@@ -304,6 +310,10 @@ public class OdometryUpdater {
     private Twist2d twistFromOdometry(SwerveModulePositions positions, SwerveModulePositions previousPositions) {
         SwerveModuleDeltas modulePositionDelta = SwerveModuleDeltas.modulePositionDelta(
                 previousPositions, positions);
+        if (!m_alwaysUpdate && Experiments.INSTANCE.enabled(Experiment.IgnoreOdometry)) {
+            // Ignoring odometry means delta is always zero.
+            modulePositionDelta = SwerveModuleDeltas.ZERO;
+        }
         if (DEBUG) {
             System.out.printf("modulePositionDelta %s\n", modulePositionDelta);
         }
