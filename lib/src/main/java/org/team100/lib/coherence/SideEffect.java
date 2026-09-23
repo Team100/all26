@@ -20,6 +20,9 @@ public class SideEffect implements Runnable {
         m_valid = false;
     }
 
+    /**
+     * Run the delegate, if not already run.
+     */
     @Override
     public synchronized void run() {
         if (m_valid)
@@ -28,6 +31,7 @@ public class SideEffect implements Runnable {
         m_valid = true;
     }
 
+    /** Invalidate the cache, so the next run() will ask the delegate. */
     public synchronized void reset() {
         m_valid = false;
     }

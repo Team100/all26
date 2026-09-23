@@ -12,7 +12,7 @@ See `OdometryUpdater`.
 
 ## Vision
 
-Each camera publishes relative poses of AprilTags it can see (`Blips), and
+Each camera publishes relative poses of AprilTags it can see (`Blips`), and
 these are received by `AprilTagRobotLocalizer`, which transforms each one into
 a global pose estimate, using its knowledge of each camera pose relative to the
 robot (see `Camera`), and each tag relative to the field

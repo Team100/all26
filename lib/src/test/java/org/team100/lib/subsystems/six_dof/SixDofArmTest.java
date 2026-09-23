@@ -20,6 +20,7 @@ import org.wpilib.math.geometry.Rotation3d;
 
 
 public class SixDofArmTest implements Timeless {
+    private static final boolean DEBUG = false;
     LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
 
     @Test
@@ -50,12 +51,14 @@ public class SixDofArmTest implements Timeless {
         assertEquals(4, f1.size());
         SixDofConfig q0 = new SixDofConfig(0, 0, 0, 0, 0, 0);
         SixDofConfig b1 = SixDofConfig.nearest(f1, q0);
-        System.out.printf("b1 %s\n", b1);
+        if (DEBUG)
+            System.out.printf("b1 %s\n", b1);
 
         List<SixDofConfig> all2 = arm.m_kinematics.inverse(
                 new Pose3d(0.2, -0.2, 0.6, new Rotation3d(0, 0, 0)), 0.0, null, 0.0);
         assertEquals(8, all2.size());
-        System.out.println("feasibility filtering ...");
+        if (DEBUG)
+            System.out.println("feasibility filtering ...");
         List<SixDofConfig> f2 = arm.m_feasibility.filter(all2);
         // two of the possibilities use a pitch rotation which is exactly
         // 90 degrees, and then rounding puts it just outside the range.
@@ -63,7 +66,8 @@ public class SixDofArmTest implements Timeless {
         // assertEquals(8, f2.size());
         // use previous pose to measure distance
         SixDofConfig b2 = SixDofConfig.nearest(f2, b1);
-        System.out.printf("b2 %s\n", b2);
+        if (DEBUG)
+            System.out.printf("b2 %s\n", b2);
     }
 
     @Test

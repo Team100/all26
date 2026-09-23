@@ -1,6 +1,5 @@
 package org.team100.lib.subsystems.swerve.commands.manual;
 
-import java.util.function.DoubleConsumer;
 import java.util.function.Supplier;
 
 import org.team100.lib.config.DriverSkill;
@@ -34,7 +33,6 @@ public class DriveFieldRelative extends Command {
      * Must be smoothed.
      */
     private final Supplier<DriverVelocity> m_twistSupplier;
-    private final DoubleConsumer m_heedRadiusM;
     private final SwerveDriveSubsystem m_drive;
     private final SwerveLimiter m_limiter;
 
@@ -49,12 +47,10 @@ public class DriveFieldRelative extends Command {
             LoggerFactory parent,
             SwerveKinodynamics swerveKinodynamics,
             Supplier<DriverVelocity> twistSupplier,
-            DoubleConsumer heedRadiusM,
             SwerveDriveSubsystem drive,
             SwerveLimiter limiter) {
         LoggerFactory log = parent.type(this);
         m_twistSupplier = twistSupplier;
-        m_heedRadiusM = heedRadiusM;
         m_drive = drive;
         m_limiter = limiter;
         m_log_scaled = log.VelocitySE2Logger(Level.TRACE, "scaled");
@@ -64,9 +60,9 @@ public class DriveFieldRelative extends Command {
 
     @Override
     public void initialize() {
-        m_heedRadiusM.accept(HEED_RADIUS_M);
+        m_drive.setHeedRadiusM(HEED_RADIUS_M);
         // make sure the limiter knows what we're doing
-        m_limiter.updateSetpoint(m_drive.getVelocity());
+        m_limiter.updateSetpoint(m_drive.getState().velocity());
         m_v = VelocitySE2.ZERO;
     }
 

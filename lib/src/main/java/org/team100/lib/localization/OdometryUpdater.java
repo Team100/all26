@@ -111,43 +111,13 @@ public class OdometryUpdater {
 
     /** For testing. */
     SwerveState update(double timestamp) {
-        return put(timestamp, m_gyro.getYawNWU(), m_positions.get());
-    }
-
-    /**
-     * Empty the history and add the given measurements at the current instant.
-     * 
-     * Uses the module position supplier passed to the constructor, and the gyro.
-     * When this is called by the bound command, it provides a pose with the current
-     * translation and a rotation of zero (or 180 for the other button).
-     */
-    public void reset(Pose2d pose, IsotropicNoiseSE2 noise) {
-        reset(pose, noise, Takt.get());
-    }
-
-    /**
-     * Empty the history and add the given measurements.
-     * 
-     * Uses the module position supplier passed to the constructor.
-     * When this is called by the bound command, it provides a pose with the current
-     * translation and a rotation of zero (or 180 for the other button).
-     * The gyro angle is whatever the gyro says, not zero.
-     * 
-     * New! Adds a very uncertain gyro bias estimate.
-     */
-    public void reset(
-            Pose2d pose,
-            IsotropicNoiseSE2 noise,
-            double timestampSeconds) {
-        // No idea what the gyro bias is.
-        VariableR1 gyroBias = VariableR1.fromVariance(0, 1);
-        m_history.reset(
-                m_positions.get(),
-                pose,
-                noise,
-                timestampSeconds,
-                m_gyro.getYawNWU(),
-                gyroBias);
+        SwerveModulePositions positions = m_positions.get();
+        Rotation2d yawNWU = m_gyro.getYawNWU();
+        if (DEBUG) {
+            System.out.printf("OdometryUpdater.update() gyro %s positions %s\n",
+                    yawNWU, positions);
+        }
+        return put(timestamp, yawNWU, positions);
     }
 
     ////////////////////////////////////////////////////
@@ -315,13 +285,13 @@ public class OdometryUpdater {
             modulePositionDelta = SwerveModuleDeltas.ZERO;
         }
         if (DEBUG) {
-            System.out.printf("modulePositionDelta %s\n", modulePositionDelta);
+            System.out.printf("OdometryUpdater modulePositionDelta %s\n", modulePositionDelta);
         }
         Twist2d twist = m_kinodynamics.getKinematics().forward(modulePositionDelta);
         // Add noise, if in simulation (otherwise, this is a no-op).
         twist = m_noise.apply(twist);
         if (DEBUG) {
-            System.out.printf("twist %s\n", StrUtil.twistStr(twist));
+            System.out.printf("OdometryUpdater twist %s\n", StrUtil.twistStr(twist));
         }
         return twist;
     }

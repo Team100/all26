@@ -26,6 +26,8 @@ import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.numbers.N3;
 
 public class RRRProfileTest {
+    private static final boolean DEBUG = false;
+
     @Test
     void test0() {
         RRRKinematicsPoE k = new RRRKinematicsPoE(0.3, 0.3, 0.1);
@@ -165,8 +167,9 @@ public class RRRProfileTest {
                         new VelocitySE2(0, 0, 0));
             }
             setpoint = p.calculate(setpoint, goal, 0.02);
-            System.out.printf("%d, %s, %s, %s\n",
-                    i, setpoint.q(), setpoint.qdot(), StrUtil.poseStr(k.forward(setpoint.q()).p4()));
+            if (DEBUG)
+                System.out.printf("%d, %s, %s, %s\n",
+                        i, setpoint.q(), setpoint.qdot(), StrUtil.poseStr(k.forward(setpoint.q()).p4()));
         }
     }
 

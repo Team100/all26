@@ -119,7 +119,7 @@ public class DriveTargetLockWithProfile extends Command {
     @Override
     public void initialize() {
         m_heedRadiusM.accept(HEED_RADIUS_M);
-        m_limiter.updateSetpoint(m_drive.getVelocity());
+        m_limiter.updateSetpoint(m_drive.getState().velocity());
         StateSE2 state = m_drive.getState();
         // always use zero initial setpoint velocity to avoid "jerk" on init.
         m_thetaSetpoint = new ControlR1(state.theta().x(), 0);

@@ -56,7 +56,14 @@ public enum Experiment {
      * 
      * Useful for testing vision.
      */
-    IgnoreOdometry("Ignore odometry input");
+    IgnoreOdometry("Ignore odometry input"),
+    /**
+     * Show seen tags.
+     * 
+     * Listens for camera input and paints the tags on the field.  This is
+     * expensive to do, so it should be kept off for comp.
+     */
+    ShowTags("Show seen tags");
 
     /** Show this at startup */
     public final String description;

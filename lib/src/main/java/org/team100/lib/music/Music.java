@@ -7,7 +7,7 @@ import org.wpilib.command2.Subsystem;
 
 /** This is a subsystem so that we can require it */
 public interface Music extends Subsystem {
-    /** Unison */
+    /** Play sound in unison. */
     Command play(double freq);
 
     List<Player> players();
