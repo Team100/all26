@@ -2,7 +2,6 @@ package org.team100.lib.localization;
 
 import java.util.Map.Entry;
 import java.util.SortedMap;
-import java.util.function.DoubleFunction;
 
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.logging.Level;
@@ -24,22 +23,15 @@ import org.wpilib.math.geometry.Rotation2d;
  * 
  * The history always has *something* in it, even the initial zero pose.
  * 
- * There are no dependencies managed here; for that, use SwerveModelEstimate.
+ * The buffer only needs to be long enough to catch stale-but-still-helpful
+ * vision updates.
  * 
- * Note this should only be used from within the localization package.
- * 
- * Other SwerveModel consumers should use SwerveModelEstimate.
+ * The current Raspberry Pi cameras seem to be able to provide frames to RoboRIO
+ * code with about 75-100 ms latency. There will never be a vision update
+ * older than about 200 ms.
  */
-public class SwerveHistory implements DoubleFunction<StateSE2> {
-    /**
-     * The buffer only needs to be long enough to catch stale-but-still-helpful
-     * vision updates.
-     * 
-     * The current Raspberry Pi cameras seem to be able to provide frames to RoboRIO
-     * code with about 75-100 ms latency. There will never be a vision update
-     * older than about 200 ms.
-     */
-    // private static final double BUFFER_DURATION = 0.2;
+public class SwerveHistory implements StateSampler {
+    private static final boolean DEBUG = false;
 
     private final DoubleLogger m_log_timestamp;
     private final TimeInterpolatableBuffer100<SwerveState> m_poseBuffer;
@@ -64,11 +56,9 @@ public class SwerveHistory implements DoubleFunction<StateSE2> {
                 interpolator, bufferDuration, timestampSeconds, initialState);
     }
 
-    /**
-     * Sample the state estimate buffer.
-     */
+    /** Sample the state estimate buffer. */
     @Override
-    public StateSE2 apply(double timestampSeconds) {
+    public StateSE2 get(double timestampSeconds) {
         m_log_timestamp.log(() -> timestampSeconds);
         return m_poseBuffer.get(timestampSeconds).state();
     }
@@ -92,7 +82,8 @@ public class SwerveHistory implements DoubleFunction<StateSE2> {
     }
 
     //////////////////////////////////////////////////
-    // methods below are for history maintenance
+    //
+    // Methods below are for history maintenance and testing.
 
     /**
      * timestamp in seconds
@@ -104,7 +95,10 @@ public class SwerveHistory implements DoubleFunction<StateSE2> {
             SwerveModulePositions positions,
             Rotation2d gyroYaw,
             VariableR1 gyroBias) {
-        // System.out.printf("history put noise %s\n", noise);
+        if (DEBUG)
+            System.out.printf("SwerveHistory.put() %f %s %s\n",
+                    timestamp, state, noise);
+
         m_poseBuffer.put(
                 timestamp,
                 new SwerveState(
@@ -116,6 +110,8 @@ public class SwerveHistory implements DoubleFunction<StateSE2> {
     }
 
     void put(double timestamp, SwerveState state) {
+        if (DEBUG)
+            System.out.printf("SwerveHistory.put() %f %s\n", timestamp, state);
         m_poseBuffer.put(timestamp, state);
     }
 

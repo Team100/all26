@@ -29,7 +29,6 @@ public class DriveManuallySetup {
                 comLog,
                 swerveKinodynamics,
                 driverControl::velocity,
-                localizer::setHeedRadiusM,
                 drive,
                 limiter);
     }

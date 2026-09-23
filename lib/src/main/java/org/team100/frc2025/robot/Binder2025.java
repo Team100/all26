@@ -61,7 +61,7 @@ public class Binder2025 {
                 log,
                 m_machinery.m_swerveKinodynamics,
                 RobotController::getBatteryVoltage);
-        limiter.updateSetpoint(m_machinery.m_drive.getVelocity());
+        limiter.updateSetpoint(m_machinery.m_drive.getState().velocity());
 
         // There are 3 modes:
         // * normal

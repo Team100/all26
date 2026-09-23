@@ -110,7 +110,7 @@ public class SwerveLocal implements Player {
     //
 
     /** Uses Cache so the position is fresh and coherent. */
-    SwerveModulePositions positions() {
+    public SwerveModulePositions positions() {
         return m_modules.positions();
     }
 

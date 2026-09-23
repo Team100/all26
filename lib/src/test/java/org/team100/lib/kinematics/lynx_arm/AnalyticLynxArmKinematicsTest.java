@@ -174,7 +174,8 @@ public class AnalyticLynxArmKinematicsTest {
         AnalyticLynxArmKinematics k = AnalyticLynxArmKinematics.unit();
         // negative is up
         LynxArmPose x = k.forward(new LynxArmConfig(0, -0.775, 0.775, 0, 0));
-        System.out.println(x);
+        if (DEBUG)
+            System.out.println(x);
     }
 
     @Test

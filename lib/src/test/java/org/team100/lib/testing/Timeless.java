@@ -50,7 +50,7 @@ public interface Timeless {
     }
 
     /**
-     * Increments the clock and resets all the memoized quantities.
+     * Increments the clock and refreshes all the caches.
      * This used to allow the time step to be specified, but it's not a realistic to
      * require correctness in that case, so I took it out.
      */

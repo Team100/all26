@@ -56,7 +56,7 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
      * If we *did* want to optimize it, we could move the replay from the vision
      * writer to the pose reader, and save something like 20 us (0.4%) on average.
      */
-    // There's no need to run this all the time
+    // This takes a long time. There's no need to run this all the time
     // @Test
     void test0() {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest();
@@ -77,7 +77,10 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
         OdometryUpdater ou = new OdometryUpdater(
                 logger, kinodynamics, gyro, history,
                 () -> positions, UnaryOperator.identity(), true);
-        ou.reset(Pose2d.kZero, IsotropicNoiseSE2.high(), 0);
+        history.reset(
+                positions, Pose2d.kZero, IsotropicNoiseSE2.high(),
+                0, gyro.getYawNWU(),
+                VariableR1.fromVariance(0, 1));
         NudgingVisionUpdater vu = new NudgingVisionUpdater(logger, history, ou);
 
         // fill the buffer with odometry
