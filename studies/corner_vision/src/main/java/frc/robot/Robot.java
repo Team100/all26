@@ -3,6 +3,9 @@ package frc.robot;
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.network.Sync;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.framework.TimedRobot;
+import org.wpilib.networktables.NetworkTableInstance;
 
 public class Robot extends TimedRobot {
 
