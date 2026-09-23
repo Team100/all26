@@ -1,5 +1,7 @@
 package org.team100.frc2026;
 
+import java.nio.file.Paths;
+
 import org.team100.frc2026.auton.Autons;
 import org.team100.frc2026.robot.Binder;
 import org.team100.frc2026.robot.Machinery;
@@ -21,10 +23,18 @@ import org.wpilib.command2.CommandScheduler;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.networktables.NetworkTableInstance;
 
+import gtsam.Point2;
+
 /**
  * This is the main robot class, which wires up events from TimedRobot100.
  */
 public class Robot extends TimedRobot100 {
+    static {
+        // To help find the GTSAM lib.
+        String cwd = Paths.get("").toAbsolutePath().toString();
+        System.out.println("CWD: " + cwd);
+        System.out.flush();
+    }
     private final RobotLog m_robotLog;
     private final Sync m_sync;
     private final Machinery m_machinery;
@@ -34,6 +44,14 @@ public class Robot extends TimedRobot100 {
 
     public Robot() {
         Startup.start();
+        try {
+            Point2 p = new Point2(4, 5);
+            System.out.printf("GTSAM p %f %f\n", p.x(), p.y());
+        } catch (Throwable e) {
+            System.out.println("GTSAM FAILED!");
+            e.printStackTrace();
+        }
+
         System.out.printf("Robot class: %s\n",
                 this.getClass().getName());
         Logging logging = Logging.instance();
@@ -68,7 +86,7 @@ public class Robot extends TimedRobot100 {
         }
     }
 
-    ////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////
     //
     // INITIALIZERS, DO NOT CHANGE THESE
     //
@@ -112,7 +130,7 @@ public class Robot extends TimedRobot100 {
         m_binder.close();
     }
 
-    ////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////
     //
     // EXIT: CLEAN UP
     //
@@ -121,7 +139,7 @@ public class Robot extends TimedRobot100 {
     public void disabledExit() {
     }
 
-    /////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
     //
     // LEAVE ALL THESE EMPTY
     //
