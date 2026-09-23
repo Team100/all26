@@ -17,8 +17,9 @@ import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VariableR1;
-
+import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
+
 
 public class OdometryUpdaterTest {
     private static final boolean DEBUG = false;
@@ -32,8 +33,19 @@ public class OdometryUpdaterTest {
     void testNewState1() {
         MockGyro gyro = new MockGyro();
         positions = SwerveModulePositions.kZero();
+        SwerveHistory history = new SwerveHistory(
+                log,
+                kinodynamics,
+                0.2,
+                Rotation2d.kZero,
+                VariableR1.fromVariance(0, 1),
+                positions,
+                Pose2d.kZero,
+                IsotropicNoiseSE2.high(),
+                0);
         OdometryUpdater ou = new OdometryUpdater(
-                log, kinodynamics, gyro, null, () -> positions, UnaryOperator.identity());
+                log, kinodynamics, gyro, history,
+                () -> positions, UnaryOperator.identity(), true);
         // previous state is at zero, but uncertain
         StateSE2 sampleState = new StateSE2();
         IsotropicNoiseSE2 stateNoise = IsotropicNoiseSE2.fromStdDev(1, 1);
@@ -82,8 +94,19 @@ public class OdometryUpdaterTest {
     void testNewState2() {
         MockGyro gyro = new MockGyro();
         positions = SwerveModulePositions.kZero();
+        SwerveHistory history = new SwerveHistory(
+                log,
+                kinodynamics,
+                0.2,
+                Rotation2d.kZero,
+                VariableR1.fromVariance(0, 1),
+                positions,
+                Pose2d.kZero,
+                IsotropicNoiseSE2.high(),
+                0);
         OdometryUpdater ou = new OdometryUpdater(
-                log, kinodynamics, gyro, null, () -> positions, UnaryOperator.identity());
+                log, kinodynamics, gyro, history,
+                () -> positions, UnaryOperator.identity(), true);
 
         // previous state is at zero, pretty sure.
         StateSE2 sampleState = new StateSE2();
@@ -119,8 +142,19 @@ public class OdometryUpdaterTest {
     void testNewStateWithBias() {
         MockGyro gyro = new MockGyro();
         positions = SwerveModulePositions.kZero();
+        SwerveHistory history = new SwerveHistory(
+                log,
+                kinodynamics,
+                0.2,
+                Rotation2d.kZero,
+                VariableR1.fromVariance(0, 1),
+                positions,
+                Pose2d.kZero,
+                IsotropicNoiseSE2.high(),
+                0);
         OdometryUpdater ou = new OdometryUpdater(
-                log, kinodynamics, gyro, null, () -> positions, UnaryOperator.identity());
+                log, kinodynamics, gyro, history,
+                () -> positions, UnaryOperator.identity(), true);
 
         // previous state is at zero, pretty sure.
         StateSE2 sampleState = new StateSE2();
@@ -175,8 +209,19 @@ public class OdometryUpdaterTest {
     void testNewStateWithBias2() {
         MockGyro gyro = new MockGyro();
         positions = SwerveModulePositions.kZero();
+        SwerveHistory history = new SwerveHistory(
+                log,
+                kinodynamics,
+                0.2,
+                Rotation2d.kZero,
+                VariableR1.fromVariance(0, 1),
+                positions,
+                Pose2d.kZero,
+                IsotropicNoiseSE2.high(),
+                0);
         OdometryUpdater ou = new OdometryUpdater(
-                log, kinodynamics, gyro, null, () -> positions, UnaryOperator.identity());
+                log, kinodynamics, gyro, history,
+                () -> positions, UnaryOperator.identity(), true);
 
         // previous state is at zero, pretty sure.
         StateSE2 sampleState = new StateSE2();

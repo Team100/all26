@@ -82,7 +82,7 @@ public class UTurnWithRotation implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return machinery.m_drive.getPose();
+        return machinery.m_drive.getState().pose();
     }
 
     @Override

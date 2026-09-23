@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.camera.Camera;
+import org.team100.lib.coherence.Takt;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
@@ -55,8 +56,11 @@ public class TargetsTest implements Timeless {
                 "objectVision/test4/targets", Target.struct);
         StructArrayPublisher<Target> pub = topic.publish();
         stepTime();
+        double timestampS = Takt.get();
+        long time = (long) (timestampS * 1000000.0);
+
         // tilt down 45
-        pub.set(new Target[] { new Target(0, new Rotation3d(0, Math.PI / 4, 0)) });
+        pub.set(new Target[] { new Target(time, new Rotation3d(0, Math.PI / 4, 0)) });
 
         // wait for NT rate-limiting
         Thread.sleep(200);
@@ -92,7 +96,7 @@ public class TargetsTest implements Timeless {
         Thread.sleep(100);
 
         stepTime();
-        writer.update();
+        writer.run();
 
         // wait for NT rate-limiting
         Thread.sleep(100);
@@ -131,7 +135,7 @@ public class TargetsTest implements Timeless {
         Thread.sleep(100);
 
         stepTime();
-        writer.update();
+        writer.run();
 
         // wait for NT rate-limiting
         Thread.sleep(100);
@@ -175,7 +179,7 @@ public class TargetsTest implements Timeless {
         Thread.sleep(100);
 
         stepTime();
-        writer.update();
+        writer.run();
 
         // wait for NT rate-limiting
         Thread.sleep(100);
@@ -218,7 +222,7 @@ public class TargetsTest implements Timeless {
         Thread.sleep(100);
 
         stepTime();
-        writer.update();
+        writer.run();
 
         // wait for NT rate-limiting
         Thread.sleep(100);

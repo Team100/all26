@@ -29,23 +29,27 @@ public class CoaslescingCollectionTest {
         };
         CoalescingCollection<Double> c = new CoalescingCollection<>(
                 history, near, combine);
+        c.evict(-3);
         c.add(0.0, 10.0);
         assertArrayEquals(
                 new double[] { 10.0 },
                 c.getAll().stream().mapToDouble(Double::doubleValue).toArray());
+        c.evict(-2);
         c.add(1.0, 20.0);
         assertArrayEquals(
                 new double[] { 10.0, 20.0 },
                 c.getAll().stream().mapToDouble(Double::doubleValue).toArray());
         // near 10
+        c.evict(-1);
         c.add(2.0, 10.5);
         assertArrayEquals(
                 new double[] { 20.0, 10.25 },
                 c.getAll().stream().mapToDouble(Double::doubleValue).toArray());
         // combines with the near one, and also expires the other one
-        c.add(10.0, 10.5);
+        c.evict(0);
+        c.add(3.0, 10.5);
         assertArrayEquals(
-                new double[] { 10.375 },
+                new double[] { 20.0, 10.375 },
                 c.getAll().stream().mapToDouble(Double::doubleValue).toArray());
     }
 

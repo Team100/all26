@@ -97,6 +97,12 @@ public class Offset {
                 new Transform3d(
                         new Translation3d(),
                         new Rotation3d(0, Math.PI / 6, 0))));
+
+        //////////////////////////////////////
+        //
+        // For simulated tag detector cameras.
+        // These point in the cardinal directions.
+        //
         offsets.put(Camera.SIM0, new Offset(
                 new Transform3d(
                         new Translation3d(0, 0, 0.75),

@@ -16,8 +16,7 @@ import org.team100.lib.util.TrailingHistory.ValueRecord;
  * so don't let it get too large.
  */
 public class CoalescingCollection<T> {
-    private static final double HISTORY_DURATION = 1.0;
-
+    private static final boolean DEBUG = false;
     private final TrailingHistory<T> m_delegate;
     /** True if items should be combined. */
     private final BiPredicate<T, T> m_near;
@@ -36,20 +35,27 @@ public class CoalescingCollection<T> {
      * @param time seconds
      */
     public void add(double time, T value) {
+        if (DEBUG)
+            System.out.printf("time %f value %s\n", time, value);
         List<T> neighbors = new ArrayList<>();
         neighbors.add(value);
         Iterator<ValueRecord<T>> iter = m_delegate.iterator();
         while (iter.hasNext()) {
             ValueRecord<T> vr = iter.next();
             T v = vr.value();
+            if (DEBUG)
+                System.out.printf("vr %s\n", vr);
             if (m_near.test(v, value)) {
                 iter.remove();
                 neighbors.add(v);
             }
         }
         T rep = m_combine.apply(neighbors);
-        m_delegate.evict(time - HISTORY_DURATION);
         m_delegate.add(time, rep);
+    }
+
+    public void evict(double t) {
+        m_delegate.evict(t);
     }
 
     public void addAll(double time, Collection<T> values) {

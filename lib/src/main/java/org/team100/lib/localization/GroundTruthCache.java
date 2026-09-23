@@ -1,7 +1,5 @@
 package org.team100.lib.localization;
 
-import java.util.function.DoubleFunction;
-
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.SideEffect;
 import org.team100.lib.state.StateSE2;
@@ -11,7 +9,7 @@ import org.team100.lib.state.StateSE2;
  * 
  * Similar to FreshSwerveEstimate.
  */
-public class GroundTruthCache implements DoubleFunction<StateSE2> {
+public class GroundTruthCache {
     private final SwerveHistory m_history;
     private final SideEffect m_odometry;
 
@@ -22,10 +20,9 @@ public class GroundTruthCache implements DoubleFunction<StateSE2> {
         m_odometry = Cache.ofSideEffect(odometry::update);
     }
 
-    @Override
     public StateSE2 apply(double timestampS) {
         m_odometry.run();
-        return m_history.apply(timestampS);
+        return m_history.get(timestampS);
     }
 
 }

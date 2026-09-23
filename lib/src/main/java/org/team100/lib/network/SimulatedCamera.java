@@ -53,7 +53,7 @@ public class SimulatedCamera implements Runnable {
 
         Blip b = new Blip(pastUs, 1, t);
 
-        m_pub.set(new Blip[] { b }, pastUs);
+        m_pub.set(new Blip[] { b });
         m_inst.flushLocal();
     }
 
