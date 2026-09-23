@@ -9,11 +9,14 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.dynamics.p.PDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
+import org.team100.lib.motor.ctre.KrakenX44Motor;
 import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
 import org.team100.lib.util.CanId;
 
@@ -26,8 +29,16 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private final RobotContainer m_robotContainer;
-    private final NeoVortexCANSparkMotor top;
-    private final NeoVortexCANSparkMotor bottom;
+
+    private static final CanId CAN_ID_1 = new CanId(20);
+    private static final CanId CAN_ID_2 = new CanId(16);
+    private static final double TOLERANCE_M_S = 1;
+    private static final double GEAR_RATIO = 30.0 / 12.0;
+    private static final double WHEEL_DIAMETER_M = 0.05;
+    private static final double NORMAL_SPEED = 10;
+    PDynamics dynamics = PDynamics.drum(0.001, 0.025);
+    final Motor m1;
+    final Motor m2;
 
     private static final LoggerFactory rootLogger = Logging.instance().rootLogger;
     private static final TotalCurrentLog currentLog = new TotalCurrentLog(rootLogger);
@@ -35,36 +46,25 @@ public class Robot extends TimedRobot {
     public Robot() {
         m_robotContainer = new RobotContainer();
         LoggerFactory parent = rootLogger.type(this);
-
         LoggerFactory topLog = parent.name("Top");
         LoggerFactory bottomLog = parent.name("Bottom");
-        top = new NeoVortexCANSparkMotor(
-                topLog,
-                currentLog,
-                new CanId(1),
-                NeutralMode100.BRAKE, MotorPhase.FORWARD,
-                new CurrentLimit(1, 1),
-                new Friction(topLog, 0, 0, 0, 0),
-                PIDConstants.makeVelocityPID(rootLogger, 0.0002, 0.0000005, 0.0004),
-                0, 0);
-        bottom = new NeoVortexCANSparkMotor(
-                bottomLog,
-                currentLog,
-                new CanId(2),
-                NeutralMode100.BRAKE,
-                MotorPhase.FORWARD,
-                new CurrentLimit(1, 1),
-                new Friction(bottomLog, 0, 0, 0, 0),
-                PIDConstants.makeVelocityPID(rootLogger, 0.00005, 0.0000005, 0.0001),
-                0, 0);
+        Friction friction = new Friction(0.5, 0.5, 0.0, 0.5);
+        // tuned 3/12/26
+        PIDConstants pid = PIDConstants.makeVelocityPID(0.08);
+        m1 = new KrakenX44Motor(
+                topLog, currentLog, CAN_ID_1, NeutralMode100.COAST, MotorPhase.FORWARD,
+                new CurrentLimit(1, 1), friction, pid);
+        m2 = new KrakenX44Motor(
+                bottomLog, currentLog, CAN_ID_2, NeutralMode100.COAST, MotorPhase.REVERSE,
+                new CurrentLimit(1, 1), friction, pid);
     }
 
     @Override
     public void robotPeriodic() {
         Takt.update();
         Cache.refresh();
-        top.periodic();
-        bottom.periodic();
+        m1.periodic();
+        m2.periodic();
         CommandScheduler.getInstance().run();
         NetworkTableInstance.getDefault().flush();
     }
@@ -103,8 +103,8 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        top.setVelocity(Math.PI * -200, 0);
-        bottom.setVelocity(Math.PI * 200, 0);
+        m1.setVelocity(Math.PI * 20, 0);
+        m2.setVelocity(Math.PI * 20, 0);
     }
 
     @Override

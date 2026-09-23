@@ -5,34 +5,70 @@ package org.team100.lib.experiments;
  */
 public enum Experiment {
     /**
-     * Smooth chassis speeds.
+     * Make chassis speeds feasible.
+     * 
+     * Advanced drivers prefer this to be off, which allows wheel slip.
      */
-    UseSwerveLimiter,
+    UseSwerveLimiter("Make chassis speeds feasible"),
     /**
-     * Flush network tables as often as possible. Do not enable this experiment in
+     * Flush network tables as often as possible.
+     * 
+     * Do not enable this experiment in
      * competition, you'll overwhelm the network and the RIO
      */
-    FlushOften,
+    FlushOften("Flush network tables as often as possible"),
     /**
-     * Pay attention to camera input. It's useful to turn this off for testing and
-     * calibration.
+     * Ignore camera input.
+     * 
+     * Useful for testing and calibration.
      */
-    HeedVision,
+    IgnoreVision("Ignore camera input"),
     /**
-     * Skip velocity feedforward in steering, to reduce noise.
+     * Skip velocity feedforward in steering.
+     * 
+     * This may reduce noise.
      */
-    SteerWithoutVelocity,
+    SteerWithoutVelocity("Skip velocity feedforward in steering"),
     /**
      * Use longitudinal dynamics, i.e. motor torque.
      */
-    SwerveDynamicsLongitudinal,
+    SwerveDynamicsLongitudinal("Use longitudinal dynamics, i.e. motor torque"),
     /**
      * Use lateral dynamics, i.e. slip angle.
      */
-    SwerveDynamicsLateral,
+    SwerveDynamicsLateral("Use lateral dynamics, i.e. slip angle"),
     /**
-     * Use only the gyro for rotation. This is useful when there's no vision input
-     * to fix the gyro drift and/or odometry noise, e.g. for practice without tags.
+     * Use only the gyro for rotation.
+     * 
+     * This is useful when there's no vision input to fix the gyro drift and/or
+     * odometry noise, e.g. for practice without tags.
      */
-    PerfectGyro
+    PerfectGyro("Use only the gyro for rotation"),
+    /**
+     * Use simulated camera in real robot.
+     * 
+     * Useful for testing real-robot localization without a physical camera
+     * attached. The simulated camera is used by default in simulation.
+     */
+    SimulateCameras("Use simulated camera in real robot"),
+    /**
+     * Ignore Odometry.
+     * 
+     * Useful for testing vision.
+     */
+    IgnoreOdometry("Ignore odometry input"),
+    /**
+     * Show seen tags.
+     * 
+     * Listens for camera input and paints the tags on the field.  This is
+     * expensive to do, so it should be kept off for comp.
+     */
+    ShowTags("Show seen tags");
+
+    /** Show this at startup */
+    public final String description;
+
+    private Experiment(String description) {
+        this.description = description;
+    }
 }

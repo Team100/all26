@@ -18,7 +18,9 @@ public class PositionAwareSubsystemSetup {
             SwerveDriveSubsystem drive) {
 
         PositionAwareSubsytem shooterElevation = new PositionAwareSubsytem(
-                new Translation2d(3, 4), drive::getPose);
+                new Translation2d(3, 4), () -> {
+                    return drive.getState().pose();
+                });
 
         // you could run the elevation command as the default ...
         shooterElevation.setDefaultCommand(shooterElevation.holdAimingPoint());

@@ -41,9 +41,9 @@ public class Robot extends TimedRobot100 {
         LoggerFactory fieldLogger = logging.fieldLogger;
         m_robotLog = new RobotLog(log);
         m_sync = new Sync(NetworkTableInstance.getDefault());
-        m_machinery = new Machinery(m_robotLog.totalCurrentLog());
+        m_machinery = new Machinery(log, fieldLogger, m_robotLog.totalCurrentLog());
         m_binder = new Binder(log, m_machinery);
-        m_autons = new Autons(m_machinery);
+        m_autons = new Autons(log, m_machinery);
         m_autoViz = new AutonVisualization(fieldLogger);
         m_autons.onChange(m_autoViz::show);
         Prewarmer.init(m_machinery);

@@ -49,7 +49,7 @@ public class SimulatedTagDetectorTest {
         // sim uses alliance from driver station
         DriverStationSim.setAllianceStationId(AllianceStationID.RED_1);
         DriverStationSim.notifyNewData();
-        sim.periodic();
+        sim.run();
     }
 
 

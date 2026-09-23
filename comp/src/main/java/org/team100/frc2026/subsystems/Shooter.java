@@ -25,6 +25,7 @@ import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
 
 public class Shooter extends SubsystemBase {
+    private static final boolean ENABLE = false;
     private static final boolean DEBUG = false;
     private static final double TUNING_SETTING = 0;
     private static final double TEST_SPEED = 15;
@@ -49,6 +50,7 @@ public class Shooter extends SubsystemBase {
      * @param parent log
      * @param speed  speed (m/s) for auto mode
      */
+    @SuppressWarnings("unused")
     public Shooter(
             LoggerFactory parent,
             TotalCurrentLog currentLog,
@@ -73,7 +75,7 @@ public class Shooter extends SubsystemBase {
         final Motor m2;
         final Motor m3;
         final Motor m4;
-        if (RobotBase.isReal()) {
+        if (ENABLE && RobotBase.isReal()) {
             // friction test 3/12/262
             Friction friction = new Friction(0.3, 0.25, 0.0, 0.5);
             // tuned 3/12/26

@@ -7,7 +7,6 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.util.CanId;
-import org.team100.lib.util.Math100;
 import org.wpilib.math.util.MathUtil;
 
 import com.reduxrobotics.sensors.canandmag.Canandmag;
@@ -35,7 +34,7 @@ public class ReduxPositionSensor implements RotaryPositionSensor {
             EncoderDrive drive) {
         LoggerFactory log = parent.type(this);
         encoder = new Canandmag(id.id);
-        m_positionOffsetTurns = Math100.throwIfOutOfRange(inputOffsetTurns, 0.0, 1.0);
+        m_positionOffsetTurns = inputOffsetTurns;
         m_drive = drive;
 
         m_turns = Cache.of(this::wrap);

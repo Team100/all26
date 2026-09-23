@@ -13,6 +13,7 @@ import org.team100.lib.camera.Offset;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
+import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VisionNoise;
@@ -31,7 +32,9 @@ import org.wpilib.networktables.PubSubOption;
 import org.wpilib.networktables.StructArrayPublisher;
 
 /**
- * Publishes AprilTag Blip sightings on Network Tables, just like real
+ * Copy of SimulatedTagDetector that publishes BlipWithCorners[].
+ * 
+ * Publishes AprilTag BlipWithCornes sightings on Network Tables, just like real
  * cameras would.
  * 
  * This uses a separate client NT instance, so there will be weird delays due to
@@ -45,7 +48,7 @@ import org.wpilib.networktables.StructArrayPublisher;
  * 
  * So fix that.
  */
-public class SimulatedTagDetector {
+public class SimulatedTagCornerDetector {
     private static final boolean DEBUG = false;
     private static final boolean PUBLISH_DEBUG = false;
     // these are the extents of the normalized image coordinates
@@ -75,10 +78,11 @@ public class SimulatedTagDetector {
     private final AprilTagFieldLayoutWithCorrectOrientation m_layout;
     private final StateSampler m_history;
 
-    private final Map<Camera, StructArrayPublisher<Blip>> m_publishers;
+    private final Map<Camera, StructArrayPublisher<BlipWithCorners>> m_publishers;
     /** client instance, not the default */
     private final NetworkTableInstance m_inst;
     private final Random m_rand;
+    private final CornersFromPose m_corners;
 
     /**
      * 
@@ -86,7 +90,7 @@ public class SimulatedTagDetector {
      * @param layout
      * @param history pose history by timestamp (sec)
      */
-    public SimulatedTagDetector(
+    public SimulatedTagCornerDetector(
             List<Camera> cameras,
             AprilTagFieldLayoutWithCorrectOrientation layout,
             StateSampler history) {
@@ -100,20 +104,21 @@ public class SimulatedTagDetector {
         m_inst.setServer("localhost");
         m_inst.startClient("SimulatedTagDetector");
         m_rand = new Random();
+        m_corners = new CornersFromPose();
         for (Camera camera : m_cameras) {
             // see tag_detector.py
-            // name is "vision/{IDENTITY}/blips"
-            String name = "vision/" + camera.getSerial() + "/blips";
+            // name is "vision/{IDENTITY}/blips_with_corners"
+            String name = "vision/" + camera.getSerial() + "/blips_with_corners";
             m_publishers.put(
                     camera,
                     m_inst.getStructArrayTopic(
-                            name, Blip.struct).publish(PubSubOption.KEEP_DUPLICATES));
+                            name, BlipWithCorners.struct).publish(PubSubOption.KEEP_DUPLICATES));
         }
     }
 
-    public static SimulatedTagDetector get(
+    public static SimulatedTagCornerDetector get(
             AprilTagFieldLayoutWithCorrectOrientation layout, SwerveHistory history) {
-        return new SimulatedTagDetector(
+        return new SimulatedTagCornerDetector(
                 List.of(Camera.SIM0, Camera.SIM1, Camera.SIM2, Camera.SIM3),
                 layout,
                 history);
@@ -145,11 +150,11 @@ public class SimulatedTagDetector {
                     robotPose3d.getTranslation().getZ(), robotPose3d.getRotation().getX(),
                     robotPose3d.getRotation().getY(), robotPose3d.getRotation().getZ());
         }
-        for (Map.Entry<Camera, StructArrayPublisher<Blip>> entry : m_publishers.entrySet()) {
+        for (Map.Entry<Camera, StructArrayPublisher<BlipWithCorners>> entry : m_publishers.entrySet()) {
             Camera camera = entry.getKey();
-            StructArrayPublisher<Blip> publisher = entry.getValue();
+            StructArrayPublisher<BlipWithCorners> publisher = entry.getValue();
 
-            List<Blip> blips = new ArrayList<>();
+            List<BlipWithCorners> blips = new ArrayList<>();
             Transform3d cameraOffset = Offset.get(camera).offset();
             Pose3d cameraPose3d = robotPose3d.plus(cameraOffset);
             Alliance alliance = opt.get();
@@ -173,7 +178,9 @@ public class SimulatedTagDetector {
                     if (DEBUG) {
                         System.out.print("VISIBLE ");
                     }
-                    blips.add(Blip.fromXForward(time, tagId, tagInCamera));
+
+                    double[] corners = m_corners.corners(camera, GeometryUtil.xForwardToZForward(tagInCamera));
+                    blips.add(new BlipWithCorners(time, tagId, tofloat(corners), tagInCamera));
                 } else {
                     // ignore it
                     if (DEBUG) {
@@ -195,12 +202,20 @@ public class SimulatedTagDetector {
             }
 
             publisher.set(
-                    blips.toArray(new Blip[0]));
+                    blips.toArray(new BlipWithCorners[0]));
             if (PUBLISH_DEBUG) {
                 System.out.printf("%s\n", blips);
             }
         }
         m_inst.flush();
+    }
+
+    float[] tofloat(double[] d) {
+        float[] f = new float[d.length];
+        for (int i = 0; i < d.length; ++i) {
+            f[i] = (float) d[i];
+        }
+        return f;
     }
 
     /**

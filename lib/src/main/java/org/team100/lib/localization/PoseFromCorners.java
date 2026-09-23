@@ -46,6 +46,8 @@ public class PoseFromCorners {
 
     /**
      * Compute the pose based on the corners, with distortion correction.
+     * 
+     * This is the "z on the axis" camera coordinate pose.
      */
     public Transform3d pose(Camera camera, double[] detectedCorners) {
         double[] corners = correctedCorners(camera, detectedCorners);
