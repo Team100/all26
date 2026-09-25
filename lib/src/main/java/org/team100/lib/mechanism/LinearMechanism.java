@@ -1,6 +1,7 @@
 package org.team100.lib.mechanism;
 
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.motor.Motor;
@@ -48,6 +49,7 @@ public class LinearMechanism implements Player {
         m_log_accel = log.doubleLogger(Level.DEBUG, "accel (m_s2)");
         m_log_velocity = log.doubleLogger(Level.DEBUG, "velocity (m_s)");
         m_log_position = log.doubleLogger(Level.DEBUG, "position (m)");
+        LogPoller.register(this::log);
     }
 
     /** Should actuate immediately. Use for homing. */
@@ -69,7 +71,7 @@ public class LinearMechanism implements Player {
         m_motor.setDutyCycle(output);
     }
 
-    /** For tuning friction. */
+    /** For measuring friction. */
     public void setVoltage(double volts) {
         m_motor.setVoltage(volts);
     }
@@ -167,10 +169,11 @@ public class LinearMechanism implements Player {
     }
 
     /**
-     * Force the encoder to zero.
+     * Force the encoder measurement. For "homing".
      */
-    public void setZero() {
-        m_encoder.setUnwrappedEncoderPositionRad(0);
+    public void setEncoderPositionM(double positionM) {
+        m_encoder.setUnwrappedEncoderPositionRad(
+                positionM * m_gearRatio / m_wheelRadiusM);
     }
 
     public void close() {
@@ -178,10 +181,7 @@ public class LinearMechanism implements Player {
         m_encoder.close();
     }
 
-    /** For logging. */
-    public void periodic() {
-        m_motor.periodic();
-        m_encoder.periodic();
+    private void log() {
         m_log_position.log(this::getPositionM);
         m_log_velocity.log(this::getVelocityM_S);
         m_log_accel.log(this::getAccelerationM_S2);

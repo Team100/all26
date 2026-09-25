@@ -11,6 +11,7 @@ import org.team100.lib.experiments.Experiments;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.indicator.SolidIndicator;
 import org.team100.lib.localization.ManualPose;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -119,9 +120,9 @@ public class Robot extends TimedRobot {
         Takt.update();
         Cache.refresh();
         CommandScheduler.getInstance().run();
-        m_pose.periodic();
         m_indicator.periodic();
-        m_ball.periodic();
+        // Poll for logs after all the actuation is done
+        LogPoller.log();
     }
 
     @Override

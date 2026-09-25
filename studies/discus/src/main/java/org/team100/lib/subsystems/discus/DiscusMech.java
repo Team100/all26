@@ -81,11 +81,6 @@ public class DiscusMech extends SubsystemBase {
         m_mech.setVelocity(v, 0);
     }
 
-    @Override
-    public void periodic() {
-        m_mech.periodic();
-    }
-
     public double getPosition() {
         return m_mech.getWrappedPositionRad();
     }

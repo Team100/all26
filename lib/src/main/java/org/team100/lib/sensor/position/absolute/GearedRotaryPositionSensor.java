@@ -53,11 +53,6 @@ public class GearedRotaryPositionSensor implements RotaryPositionSensor {
     }
 
     @Override
-    public void periodic() {
-        m_delegate.periodic();
-    }
-
-    @Override
     public void close() {
         m_delegate.close();
     }

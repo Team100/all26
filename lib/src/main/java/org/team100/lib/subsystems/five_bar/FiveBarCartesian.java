@@ -11,6 +11,7 @@ import org.team100.lib.kinematics.five_bar.FiveBarKinematics;
 import org.team100.lib.kinematics.five_bar.JointPositions;
 import org.team100.lib.kinematics.five_bar.Scenario;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.Translation2dLogger;
@@ -118,6 +119,7 @@ public class FiveBarCartesian extends SubsystemBase {
                 100.0);
         m_mechP1.setUnwrappedPosition(0, 0, 0);
         m_mechP5.setUnwrappedPosition(0, 0, 0);
+        LogPoller.register(this::log);
     }
 
     /**
@@ -163,10 +165,7 @@ public class FiveBarCartesian extends SubsystemBase {
                 y3 - m_scenario.ycenter));
     }
 
-    @Override
-    public void periodic() {
-        m_mechP1.periodic();
-        m_mechP5.periodic();
+    private void log() {
         Optional<Translation2d> p = getPosition();
         if (p.isPresent())
             m_log_position.log(() -> p.get());

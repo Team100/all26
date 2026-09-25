@@ -3,17 +3,18 @@ package org.team100.lib.targeting;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.DoubleFunction;
 
 import org.team100.frc2025.field.FieldConstants2025;
 import org.team100.lib.camera.Camera;
 import org.team100.lib.camera.Offset;
 import org.team100.lib.coherence.Takt;
+import org.team100.lib.experiments.Experiment;
+import org.team100.lib.experiments.Experiments;
+import org.team100.lib.localization.StateSampler;
 import org.team100.lib.localization.SwerveHistory;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.state.StateSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -39,7 +40,7 @@ public class SimulatedTargetWriter {
     private final Map<Camera, StructArrayPublisher<Target>> m_publishers;
     private final DoubleLogger m_log_poseTimestamp;
     private final List<Camera> m_cameras;
-    private final DoubleFunction<StateSE2> m_history;
+    private final StateSampler m_history;
 
     /** For now, a fixed list of targets */
     private final Translation2d[] m_targets;
@@ -49,7 +50,7 @@ public class SimulatedTargetWriter {
     public SimulatedTargetWriter(
             LoggerFactory parent,
             List<Camera> cameras,
-            DoubleFunction<StateSE2> history,
+            StateSampler history,
             Translation2d[] targets) {
         LoggerFactory log = parent.type(this);
         m_log_poseTimestamp = log.doubleLogger(Level.TRACE, "pose timestamp (s)");
@@ -72,14 +73,8 @@ public class SimulatedTargetWriter {
         }
     }
 
-    public static Runnable get(LoggerFactory parent, SwerveHistory history) {
-        if (RobotBase.isReal()) {
-            // Real robots get an empty simulated target detector.
-            return () -> {
-            };
-        }
-        // In simulation, we want the real simulated target detector.
-        SimulatedTargetWriter tsim = new SimulatedTargetWriter(
+    public static SimulatedTargetWriter get(LoggerFactory parent, SwerveHistory history) {
+        return new SimulatedTargetWriter(
                 parent,
                 List.of(Camera.SIM0, Camera.SIM1, Camera.SIM2, Camera.SIM3),
                 history,
@@ -87,16 +82,22 @@ public class SimulatedTargetWriter {
                         FieldConstants2025.CoralMark.LEFT.value,
                         FieldConstants2025.CoralMark.CENTER.value,
                         FieldConstants2025.CoralMark.RIGHT.value });
-        return tsim::update;
     }
 
-    public void update() {
+    public void run() {
+        if (RobotBase.isReal() && !Experiments.INSTANCE.enabled(Experiment.SimulateCameras)) {
+            // Real robot, but without simulated cameras.
+            return;
+        }
         if (DEBUG)
             System.out.println("simulated target write update");
         // select pose from a little while ago
         double timestampS = Takt.get() - DELAY;
         m_log_poseTimestamp.log(() -> timestampS);
-        Pose2d pose = m_history.apply(timestampS).pose();
+        Pose2d pose = m_history.get(timestampS).pose();
+
+        // Use exactly the timestamp used in this history lookup.
+        long time = (long) (timestampS * 1000000.0);
 
         for (Map.Entry<Camera, StructArrayPublisher<Target>> entry : m_publishers.entrySet()) {
             Camera camera = entry.getKey();
@@ -108,14 +109,12 @@ public class SimulatedTargetWriter {
             }
             // tilt down 45
             // Rotation3d[] rots = new Rotation3d[] { new Rotation3d(0, Math.PI / 4, 0) };
-            Target[] rots = rot.stream().map(x -> new Target(0, x)).toArray(Target[]::new);
+            Target[] rots = rot.stream().map(x -> new Target(time, x)).toArray(Target[]::new);
 
-            // Use exactly the timestamp used in this history lookup.
-            long time = (long) (timestampS * 1000000.0);
             if (DEBUG) {
-                System.out.printf("writer timestamp us %d\n", time);
+                System.out.printf("writer timestamp us %d rots %d\n", time, rots.length);
             }
-            publisher.set(rots, time);
+            publisher.set(rots);
         }
         m_inst.flushLocal();
         m_inst.flush();

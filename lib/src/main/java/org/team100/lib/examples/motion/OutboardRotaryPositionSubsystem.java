@@ -55,7 +55,8 @@ public class OutboardRotaryPositionSubsystem extends SubsystemBase {
                 0.01, // position tolerance, rad
                 0.01); // velocity tolerance, rad/s
         RotaryMechanism mech = mech(log, currentLog);
-        m_servo = new OutboardAngularPositionServo(log, mech, dynamics, ref);
+        m_servo = new OutboardAngularPositionServo(
+                log, mech, dynamics, ref, 0.02, 0.02);
         m_servo.reset();
     }
 

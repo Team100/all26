@@ -136,12 +136,6 @@ public class FiveBarMech extends SubsystemBase {
         return m_kinematics.forward(m_scenario, q1, q5);
     }
 
-    @Override
-    public void periodic() {
-        m_mechP1.periodic();
-        m_mechP5.periodic();
-    }
-
     /**
      * True if the specified angles result in a feasible configuration. For example,
      * if the arms are far apart, the middle links won't reach. If the arms are

@@ -56,10 +56,6 @@ public class AnalogRotaryPositionSensor extends RoboRioRotaryPositionSensor {
     }
 
     @Override
-    public void periodic() {
-    }
-
-    @Override
     public void close() {
         m_input.close();
     }

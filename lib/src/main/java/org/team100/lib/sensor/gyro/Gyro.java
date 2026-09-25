@@ -50,8 +50,4 @@ public interface Gyro {
 
     /** Roll in radians, NWU, positive-right. */
     Rotation2d getRollNWU();
-
-    /** For computing rate. */
-    void periodic();
-
 }

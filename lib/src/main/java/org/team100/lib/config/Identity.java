@@ -61,9 +61,7 @@ public enum Identity {
             serialNumber = "";
         }
         if (identities.containsKey(serialNumber)) {
-            Identity identity = identities.get(serialNumber);
-            System.out.printf("Identity: %s\n", identity);
-            return identity;
+            return identities.get(serialNumber);
         }
         System.out.printf("*** Using Identity UNKNOWN for serial number %s\n", serialNumber);
         return UNKNOWN;

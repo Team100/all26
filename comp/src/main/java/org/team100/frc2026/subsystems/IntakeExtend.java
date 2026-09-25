@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** Intake must be retracted at startup. */
 public class IntakeExtend extends SubsystemBase {
+    private static final boolean ENABLE = false;
     private static final CanId CAN_ID = new CanId(19);
     private static final CanId CAN_ID2 = new CanId(17);
     private static final double gearRatio = 74.667;
@@ -36,6 +37,7 @@ public class IntakeExtend extends SubsystemBase {
     private final AngularPositionServo m_servo;
     private final AngularPositionServo m_Servo2;
 
+    @SuppressWarnings("unused")
     public IntakeExtend(LoggerFactory parent, TotalCurrentLog currentLog) {
         LoggerFactory log = parent.type(this);
         LoggerFactory log1 = log.name("Extend1");
@@ -48,7 +50,7 @@ public class IntakeExtend extends SubsystemBase {
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.1, 0.05);
         final Motor motor;
         final Motor motor2;
-        if (RobotBase.isReal()) {
+        if (ENABLE && RobotBase.isReal()) {
             // friction test 3/12/26
             Friction friction = new Friction(0.32, 0.32, 0.0, 0.5);
             // tuned 3/12/26
@@ -73,12 +75,6 @@ public class IntakeExtend extends SubsystemBase {
         m_Servo2 = OutboardAngularPositionServo.make(
                 log2, motor2, dynamics, ref, gearRatio,
                 RETRACTED_POSITION, RETRACTED_POSITION, EXTENDED_POSITION);
-    }
-
-    @Override
-    public void periodic() {
-        m_servo.periodic();
-        m_Servo2.periodic();
     }
 
     /** Current position is out, or nearly so */

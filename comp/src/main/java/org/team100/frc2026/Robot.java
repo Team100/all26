@@ -10,6 +10,7 @@ import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.framework.TimedRobot100;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.RobotLog;
@@ -40,9 +41,9 @@ public class Robot extends TimedRobot100 {
         LoggerFactory fieldLogger = logging.fieldLogger;
         m_robotLog = new RobotLog(log);
         m_sync = new Sync(NetworkTableInstance.getDefault());
-        m_machinery = new Machinery(m_robotLog.totalCurrentLog());
+        m_machinery = new Machinery(log, fieldLogger, m_robotLog.totalCurrentLog());
         m_binder = new Binder(log, m_machinery);
-        m_autons = new Autons(m_machinery);
+        m_autons = new Autons(log, m_machinery);
         m_autoViz = new AutonVisualization(fieldLogger);
         m_autons.onChange(m_autoViz::show);
         Prewarmer.init(m_machinery);
@@ -60,8 +61,8 @@ public class Robot extends TimedRobot100 {
         // Run one iteration of the command scheduler.
         CommandScheduler.getInstance().run();
         m_machinery.periodic();
-        m_binder.periodic();
-        m_robotLog.periodic();
+        // Poll for logs after all the actuation is done
+        LogPoller.log();
         if (Experiments.INSTANCE.enabled(Experiment.FlushOften)) {
             NetworkTableInstance.getDefault().flush();
         }

@@ -10,6 +10,14 @@ public class MockAngularPositionServo implements AngularPositionServo {
     }
 
     @Override
+    public void setVoltage(double v) {
+    }
+
+    @Override
+    public void setUnwrappedEncoderPositionRad(double x) {
+    }
+
+    @Override
     public void setDutyCycle(double dutyCycle) {
     }
 
@@ -33,6 +41,16 @@ public class MockAngularPositionServo implements AngularPositionServo {
 
     @Override
     public double getUnwrappedPositionRad() {
+        return 0;
+    }
+
+    @Override
+    public double getVelocity() {
+        return 0;
+    }
+
+    @Override
+    public double getAcceleration() {
         return 0;
     }
 
@@ -67,10 +85,6 @@ public class MockAngularPositionServo implements AngularPositionServo {
 
     @Override
     public void close() {
-    }
-
-    @Override
-    public void periodic() {
     }
 
     @Override

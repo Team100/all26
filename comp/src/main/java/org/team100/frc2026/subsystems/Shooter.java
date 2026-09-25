@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
+    private static final boolean ENABLE = false;
     private static final boolean DEBUG = false;
     private static final double TUNING_SETTING = 0;
     private static final double TEST_SPEED = 15;
@@ -50,6 +51,7 @@ public class Shooter extends SubsystemBase {
      * @param parent log
      * @param speed  speed (m/s) for auto mode
      */
+    @SuppressWarnings("unused")
     public Shooter(
             LoggerFactory parent,
             TotalCurrentLog currentLog,
@@ -74,7 +76,7 @@ public class Shooter extends SubsystemBase {
         final Motor m2;
         final Motor m3;
         final Motor m4;
-        if (RobotBase.isReal()) {
+        if (ENABLE && RobotBase.isReal()) {
             // friction test 3/12/262
             Friction friction = new Friction(0.3, 0.25, 0.0, 0.5);
             // tuned 3/12/26
@@ -108,14 +110,6 @@ public class Shooter extends SubsystemBase {
                 log3, m3, dynamics, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
         m_servo4 = OutboardLinearVelocityServo.make(
                 log4, m4, dynamics, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
-    }
-
-    @Override
-    public void periodic() {
-        m_servo1.periodic();
-        m_servo2.periodic();
-        m_servo3.periodic();
-        m_servo4.periodic();
     }
 
     public Command tune() {
@@ -241,10 +235,10 @@ public class Shooter extends SubsystemBase {
 
     @SuppressWarnings("unused")
     private void setVelocityDirect(double setpointM_S) {
-        m_servo1.setVelocityDirect(setpointM_S, 0);
-        m_servo2.setVelocityDirect(setpointM_S, 0);
-        m_servo3.setVelocityDirect(setpointM_S, 0);
-        m_servo4.setVelocityDirect(setpointM_S, 0);
+        m_servo1.setVelocityDirect(setpointM_S);
+        m_servo2.setVelocityDirect(setpointM_S);
+        m_servo3.setVelocityDirect(setpointM_S);
+        m_servo4.setVelocityDirect(setpointM_S);
     }
 
     private void setVelocityProfiled(double goalM_S) {

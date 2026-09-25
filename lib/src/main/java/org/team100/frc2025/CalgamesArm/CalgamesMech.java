@@ -615,14 +615,6 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
         return m_kinematics;
     }
 
-    @Override
-    public void periodic() {
-        m_shoulder.periodic();
-        m_elevatorFront.periodic();
-        m_elevatorBack.periodic();
-        m_wrist.periodic();
-    }
-
     /////////////////////////////////////////////////////////////
 
     /** Elevator torque off, shoulder and wrist hold position at zero. */

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.DoubleFunction;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.camera.Camera;
@@ -37,7 +36,7 @@ class AprilTagRobotLocalizerPerformanceTest {
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
         List<Pose2d> poseEstimate = new ArrayList<Pose2d>();
         List<Double> timeEstimate = new ArrayList<Double>();
-        DoubleFunction<StateSE2> history = t -> new StateSE2(new Rotation2d(-Math.PI / 4));
+        StateSampler history = t -> new StateSE2(new Rotation2d(-Math.PI / 4));
 
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override

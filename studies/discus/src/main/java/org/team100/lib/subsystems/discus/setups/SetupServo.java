@@ -1,5 +1,7 @@
 package org.team100.lib.subsystems.discus.setups;
 
+import static org.team100.lib.util.TriggerUtil.whileTrue;
+
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -7,7 +9,6 @@ import org.team100.lib.subsystems.discus.DiscusServo;
 import org.team100.lib.visualization.ArmVisualization;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Adds profiled motion. */
 public class SetupServo implements Runnable {
@@ -28,14 +29,20 @@ public class SetupServo implements Runnable {
 
         // These bindings are remembered by the trigger event loop, so we don't need to
         // retain them.
-        // new Trigger(controller::getAButton).whileTrue(m_discus.home());
-        // new Trigger(controller::getBButton).onTrue(m_discus.zero()
-        new Trigger(controller::getXButton).whileTrue(m_discus.position(() -> 3));
-        new Trigger(controller::getYButton).whileTrue(m_discus.position(() -> -8));
-        new Trigger(controller::getRightBumperButton).whileTrue(m_discus.position(() -> 12));
-        new Trigger(controller::getLeftBumperButton).whileTrue(m_discus.position(() -> -12));
-        new Trigger(controller::getAButton).whileTrue(m_discus.position(() -> 20));
-        new Trigger(controller::getBButton).whileTrue(m_discus.position(() -> -20));
+        // whileTrue(controller::getAButton, m_discus.home());
+        // onTrue(controller::getBButton, m_discus.zero()
+        whileTrue(controller::getXButton,
+                m_discus.position(() -> 3));
+        whileTrue(controller::getYButton,
+                m_discus.position(() -> -8));
+        whileTrue(controller::getRightBumperButton,
+                m_discus.position(() -> 12));
+        whileTrue(controller::getLeftBumperButton,
+                m_discus.position(() -> -12));
+        whileTrue(controller::getAButton,
+                m_discus.position(() -> 20));
+        whileTrue(controller::getBButton,
+                m_discus.position(() -> -20));
     }
 
     @Override

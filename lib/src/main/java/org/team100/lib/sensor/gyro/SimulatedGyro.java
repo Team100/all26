@@ -111,10 +111,4 @@ public class SimulatedGyro implements Gyro {
     public Rotation2d getRollNWU() {
         return Rotation2d.kZero;
     }
-
-    @Override
-    public void periodic() {
-        //
-    }
-
 }

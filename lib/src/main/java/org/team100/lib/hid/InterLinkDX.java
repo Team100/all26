@@ -8,6 +8,7 @@ import static org.team100.lib.hid.ControlUtil.scale;
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.DoubleCache;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 
@@ -105,6 +106,7 @@ public class InterLinkDX {
         m_log_rightY = log.doubleLogger(Level.DEBUG, "right Y");
         m_log_rightX = log.doubleLogger(Level.DEBUG, "right X");
         m_log_leftX = log.doubleLogger(Level.DEBUG, "left X");
+        LogPoller.register(this::log);
     }
 
     public DriverVelocity velocity() {
@@ -125,7 +127,7 @@ public class InterLinkDX {
         return new DriverVelocity(dx, dy, dtheta);
     }
 
-    public void periodic() {
+    private void log() {
         m_log_rightY.log(m_rightY);
         m_log_rightX.log(m_rightX);
         m_log_leftX.log(m_leftX);

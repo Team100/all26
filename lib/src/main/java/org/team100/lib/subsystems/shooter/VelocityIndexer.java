@@ -42,11 +42,6 @@ public class VelocityIndexer extends SubsystemBase implements ShooterIndexer {
         return run(this::zero);
     }
 
-    @Override
-    public void periodic() {
-        m_servo.periodic();
-    }
-
     //////////////////////////////////////////////////////////
 
     private void full() {
@@ -61,7 +56,7 @@ public class VelocityIndexer extends SubsystemBase implements ShooterIndexer {
         if (m_profiled) {
             m_servo.setVelocityProfiled(velocityM_S);
         } else {
-            m_servo.setVelocityDirect(velocityM_S, 0);
+            m_servo.setVelocityDirect(velocityM_S);
         }
     }
 

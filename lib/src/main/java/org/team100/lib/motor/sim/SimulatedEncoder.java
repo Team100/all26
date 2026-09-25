@@ -1,6 +1,7 @@
 package org.team100.lib.motor.sim;
 
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
@@ -23,6 +24,7 @@ public class SimulatedEncoder implements IncrementalEncoder {
         m_log_position = log.doubleLogger(Level.TRACE, "position (rad)");
         m_log_velocity = log.doubleLogger(Level.TRACE, "velocity (rad_s)");
         m_log_accel = log.doubleLogger(Level.TRACE, "accel (rad_s2)");
+        LogPoller.register(this::log);
     }
 
     /**
@@ -67,8 +69,7 @@ public class SimulatedEncoder implements IncrementalEncoder {
         m_offset = gt - positionRad;
     }
 
-    @Override
-    public void periodic() {
+    private void log() {
         m_log_position.log(this::getUnwrappedPositionRad);
         m_log_velocity.log(this::getVelocityRad_S);
         m_log_accel.log(this::getAccelerationRad_S2);

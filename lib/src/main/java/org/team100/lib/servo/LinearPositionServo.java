@@ -1,7 +1,5 @@
 package org.team100.lib.servo;
 
-import org.team100.lib.reference.r1.SetpointsR1;
-
 /**
  * Linear position control, e.g. for elevators.
  * 
@@ -17,6 +15,15 @@ public interface LinearPositionServo {
      * but there needs to be an initial setpoint.
      */
     void reset();
+
+    /** Force the encoder measurement. For "homing". */
+    void setEncoderPositionM(double positionM);
+
+    /** For measuring friction. */
+    void setVoltage(double volts);
+
+    /** For friction measurement and homing. */
+    void setVelocity(double velocityM_S);
 
     /**
      * Initializes the profile if necessary.
@@ -41,11 +48,13 @@ public interface LinearPositionServo {
      * Gravity compensation used to be here; it should be in the
      * dynamics now.
      */
-    void setPositionDirect(SetpointsR1 setpoint);
+    void setPositionDirect(double goalM);
 
     double getPosition();
 
     double getVelocity();
+
+    double getAcceleration();
 
     boolean atSetpoint();
 
@@ -58,6 +67,4 @@ public interface LinearPositionServo {
     void stop();
 
     void close();
-
-    void periodic();
 }

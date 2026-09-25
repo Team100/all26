@@ -1,6 +1,8 @@
 package org.team100.lib.subsystems.five_bar.setups;
 
 import static edu.wpi.first.wpilibj2.command.Commands.print;
+import static org.team100.lib.util.TriggerUtil.onTrue;
+import static org.team100.lib.util.TriggerUtil.whileTrue;
 
 import org.team100.lib.kinematics.five_bar.Scenario;
 import org.team100.lib.logging.LoggerFactory;
@@ -12,7 +14,6 @@ import org.team100.lib.visualization.FiveBarVisualization;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class SetupCartesian implements Runnable {
     private static final double XMAX = 0.15;
@@ -37,8 +38,10 @@ public class SetupCartesian implements Runnable {
 
         // These bindings are remembered by the trigger event loop, so we don't need to
         // retain them.
-        new Trigger(controller::getAButton).whileTrue(m_fiveBar.home());
-        new Trigger(controller::getBButton).onTrue(m_fiveBar.zero());
+        whileTrue(controller::getAButton,
+                m_fiveBar.home());
+        onTrue(controller::getBButton,
+                m_fiveBar.zero());
 
         // Make a little square. Also illustrates "print" commands for
         // debugging.
@@ -46,7 +49,7 @@ public class SetupCartesian implements Runnable {
         // a little square.
         double XX = 0.05;
         double YY = 0.05;
-        new Trigger(controller::getXButton).whileTrue(
+        whileTrue(controller::getXButton,
                 Commands.sequence(
                         print("move to origin"),
                         m_fiveBar.move(new Translation2d(0, 0)),

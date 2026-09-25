@@ -49,7 +49,7 @@ public class DriveAndScore {
         Command eject = m_machinery.m_manipulator.centerEject().withTimeout(0.5);
         return sequence(
                 parallel(
-                        runOnce(() -> m_machinery.m_localizer.setHeedRadiusM(HEED_RADIUS_M)),
+                        runOnce(() -> m_machinery.m_drive.setHeedRadiusM(HEED_RADIUS_M)),
                         toReef,
                         waitUntil(toReef::isDone).andThen(toL4),
                         waitUntil(() -> toReef.isDone() && toL4.isDone())

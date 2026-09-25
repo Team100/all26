@@ -66,7 +66,6 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             CanId turningMotorCanId,
             RoboRioChannel turningEncoderChannel,
             double turningOffset,
-            SwerveKinodynamics kinodynamics,
             EncoderDrive encoderDrive,
             NeutralMode100 neutral,
             MotorPhase motorPhase) {
@@ -89,7 +88,6 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 turningMotorCanId,
                 turningSensor,
                 STEERING_RATIO,
-                kinodynamics,
                 neutral,
                 motorPhase);
         return new WCPSwerveModule100(parent, drive, steer, ratio);
@@ -105,7 +103,6 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             CanId turningMotorCanId,
             CanId turningEncoderChannel,
             double turningOffset,
-            SwerveKinodynamics kinodynamics,
             EncoderDrive encoderDrive,
             NeutralMode100 neutral,
             MotorPhase motorPhase) {
@@ -129,7 +126,6 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 turningMotorCanId,
                 turningSensor,
                 STEERING_RATIO,
-                kinodynamics,
                 neutral,
                 motorPhase);
         return new WCPSwerveModule100(parent, drive, steer, ratio);
@@ -148,7 +144,6 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             CanId turningMotorCanId,
             RoboRioChannel turningEncoderChannel,
             double turningOffset,
-            SwerveKinodynamics kinodynamics,
             EncoderDrive encoderDrive,
             NeutralMode100 neutral,
             MotorPhase motorPhase) {
@@ -313,7 +308,6 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             CanId turningMotorCanId,
             RotaryPositionSensor turningSensor,
             double gearRatio,
-            SwerveKinodynamics kinodynamics,
             NeutralMode100 neutral,
             MotorPhase motorPhase) {
         Friction friction = new Friction(0.100, 0.100, 0.005, 0.5);

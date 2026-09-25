@@ -29,7 +29,7 @@ public class DriveBackwards extends Command {
 
     @Override
     public void initialize() {
-        m_startingPose = m_drive.getPose();
+        m_startingPose = m_drive.getState().pose();
     }
 
     @Override
@@ -38,7 +38,7 @@ public class DriveBackwards extends Command {
     }
 
     public boolean isDone() {
-        return m_drive.getPose().getTranslation().minus(m_startingPose.getTranslation()).getNorm() >= m_length;
+        return m_drive.getState().pose().getTranslation().minus(m_startingPose.getTranslation()).getNorm() >= m_length;
     }
 
     @Override

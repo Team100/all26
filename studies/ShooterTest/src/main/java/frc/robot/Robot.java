@@ -9,13 +9,13 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
-import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
 import org.team100.lib.util.CanId;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -60,10 +60,9 @@ public class Robot extends TimedRobot {
         Takt.update();
         // Take all the measurements we can, as soon and quickly as possible.
         Cache.refresh();
-     
         CommandScheduler.getInstance().run();
-        left.periodic();
-        right.periodic();
+        // Poll for logs after all the actuation is done
+        LogPoller.log();
     }
 
     @Override

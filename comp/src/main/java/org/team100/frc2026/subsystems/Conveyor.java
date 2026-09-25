@@ -68,12 +68,6 @@ public class Conveyor extends SubsystemBase {
                 log2, m2, dynamics, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
     }
 
-    @Override
-    public void periodic() {
-        m_servo1.periodic();
-        m_servo2.periodic();
-    }
-
     /**
      * Use a profile to spin up the conveyor to the normal speed.
      * Never ends, but stops the motor when interrupted.

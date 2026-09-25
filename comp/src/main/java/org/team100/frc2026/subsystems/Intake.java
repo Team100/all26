@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
+    private static final boolean ENABLE = false;
     private static final CanId CAN_ID_1 = new CanId(20);
     private static final CanId CAN_ID_2 = new CanId(16);
     private static final double TOLERANCE_M_S = 1;
@@ -33,6 +34,7 @@ public class Intake extends SubsystemBase {
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
 
+    @SuppressWarnings("unused")
     public Intake(LoggerFactory parent, TotalCurrentLog currentLog) {
         LoggerFactory log = parent.type(this);
         LoggerFactory log1 = log.name("motor1");
@@ -47,7 +49,7 @@ public class Intake extends SubsystemBase {
                 log, () -> profile, 1);
         final Motor m1;
         final Motor m2;
-        if (RobotBase.isReal()) {
+        if (ENABLE && RobotBase.isReal()) {
             // friction test 3/12/26
             Friction friction = new Friction(0.5, 0.5, 0.0, 0.5);
             // tuned 3/12/26
@@ -100,12 +102,6 @@ public class Intake extends SubsystemBase {
     public Command stopOnce() {
         return runOnce(this::stopMotor)
                 .withName("Stop Intake Once");
-    }
-
-    @Override
-    public void periodic() {
-        m_servo1.periodic();
-        m_servo2.periodic();
     }
 
     /** For testing friction only */

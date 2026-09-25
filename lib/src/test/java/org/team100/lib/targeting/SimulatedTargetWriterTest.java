@@ -45,7 +45,7 @@ public class SimulatedTargetWriterTest implements Timeless {
         Thread.sleep(100);
 
         stepTime();
-        writer.update();
+        writer.run();
 
         // wait for NT rate-limiting
         Thread.sleep(100);

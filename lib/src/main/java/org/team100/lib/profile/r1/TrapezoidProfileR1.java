@@ -66,7 +66,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
     private final double m_scale;
     private final double m_tolerance;
 
-
+    /** TODO: separate position and velocity tolerance */
     public TrapezoidProfileR1(double maxVel, double maxAccel, double tolerance) {
         m_scale = 1;
         m_maxVelocity = maxVel;
@@ -118,7 +118,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
     @Override
     public ControlR1 calculate(double dt, final ControlR1 initialRaw, final StateR1 goalRaw) {
         if (DEBUG) {
-            System.out.printf("calculateWithETA %5.3f %s %s\n", dt, initialRaw, goalRaw);
+            System.out.printf("calculate dt: %5.3f initial: %s goal: %s\n", dt, initialRaw, goalRaw);
         }
         // Too-high initial speed is handled with braking
         if (initialRaw.v() > m_maxVelocity) {
@@ -140,9 +140,9 @@ public class TrapezoidProfileR1 implements ProfileR1 {
         }
         StateR1 goal = limitVelocity(goalRaw);
 
-        if (goal.control().near(initial, m_tolerance)) {
+        if (initial.near(goal.control(), m_tolerance)) {
             if (DEBUG) {
-                System.out.print("at goal\n");
+                System.out.print("initial is near goal: return goal\n");
             }
             return goal.control();
         }
@@ -158,19 +158,13 @@ public class TrapezoidProfileR1 implements ProfileR1 {
 
         if (Double.isNaN(t1IplusGminus)) {
             // t1IminusGplus is ok
-            // the valid path is I-G+, assume we're on I-
-            if (DEBUG) {
-                System.out.print("assume we're on I-\n");
-            }
+            // the valid path is I-G+, we must be on I-
             return handleIminus(dt, initial, goal, t1IminusGplus);
         }
 
         if (Double.isNaN(t1IminusGplus)) {
             // t1IplusGminus is ok
-            // the valid path is I+G-, assume we're on I+
-            if (DEBUG) {
-                System.out.print("assume we're on I+\n");
-            }
+            // the valid path is I+G-, we must be on I+
             return handleIplus(dt, initial, goal, t1IplusGminus);
         }
 
@@ -180,13 +174,13 @@ public class TrapezoidProfileR1 implements ProfileR1 {
         dt = truncateDt(dt, initial, goal);
         if (MathUtil.isNear(0, t1IminusGplus, 1e-12)) {
             if (DEBUG) {
-                System.out.print("assume we're on G+\n");
+                System.out.print("at switch, on G+\n");
             }
             return full(dt, initial, 1);
         }
         if (MathUtil.isNear(0, t1IplusGminus, 1e-12)) {
             if (DEBUG) {
-                System.out.print("assume we're on G-\n");
+                System.out.print("at switch, on G-\n");
             }
             return full(dt, initial, -1);
         }
@@ -198,12 +192,12 @@ public class TrapezoidProfileR1 implements ProfileR1 {
         // the way to the goal. We want to avoid these little loops.
         if (t1IminusGplus > t1IplusGminus) {
             if (DEBUG) {
-                System.out.print("we're on G+\n");
+                System.out.print("chasing moving G+\n");
             }
             return full(dt, initial, 1);
         }
         if (DEBUG) {
-            System.out.print("we're on G-\n");
+            System.out.print("chasing moving G-\n");
         }
         return full(dt, initial, -1);
     }
@@ -219,7 +213,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
         if (MathUtil.isNear(timeToSwitch, 0, 1e-12)) {
             // switch eta is zero: go to the goal via G-
             if (DEBUG) {
-                System.out.printf("timeToSwitch %f, go to G-\n", timeToSwitch);
+                System.out.println("on G-");
             }
             return full(truncateDt(dt, initial, goal), initial, -1);
         }
@@ -228,9 +222,6 @@ public class TrapezoidProfileR1 implements ProfileR1 {
 
         if (timeToSwitch < dt && timeToSwitch < timeToCruise) {
             // We Encounter G- during dt, before cruise, so switch.
-            if (DEBUG) {
-                System.out.print("switch is soon\n");
-            }
             return traverseSwitch(dt, initial, goal, timeToSwitch, 1);
         }
 
@@ -244,24 +235,7 @@ public class TrapezoidProfileR1 implements ProfileR1 {
             return keepCruising(dt - timeToCruise, nextState, goal);
         }
         // We will not encounter any boundary during dt
-        ControlR1 result = full(dt, initial, 1);
-
-        // but we still need to know the full duration.
-        //
-        // the two possibilities are I+G- and I+C+G-
-        if (timeToSwitch < timeToCruise) {
-            // we hit the switching point first
-            // so if we proceed for t1, what velocity will we be at?
-            if (DEBUG) {
-                System.out.print("no cruise\n");
-            }
-            return result;
-        }
-        // we hit cruise first
-        if (DEBUG) {
-            System.out.print("go cruise\n");
-        }
-        return result;
+        return full(dt, initial, 1);
     }
 
     /**
@@ -269,9 +243,11 @@ public class TrapezoidProfileR1 implements ProfileR1 {
      * constraint.
      */
     private ControlR1 handleIminus(double dt, ControlR1 initial, StateR1 goal, double timeToSwitch) {
-
         if (MathUtil.isNear(timeToSwitch, 0, 1e-12)) {
             // Switch ETA is zero: go to the goal via G+
+            if (DEBUG) {
+                System.out.println("on G+");
+            }
             return full(truncateDt(dt, initial, goal), initial, 1);
         }
         // how much time to get to cruise? (remember initial v is negative)
@@ -292,23 +268,13 @@ public class TrapezoidProfileR1 implements ProfileR1 {
         }
         // We will not encounter any boundary during dt, so the resulting state is just
         // "full throttle for dt"
-        ControlR1 result = full(dt, initial, -1);
-
-        // but we still need to know the full duration.
-        //
-        // the two possibilities are I-G+ and I-C-G+
-        if (timeToSwitch < timeToCruise) {
-            // we hit the switching point first
-            return result;
-        }
-        // we hit cruise first
-        return result;
+        return full(dt, initial, -1);
     }
 
     /** At positive cruising speed, keep going. */
     ControlR1 keepCruising(double dt, ControlR1 initial, StateR1 goal) {
         if (DEBUG) {
-            System.out.printf("keep cruising %s\n", initial);
+            System.out.printf("cruising %s\n", initial);
         }
 
         // We're already at positive cruising speed, which means G- is next.
@@ -346,6 +312,9 @@ public class TrapezoidProfileR1 implements ProfileR1 {
     }
 
     ControlR1 keepCruisingMinus(double dt, ControlR1 initial, StateR1 goal) {
+        if (DEBUG) {
+            System.out.printf("cruising minus %s\n", initial);
+        }
         // We're already at negative cruising speed, which means G+ is next.
         // will we reach it during dt?
         double c_plus = c_plus(goal.control());
@@ -428,14 +397,15 @@ public class TrapezoidProfileR1 implements ProfileR1 {
      * period.
      */
     private ControlR1 full(double dt, ControlR1 in_initial, double direction) {
-        if (DEBUG) {
-            System.out.printf("full x_i %s\n", in_initial);
-        }
         double x = in_initial.x() + in_initial.v() * dt
                 + 0.5 * direction * getScaledAccel() * Math.pow(dt, 2);
         double v = in_initial.v() + direction * getScaledAccel() * dt;
         double a = direction * getScaledAccel();
-        return new ControlR1(x, v, a);
+        ControlR1 out = new ControlR1(x, v, a);
+        if (DEBUG) {
+            System.out.printf("full accel, in %s out %s\n", in_initial, out);
+        }
+        return out;
     }
 
     /**
@@ -449,9 +419,13 @@ public class TrapezoidProfileR1 implements ProfileR1 {
         if (MathUtil.isNear(initial.v(), q_dot_switch, 1e-6))
             return 0;
         double t1 = (q_dot_switch - initial.v()) / getScaledAccel();
-        if (t1 < 0) {
+        if (t1 < 0 || Double.isNaN(t1)) {
+            if (DEBUG)
+                System.out.println("infeasible I+G-");
             return Double.NaN;
         }
+        if (DEBUG)
+            System.out.printf("switch eta for I+G-  %6.3f\n", t1);
         return t1;
     }
 
@@ -467,9 +441,13 @@ public class TrapezoidProfileR1 implements ProfileR1 {
             return 0;
 
         double t1 = (q_dot_switch - initial.v()) / (-1.0 * getScaledAccel());
-        if (t1 < 0) {
+        if (t1 < 0 || Double.isNaN(t1)) {
+            if (DEBUG)
+                System.out.println("infeasible I-G+");
             return Double.NaN;
         }
+        if (DEBUG)
+            System.out.printf("switch eta for I-G+ %6.3f\n", t1);
         return t1;
     }
 

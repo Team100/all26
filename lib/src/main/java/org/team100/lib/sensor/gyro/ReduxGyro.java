@@ -2,7 +2,9 @@ package org.team100.lib.sensor.gyro;
 
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
+import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.Rotation2dLogger;
 import org.team100.lib.util.CanId;
@@ -55,6 +57,13 @@ public class ReduxGyro implements Gyro {
     private final Rotation2dLogger m_log_pitch;
     private final Rotation2dLogger m_log_roll;
 
+    private final DoubleLogger m_log_accel_x;
+    private final DoubleLogger m_log_accel_y;
+    private final DoubleLogger m_log_accel_z;
+
+    private final BooleanLogger m_log_calibrating;
+    private final BooleanLogger m_log_fault;
+
     public ReduxGyro(LoggerFactory parent, CanId canID) {
         LoggerFactory log = parent.type(this);
         m_gyro = new Canandgyro(canID.id);
@@ -75,11 +84,33 @@ public class ReduxGyro implements Gyro {
         m_gyro.clearStickyFaults();
         m_gyro.setYaw(0);
 
-        m_log_age = log.doubleLogger(Level.TRACE, "position frame age (s)");
+        m_log_age = log.doubleLogger(Level.TRACE, "Position frame age (s)");
         m_log_yaw = log.rotation2dLogger(Level.TRACE, "Yaw NWU (rad)");
         m_log_yaw_rate = log.doubleLogger(Level.TRACE, "Yaw Rate NWU (rad_s)");
         m_log_pitch = log.rotation2dLogger(Level.TRACE, "Pitch NWU (rad)");
         m_log_roll = log.rotation2dLogger(Level.TRACE, "Roll NWU (rad)");
+
+        m_log_accel_x = log.doubleLogger(Level.TRACE, "Accel X (g)");
+        m_log_accel_y = log.doubleLogger(Level.TRACE, "Accel Y (g)");
+        m_log_accel_z = log.doubleLogger(Level.TRACE, "Accel Z (g)");
+
+        m_log_calibrating = log.booleanLogger(Level.TRACE, "Calibrating");
+        m_log_fault = log.booleanLogger(Level.TRACE, "Fault");
+
+        LogPoller.register(this::log);
+    }
+
+    private void log() {
+        m_log_accel_x.log(m_gyro::getAccelerationX);
+        m_log_accel_y.log(m_gyro::getAccelerationY);
+        m_log_accel_z.log(m_gyro::getAccelerationZ);
+        m_log_calibrating.log(m_gyro::isCalibrating);
+        m_log_fault.log(m_gyro.getActiveFaults()::faultsValid);
+        if (m_gyro.isCalibrating())
+            System.out.println("Redux Gyro Calibrating ......");
+        final CanandgyroFaults activeFaults = m_gyro.getActiveFaults();
+        if (activeFaults.faultsValid())
+            System.out.println("WARNING: Redux Gyro fault!");
     }
 
     @Override
@@ -139,15 +170,5 @@ public class ReduxGyro implements Gyro {
         final Rotation2d rollNWU = Rotation2d.fromRotations(m_gyro.getRoll());
         m_log_roll.log(() -> rollNWU);
         return rollNWU;
-    }
-
-    @Override
-    public void periodic() {
-        if (m_gyro.isCalibrating())
-            System.out.println("Redux Gyro Calibrating ......");
-        final CanandgyroFaults activeFaults = m_gyro.getActiveFaults();
-        if (activeFaults.faultsValid())
-            System.out.println("WARNING: Redux Gyro fault!");
-
     }
 }

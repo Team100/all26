@@ -64,12 +64,6 @@ public class RRArm extends SubsystemBase
                 q2, m2, m2.encoder(), 0, 1, qMin.q2(), qMax.q2());
     }
 
-    @Override
-    public void periodic() {
-        m_q1.periodic();
-        m_q2.periodic();
-    }
-
     public void set(RRConfig q, RRVelocity qdot, RRAcceleration qddot) {
         RREffort f = m_dynamics.effort(q, qdot, qddot);
         set(q, qdot, f);

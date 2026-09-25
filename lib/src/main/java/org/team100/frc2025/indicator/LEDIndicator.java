@@ -3,7 +3,6 @@ package org.team100.frc2025.indicator;
 import org.team100.frc2025.Climber.ClimberIntake;
 import org.team100.frc2025.grip.Manipulator;
 import org.team100.lib.coherence.Takt;
-import org.team100.lib.localization.NudgingVisionUpdater;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -42,7 +41,6 @@ public class LEDIndicator {
     private final AddressableLEDBuffer m_blackBuffer;
     private final AddressableLEDBuffer m_whiteBuffer;
 
-    private final NudgingVisionUpdater m_updater;
     private final Manipulator m_manipulator;
     private final ClimberIntake m_climberIntake;
 
@@ -55,7 +53,6 @@ public class LEDIndicator {
      * Since this has logic about the 2025 game it should be in the "comp" project.
      */
     public LEDIndicator(
-            NudgingVisionUpdater updater,
             Manipulator manipulator,
             ClimberIntake climberIntake) {
         m_led = new AddressableLED(0);
@@ -68,7 +65,6 @@ public class LEDIndicator {
         m_blackBuffer = fill(Color.kBlack);
         m_led.setData(m_redBuffer);
         m_led.start();
-        m_updater = updater;
         m_manipulator = manipulator;
         m_climberIntake = climberIntake;
     }
@@ -79,11 +75,7 @@ public class LEDIndicator {
     public void periodic() {
 
         if (RobotState.isDisabled()) {
-            if (m_updater.getPoseAgeSec() < 1) {
-                m_led.setData(m_greenBuffer);
-            } else {
-                m_led.setData(m_redBuffer);
-            }
+            // do nothing
         } else if (m_climberIntake.isIn()) {
             if (shouldBlink()) {
                 m_led.setData(m_blinkState ? m_greenBuffer : m_blackBuffer);

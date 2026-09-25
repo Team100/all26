@@ -68,7 +68,8 @@ public class NudgingVisionUpdater implements VisionUpdater {
      */
     @Override
     public void put(double timestamp, NoisyPose2d noisyMeasurement) {
-        // System.out.printf("vision updater visionNoise %s\n", visionNoise);
+        // Remember the time of this update.
+        m_latestTimeS = Takt.get();
 
         // Skip too-old measurement
         if (m_history.tooOld(timestamp)) {
@@ -88,9 +89,6 @@ public class NudgingVisionUpdater implements VisionUpdater {
 
         // Replay everything after the sample.
         m_odometryUpdater.replay(timestamp);
-
-        // Remember the time of this update.
-        m_latestTimeS = Takt.get();
     }
 
     /**
@@ -98,14 +96,12 @@ public class NudgingVisionUpdater implements VisionUpdater {
      * 
      * Position and gyro measurements are left alone.
      */
-    SwerveState newState(
-            SwerveState sample, NoisyPose2d noisyMeasurement) {
+    SwerveState newState(SwerveState sample, NoisyPose2d noisyMeasurement) {
 
         // Nudge the sample pose towards the measurement.
         StateSE2 sampleState = sample.state();
 
-        NoisyPose2d noisySample = new NoisyPose2d(
-                sampleState.pose(), sample.noise());
+        NoisyPose2d noisySample = new NoisyPose2d(sampleState.pose(), sample.noise());
 
         NoisyPose2d nudged = nudge(noisySample, noisyMeasurement);
 

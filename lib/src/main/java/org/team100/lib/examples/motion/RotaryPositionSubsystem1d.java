@@ -104,7 +104,7 @@ public class RotaryPositionSubsystem1d extends SubsystemBase {
             RotaryMechanism mech = new RotaryMechanism(
                     log, motor, sensor, GEAR_RATIO, MIN_POSITION, MAX_POSITION);
             m_servo = new OnboardAngularPositionServo(
-                    log, mech, dynamics, ref, feedback);
+                    log, mech, dynamics, ref, feedback, 0.02, 0.02);
             m_servo.reset();
         } else {
             SimulatedMotor motor = new SimulatedMotor(log, 600);
@@ -114,7 +114,7 @@ public class RotaryPositionSubsystem1d extends SubsystemBase {
             RotaryMechanism mech = new RotaryMechanism(
                     log, motor, sensor, GEAR_RATIO, MIN_POSITION, MAX_POSITION);
             m_servo = new OnboardAngularPositionServo(
-                    log, mech, dynamics, ref, feedback);
+                    log, mech, dynamics, ref, feedback, 0.02, 0.02);
             m_servo.reset();
         }
     }
@@ -162,11 +162,6 @@ public class RotaryPositionSubsystem1d extends SubsystemBase {
      */
     public boolean isDone() {
         return m_servo.atGoal();
-    }
-
-    @Override
-    public void periodic() {
-        m_servo.periodic();
     }
 
 }

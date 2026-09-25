@@ -41,10 +41,6 @@ public class ClimberIntake extends SubsystemBase {
         m_encoder = m_motor.encoder();
     }
 
-    @Override
-    public void periodic() {
-        m_motor.periodic();
-    }
 
     public boolean isSlow() {
         return m_encoder.getVelocityRad_S() < 1;

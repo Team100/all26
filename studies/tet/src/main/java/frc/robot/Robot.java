@@ -9,122 +9,121 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.dynamics.p.PDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
+import org.team100.lib.mechanism.LinearMechanism;
+import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
-import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
+import org.team100.lib.motor.ctre.KrakenX44Motor;
+import org.team100.lib.profile.r1.ProfileR1;
+import org.team100.lib.profile.r1.TrapezoidProfileR1;
+import org.team100.lib.reference.r1.ProfileReferenceR1;
+import org.team100.lib.reference.r1.ReferenceR1;
+import org.team100.lib.servo.LinearPositionServo;
+import org.team100.lib.servo.OutboardLinearPositionServo;
+import org.team100.lib.state.StateR1;
 import org.team100.lib.util.CanId;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
-    private Command m_autonomousCommand;
 
-    private final RobotContainer m_robotContainer;
-    private final NeoVortexCANSparkMotor top;
-    private final NeoVortexCANSparkMotor bottom;
-
+    private static final CanId LeftCan = new CanId(10);
+    private static final CanId RightCan = new CanId(9);
+    PDynamics dynamics = PDynamics.drum(0.001, 0.025);
+    final Motor m1;
+    final Motor m2;
+    private final LinearMechanism l1;
+    private final LinearMechanism l2;
+    private final LinearPositionServo s1;
+    private final LinearPositionServo s2;
+    private final ReferenceR1 ref;
     private static final LoggerFactory rootLogger = Logging.instance().rootLogger;
     private static final TotalCurrentLog currentLog = new TotalCurrentLog(rootLogger);
+    private final XboxController controller;
 
     public Robot() {
-        m_robotContainer = new RobotContainer();
         LoggerFactory parent = rootLogger.type(this);
+        LoggerFactory leftLog = parent.name("left");
+        LoggerFactory rightLog = parent.name("right");
+        controller = new XboxController(0);
+        Friction friction = new Friction(0.5, 0.5, 0.0, 0.5);
+        // tuned 3/12/26
+        PIDConstants pid = PIDConstants.makeVelocityPID(0.0275);
+        PDynamics pd = new PDynamics(0);
+        ProfileR1 profile = new TrapezoidProfileR1(0.5, 1, 0.01);
+        ref = new ProfileReferenceR1(
+                parent, () -> profile, 0.1, 10.1);
+        m1 = new KrakenX44Motor(
+                leftLog, currentLog, LeftCan, NeutralMode100.COAST, MotorPhase.REVERSE,
+                new CurrentLimit(40, 50),
+                friction, pid);
+        m2 = new KrakenX44Motor(
+                rightLog, currentLog, RightCan, NeutralMode100.COAST, MotorPhase.FORWARD,
+                new CurrentLimit(40, 50),
+                friction, pid);
+        l1 = new LinearMechanism(
+                leftLog, m1, m1.encoder(), 6.06,
+                0.025, 0, 0.1);
+        l2 = new LinearMechanism(
+                rightLog, m2, m2.encoder(), 6.06,
+                0.025, 0, 0.1);
+        s1 = new OutboardLinearPositionServo(
+                leftLog, l1, pd, ref, 0.01, 0.01);
+        s2 = new OutboardLinearPositionServo(
+                rightLog, l2, pd, ref, 0.01, 0.01);
+        ref.setGoal(new StateR1(l1.getPositionM(), 0));
 
-        LoggerFactory topLog = parent.name("Top");
-        LoggerFactory bottomLog = parent.name("Bottom");
-        top = new NeoVortexCANSparkMotor(
-                topLog,
-                currentLog,
-                new CanId(1),
-                NeutralMode100.BRAKE, MotorPhase.FORWARD,
-                new CurrentLimit(1, 1),
-                new Friction(topLog, 0, 0, 0, 0),
-                PIDConstants.makeVelocityPID(rootLogger, 0.0002, 0.0000005, 0.0004),
-                0, 0);
-        bottom = new NeoVortexCANSparkMotor(
-                bottomLog,
-                currentLog,
-                new CanId(2),
-                NeutralMode100.BRAKE,
-                MotorPhase.FORWARD,
-                new CurrentLimit(1, 1),
-                new Friction(bottomLog, 0, 0, 0, 0),
-                PIDConstants.makeVelocityPID(rootLogger, 0.00005, 0.0000005, 0.0001),
-                0, 0);
     }
 
     @Override
     public void robotPeriodic() {
         Takt.update();
         Cache.refresh();
-        top.periodic();
-        bottom.periodic();
+        s1.periodic();
+        s2.periodic();
         CommandScheduler.getInstance().run();
+        // Poll for logs after all the actuation is done
+        LogPoller.log();
         NetworkTableInstance.getDefault().flush();
     }
 
     @Override
-    public void disabledInit() {
-    }
-
-    @Override
-    public void disabledPeriodic() {
-    }
-
-    @Override
-    public void disabledExit() {
-    }
-
-    @Override
-    public void autonomousInit() {
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-        if (m_autonomousCommand != null) {
-            CommandScheduler.getInstance().schedule(m_autonomousCommand);
-        }
-    }
-
-    @Override
-    public void autonomousPeriodic() {
-    }
-
-    @Override
-    public void autonomousExit() {
-    }
-
-    @Override
     public void teleopInit() {
-        if (m_autonomousCommand != null) {
-            m_autonomousCommand.cancel();
-        }
-        top.setVelocity(Math.PI * -200, 0);
-        bottom.setVelocity(Math.PI * 200, 0);
+        // m1.setVelocity(Math.PI * 200, 0);
+        // m2.setVelocity(Math.PI * 200, 0);
+        // m1.setVelocity(2, 0);
+        // m2.setVelocity(2, 0);
     }
 
     @Override
     public void teleopPeriodic() {
+        if (controller.getXButton()) {
+            s1.setPositionProfiled(0.1);
+            s2.setPositionProfiled(0.1);
+        } else if (controller.getYButton()) {
+            s1.setPositionProfiled(0);
+            s2.setPositionProfiled(0);
+        } else if (controller.getAButton()) {
+            l1.setZero();
+            l2.setZero();
+        } else {
+            m1.stop();
+            m2.stop();
+            ref.init(new StateR1(l1.getPositionM(), 0));
+            s1.reset();
+            s2.reset();
+        }
     }
 
     @Override
     public void teleopExit() {
     }
 
-    @Override
-    public void testInit() {
-        CommandScheduler.getInstance().cancelAll();
-    }
-
-    @Override
-    public void testPeriodic() {
-    }
-
-    @Override
-    public void testExit() {
-    }
 }

@@ -63,7 +63,7 @@ public class Climber extends SubsystemBase {
             RotaryMechanism climberMech = new RotaryMechanism(
                     log1, m_motor, encoder, initialPosition, gearRatio,
                     Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-            m_servo = new OutboardAngularPositionServo(log1, climberMech, dyn, ref);
+            m_servo = new OutboardAngularPositionServo(log1, climberMech, dyn, ref, 0.05, 0.05);
             m_motor2 = new KrakenX60Motor(
                     log2,
                     currentLog,
@@ -77,7 +77,7 @@ public class Climber extends SubsystemBase {
             RotaryMechanism climberMech2 = new RotaryMechanism(
                     log2, m_motor2, encoder2, initialPosition, gearRatio,
                     Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-            m_servo2 = new OutboardAngularPositionServo(log2, climberMech2, dyn, ref);
+            m_servo2 = new OutboardAngularPositionServo(log2, climberMech2, dyn, ref, 0.05, 0.05);
         } else {
             m_motor = new SimulatedMotor(log1, 600);
             IncrementalEncoder encoder = m_motor.encoder();
@@ -89,8 +89,8 @@ public class Climber extends SubsystemBase {
             RotaryMechanism climberMech2 = new RotaryMechanism(
                     log2, m_motor2, encoder2, initialPosition, gearRatio,
                     Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-            m_servo = new OutboardAngularPositionServo(log1, climberMech, dyn, ref);
-            m_servo2 = new OutboardAngularPositionServo(log2, climberMech2, dyn, ref);
+            m_servo = new OutboardAngularPositionServo(log1, climberMech, dyn, ref, 0.05, 0.05);
+            m_servo2 = new OutboardAngularPositionServo(log2, climberMech2, dyn, ref, 0.05, 0.05);
         }
     }
 
@@ -142,11 +142,5 @@ public class Climber extends SubsystemBase {
     private void setL3() {
         m_servo.actuateWithProfile(m_level3);
         m_servo2.actuateWithProfile(m_level3);
-    }
-
-    @Override
-    public void periodic() {
-        m_servo.periodic();
-        m_servo2.periodic();
     }
 }

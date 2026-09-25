@@ -5,8 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
+import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.dynamics.swerve.SwerveEffort;
 import org.team100.lib.geometry.se2.ChassisAcceleration;
+import org.team100.lib.logging.LoggerFactory;
+import org.team100.lib.logging.TestLoggerFactory;
+import org.team100.lib.logging.TotalCurrentLog;
+import org.team100.lib.logging.primitive.TestPrimitiveLogger;
+import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
+import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
+import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
 import org.team100.lib.testing.Timeless;
 
@@ -17,12 +25,17 @@ class SwerveLocalTest implements Timeless {
 
     @Test
     void testSimple() throws IOException {
-        Fixture fixture = new Fixture();
-        SwerveLocal local = fixture.swerveLocal;
-        local.setChassisSpeeds(new ChassisSpeeds(), ChassisAcceleration.ZERO);
-        local.stop();
-        local.setRawModuleStates(
+        LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());
+        TotalCurrentLog currentLog = new TotalCurrentLog(logger);
+        SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forTest();
+        // uses simulated modules
+        SwerveModuleCollection collection = SwerveModuleCollection.get(
+                logger, currentLog, new CurrentLimit(10, 20), new CurrentLimit(10, 20));
+        SwerveLocal swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
+        swerveLocal.setChassisSpeeds(new ChassisSpeeds(), ChassisAcceleration.ZERO);
+        swerveLocal.stop();
+        swerveLocal.setRawModuleStates(
                 SwerveModuleStates.ZERO, SwerveEffort.ZERO);
-        assertEquals(0, local.positions().frontLeft().distanceMeters(), DELTA);
+        assertEquals(0, swerveLocal.positions().frontLeft().distanceMeters(), DELTA);
     }
 }

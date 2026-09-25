@@ -40,12 +40,6 @@ public class DualDrumDutyCycleShooter extends SubsystemBase implements DualDrumS
         return run(this::zero);
     }
 
-    @Override
-    public void periodic() {
-        m_left.periodic();
-        m_right.periodic();
-    }
-
     ///////////////////////////////////////////////////////
 
     private void half() {

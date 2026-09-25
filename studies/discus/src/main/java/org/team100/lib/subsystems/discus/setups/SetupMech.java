@@ -1,5 +1,7 @@
 package org.team100.lib.subsystems.discus.setups;
 
+import static org.team100.lib.util.TriggerUtil.whileTrue;
+
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -7,7 +9,6 @@ import org.team100.lib.subsystems.discus.DiscusMech;
 import org.team100.lib.visualization.ArmVisualization;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Adds gearing, friction, and PID. */
 public class SetupMech implements Runnable {
@@ -30,15 +31,19 @@ public class SetupMech implements Runnable {
         // These bindings are remembered by the trigger event loop, so we don't need to
         // retain them.
         // button 1, "z" in the sim
-        new Trigger(controller::getAButton).whileTrue(m_discus.home());
+        whileTrue(controller::getAButton,
+                m_discus.home());
         // button 2, "x" in the sim
-        new Trigger(controller::getBButton).whileTrue(m_discus.zero());
-        new Trigger(controller::getXButton).whileTrue(m_discus.position(() -> 2));
-        new Trigger(controller::getYButton).whileTrue(m_discus.position(() -> -2));
+        whileTrue(controller::getBButton,
+                m_discus.zero());
+        whileTrue(controller::getXButton,
+                m_discus.position(() -> 2));
+        whileTrue(controller::getYButton,
+                m_discus.position(() -> -2));
 
         // set voltage directly to tune friction.
-        new Trigger(controller::getLeftBumperButton)
-                .whileTrue(m_discus.friction(() -> 0.2 * controller.getRightX()));
+        whileTrue(controller::getLeftBumperButton,
+                m_discus.friction(() -> 0.2 * controller.getRightX()));
     }
 
     @Override

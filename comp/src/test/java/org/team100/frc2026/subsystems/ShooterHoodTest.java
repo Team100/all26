@@ -55,14 +55,12 @@ public class ShooterHoodTest implements Timeless2026 {
         for (int i = 0; i < 10; ++i) {
             stepTime();
             position.execute();
-            hood.periodic();
         }
         // partway there
         assertEquals(0.292, hood.getUnwrappedPositionRad(), DELTA);
         for (int i = 0; i < 10; ++i) {
             stepTime();
             position.execute();
-            hood.periodic();
         }
         // all the way there
         assertEquals(0.4, hood.getUnwrappedPositionRad(), DELTA);

@@ -5,6 +5,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 
@@ -63,6 +64,7 @@ public class CombinedRotaryPositionSensor implements RotaryPositionSensor {
         m_synchronized = false;
         m_synchronizer = Executors.newSingleThreadScheduledExecutor();
         m_synchronizer.schedule(this::sync, 3, TimeUnit.SECONDS);
+        LogPoller.register(this::log);
     }
 
     /**
@@ -144,9 +146,7 @@ public class CombinedRotaryPositionSensor implements RotaryPositionSensor {
         m_incremental.close();
     }
 
-    public void periodic() {
-        m_absolute.periodic();
-        m_incremental.periodic();
+    private void log() {
         m_log_absolute.log(m_absolute::getWrappedPositionRad);
         m_log_incremental.log(m_incremental::getWrappedPositionRad);
         m_log_incremental_wrapped.log(() -> MathUtil.angleModulus(m_incremental.getWrappedPositionRad()));

@@ -105,7 +105,7 @@ public class Auton2025 {
                 () -> FieldConstants2025.makeGoal(position, point));
         MoveAndHold toL4 = m_machinery.m_mech.homeToL4();
         return parallel(
-                runOnce(() -> m_machinery.m_localizer.setHeedRadiusM(HEED_RADIUS_M)),
+                runOnce(() -> m_machinery.m_drive.setHeedRadiusM(HEED_RADIUS_M)),
                 toReef,
                 waitUntil(() -> toReef.toGo() < 1)
                         .andThen(toL4) //

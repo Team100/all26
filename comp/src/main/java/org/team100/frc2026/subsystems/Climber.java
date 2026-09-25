@@ -84,12 +84,6 @@ public class Climber extends SubsystemBase {
         return run(this::stopMotor).withName("Stop Climber");
     }
 
-    @Override
-    public void periodic() {
-        m_servo1.periodic();
-        m_servo2.periodic();
-    }
-
     ///////////////////////////////////////
 
     private void reset() {

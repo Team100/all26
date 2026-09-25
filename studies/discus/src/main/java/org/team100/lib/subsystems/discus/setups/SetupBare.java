@@ -1,5 +1,7 @@
 package org.team100.lib.subsystems.discus.setups;
 
+import static org.team100.lib.util.TriggerUtil.whileTrue;
+
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -7,7 +9,6 @@ import org.team100.lib.subsystems.discus.DiscusBare;
 import org.team100.lib.visualization.ArmVisualization;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Low-level control: voltage, current. */
 public class SetupBare implements Runnable {
@@ -24,15 +25,15 @@ public class SetupBare implements Runnable {
         // controller::getLeftX));
         m_discus.setDefaultCommand(m_discus.voltage(
                 () -> 4 * controller.getLeftX()));
-        new Trigger(controller::getAButton).whileTrue(
+        whileTrue(controller::getAButton,
                 m_discus.voltage(() -> 8));
-        new Trigger(controller::getBButton).whileTrue(
+        whileTrue(controller::getBButton,
                 m_discus.voltage(() -> 12));
 
         // WARNING: constant current produces constant acceleration
         // up to MAX SPEED! Don't run this for too long, and be careful
         // with high current values.
-        new Trigger(controller::getXButton).whileTrue(
+        whileTrue(controller::getXButton,
                 m_discus.current(() -> 1).withTimeout(1));
 
     }

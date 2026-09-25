@@ -15,6 +15,7 @@ import org.team100.lib.dynamics.r.RDynamicsAnalytic;
 import org.team100.lib.geometry.r2.StateR2;
 import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
@@ -114,6 +115,7 @@ public class Turret extends SubsystemBase {
         m_solver = new TimeOfFlightRecursion(rangeToParams, 0.01);
         m_aiming = false;
         m_solved = false;
+        LogPoller.register(this::log);
     }
 
     private static AngularPositionServo pivot(
@@ -142,7 +144,7 @@ public class Turret extends SubsystemBase {
         RotaryMechanism mech = new RotaryMechanism(
                 log, motor, sensor, GEAR_RATIO, MIN_POSITION, MAX_POSITION);
         AngularPositionServo pivot = new OnboardAngularPositionServo(
-                log, mech, dyn, ref, feedback);
+                log, mech, dyn, ref, feedback, 0.02, 0.02);
         pivot.reset();
         return pivot;
     }
@@ -172,7 +174,7 @@ public class Turret extends SubsystemBase {
         RotaryMechanism mech = new RotaryMechanism(
                 log, motor, sensor, GEAR_RATIO, 0, Math.PI / 2);
         AngularPositionServo pivot = new OnboardAngularPositionServo(
-                log, mech, dyn, ref, feedback);
+                log, mech, dyn, ref, feedback, 0.02, 0.02);
         pivot.reset();
         return pivot;
     }
@@ -300,11 +302,7 @@ public class Turret extends SubsystemBase {
         return run(this::stopAiming);
     }
 
-    @Override
-    public void periodic() {
-        m_pivot.periodic();
-        m_elevation.periodic();
-        m_drum.periodic();
+    private void log() {
         m_log_field_turret.log(this::poseArray);
         m_log_aiming.log(() -> m_aiming);
         m_log_solved.log(() -> m_solved);

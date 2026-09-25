@@ -8,7 +8,6 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.subsystems.swerve.Fixture;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
@@ -64,7 +63,7 @@ class SwerveUtilTest implements Timeless {
     void testGetAccelLimit() throws IOException {
         // this is to figure out why the Oscillate test isn't returning
         // exactly the right result
-        SwerveKinodynamics limits = new Fixture().swerveKinodynamics;
+        SwerveKinodynamics limits = SwerveKinodynamicsFactory.forTest();
         assertEquals(1, limits.getMaxDriveAccelerationM_S2(), DELTA);
         double accelLimit = SwerveUtil.getAccelLimit(limits, 1, 1,
                 new VelocitySE2(0.92, 0, 0),
@@ -76,7 +75,8 @@ class SwerveUtilTest implements Timeless {
     void testMinAccel() throws IOException {
         // this is to figure out why the Oscillate test isn't returning
         // exactly the right result
-        SwerveKinodynamics limits = new Fixture().swerveKinodynamics;
+        SwerveKinodynamics limits = SwerveKinodynamicsFactory.forTest();
+
         // the test asks for 1 m/s/s
         assertEquals(1, limits.getMaxDriveAccelerationM_S2(), DELTA);
         // the problem is that the maximum possible velocity is right at the

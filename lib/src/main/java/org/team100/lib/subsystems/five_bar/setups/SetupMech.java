@@ -1,5 +1,8 @@
 package org.team100.lib.subsystems.five_bar.setups;
 
+import static org.team100.lib.util.TriggerUtil.onTrue;
+import static org.team100.lib.util.TriggerUtil.whileTrue;
+
 import org.team100.lib.kinematics.five_bar.Scenario;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
@@ -9,7 +12,6 @@ import org.team100.lib.subsystems.five_bar.Pen;
 import org.team100.lib.visualization.FiveBarVisualization;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class SetupMech implements Runnable {
     private final double CONTROL_SCALE = 0.1;
@@ -33,13 +35,17 @@ public class SetupMech implements Runnable {
         // These bindings are remembered by the trigger event loop, so we don't need to
         // retain them.
         // button 1, "z" in the sim
-        new Trigger(controller::getAButton).whileTrue(m_fiveBar.home());
+        whileTrue(controller::getAButton,
+                m_fiveBar.home());
         // button 2, "x" in the sim
-        new Trigger(controller::getBButton).onTrue(m_fiveBar.zero());
+        onTrue(controller::getBButton,
+                m_fiveBar.zero());
         // button 3, "c" in the sim
-        new Trigger(controller::getXButton).onTrue(m_pen.down());
+        onTrue(controller::getXButton,
+                m_pen.down());
         // button 4, "v" in the sim.
-        new Trigger(controller::getYButton).onTrue(m_pen.up());
+        onTrue(controller::getYButton,
+                m_pen.up());
     }
 
     @Override

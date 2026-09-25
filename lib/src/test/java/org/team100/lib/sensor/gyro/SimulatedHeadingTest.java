@@ -28,7 +28,7 @@ class SimulatedHeadingTest implements Timeless {
     void testInitial() {
         SwerveKinodynamics l = SwerveKinodynamicsFactory.forRealisticTest();
         SwerveModuleCollection c = SwerveModuleCollection.get(
-                logger, currentLog, new CurrentLimit(10, 20), new CurrentLimit(10, 20), l);
+                logger, currentLog, new CurrentLimit(10, 20), new CurrentLimit(10, 20));
         SimulatedGyro h = new SimulatedGyro(logger, l, c, 0);
         assertEquals(0, h.getYawNWU().getRadians(), DELTA);
         assertEquals(0, h.getYawRateNWU(), DELTA);
@@ -38,7 +38,7 @@ class SimulatedHeadingTest implements Timeless {
     void testTranslation() {
         SwerveKinodynamics l = SwerveKinodynamicsFactory.forRealisticTest();
         SwerveModuleCollection c = SwerveModuleCollection.get(
-                logger, currentLog, new CurrentLimit(10, 20), new CurrentLimit(10, 20), l);
+                logger, currentLog, new CurrentLimit(10, 20), new CurrentLimit(10, 20));
         SwerveModulePositions p = c.positions();
         assertEquals(0, p.frontLeft().distanceMeters(), DELTA);
         assertEquals(0, p.frontRight().distanceMeters(), DELTA);
@@ -67,7 +67,7 @@ class SimulatedHeadingTest implements Timeless {
     void testRotation() {
         SwerveKinodynamics l = SwerveKinodynamicsFactory.forRealisticTest();
         SwerveModuleCollection c = SwerveModuleCollection.get(
-                logger, currentLog, new CurrentLimit(10, 20), new CurrentLimit(10, 20), l);
+                logger, currentLog, new CurrentLimit(10, 20), new CurrentLimit(10, 20));
         SimulatedGyro h = new SimulatedGyro(logger, l, c, 0);
         ChassisSpeeds speeds = new ChassisSpeeds(0, 0, 1);
         // includes discretization
@@ -110,7 +110,7 @@ class SimulatedHeadingTest implements Timeless {
         assertEquals(-0.205, states.rearRight().angle().get().getRadians(), DELTA);
 
         SwerveModuleCollection c = SwerveModuleCollection.get(
-                logger, currentLog, new CurrentLimit(10, 20), new CurrentLimit(10, 20), l);
+                logger, currentLog, new CurrentLimit(10, 20), new CurrentLimit(10, 20));
         SimulatedGyro h = new SimulatedGyro(logger, l, c, 0);
 
         // steering velocity is 13 rad/s, we need to go about 2 rad? so wait 0.2 sec?

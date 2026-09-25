@@ -85,8 +85,9 @@ public class DiscusServo extends SubsystemBase {
                 logger,
                 mech,
                 dyn,
-                ref);
-
+                ref,
+                POSITION_TOLERANCE,
+                VELOCITY_TOLERANCE);
     }
 
     public void setPosition(double p) {
@@ -96,11 +97,6 @@ public class DiscusServo extends SubsystemBase {
 
     public double getPosition() {
         return m_servo.getUnwrappedPositionRad();
-    }
-
-    @Override
-    public void periodic() {
-        m_servo.periodic();
     }
 
     //////////////////////

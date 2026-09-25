@@ -1,11 +1,12 @@
 package org.team100.lib.subsystems.lynxmotion_arm;
 
+import static org.team100.lib.util.TriggerUtil.whileTrue;
+
 import org.team100.lib.subsystems.lynxmotion_arm.commands.MoveCommandTwoDof;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class LynxArmTwoDofSetup implements Runnable {
     private final LynxArmTwoDof m_arm;
@@ -16,11 +17,14 @@ public class LynxArmTwoDofSetup implements Runnable {
         m_viz = new LynxArmVisualizer(m_arm::getPose);
 
         MoveCommandTwoDof move1 = m_arm.moveTo(new Translation2d(0.2, 0.1));
-        new Trigger(m_controller::getAButton).whileTrue(move1);
+        whileTrue(m_controller::getAButton,
+                move1);
         MoveCommandTwoDof move2 = m_arm.moveTo(new Translation2d(0.2, 0));
-        new Trigger(m_controller::getBButton).whileTrue(move2);
+        whileTrue(m_controller::getBButton,
+                move2);
         MoveCommandTwoDof move3 = m_arm.moveTo(new Translation2d(0.3, 0.1));
-        new Trigger(m_controller::getXButton).whileTrue(move3);
+        whileTrue(m_controller::getXButton,
+                move3);
 
         MoveCommandTwoDof move4 = m_arm.moveTo(new Translation2d(0.2, 0.05));
         MoveCommandTwoDof move5 = m_arm.moveTo(new Translation2d(0.2, 0.0));
@@ -28,7 +32,7 @@ public class LynxArmTwoDofSetup implements Runnable {
         MoveCommandTwoDof move7 = m_arm.moveTo(new Translation2d(0.4, 0.05));
         MoveCommandTwoDof move8 = m_arm.moveTo(new Translation2d(0.4, 0.0));
         MoveCommandTwoDof move9 = m_arm.moveTo(new Translation2d(0.4, 0.05));
-        new Trigger(m_controller::getYButton).whileTrue(
+        whileTrue(m_controller::getYButton,
                 Commands.sequence(
                         move4.until(move4::done),
                         move5.until(move5::done),
