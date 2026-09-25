@@ -47,8 +47,4 @@ public interface IncrementalEncoder {
      * Caches should also be flushed, so the new value is available immediately.
      */
     void setUnwrappedEncoderPositionRad(double motorPositionRad);
-
-    /** For logging */
-    void periodic();
-
 }

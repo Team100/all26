@@ -3,6 +3,7 @@ package org.team100.lib.hid;
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.DoubleCache;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.wpilib.driverstation.Gamepad;
@@ -57,6 +58,7 @@ public class DriverXboxControl {
         m_log_rightY = log.doubleLogger(Level.DEBUG, "right Y");
         m_log_rightX = log.doubleLogger(Level.DEBUG, "right X");
         m_log_leftX = log.doubleLogger(Level.DEBUG, "left X");
+        LogPoller.register(this::log);
     }
 
     /**
@@ -75,7 +77,7 @@ public class DriverXboxControl {
     }
 
     /** Logs smoothed inputs. */
-    public void periodic() {
+    private void log() {
         m_log_rightY.log(m_rightY);
         m_log_rightX.log(m_rightX);
         m_log_leftX.log(m_leftX);

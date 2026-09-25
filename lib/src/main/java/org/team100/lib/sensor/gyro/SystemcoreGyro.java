@@ -39,7 +39,6 @@ public class SystemcoreGyro implements Gyro {
         m_log_yaw_rate = log.doubleLogger(Level.TRACE, "Yaw Rate NWU (rad_s)");
         m_log_pitch = log.rotation2dLogger(Level.TRACE, "Pitch NWU (rad)");
         m_log_roll = log.rotation2dLogger(Level.TRACE, "Roll NWU (rad)");
-
     }
 
     @Override
@@ -79,10 +78,4 @@ public class SystemcoreGyro implements Gyro {
         m_log_roll.log(() -> r);
         return r;
     }
-
-    @Override
-    public void periodic() {
-        //
-    }
-
 }

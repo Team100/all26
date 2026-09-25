@@ -7,7 +7,10 @@ import org.team100.lib.coherence.DoubleCache;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.experiments.Experiment;
+import org.team100.lib.experiments.Experiments;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -88,8 +91,8 @@ public abstract class Talon6Motor implements Motor {
     private final DoubleLogger m_log_desired_speed;
     private final DoubleLogger m_log_friction_FF;
     private final DoubleLogger m_log_velocity_FF;
-    private final DoubleLogger m_totalFeedForward;
     private final DoubleLogger m_log_torque_FF;
+    private final DoubleLogger m_totalFeedForward;
     /** rad */
     private final DoubleLogger m_log_position;
     /** rad/s */
@@ -219,6 +222,7 @@ public abstract class Talon6Motor implements Motor {
         m_log_temp = m_log.doubleLogger(Level.DEBUG, "temperature (C)");
 
         m_log.intLogger(Level.TRACE, "Device ID").log(() -> canId.id);
+        LogPoller.register(this::log);
     }
 
     /** Set duty cycle immediately. */
@@ -267,23 +271,21 @@ public abstract class Talon6Motor implements Motor {
      */
     @Override
     public void setVelocity(double motorRad_S, double torqueNm) {
-        double backEMFVolts = backEMFVoltage(motorRad_S);
-        double frictionFFVolts = m_friction.frictionFFVolts(motorRad_S);
-        double torqueFFVolts = getTorqueFFVolts(torqueNm);
-        double FFVolts = backEMFVolts + frictionFFVolts + torqueFFVolts;
+        double FFVolts = ffVolts(motorRad_S, torqueNm);
 
-        // CTRE control unit is rev/s.
-        warn(() -> m_motor.setControl(
-                m_velocityVoltage
-                        .withSlot(1)
-                        .withVelocity(motorRad_S / (2 * Math.PI))
-                        .withFeedForward(FFVolts)));
+        if (Experiments.INSTANCE.enabled(Experiment.FeedForwardOnly)) {
+            warn(() -> m_motor.setControl(
+                    m_voltageOut.withOutput(FFVolts)));
+        } else {
+            // CTRE control unit is rev/s.
+            warn(() -> m_motor.setControl(
+                    m_velocityVoltage
+                            .withSlot(1)
+                            .withVelocity(motorRad_S / (2 * Math.PI))
+                            .withFeedForward(FFVolts)));
+        }
 
         m_log_desired_speed.log(() -> motorRad_S);
-        m_log_friction_FF.log(() -> frictionFFVolts);
-        m_log_velocity_FF.log(() -> backEMFVolts);
-        m_log_torque_FF.log(() -> torqueFFVolts);
-        m_totalFeedForward.log(() -> FFVolts);
     }
 
     @Override
@@ -307,24 +309,22 @@ public abstract class Talon6Motor implements Motor {
             double motorRad,
             double motorRad_S,
             double torqueNm) {
-        double backEMFVolts = backEMFVoltage(motorRad_S);
-        double frictionFFVolts = m_friction.frictionFFVolts(motorRad_S);
-        double torqueFFVolts = getTorqueFFVolts(torqueNm);
-        double FFVolts = backEMFVolts + frictionFFVolts + torqueFFVolts;
+        double FFVolts = ffVolts(motorRad_S, torqueNm);
 
-        // CTRE control unit is rev.
-        warn(() -> m_motor.setControl(
-                m_positionVoltage
-                        .withSlot(0)
-                        .withPosition(motorRad / (2 * Math.PI))
-                        .withFeedForward(FFVolts)));
+        if (Experiments.INSTANCE.enabled(Experiment.FeedForwardOnly)) {
+            warn(() -> m_motor.setControl(
+                    m_voltageOut.withOutput(FFVolts)));
+        } else {
+            // CTRE control unit is rev.
+            warn(() -> m_motor.setControl(
+                    m_positionVoltage
+                            .withSlot(0)
+                            .withPosition(motorRad / (2 * Math.PI))
+                            .withFeedForward(FFVolts)));
+        }
 
         m_log_desired_position.log(() -> motorRad);
         m_log_desired_speed.log(() -> motorRad_S);
-        m_log_friction_FF.log(() -> frictionFFVolts);
-        m_log_velocity_FF.log(() -> backEMFVolts);
-        m_log_torque_FF.log(() -> torqueFFVolts);
-        m_totalFeedForward.log(() -> FFVolts);
     }
 
     @Override
@@ -348,13 +348,6 @@ public abstract class Talon6Motor implements Motor {
         m_motor.close();
     }
 
-    @Override
-    public void periodic() {
-        log();
-    }
-
-    ///////////////////////////////////////////
-
     private void log() {
         m_log_position.log(m_position);
         m_log_velocity.log(m_velocity);
@@ -372,5 +365,26 @@ public abstract class Talon6Motor implements Motor {
         if (statusCode.isError()) {
             System.out.println("WARNING: " + statusCode.toString());
         }
+    }
+
+    private double ffVolts(
+            double motorRad_S,
+            double torqueNm) {
+        double ff = 0;
+        double frictionFFVolts = m_friction.frictionFFVolts(motorRad_S);
+        double backEMFVolts = backEMFVoltage(motorRad_S);
+        double torqueFFVolts = getTorqueFFVolts(torqueNm);
+        if (Experiments.INSTANCE.enabled(Experiment.IncludeFrictionFeedForward))
+            ff += frictionFFVolts;
+        if (Experiments.INSTANCE.enabled(Experiment.IncludeVelocityFeedForward))
+            ff += backEMFVolts;
+        if (Experiments.INSTANCE.enabled(Experiment.IncludeTorqueFeedForward))
+            ff += torqueFFVolts;
+        double FFVolts = ff;
+        m_log_friction_FF.log(() -> frictionFFVolts);
+        m_log_velocity_FF.log(() -> backEMFVolts);
+        m_log_torque_FF.log(() -> torqueFFVolts);
+        m_totalFeedForward.log(() -> FFVolts);
+        return FFVolts;
     }
 }

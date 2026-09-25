@@ -1,9 +1,9 @@
 package org.team100.lib.sensor.gyro;
 
 
-import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
@@ -98,16 +98,20 @@ public class ReduxGyro implements Gyro {
         m_log_calibrating = log.booleanLogger(Level.TRACE, "Calibrating");
         m_log_fault = log.booleanLogger(Level.TRACE, "Fault");
 
-        Cache.ofSideEffect(this::logEverything);
+        LogPoller.register(this::log);
     }
 
-    /** This is to explore using the accelerometer */
-    void logEverything() {
+    private void log() {
         m_log_accel_x.log(m_gyro::getAccelerationX);
         m_log_accel_y.log(m_gyro::getAccelerationY);
         m_log_accel_z.log(m_gyro::getAccelerationZ);
         m_log_calibrating.log(m_gyro::isCalibrating);
         m_log_fault.log(m_gyro.getActiveFaults()::faultsValid);
+        if (m_gyro.isCalibrating())
+            System.out.println("Redux Gyro Calibrating ......");
+        final CanandgyroFaults activeFaults = m_gyro.getActiveFaults();
+        if (activeFaults.faultsValid())
+            System.out.println("WARNING: Redux Gyro fault!");
     }
 
     @Override
@@ -167,14 +171,5 @@ public class ReduxGyro implements Gyro {
         final Rotation2d rollNWU = Rotation2d.fromRotations(m_gyro.getRoll());
         m_log_roll.log(() -> rollNWU);
         return rollNWU;
-    }
-
-    @Override
-    public void periodic() {
-        if (m_gyro.isCalibrating())
-            System.out.println("Redux Gyro Calibrating ......");
-        final CanandgyroFaults activeFaults = m_gyro.getActiveFaults();
-        if (activeFaults.faultsValid())
-            System.out.println("WARNING: Redux Gyro fault!");
     }
 }

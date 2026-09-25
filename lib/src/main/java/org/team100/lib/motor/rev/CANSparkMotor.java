@@ -7,7 +7,10 @@ import org.team100.lib.coherence.DoubleCache;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.experiments.Experiment;
+import org.team100.lib.experiments.Experiments;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -89,6 +92,7 @@ public abstract class CANSparkMotor implements Motor {
     private final DoubleLogger m_log_friction_FF;
     private final DoubleLogger m_log_velocity_FF;
     private final DoubleLogger m_log_torque_FF;
+    private final DoubleLogger m_totalFeedForward;
     /** duty cycle */
     private final DoubleLogger m_log_output;
     private final DoubleLogger m_log_desired_voltage;
@@ -161,6 +165,8 @@ public abstract class CANSparkMotor implements Motor {
         m_log_friction_FF = m_log.doubleLogger(Level.TRACE, "friction feedforward (V)");
         m_log_velocity_FF = m_log.doubleLogger(Level.TRACE, "velocity feedforward (V)");
         m_log_torque_FF = m_log.doubleLogger(Level.TRACE, "torque feedforward (V)");
+        m_totalFeedForward = m_log.doubleLogger(Level.TRACE, "total feedforward (V)");
+
         m_log_output = m_log.doubleLogger(Level.DEBUG, "output [-1,1]");
         m_log_desired_voltage = m_log.doubleLogger(Level.DEBUG, "desired voltage (V)");
         m_log_desired_current = m_log.doubleLogger(Level.DEBUG, "desired current (A)");
@@ -170,6 +176,7 @@ public abstract class CANSparkMotor implements Motor {
         m_log_stator_current = m_log.doubleLogger(Level.DEBUG, "stator current (A)");
         m_log_supplyVoltage = m_log.doubleLogger(Level.DEBUG, "voltage (V)");
         m_log.intLogger(Level.TRACE, "Device ID").log(m_motor::getDeviceId);
+        LogPoller.register(this::log);
     }
 
     @Override
@@ -183,7 +190,9 @@ public abstract class CANSparkMotor implements Motor {
      */
     @Override
     public void setVoltage(double volts) {
-        m_pidController.setSetpoint(volts, ControlType.kVoltage);
+        warn(() -> m_pidController.setSetpoint(
+                volts,
+                ControlType.kVoltage));
         m_log_desired_voltage.log(() -> volts);
     }
 
@@ -192,7 +201,9 @@ public abstract class CANSparkMotor implements Motor {
      */
     @Override
     public void setCurrent(double amps) {
-        m_pidController.setSetpoint(amps, ControlType.kCurrent);
+        warn(() -> m_pidController.setSetpoint(
+                amps,
+                ControlType.kCurrent));
         m_log_desired_current.log(() -> amps);
     }
 
@@ -216,23 +227,22 @@ public abstract class CANSparkMotor implements Motor {
      */
     @Override
     public void setVelocity(double motorRad_S, double torqueNm) {
-        double backEMFVolts = backEMFVoltage(motorRad_S);
-        double frictionFFVolts = m_friction.frictionFFVolts(motorRad_S);
-        double torqueFFVolts = getTorqueFFVolts(torqueNm);
-        double FFVolts = backEMFVolts + frictionFFVolts + torqueFFVolts;
+        double FFVolts = ffVolts(motorRad_S, torqueNm);
 
-        // REV control unit is RPM
-        warn(() -> m_pidController.setSetpoint(
-                60 * motorRad_S / (2 * Math.PI),
-                ControlType.kVelocity,
-                ClosedLoopSlot.kSlot1,
-                FFVolts,
-                ArbFFUnits.kVoltage));
-
+        if (Experiments.INSTANCE.enabled(Experiment.FeedForwardOnly)) {
+            warn(() -> m_pidController.setSetpoint(
+                    FFVolts,
+                    ControlType.kVoltage));
+        } else {
+            // REV control unit is RPM
+            warn(() -> m_pidController.setSetpoint(
+                    60 * motorRad_S / (2 * Math.PI),
+                    ControlType.kVelocity,
+                    ClosedLoopSlot.kSlot1,
+                    FFVolts,
+                    ArbFFUnits.kVoltage));
+        }
         m_log_desired_speed.log(() -> motorRad_S);
-        m_log_friction_FF.log(() -> frictionFFVolts);
-        m_log_velocity_FF.log(() -> backEMFVolts);
-        m_log_torque_FF.log(() -> torqueFFVolts);
     }
 
     /**
@@ -246,24 +256,24 @@ public abstract class CANSparkMotor implements Motor {
             double motorRad,
             double motorRad_S,
             double torqueNm) {
-        double backEMFVolts = backEMFVoltage(motorRad_S);
-        double frictionFFVolts = m_friction.frictionFFVolts(motorRad_S);
-        double torqueFFVolts = getTorqueFFVolts(torqueNm);
-        double FFVolts = backEMFVolts + frictionFFVolts + torqueFFVolts;
+        double FFVolts = ffVolts(motorRad_S, torqueNm);
 
-        // REV control unit is revolutions
-        warn(() -> m_pidController.setSetpoint(
-                motorRad / (2 * Math.PI),
-                ControlType.kPosition,
-                ClosedLoopSlot.kSlot0,
-                FFVolts,
-                ArbFFUnits.kVoltage));
+        if (Experiments.INSTANCE.enabled(Experiment.FeedForwardOnly)) {
+            warn(() -> m_pidController.setSetpoint(
+                    FFVolts,
+                    ControlType.kVoltage));
+        } else {
+            // REV control unit is revolutions
+            warn(() -> m_pidController.setSetpoint(
+                    motorRad / (2 * Math.PI),
+                    ControlType.kPosition,
+                    ClosedLoopSlot.kSlot0,
+                    FFVolts,
+                    ArbFFUnits.kVoltage));
+        }
 
         m_log_desired_position.log(() -> motorRad);
         m_log_desired_speed.log(() -> motorRad_S);
-        m_log_friction_FF.log(() -> frictionFFVolts);
-        m_log_velocity_FF.log(() -> backEMFVolts);
-        m_log_torque_FF.log(() -> torqueFFVolts);
     }
 
     @Override
@@ -308,11 +318,6 @@ public abstract class CANSparkMotor implements Motor {
     }
 
     @Override
-    public void periodic() {
-        log();
-    }
-
-    @Override
     public void play(double freq) {
     }
 
@@ -332,5 +337,26 @@ public abstract class CANSparkMotor implements Motor {
         if (errorCode != REVLibError.kOk) {
             System.out.println("WARNING: " + errorCode.name());
         }
+    }
+
+    private double ffVolts(
+            double motorRad_S,
+            double torqueNm) {
+        double ff = 0;
+        double frictionFFVolts = m_friction.frictionFFVolts(motorRad_S);
+        double backEMFVolts = backEMFVoltage(motorRad_S);
+        double torqueFFVolts = getTorqueFFVolts(torqueNm);
+        if (Experiments.INSTANCE.enabled(Experiment.IncludeFrictionFeedForward))
+            ff += frictionFFVolts;
+        if (Experiments.INSTANCE.enabled(Experiment.IncludeVelocityFeedForward))
+            ff += backEMFVolts;
+        if (Experiments.INSTANCE.enabled(Experiment.IncludeTorqueFeedForward))
+            ff += torqueFFVolts;
+        double FFVolts = ff;
+        m_log_friction_FF.log(() -> frictionFFVolts);
+        m_log_velocity_FF.log(() -> backEMFVolts);
+        m_log_torque_FF.log(() -> torqueFFVolts);
+        m_totalFeedForward.log(() -> FFVolts);
+        return FFVolts;
     }
 }

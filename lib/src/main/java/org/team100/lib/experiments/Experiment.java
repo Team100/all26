@@ -13,8 +13,8 @@ public enum Experiment {
     /**
      * Flush network tables as often as possible.
      * 
-     * Do not enable this experiment in
-     * competition, you'll overwhelm the network and the RIO
+     * Do not enable this experiment in competition!
+     * You'll overwhelm the network and the RIO.
      */
     FlushOften("Flush network tables as often as possible"),
     /**
@@ -60,10 +60,41 @@ public enum Experiment {
     /**
      * Show seen tags.
      * 
-     * Listens for camera input and paints the tags on the field.  This is
+     * Listens for camera input and paints the tags on the field. This is
      * expensive to do, so it should be kept off for comp.
      */
-    ShowTags("Show seen tags");
+    ShowTags("Show seen tags"),
+    /**
+     * Use motor feedforward alone.
+     * 
+     * We almost always use outboard closed-loop control of position or
+     * velocity. This experiment turns off the closed-loop controller,
+     * much like turning the PID values to zero would do, and supplies
+     * the motor with only the feedforward voltage. This mode is useful
+     * for tuning feedforwards.
+     */
+    FeedForwardOnly("Use motor feedforward alone"),
+    /**
+     * Include friction feedforward.
+     * 
+     * Turn the others off to test friction alone.
+     * This should be on by default.
+     */
+    IncludeFrictionFeedForward("Include friction feedforward"),
+    /**
+     * Include velocity feedforward.
+     * 
+     * Useful to see the effect of kE.
+     * This should be on by default.
+     */
+    IncludeVelocityFeedForward("Include velocity feedforward"),
+    /**
+     * Include torque feedforward.
+     * 
+     * Useful to see the effect of dynamics.
+     * This should be on by default.
+     */
+    IncludeTorqueFeedForward("Include torque feedforward");
 
     /** Show this at startup */
     public final String description;

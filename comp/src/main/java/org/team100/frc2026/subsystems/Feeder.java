@@ -69,12 +69,6 @@ public class Feeder extends SubsystemBase {
 
     }
 
-    @Override
-    public void periodic() {
-        m_servo1.periodic();
-        m_servo2.periodic();
-    }
-
     /** Feed 100% when shooter is at speed, 0% otherwise */
     public Command bangbang() {
         return startRun(

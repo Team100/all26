@@ -26,6 +26,9 @@ public interface AngularPositionServo extends Player {
      */
     void reset();
 
+    /** For measuring friction. */
+    void setVoltage(double volts);
+
     /**
      * Set the encoder position. This is for "homing".
      */
@@ -153,9 +156,6 @@ public interface AngularPositionServo extends Player {
     void stop();
 
     void close();
-
-    /** for logging */
-    void periodic();
 
     /** For friction measurement and homing. */
     void setVelocity(double rad_S);

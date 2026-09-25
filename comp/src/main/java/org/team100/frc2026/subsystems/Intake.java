@@ -103,12 +103,6 @@ public class Intake extends SubsystemBase {
                 .withName("Stop Intake Once");
     }
 
-    @Override
-    public void periodic() {
-        m_servo1.periodic();
-        m_servo2.periodic();
-    }
-
     /** For testing friction only */
     public Command setVelocity(double x) {
         return startRun(
