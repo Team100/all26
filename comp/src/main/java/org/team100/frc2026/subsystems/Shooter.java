@@ -242,10 +242,10 @@ public class Shooter extends SubsystemBase {
 
     @SuppressWarnings("unused")
     private void setVelocityDirect(double setpointM_S) {
-        m_servo1.setVelocityDirect(setpointM_S, 0);
-        m_servo2.setVelocityDirect(setpointM_S, 0);
-        m_servo3.setVelocityDirect(setpointM_S, 0);
-        m_servo4.setVelocityDirect(setpointM_S, 0);
+        m_servo1.setVelocityDirect(setpointM_S);
+        m_servo2.setVelocityDirect(setpointM_S);
+        m_servo3.setVelocityDirect(setpointM_S);
+        m_servo4.setVelocityDirect(setpointM_S);
     }
 
     private void setVelocityProfiled(double goalM_S) {

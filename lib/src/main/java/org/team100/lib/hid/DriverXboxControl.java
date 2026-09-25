@@ -74,6 +74,7 @@ public class DriverXboxControl {
                 0.65);
     }
 
+    /** Logs smoothed inputs. */
     public void periodic() {
         m_log_rightY.log(m_rightY);
         m_log_rightX.log(m_rightX);

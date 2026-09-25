@@ -1,10 +1,11 @@
 package org.team100.lib.subsystems.lynxmotion_arm;
 
+import static org.team100.lib.util.TriggerUtil.whileTrue;
+
 import org.team100.lib.subsystems.lynxmotion_arm.commands.MoveCommandTwoDof;
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.driverstation.Gamepad;
 import org.wpilib.command2.Commands;
-import org.wpilib.command2.button.Trigger;
+import org.wpilib.driverstation.Gamepad;
+import org.wpilib.math.geometry.Translation2d;
 
 public class LynxArmTwoDofSetup implements Runnable {
     private final LynxArmTwoDof m_arm;
@@ -15,11 +16,14 @@ public class LynxArmTwoDofSetup implements Runnable {
         m_viz = new LynxArmVisualizer(m_arm::getPose);
 
         MoveCommandTwoDof move1 = m_arm.moveTo(new Translation2d(0.2, 0.1));
-        new Trigger(m_controller::getSouthFaceButton).whileTrue(move1);
+        whileTrue(m_controller::getSouthFaceButton,
+                move1);
         MoveCommandTwoDof move2 = m_arm.moveTo(new Translation2d(0.2, 0));
-        new Trigger(m_controller::getEastFaceButton).whileTrue(move2);
+        whileTrue(m_controller::getEastFaceButton,
+                move2);
         MoveCommandTwoDof move3 = m_arm.moveTo(new Translation2d(0.3, 0.1));
-        new Trigger(m_controller::getWestFaceButton).whileTrue(move3);
+        whileTrue(m_controller::getWestFaceButton,
+                move3);
 
         MoveCommandTwoDof move4 = m_arm.moveTo(new Translation2d(0.2, 0.05));
         MoveCommandTwoDof move5 = m_arm.moveTo(new Translation2d(0.2, 0.0));
@@ -27,7 +31,7 @@ public class LynxArmTwoDofSetup implements Runnable {
         MoveCommandTwoDof move7 = m_arm.moveTo(new Translation2d(0.4, 0.05));
         MoveCommandTwoDof move8 = m_arm.moveTo(new Translation2d(0.4, 0.0));
         MoveCommandTwoDof move9 = m_arm.moveTo(new Translation2d(0.4, 0.05));
-        new Trigger(m_controller::getNorthFaceButton).whileTrue(
+        whileTrue(m_controller::getNorthFaceButton,
                 Commands.sequence(
                         move4.until(move4::done),
                         move5.until(move5::done),

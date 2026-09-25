@@ -1,5 +1,6 @@
 package org.team100.lib.indicator;
 
+import static org.team100.lib.util.TriggerUtil.onTrue;
 import static org.wpilib.command2.Commands.repeatingSequence;
 
 import java.util.HashMap;
@@ -10,7 +11,6 @@ import java.util.function.Supplier;
 import org.team100.lib.util.RoboRioChannel;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
-import org.wpilib.command2.button.Trigger;
 import org.wpilib.hardware.led.AddressableLED;
 import org.wpilib.hardware.led.AddressableLEDBuffer;
 import org.wpilib.util.Color;
@@ -73,7 +73,7 @@ public class SolidIndicator extends SubsystemBase {
      * Trigger on true, blink the color a few times.
      */
     public void event(BooleanSupplier condition, Color color) {
-        new Trigger(condition).onTrue(
+        onTrue(condition,
                 blink(color)
                         .ignoringDisable(true)
                         .withTimeout(EVENT_DURATION)
@@ -84,7 +84,7 @@ public class SolidIndicator extends SubsystemBase {
         m_led.close();
     }
 
-    /////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
 
     private Command blink(Color color) {
         return repeatingSequence(

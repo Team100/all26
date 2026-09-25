@@ -40,6 +40,7 @@ What's here:
   * Your project
   * Another project
   * etc ...
+* **test**: Standalone projects for single-DOF subsystem "turn up" activities
 
 all26 contains *all* the Team 100 code for *2026.*  There's just one repository,
 so that sharing library code across projects is easier.
