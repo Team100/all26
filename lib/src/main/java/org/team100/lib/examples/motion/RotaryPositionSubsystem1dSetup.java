@@ -1,10 +1,10 @@
 package org.team100.lib.examples.motion;
 
+import static org.team100.lib.util.TriggerUtil.whileTrue;
+
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
-
-import org.wpilib.command2.button.Trigger;
 
 /**
  * This is an example of what you'd put in RobotContainer to use some of the
@@ -22,7 +22,6 @@ public class RotaryPositionSubsystem1dSetup {
          * 
          * Notice the pattern here:
          * 
-         * * new trigger with a boolean, usually a controller button.
          * * "whileTrue" means run the command while you're holding the button
          * * the subsystem produces the command, which runs forever
          * * add a stop condition in "until"
@@ -34,6 +33,7 @@ public class RotaryPositionSubsystem1dSetup {
          * Note the use of "whileTrue" -- it cancels the command if you let go of the
          * button, which seems like a good idea.
          */
-        new Trigger(control::x).whileTrue(rotary.goToTheSpot().until(rotary::isDone));
+        whileTrue(control::x,
+                rotary.goToTheSpot().until(rotary::isDone));
     }
 }

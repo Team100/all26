@@ -1,10 +1,10 @@
 package org.team100.lib.examples.motion;
 
+import static org.team100.lib.util.TriggerUtil.whileTrue;
+
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
-
-import org.wpilib.command2.button.Trigger;
 
 /**
  * This is an example of what you'd put in Robot.java to use the subsystem.
@@ -20,7 +20,8 @@ public class OutboardRotaryPositionSubsystemSetup {
         rotary.setDefaultCommand(rotary.home());
 
         /** Extend to a fixed location as long as the button is held. */
-        new Trigger(control::x).whileTrue(rotary.extend());
+        whileTrue(control::x,
+                rotary.extend());
     }
 
 }

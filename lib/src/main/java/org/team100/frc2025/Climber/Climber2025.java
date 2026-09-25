@@ -59,7 +59,8 @@ public class Climber2025 extends SubsystemBase {
                     log, motor, sensor, gearRatio,
                     0, Math.PI / 2);
 
-            m_servo = new OnboardAngularPositionServo(log, rotaryMechanism, dyn, ref, feedback);
+            m_servo = new OnboardAngularPositionServo(
+                    log, rotaryMechanism, dyn, ref, feedback, 0.02, 0.02);
         } else {
             SimulatedMotor climberMotor = new SimulatedMotor(log, 600);
 
@@ -70,7 +71,8 @@ public class Climber2025 extends SubsystemBase {
                     log, climberMotor, sensor, 1,
                     Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
-            m_servo = new OnboardAngularPositionServo(log, climberMech, dyn, ref, feedback);
+            m_servo = new OnboardAngularPositionServo(
+                    log, climberMech, dyn, ref, feedback, 0.02, 0.02);
         }
     }
 

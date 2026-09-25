@@ -141,7 +141,7 @@ public class Turret extends SubsystemBase {
         RotaryMechanism mech = new RotaryMechanism(
                 log, motor, sensor, GEAR_RATIO, MIN_POSITION, MAX_POSITION);
         AngularPositionServo pivot = new OnboardAngularPositionServo(
-                log, mech, dyn, ref, feedback);
+                log, mech, dyn, ref, feedback, 0.02, 0.02);
         pivot.reset();
         return pivot;
     }
@@ -171,7 +171,7 @@ public class Turret extends SubsystemBase {
         RotaryMechanism mech = new RotaryMechanism(
                 log, motor, sensor, GEAR_RATIO, 0, Math.PI / 2);
         AngularPositionServo pivot = new OnboardAngularPositionServo(
-                log, mech, dyn, ref, feedback);
+                log, mech, dyn, ref, feedback, 0.02, 0.02);
         pivot.reset();
         return pivot;
     }
