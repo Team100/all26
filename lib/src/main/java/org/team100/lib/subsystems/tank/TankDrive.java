@@ -4,6 +4,7 @@ import org.team100.lib.dynamics.differential.DifferentialDriveDynamics;
 import org.team100.lib.dynamics.differential.DifferentialDriveEffort;
 import org.team100.lib.geometry.se2.ChassisAcceleration;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.ChassisVelocitiesLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
@@ -62,6 +63,7 @@ public class TankDrive extends SubsystemBase {
         m_kinematics = new DifferentialDriveKinematics(m_trackWidthM);
         m_positions = new DifferentialDriveWheelPositions(0, 0);
         m_pose = new Pose2d();
+        LogPoller.register(this::log);
     }
 
     /** Use arcade drive to set duty cycle directly. */
@@ -107,12 +109,9 @@ public class TankDrive extends SubsystemBase {
         m_right.stop();
     }
 
-    @Override
-    public void periodic() {
+    private void log() {
         updatePose();
         m_log_field_robot.log(this::poseArray);
-        m_left.periodic();
-        m_right.periodic();
     }
 
     public void setPose(Pose2d p) {

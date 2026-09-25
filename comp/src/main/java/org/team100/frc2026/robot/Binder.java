@@ -120,10 +120,6 @@ public class Binder {
                         .withName("Target lock"));
     }
 
-    public void periodic() {
-        m_driver.periodic();
-    }
-
     /** Keeps tests from conflicting. */
     public void close() {
         //

@@ -80,11 +80,4 @@ public class DiscusBare extends SubsystemBase {
     public Command current(DoubleSupplier i) {
         return run(() -> setCurrent(i.getAsDouble()));
     }
-
-    @Override
-    public void periodic() {
-        m_motor.periodic();
-        m_sensor.periodic();
-    }
-
 }

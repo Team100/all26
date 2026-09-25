@@ -114,13 +114,6 @@ public class RRRArmIndependent extends SubsystemBase implements RRRArm {
     }
 
     @Override
-    public void periodic() {
-        m_q1.periodic();
-        m_q2.periodic();
-        m_q3.periodic();
-    }
-
-    @Override
     public void setZero() {
         m_q1.setUnwrappedEncoderPositionRad(0);
         m_q2.setUnwrappedEncoderPositionRad(0);

@@ -102,7 +102,6 @@ class DriveWithTrajectoryListFunctionTest implements Timeless {
         for (double t = 0; t < 4; t += TimedRobot100.LOOP_PERIOD_S) {
             stepTime();
             c.execute();
-            drive.periodic(); // for updateOdometry
         }
         assertTrue(c.isDone());
         assertEquals(1.0, drive.getState().pose().getX(), 0.01);

@@ -10,6 +10,7 @@ import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.hid.DriverVelocity;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.state.StateSE2;
@@ -44,6 +45,7 @@ public class ManualPose {
         m_input = v;
         m_state = new StateSE2(initial);
         m_stateCache = Cache.of(this::update);
+        LogPoller.register(this::log);
     }
 
     public StateSE2 getState() {
@@ -54,7 +56,7 @@ public class ManualPose {
         return getState().pose();
     }
 
-    public void periodic() {
+    private void log() {
         m_log_field_robot.log(this::poseArray);
     }
 

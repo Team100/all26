@@ -4,6 +4,7 @@ import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -48,8 +49,8 @@ public class PivotSubsystem extends SubsystemBase {
         } else {
             m_pivot = new SimulatedMotor(logger, 600);
         }
-
         m_encoder = m_pivot.encoder();
+        LogPoller.register(this::log);
     }
 
     public void dutyCycle(double set) {
@@ -76,9 +77,7 @@ public class PivotSubsystem extends SubsystemBase {
         return run(this::zero);
     }
 
-    @Override
-    public void periodic() {
-        m_pivot.periodic();
+    private void log() {
         m_log_angle.log(this::getAngleRad);
     }
 }

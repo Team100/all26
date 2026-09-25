@@ -70,6 +70,10 @@ public class DualAngularSubsystem extends SubsystemBase {
                 m_log2, lm2, dynamics, ref, xtolerance, vtolerance);
     }
 
+    public Command voltage(double voltage) {
+        return run(() -> setVoltage(voltage));
+    }
+
     public Command position(double position) {
         return startRun(this::reset,
                 () -> setPositionProfiled(position));
@@ -92,12 +96,6 @@ public class DualAngularSubsystem extends SubsystemBase {
         return m_servo1.atGoal() && m_servo2.atGoal();
     }
 
-    @Override
-    public void periodic() {
-        m_servo1.periodic();
-        m_servo2.periodic();
-    }
-
     public void close() {
         m_servo1.close();
         m_servo2.close();
@@ -106,6 +104,11 @@ public class DualAngularSubsystem extends SubsystemBase {
     private void reset() {
         m_servo1.reset();
         m_servo2.reset();
+    }
+
+    private void setVoltage(double value) {
+        m_servo1.setVoltage(value);
+        m_servo2.setVoltage(value);
     }
 
     private void setPositionProfiled(double value) {

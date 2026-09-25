@@ -98,13 +98,6 @@ public class DiscusServo extends SubsystemBase {
         return m_servo.getUnwrappedPositionRad();
     }
 
-    @Override
-    public void periodic() {
-        m_servo.periodic();
-    }
-
-    ////////////////////
-
     private void setDutyCycle(double p) {
         m_servo.setDutyCycle(p);
     }

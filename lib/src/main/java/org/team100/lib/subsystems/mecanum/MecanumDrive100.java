@@ -7,6 +7,7 @@ import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.kinematics.mecanum.MecanumKinematics100;
 import org.team100.lib.kinematics.mecanum.MecanumKinematics100.Slip;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.logging.LoggerFactory.VelocityControlSE2Logger;
@@ -87,6 +88,7 @@ public class MecanumDrive100 extends SubsystemBase implements VelocitySubsystemS
         m_input = VelocitySE2.ZERO;
         m_pose = new Pose2d();
         m_gyroOffset = new Rotation2d();
+        LogPoller.register(this::log);
     }
 
     @Override
@@ -151,14 +153,9 @@ public class MecanumDrive100 extends SubsystemBase implements VelocitySubsystemS
         m_gyroOffset = m_gyro.getYawNWU().minus(p.getRotation());
     }
 
-    @Override
-    public void periodic() {
+    private void log() {
         updatePose();
         m_log_field_robot.log(this::poseArray);
-        m_frontLeft.periodic();
-        m_frontRight.periodic();
-        m_rearLeft.periodic();
-        m_rearRight.periodic();
     }
 
     private void resetPoseAndGyro() {
