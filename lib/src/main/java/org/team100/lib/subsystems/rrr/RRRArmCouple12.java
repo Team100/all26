@@ -63,9 +63,9 @@ public class RRRArmCouple12 extends SubsystemBase implements RRRArm {
         LoggerFactory q2 = m_log.name("q2");
         LoggerFactory q3 = m_log.name("q3");
         // LINK LENGTHS, METERS
-        double l1 = 0.3;
-        double l2 = 0.3;
-        double l3 = 0.1;
+        double l1 = 0.2286;
+        double l2 = 0.3048;
+        double l3 = 0.3048;
         m_kinematics = new RRRKinematicsPoE(l1, l2, l3);
         m_dynamics = RRRDynamicsNewtonEuler.thinRod(
                 VecBuilder.fill(0, 0, 0),
@@ -85,7 +85,7 @@ public class RRRArmCouple12 extends SubsystemBase implements RRRArm {
                     new CurrentLimit(20, 20), new Friction(0, 0, 0, 0),
                     PIDConstants.makePositionPID(1));
             m2 = new Falcon500Motor(
-                    q2, m_currentLog, new CanId(21),
+                    q2, m_currentLog, new CanId(21), 
                     NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(20, 20), new Friction(0, 0, 0, 0),
                     PIDConstants.makePositionPID(1));
