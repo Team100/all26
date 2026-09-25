@@ -80,7 +80,7 @@ public record StateR1(double x, double v) implements Interpolatable<StateR1> {
 
     @Override
     public String toString() {
-        return String.format("StateR1(X %11.8f V %11.8f)", x, v);
+        return String.format("StateR1(X %6.3f V %6.3f)", x, v);
     }
 
     @Override

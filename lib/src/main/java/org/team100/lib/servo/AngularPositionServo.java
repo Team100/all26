@@ -27,6 +27,11 @@ public interface AngularPositionServo extends Player {
     void reset();
 
     /**
+     * Set the encoder position. This is for "homing".
+     */
+    void setUnwrappedEncoderPositionRad(double x);
+
+    /**
      * Invalidates the current profile.
      * 
      * You need to keep calling this to keep actuating.
@@ -115,6 +120,12 @@ public interface AngularPositionServo extends Player {
     /** The "unwrapped" value domain is infinite. */
     double getUnwrappedPositionRad();
 
+    /** rad/s */
+    double getVelocity();
+
+    /** rad/s^2 */
+    double getAcceleration();
+
     /** For testing. */
     StateR1 getUnwrappedGoal();
 
@@ -146,6 +157,6 @@ public interface AngularPositionServo extends Player {
     /** for logging */
     void periodic();
 
-    /** For setting friction only */
+    /** For friction measurement and homing. */
     void setVelocity(double rad_S);
 }

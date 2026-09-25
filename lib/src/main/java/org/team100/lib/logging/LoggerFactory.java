@@ -21,6 +21,7 @@ import org.team100.lib.localization.SwerveState;
 import org.team100.lib.logging.primitive.PrimitiveLogger;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.reference.r1.SetpointsR1;
+import org.team100.lib.reference.r1.VelocitySetpointsR1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.state.StateR1;
@@ -786,6 +787,30 @@ public class LoggerFactory {
 
     public SetpointsR1Logger setpointsR1Logger(Level level, String leaf) {
         return new SetpointsR1Logger(level, leaf);
+    }
+
+    public class VelocitySetpointsR1Logger {
+        private final Level m_level;
+        private final VelocityControlR1Logger m_current;
+        private final VelocityControlR1Logger m_next;
+
+        VelocitySetpointsR1Logger(Level level, String leaf) {
+            m_level = level;
+            m_current = VelocityControlR1Logger(level, join(leaf, "current"));
+            m_next = VelocityControlR1Logger(level, join(leaf, "next"));
+        }
+
+        public void log(Supplier<VelocitySetpointsR1> vals) {
+            if (!allow(m_level))
+                return;
+            VelocitySetpointsR1 val = vals.get();
+            m_current.log(val::current);
+            m_next.log(val::next);
+        }
+    }
+
+    public VelocitySetpointsR1Logger velocitySetpointsR1Logger(Level level, String leaf) {
+        return new VelocitySetpointsR1Logger(level, leaf);
     }
 
     public class ControlSE2Logger {

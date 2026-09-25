@@ -1,12 +1,9 @@
 package org.team100.lib.commands;
 
-import java.util.function.BooleanSupplier;
+import static org.team100.lib.util.TriggerUtil.whileTrue;
 
 import org.team100.lib.hid.Buttons2025;
-
-import org.wpilib.command2.Command;
 import org.wpilib.command2.PrintCommand;
-import org.wpilib.command2.button.Trigger;
 
 public class Buttons2025Demo {
     Buttons2025 m_control;
@@ -46,8 +43,4 @@ public class Buttons2025Demo {
         whileTrue(m_control::kl, new PrintCommand("kl"));
     }
 
-
-    private void whileTrue(BooleanSupplier condition, Command command) {
-        new Trigger(condition).whileTrue(command);
-    }
 }

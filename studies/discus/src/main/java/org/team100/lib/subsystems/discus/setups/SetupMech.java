@@ -1,11 +1,12 @@
 package org.team100.lib.subsystems.discus.setups;
 
+import static org.team100.lib.util.TriggerUtil.whileTrue;
+
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.subsystems.discus.DiscusMech;
 import org.team100.lib.visualization.ArmVisualization;
-import org.wpilib.command2.button.Trigger;
 import org.wpilib.driverstation.Gamepad;
 
 /** Adds gearing, friction, and PID. */
@@ -29,15 +30,19 @@ public class SetupMech implements Runnable {
         // These bindings are remembered by the trigger event loop, so we don't need to
         // retain them.
         // button 1, "z" in the sim
-        new Trigger(controller::getSouthFaceButton).whileTrue(m_discus.home());
+        whileTrue(controller::getSouthFaceButton,
+                m_discus.home());
         // button 2, "x" in the sim
-        new Trigger(controller::getEastFaceButton).whileTrue(m_discus.zero());
-        new Trigger(controller::getWestFaceButton).whileTrue(m_discus.position(() -> 2));
-        new Trigger(controller::getNorthFaceButton).whileTrue(m_discus.position(() -> -2));
+        whileTrue(controller::getEastFaceButton,
+                m_discus.zero());
+        whileTrue(controller::getWestFaceButton,
+                m_discus.position(() -> 2));
+        whileTrue(controller::getNorthFaceButton,
+                m_discus.position(() -> -2));
 
         // set voltage directly to tune friction.
-        new Trigger(controller::getLeftBumperButton)
-                .whileTrue(m_discus.friction(() -> 0.2 * controller.getRightX()));
+        whileTrue(controller::getLeftBumperButton,
+                m_discus.friction(() -> 0.2 * controller.getRightX()));
     }
 
     @Override

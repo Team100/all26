@@ -167,10 +167,11 @@ public class LinearMechanism implements Player {
     }
 
     /**
-     * Force the encoder to zero.
+     * Force the encoder measurement. For "homing".
      */
-    public void setZero() {
-        m_encoder.setUnwrappedEncoderPositionRad(0);
+    public void setEncoderPositionM(double positionM) {
+        m_encoder.setUnwrappedEncoderPositionRad(
+                positionM * m_gearRatio / m_wheelRadiusM);
     }
 
     public void close() {

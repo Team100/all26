@@ -41,7 +41,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
         ProfileR1 profile = new TrapezoidProfileR1(1, 1, 0.05);
         ProfileReferenceR1 ref = new ProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
         OnboardAngularPositionServo servo = new OnboardAngularPositionServo(
-                logger, mech, dyn, ref, turningFeedback2);
+                logger, mech, dyn, ref, turningFeedback2, 0.02, 0.02);
         // set to current position
         servo.setPositionProfiled(0);
     }
@@ -60,7 +60,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
         final ProfileR1 profile = new TrapezoidProfileR1(1, 1, 0.05);
         final ProfileReferenceR1 ref = new ProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
         final OnboardAngularPositionServo servo = new OnboardAngularPositionServo(
-                logger, mech, dyn, ref, turningFeedback2);
+                logger, mech, dyn, ref, turningFeedback2, 0.02, 0.02);
         servo.reset();
         // spin for 1 s
         for (int i = 0; i < 50; ++i) {
@@ -94,7 +94,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
         ProfileR1 profile = new TrapezoidProfileR1(2, 2, 0.05);
         ProfileReferenceR1 ref = new ProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
         OnboardAngularPositionServo servo = new OnboardAngularPositionServo(
-                logger, mech, dyn, ref, turningFeedback2);
+                logger, mech, dyn, ref, turningFeedback2, 0.02, 0.02);
 
         // at zero
         servo.reset();
@@ -159,7 +159,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
         // IncrementalProfile profile = new TrapezoidProfileWPI(2, 2);
         ProfileReferenceR1 ref = new ProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
         OnboardAngularPositionServo servo = new OnboardAngularPositionServo(
-                logger, mech, dyn, ref, turningFeedback2);
+                logger, mech, dyn, ref, turningFeedback2, 0.02, 0.02);
 
         // at zero
         servo.reset();
@@ -218,7 +218,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
         final FeedbackR1 turningFeedback2 = new PIDFeedback(
                 logger, 10, 0, 0, false, 0.05, 1);
         OnboardAngularPositionServo servo = new OnboardAngularPositionServo(
-                logger, mech, dyn, ref, turningFeedback2);
+                logger, mech, dyn, ref, turningFeedback2, 0.02, 0.02);
 
         servo.reset();
         servo.periodic();
@@ -256,7 +256,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
         final FeedbackR1 turningFeedback2 = new PIDFeedback(
                 logger, 10, 0, 0, false, 0.05, 1);
         OnboardAngularPositionServo servo = new OnboardAngularPositionServo(
-                logger, mech, dyn, ref, turningFeedback2);
+                logger, mech, dyn, ref, turningFeedback2, 0.02, 0.02);
 
         servo.reset();
         servo.periodic();
@@ -325,7 +325,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
         final FeedbackR1 turningFeedback2 = new PIDFeedback(
                 logger, 10, 0, 0, false, 0.05, 1);
         OnboardAngularPositionServo servo = new OnboardAngularPositionServo(
-                logger, mech, dyn, ref, turningFeedback2);
+                logger, mech, dyn, ref, turningFeedback2, 0.02, 0.02);
 
         servo.reset();
         servo.periodic();

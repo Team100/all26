@@ -8,9 +8,8 @@ import org.team100.lib.dynamics.r.REffort;
 import org.team100.lib.dynamics.r.RVelocity;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.logging.LoggerFactory.StateR1Logger;
+import org.team100.lib.logging.LoggerFactory.SetpointsR1Logger;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
@@ -28,36 +27,37 @@ public class OnboardAngularPositionServo extends AngularPositionServoImpl {
 
     private final FeedbackR1 m_feedback;
 
+    private final SetpointsR1Logger m_log_setpoints;
     private final DoubleLogger m_log_feedforward_torque;
-    private final StateR1Logger m_log_measurement;
-    private final ControlR1Logger m_log_control;
     private final DoubleLogger m_log_u_FB;
     private final DoubleLogger m_log_u_FF;
     private final DoubleLogger m_log_u_TOTAL;
-    private final DoubleLogger m_log_error;
+    private final DoubleLogger m_log_position_error;
     private final DoubleLogger m_log_velocity_error;
+    private final DoubleLogger m_log_accel_error;
 
     public OnboardAngularPositionServo(
             LoggerFactory parent,
             RotaryMechanism mech,
             RDynamics dynamics,
             ReferenceR1 ref,
-            FeedbackR1 feedback) {
-        super(parent, mech, dynamics, ref);
+            FeedbackR1 feedback,
+            double xtolerance,
+            double vtolerance) {
+        super(parent, mech, dynamics, ref, xtolerance, vtolerance);
         if (feedback.handlesWrapping())
             throw new IllegalArgumentException("Do not supply wrapping feedback");
         LoggerFactory log = parent.type(this);
         m_feedback = feedback;
 
+        m_log_setpoints = log.setpointsR1Logger(Level.TRACE, "setpoints");
         m_log_feedforward_torque = log.doubleLogger(Level.TRACE, "Feedforward Torque (Nm)");
-        m_log_measurement = log.StateR1Logger(Level.COMP, "measurement (rad)");
-        m_log_control = log.ControlR1Logger(Level.COMP, "control (rad)");
         m_log_u_FB = log.doubleLogger(Level.TRACE, "u_FB (rad_s)");
         m_log_u_FF = log.doubleLogger(Level.TRACE, "u_FF (rad_s)");
-
         m_log_u_TOTAL = log.doubleLogger(Level.COMP, "u_TOTAL (rad_s)");
-        m_log_error = log.doubleLogger(Level.TRACE, "Controller Position Error (rad)");
-        m_log_velocity_error = log.doubleLogger(Level.TRACE, "Controller Velocity Error (rad_s)");
+        m_log_position_error = log.doubleLogger(Level.COMP, "position error (rad)");
+        m_log_velocity_error = log.doubleLogger(Level.COMP, "velocity error (rad_s)");
+        m_log_accel_error = log.doubleLogger(Level.COMP, "accel error (rad_s2)");
     }
 
     @Override
@@ -98,14 +98,15 @@ public class OnboardAngularPositionServo extends AngularPositionServoImpl {
 
         m_mechanism.setVelocity(u_TOTAL, t.t());
 
+        m_log_setpoints.log(() -> unwrappedSetpoint);
         m_log_feedforward_torque.log(() -> t.t());
-        m_log_measurement.log(() -> unwrappedMeasurement);
-        m_log_control.log(() -> nextUnwrappedSetpoint);
         m_log_u_FB.log(() -> u_FB);
         m_log_u_FF.log(() -> u_FF);
         m_log_u_TOTAL.log(() -> u_TOTAL);
-        m_log_error.log(() -> currentUnwrappedSetpoint.x() - unwrappedMeasurement.x());
-        m_log_velocity_error.log(() -> currentUnwrappedSetpoint.v() - unwrappedMeasurement.v());
+        m_log_position_error.log(() -> unwrappedSetpoint.current().x() - getUnwrappedPositionRad());
+        m_log_velocity_error.log(() -> unwrappedSetpoint.current().v() - getVelocity());
+        m_log_accel_error.log(() -> unwrappedSetpoint.current().a() - getAcceleration());
+
     }
 
 }

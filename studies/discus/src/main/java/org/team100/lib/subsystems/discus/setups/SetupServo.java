@@ -1,11 +1,12 @@
 package org.team100.lib.subsystems.discus.setups;
 
+import static org.team100.lib.util.TriggerUtil.whileTrue;
+
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.subsystems.discus.DiscusServo;
 import org.team100.lib.visualization.ArmVisualization;
-import org.wpilib.command2.button.Trigger;
 import org.wpilib.driverstation.Gamepad;
 
 /** Adds profiled motion. */
@@ -27,14 +28,22 @@ public class SetupServo implements Runnable {
 
         // These bindings are remembered by the trigger event loop, so we don't need to
         // retain them.
-        // new Trigger(controller::getAButton).whileTrue(m_discus.home());
-        // new Trigger(controller::getBButton).onTrue(m_discus.zero());
-        new Trigger(controller::getWestFaceButton).whileTrue(m_discus.position(() -> 3));
-        new Trigger(controller::getNorthFaceButton).whileTrue(m_discus.position(() -> -8));
-        new Trigger(controller::getRightBumperButton).whileTrue(m_discus.position(() -> 12));
-        new Trigger(controller::getLeftBumperButton).whileTrue(m_discus.position(() -> -12));
-        new Trigger(controller::getSouthFaceButton).whileTrue(m_discus.position(() -> 20));
-        new Trigger(controller::getEastFaceButton).whileTrue(m_discus.position(() -> -20));
+        // whileTrue(controller::getAButton,
+        // m_discus.home());
+        // onTrue(controller::getBButton,
+        // m_discus.zero());
+        whileTrue(controller::getWestFaceButton,
+                m_discus.position(() -> 3));
+        whileTrue(controller::getNorthFaceButton,
+                m_discus.position(() -> -8));
+        whileTrue(controller::getRightBumperButton,
+                m_discus.position(() -> 12));
+        whileTrue(controller::getLeftBumperButton,
+                m_discus.position(() -> -12));
+        whileTrue(controller::getSouthFaceButton,
+                m_discus.position(() -> 20));
+        whileTrue(controller::getEastFaceButton,
+                m_discus.position(() -> -20));
     }
 
     @Override
