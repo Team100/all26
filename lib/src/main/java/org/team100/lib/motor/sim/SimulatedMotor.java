@@ -4,6 +4,7 @@ import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.ObjectCache;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.StateR1Logger;
@@ -54,6 +55,7 @@ public class SimulatedMotor implements Motor {
         m_log_state = m_log.StateR1Logger(Level.DEBUG, "state");
         m_stateCache = Cache.of(this::update);
         m_smoothDerivative = new LowPassDerivative();
+        LogPoller.register(this::log);
     }
 
     private StateR1 update() {
@@ -190,8 +192,7 @@ public class SimulatedMotor implements Motor {
         //
     }
 
-    @Override
-    public void periodic() {
+    private void log() {
         if (m_positionInput != null)
             m_log_positionInput.log(() -> m_positionInput);
         if (m_velocityInput != null)

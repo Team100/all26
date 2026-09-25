@@ -142,10 +142,4 @@ public class Climber extends SubsystemBase {
         m_servo.actuateWithProfile(m_level3);
         m_servo2.actuateWithProfile(m_level3);
     }
-
-    @Override
-    public void periodic() {
-        m_servo.periodic();
-        m_servo2.periodic();
-    }
 }

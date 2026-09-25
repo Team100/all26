@@ -55,7 +55,10 @@ public class SingleAngularSubsystem extends SubsystemBase {
 
         m_servo1 = new OutboardAngularPositionServo(
                 m_log1, lm1, dynamics, ref, xtolerance, vtolerance);
+    }
 
+    public Command voltage(double voltage) {
+        return run(() -> setVoltage(voltage));
     }
 
     public Command position(double position) {
@@ -80,17 +83,16 @@ public class SingleAngularSubsystem extends SubsystemBase {
         return m_servo1.atGoal();
     }
 
-    @Override
-    public void periodic() {
-        m_servo1.periodic();
-    }
-
     public void close() {
         m_servo1.close();
     }
 
     private void reset() {
         m_servo1.reset();
+    }
+
+    private void setVoltage(double value) {
+        m_servo1.setVoltage(value);
     }
 
     private void setPositionProfiled(double value) {

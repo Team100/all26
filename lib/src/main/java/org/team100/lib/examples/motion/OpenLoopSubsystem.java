@@ -82,9 +82,4 @@ public class OpenLoopSubsystem extends SubsystemBase {
             setDutyCycle(-1.0);
         });
     }
-
-    @Override
-    public void periodic() {
-        m_motor.periodic();
-    }
 }

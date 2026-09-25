@@ -86,7 +86,6 @@ public class SixDofArmTest implements Timeless {
         for (int i = 0; i < 100; ++i) {
             stepTime();
             cmd.execute();
-            arm.periodic();
         }
         SixDofConfig finalConfig = arm.getConfig();
         TestUtil.verify(configGoal, finalConfig);

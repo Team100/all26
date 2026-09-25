@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.team100.lib.dynamics.swerve.SwerveEffort;
 import org.team100.lib.geometry.se2.ChassisAcceleration;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.ChassisVelocitiesLogger;
 import org.team100.lib.logging.LoggerFactory.SwerveModulePositionsLogger;
@@ -51,6 +52,7 @@ public class SwerveLocal implements Player {
         m_swerveKinodynamics = swerveKinodynamics;
         m_modules = modules;
         m_players = m_modules.players();
+        LogPoller.register(this::log);
     }
 
     @Override
@@ -121,8 +123,7 @@ public class SwerveLocal implements Player {
     }
 
     /** Updates visualization. */
-    void periodic() {
+    private void log() {
         m_logPositions.log(this::positions);
-        m_modules.periodic();
     }
 }

@@ -294,14 +294,6 @@ public class SwerveModuleCollection implements Player {
                 m_rearRight };
     }
 
-    /** Updates visualization. */
-    public void periodic() {
-        m_frontLeft.periodic();
-        m_frontRight.periodic();
-        m_rearLeft.periodic();
-        m_rearRight.periodic();
-    }
-
     @Override
     public void play(double freq) {
         m_frontLeft.play(freq);

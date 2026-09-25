@@ -6,6 +6,7 @@ import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -104,7 +105,7 @@ public class Manipulator extends SubsystemBase implements Music {
 
         }
         m_players = List.of(m_leftMech, m_rightMech, m_algaeMech);
-
+        LogPoller.register(this::log);
     }
 
     @Override
@@ -274,12 +275,7 @@ public class Manipulator extends SubsystemBase implements Music {
         m_algaeMech.setDutyCycle(-1);
     }
 
-    @Override
-    public void periodic() {
-        m_rightMech.periodic();
-        m_leftMech.periodic();
-        m_algaeMech.periodic();
-        m_algaeMotor.periodic();
+    private void log() {
         coralLogger.log(this::hasCoral);
     }
     ///////////////////////////////////////////

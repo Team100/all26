@@ -74,12 +74,6 @@ public class IntakeExtend extends SubsystemBase {
                 log2, motor2, dynamics, ref, gearRatio, gearDiameter);
     }
 
-    @Override
-    public void periodic() {
-        m_servo.periodic();
-        m_Servo2.periodic();
-    }
-
     /** Current position is out, or nearly so */
     public boolean isOut() {
         return MathUtil.isNear(m_servo.getPosition(), EXTENDED_POSITION, 1)

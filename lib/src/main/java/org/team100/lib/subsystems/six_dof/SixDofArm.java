@@ -88,16 +88,6 @@ public class SixDofArm extends SubsystemBase implements PositionSubsystemRn<N6> 
                 q6, m6, m6.encoder(), 0, 1, qMin.q6(), qMax.q6());
     }
 
-    @Override
-    public void periodic() {
-        m_q1.periodic();
-        m_q2.periodic();
-        m_q3.periodic();
-        m_q4.periodic();
-        m_q5.periodic();
-        m_q6.periodic();
-    }
-
     /**
      * @param p tool center point pose, aimed at +z
      */

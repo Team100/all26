@@ -25,6 +25,8 @@ public class Robot extends TimedRobot {
         Cache.refresh();
         CommandScheduler.getInstance().run();
         m_machinery.periodic();
+        // Poll for logs after all the actuation is done
+        LogPoller.log();
     }
 
     @Override

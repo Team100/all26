@@ -76,11 +76,6 @@ public class Climber2025 extends SubsystemBase {
         }
     }
 
-    @Override
-    public void periodic() {
-        m_servo.periodic();
-    }
-
     public boolean atGoal() {
         return m_servo.atGoal();
     }

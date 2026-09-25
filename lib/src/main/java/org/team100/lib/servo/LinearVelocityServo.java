@@ -20,6 +20,9 @@ public interface LinearVelocityServo extends Player {
     /** Reset encoder to zero */
     void reset();
 
+    /** For measuring friction. */
+    void setVoltage(double volts);
+
     void setDutyCycle(double dutyCycle);
 
     /**
@@ -34,7 +37,7 @@ public interface LinearVelocityServo extends Player {
      * 
      * You need to keep calling this to keep actuating.
      * 
-     * @param setpointM_S  desired speed, m/s
+     * @param setpointM_S desired speed, m/s
      */
     void setVelocityDirect(double setpointM_S);
 
@@ -59,8 +62,4 @@ public interface LinearVelocityServo extends Player {
 
     /** For cleanup. */
     void close();
-
-    /** For logging */
-    void periodic();
-
 }

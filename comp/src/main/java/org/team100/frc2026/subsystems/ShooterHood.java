@@ -70,11 +70,6 @@ public class ShooterHood extends SubsystemBase {
                 MIN_POSITION_RAD, MIN_POSITION_RAD, MAX_POSITION_RAD);
     }
 
-    @Override
-    public void periodic() {
-        m_servo.periodic();
-    }
-
     /** Fixed angle for around 2.5m */
     public Command failsafe() {
         return setPosition(0.1)

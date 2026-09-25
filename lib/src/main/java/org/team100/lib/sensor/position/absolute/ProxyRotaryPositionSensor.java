@@ -56,11 +56,6 @@ public class ProxyRotaryPositionSensor implements RotaryPositionSensor {
     }
 
     @Override
-    public void periodic() {
-        m_encoder.periodic();
-    }
-
-    @Override
     public void close() {
         m_encoder.close();
     }
