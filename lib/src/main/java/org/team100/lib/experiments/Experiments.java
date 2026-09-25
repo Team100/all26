@@ -26,7 +26,10 @@ public class Experiments {
     public static final Experiments INSTANCE = new Experiments(Identity.instance);
 
     /** These experiments are enabled by default. */
-    private final Set<Experiment> m_defaults = Set.of();
+    private final Set<Experiment> m_defaults = Set.of(
+            Experiment.IncludeFrictionFeedForward,
+            Experiment.IncludeVelocityFeedForward,
+            Experiment.IncludeTorqueFeedForward);
 
     /** Key = experiment, value = enabled. */
     private final Map<Experiment, Boolean> m_enabled;

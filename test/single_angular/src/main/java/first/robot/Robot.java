@@ -13,6 +13,7 @@ import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.hid.DriverXboxControl;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.RobotLog;
@@ -70,6 +71,7 @@ public class Robot extends TimedRobot100 {
         whileTrue(m_control::b, m_subsystem.position(0.1).withName("out"));
         whileTrue(m_control::leftBumper, m_subsystem.velocity(-0.1).withName("negative"));
         whileTrue(m_control::rightBumper, m_subsystem.velocity(0.1).withName("positive"));
+        whileTrue(m_control::back, m_subsystem.voltage(0.5).withName("voltage"));
     }
 
     @Override
@@ -77,8 +79,8 @@ public class Robot extends TimedRobot100 {
         Takt.update();
         Cache.refresh();
         CommandScheduler.getInstance().run();
-        m_robotLog.periodic();
-        m_control.periodic();
+        // Poll for logs after all the actuation is done
+        LogPoller.log();
         if (Experiments.INSTANCE.enabled(Experiment.FlushOften)) {
             NetworkTableInstance.getDefault().flush();
         }

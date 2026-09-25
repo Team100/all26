@@ -66,6 +66,11 @@ public class OnboardAngularPositionServo extends AngularPositionServoImpl {
         m_feedback.reset();
     }
 
+    @Override
+    public void setVoltage(double v) {
+        m_mechanism.setVoltage(v);
+    }
+
     /**
      * Feedback using measurement and current setpoint. Feedforward using next
      * setpoint.

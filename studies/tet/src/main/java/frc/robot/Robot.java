@@ -89,6 +89,8 @@ public class Robot extends TimedRobot {
         s1.periodic();
         s2.periodic();
         CommandScheduler.getInstance().run();
+        // Poll for logs after all the actuation is done
+        LogPoller.log();
         NetworkTableInstance.getDefault().flush();
     }
 

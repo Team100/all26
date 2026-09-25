@@ -194,8 +194,4 @@ public interface Motor extends Player, TotalCurrentLog.Reporter {
 
     /** For test cleanup. */
     void close();
-
-    /** For logging */
-    void periodic();
-
 }

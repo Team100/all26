@@ -9,6 +9,7 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -58,10 +59,9 @@ public class Robot extends TimedRobot {
         Takt.update();
         // Take all the measurements we can, as soon and quickly as possible.
         Cache.refresh();
-     
         CommandScheduler.getInstance().run();
-        left.periodic();
-        right.periodic();
+        // Poll for logs after all the actuation is done
+        LogPoller.log();
     }
 
     @Override

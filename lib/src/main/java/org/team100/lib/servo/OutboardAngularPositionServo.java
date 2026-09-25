@@ -27,7 +27,7 @@ import org.team100.lib.state.ControlR1;
  * positional commands make sense.
  */
 public class OutboardAngularPositionServo extends AngularPositionServoImpl {
-
+    private static final boolean DEBUG = false;
     private final SetpointsR1Logger m_log_setpoints;
     private final DoubleLogger m_log_ff_torque;
     private final DoubleLogger m_log_position_error;
@@ -94,7 +94,8 @@ public class OutboardAngularPositionServo extends AngularPositionServoImpl {
      */
     @Override
     void actuate(SetpointsR1 unwrappedSetpoint) {
-
+        if (DEBUG)
+            System.out.printf("actuate %s\n", unwrappedSetpoint);
         ControlR1 nextUnwrappedSetpoint = unwrappedSetpoint.next();
 
         REffort t = m_dynamics.effort(

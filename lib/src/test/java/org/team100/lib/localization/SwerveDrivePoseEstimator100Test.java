@@ -889,10 +889,6 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
             public Rotation2d getRollNWU() {
                 return null;
             }
-
-            @Override
-            public void periodic() {
-            }
         };
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forWPITest();
 

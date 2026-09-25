@@ -69,6 +69,10 @@ public class DualRollerSubsystem extends SubsystemBase {
                 m_log2, lm2, dynamics, ref, vtolerance);
     }
 
+    public Command voltage(double voltage) {
+        return run(() -> setVoltage(voltage));
+    }
+
     public Command velocity(double velocity) {
         return startRun(this::reset,
                 () -> setVelocity(velocity));
@@ -82,12 +86,6 @@ public class DualRollerSubsystem extends SubsystemBase {
         return m_servo1.atGoal() && m_servo2.atGoal();
     }
 
-    @Override
-    public void periodic() {
-        m_servo1.periodic();
-        m_servo2.periodic();
-    }
-
     public void close() {
         m_servo1.close();
         m_servo2.close();
@@ -96,6 +94,11 @@ public class DualRollerSubsystem extends SubsystemBase {
     private void reset() {
         m_servo1.reset();
         m_servo2.reset();
+    }
+
+    private void setVoltage(double value) {
+        m_servo1.setVoltage(value);
+        m_servo2.setVoltage(value);
     }
 
     private void setVelocity(double value) {

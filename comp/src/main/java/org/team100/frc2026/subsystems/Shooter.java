@@ -111,14 +111,6 @@ public class Shooter extends SubsystemBase {
                 log4, m4, dynamics, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
     }
 
-    @Override
-    public void periodic() {
-        m_servo1.periodic();
-        m_servo2.periodic();
-        m_servo3.periodic();
-        m_servo4.periodic();
-    }
-
     public Command tune() {
         return startRun(
                 this::reset,

@@ -1,5 +1,7 @@
 package org.team100.lib.motor.ctre;
 
+import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.Motor;
@@ -53,12 +55,15 @@ public class TalonSRXMotor implements Motor {
         // m_motor.configPeakCurrentLimit(0);
         // the supply limit is really an input power limit; the available torque thus
         // varies with RPM.
+
         // m_motor.configContinuousCurrentLimit((int) supplyLimit);
         // m_motor.enableCurrentLimit(true);
         // m_log = parent.type(this);
         // m_log_supply = m_log.doubleLogger(Level.TRACE, "supply current (A)");
         // m_log_stator = m_log.doubleLogger(Level.TRACE, "stator current (A)");
         // m_log_duty = m_log.doubleLogger(Level.TRACE, "duty cycle");
+        // LogPoller.register(this::log);
+
     }
 
     @Override
@@ -116,8 +121,7 @@ public class TalonSRXMotor implements Motor {
         // SRX doesn't support close()
     }
 
-    @Override
-    public void periodic() {
+    private void log() {
         // m_log_supply.log(m_motor::getSupplyCurrent);
         // m_log_stator.log(m_motor::getStatorCurrent);
         // m_log_duty.log(m_motor::getMotorOutputPercent);

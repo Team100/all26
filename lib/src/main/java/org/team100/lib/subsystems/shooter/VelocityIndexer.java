@@ -42,11 +42,6 @@ public class VelocityIndexer extends SubsystemBase implements ShooterIndexer {
         return run(this::zero);
     }
 
-    @Override
-    public void periodic() {
-        m_servo.periodic();
-    }
-
     //////////////////////////////////////////////////////////
 
     private void full() {

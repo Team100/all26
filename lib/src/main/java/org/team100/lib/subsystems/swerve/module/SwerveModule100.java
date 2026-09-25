@@ -157,12 +157,6 @@ public abstract class SwerveModule100 implements Player {
         m_steer.stop();
     }
 
-    /** Update logs. */
-    void periodic() {
-        m_drive.periodic();
-        m_steer.periodic();
-    }
-
     /**
      * Turning servo commands compute the velocity based on the previous desired
      * angle.

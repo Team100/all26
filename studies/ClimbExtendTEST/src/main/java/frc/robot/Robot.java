@@ -7,6 +7,7 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.hid.DriverXboxControl;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.util.Startup;
@@ -38,6 +39,8 @@ public class Robot extends TimedRobot {
         // Run one iteration of the command scheduler.
         CommandScheduler.getInstance().run();
         m_machinery.periodic();
+        // Poll for logs after all the actuation is done
+        LogPoller.log();
         if (Experiments.INSTANCE.enabled(Experiment.FlushOften)) {
             // StrUtil.warn("FLUSHING EVERY LOOP, DO NOT USE IN COMP");
             NetworkTableInstance.getDefault().flush();

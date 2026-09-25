@@ -2,6 +2,7 @@ package org.team100.lib.servo;
 
 import org.team100.lib.dynamics.r.RDynamics;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
@@ -76,6 +77,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
         m_log_at_setpoint = log.booleanLogger(Level.TRACE, "at setpoint");
         m_log_profile_done = log.booleanLogger(Level.TRACE, "profile done");
         m_log_at_goal = log.booleanLogger(Level.TRACE, "at goal");
+        LogPoller.register(this::log);
     }
 
     abstract void actuate(SetpointsR1 wrappedSetpoints);
@@ -86,6 +88,11 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
         ControlR1 measurement = new ControlR1(getWrappedPositionRad(), 0);
         m_ref.setGoal(measurement.state());
         m_ref.init(measurement.state());
+    }
+
+    @Override
+    public void setVoltage(double v) {
+        m_mechanism.setVoltage(v);
     }
 
     @Override
@@ -102,14 +109,20 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
 
     @Override
     public void setPositionDirect(double wrappedGoalRad, double velocityRad_S) {
+        if (DEBUG)
+            System.out.printf("setPositionDirect %6.3f %6.3f\n", wrappedGoalRad, velocityRad_S);
         m_log_velocity.log(() -> velocityRad_S);
         // make sure the reference gets reinitialized if required later
         m_unwrappedGoal = null;
         m_validSetpoint = true;
 
         double unwrappedMeasurement = m_mechanism.getUnwrappedPositionRad();
+        if (DEBUG)
+            System.out.printf("unwrappedMeasurement %6.3f\n", unwrappedMeasurement);
         double dx = MathUtil.angleModulus(wrappedGoalRad - unwrappedMeasurement);
         double unwrappedGoalX = unwrappedMeasurement + dx;
+        if (DEBUG)
+            System.out.printf("unwrappedGoalX %6.3f\n", unwrappedGoalX);
         if (dx > 0) {
             if (DEBUG)
                 System.out.println("short way is positive");
@@ -321,9 +334,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
         m_mechanism.close();
     }
 
-    @Override
-    public void periodic() {
-        m_mechanism.periodic();
+    private void log() {
         m_log_atGoal.log(() -> atGoal());
         m_log_position.log(() -> getUnwrappedPositionRad());
         m_log_velocity.log(() -> getVelocity());

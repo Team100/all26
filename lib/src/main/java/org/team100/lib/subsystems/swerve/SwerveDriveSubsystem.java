@@ -8,6 +8,7 @@ import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.se2.ChassisAcceleration;
 import org.team100.lib.localization.StateEstimator;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.StateSE2Logger;
@@ -49,6 +50,7 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
         m_log_input = log.velocityControlSE2Logger(Level.TRACE, "drive input");
         m_log_rotation_evolution = log.doubleLogger(Level.TRACE, "rotation evolution");
         m_players = m_swerveLocal.players();
+        LogPoller.register(this::log);
         stop();
     }
 
@@ -178,10 +180,7 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
         return m_players;
     }
 
-    @Override
-    public void periodic() {
-        // Periodic is for logging and visualization.
-        m_swerveLocal.periodic();
+    private void log() {
         m_log_state.log(this::getState);
     }
 
