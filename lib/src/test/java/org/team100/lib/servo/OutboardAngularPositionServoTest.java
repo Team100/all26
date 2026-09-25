@@ -52,7 +52,7 @@ public class OutboardAngularPositionServoTest implements Timeless {
         ProfileR1 profile = new TrapezoidProfileR1(1, 1, 0.05);
         ProfileReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.01, 0.01);
         OutboardAngularPositionServo servo = new OutboardAngularPositionServo(
-                log, mech, dyn, ref);
+                log, mech, dyn, ref, 0.02, 0.02);
         // false upon construction
         assertFalse(servo.atGoal());
         // because there is no valid setpoint
@@ -97,7 +97,7 @@ public class OutboardAngularPositionServoTest implements Timeless {
         ProfileR1 profile = new TrapezoidProfileR1(1, 1, 0.05);
         ProfileReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.01, 0.01);
         OutboardAngularPositionServo servo = new OutboardAngularPositionServo(
-                log, mech, dyn, ref);
+                log, mech, dyn, ref, 0.02, 0.02);
         // set to current position
         servo.setPositionProfiled(0);
     }
@@ -119,7 +119,7 @@ public class OutboardAngularPositionServoTest implements Timeless {
         final ProfileR1 profile = new TrapezoidProfileR1(1, 1, 0.05);
         final ProfileReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.01, 0.01);
         final OutboardAngularPositionServo servo = new OutboardAngularPositionServo(
-                log, mech, dyn, ref);
+                log, mech, dyn, ref, 0.02, 0.02);
         servo.reset();
         // it moves slowly
         servo.setPositionProfiled(1);
@@ -156,7 +156,7 @@ public class OutboardAngularPositionServoTest implements Timeless {
         // no profile for this test.
         ReferenceR1 ref = new MockProfileReferenceR1();
         OutboardAngularPositionServo servo = new OutboardAngularPositionServo(
-                log, mech, dyn, ref);
+                log, mech, dyn, ref, 0.02, 0.02);
 
         servo.reset();
         servo.periodic();
@@ -211,7 +211,7 @@ public class OutboardAngularPositionServoTest implements Timeless {
         // no profile for this test.
         ReferenceR1 ref = new MockProfileReferenceR1();
         OutboardAngularPositionServo servo = new OutboardAngularPositionServo(
-                log, mech, dyn, ref);
+                log, mech, dyn, ref, 0.02, 0.02);
 
         // Start at zero.
 
@@ -328,7 +328,7 @@ public class OutboardAngularPositionServoTest implements Timeless {
                 log, motor, sensor, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
         ReferenceR1 ref = new MockProfileReferenceR1();
         OutboardAngularPositionServo servo = new OutboardAngularPositionServo(
-                log, mech, dyn, ref);
+                log, mech, dyn, ref, 0.02, 0.02);
 
         servo.reset();
         servo.periodic();
@@ -385,7 +385,7 @@ public class OutboardAngularPositionServoTest implements Timeless {
         ProfileR1 profile = new TrapezoidProfileR1(200, 10000, 0.05);
         ProfileReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.01, 0.01);
         OutboardAngularPositionServo servo = new OutboardAngularPositionServo(
-                log, mech, dyn, ref);
+                log, mech, dyn, ref, 0.02, 0.02);
 
         servo.reset();
         servo.periodic();
@@ -474,7 +474,7 @@ public class OutboardAngularPositionServoTest implements Timeless {
                 log, motor, sensor, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
         ReferenceR1 ref = new MockProfileReferenceR1();
         OutboardAngularPositionServo servo = new OutboardAngularPositionServo(
-                log, mech, dyn, ref);
+                log, mech, dyn, ref, 0.02, 0.02);
 
         servo.reset();
         servo.periodic();

@@ -1,5 +1,7 @@
 package org.team100.lib.subsystems.five_bar.setups;
 
+import static org.team100.lib.util.TriggerUtil.onTrue;
+import static org.team100.lib.util.TriggerUtil.whileTrue;
 import static org.wpilib.command2.Commands.print;
 
 import org.team100.lib.kinematics.five_bar.Scenario;
@@ -8,11 +10,9 @@ import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.subsystems.five_bar.FiveBarCartesian;
 import org.team100.lib.visualization.FiveBarVisualization;
-
-import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.driverstation.Gamepad;
 import org.wpilib.command2.Commands;
-import org.wpilib.command2.button.Trigger;
+import org.wpilib.driverstation.Gamepad;
+import org.wpilib.math.geometry.Translation2d;
 
 public class SetupCartesian implements Runnable {
     private static final double XMAX = 0.15;
@@ -37,8 +37,10 @@ public class SetupCartesian implements Runnable {
 
         // These bindings are remembered by the trigger event loop, so we don't need to
         // retain them.
-        new Trigger(controller::getSouthFaceButton).whileTrue(m_fiveBar.home());
-        new Trigger(controller::getEastFaceButton).onTrue(m_fiveBar.zero());
+        whileTrue(controller::getSouthFaceButton,
+                m_fiveBar.home());
+        onTrue(controller::getEastFaceButton,
+                m_fiveBar.zero());
 
         // Make a little square. Also illustrates "print" commands for
         // debugging.
@@ -46,7 +48,7 @@ public class SetupCartesian implements Runnable {
         // a little square.
         double XX = 0.05;
         double YY = 0.05;
-        new Trigger(controller::getWestFaceButton).whileTrue(
+        whileTrue(controller::getWestFaceButton,
                 Commands.sequence(
                         print("move to origin"),
                         m_fiveBar.move(new Translation2d(0, 0)),

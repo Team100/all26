@@ -84,8 +84,9 @@ public class DiscusServo extends SubsystemBase {
                 logger,
                 mech,
                 dyn,
-                ref);
-
+                ref,
+                POSITION_TOLERANCE,
+                VELOCITY_TOLERANCE);
     }
 
     public void setPosition(double p) {

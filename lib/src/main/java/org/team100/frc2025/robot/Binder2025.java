@@ -1,9 +1,9 @@
 package org.team100.frc2025.robot;
 
+import static org.team100.lib.util.TriggerUtil.onTrue;
+import static org.team100.lib.util.TriggerUtil.whileTrue;
 import static org.wpilib.command2.Commands.parallel;
 import static org.wpilib.command2.Commands.sequence;
-
-import java.util.function.BooleanSupplier;
 
 import org.team100.frc2025.Climber.ClimberCommands;
 import org.team100.frc2025.CommandGroups.MoveToAlgaePosition;
@@ -23,8 +23,6 @@ import org.team100.lib.subsystems.se2.commands.DriveWithTrajectoryFunction;
 import org.team100.lib.subsystems.se2.commands.FloorPickSequence2;
 import org.team100.lib.subsystems.se2.commands.ManualPosition;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.button.Trigger;
 import org.wpilib.system.RobotController;
 
 /**
@@ -50,7 +48,7 @@ public class Binder2025 {
         final OperatorXboxControl operator = new OperatorXboxControl(1);
         final Buttons2025 buttons = new Buttons2025(2);
 
-        /////////////////////////////////////////////////
+        ////////////////////////////////////////////////
         //
         // DEFAULT COMMANDS
         //
@@ -88,7 +86,7 @@ public class Binder2025 {
                 .setDefaultCommand(m_machinery.m_climberIntake.stop().withName("climber intake default"));
         m_machinery.m_manipulator.setDefaultCommand(m_machinery.m_manipulator.stop().withName("manipulator default"));
 
-        ///////////////////////////
+        //////////////////////////
         //
         // DRIVETRAIN
         //
@@ -100,7 +98,7 @@ public class Binder2025 {
         // onTrue(driver::start,
         // new SetRotation(m_machinery.m_drive, Rotation2d.kPi));
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // MECHANISM
         //
@@ -109,7 +107,7 @@ public class Binder2025 {
                 new ManualPosition(operator::velocity, m_machinery.m_mech));
         // new ManualConfig(operatorControl::velocity, mech));
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // CORAL PICK
         //
@@ -164,7 +162,7 @@ public class Binder2025 {
                                 .until(m_machinery.m_manipulator::hasCoralSideways),
                         m_machinery.m_manipulator.sidewaysHold()));
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // CORAL SCORING
         //
@@ -178,7 +176,8 @@ public class Binder2025 {
         final LoggerFactory coralSequence = rootLogger.name("Coral Sequence");
         // final ProfileSE2 profile = HolonomicProfileFactory.get(
         // coralSequence, m_machinery.m_swerveKinodynamics, 1, 0.5, 1, 0.2);
-        final ControllerSE2 holonomicController = new FullStateControllerSE2(coralSequence, 3.0, 3.5, 0, 0, 0.01, 0.01, 0.01, 0.01);
+        final ControllerSE2 holonomicController = new FullStateControllerSE2(coralSequence, 3.0, 3.5, 0, 0, 0.01, 0.01,
+                0.01, 0.01);
 
         // Drive to a scoring location at the reef and score.
         whileTrue(driver::b, m_machinery.m_manipulator.centerEject());
@@ -192,7 +191,7 @@ public class Binder2025 {
         // holonomicController, profile, m_machinery.m_drive,
         // m_machinery.m_localizer::setHeedRadiusM, buttons::level, buttons::point));
 
-        ///////////////////////////////////////////////////
+        //////////////////////////////////////////////////
         //
         // for testing
         //
@@ -204,9 +203,9 @@ public class Binder2025 {
                 navigator.until(navigator::isDone));
         //
         //
-        ///////////////////////////////////////////////////
+        //////////////////////////////////////////////////
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // ALGAE
         //
@@ -243,7 +242,7 @@ public class Binder2025 {
         // whileTrue(driverControl::b, m_manipulator.run(m_manipulator::ejectCenter));
         // whileTrue(driverControl::x, m_manipulator.run(m_manipulator::intakeCenter));
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // CLIMB
         //
@@ -259,21 +258,13 @@ public class Binder2025 {
         whileTrue(operator::rightBumper,
                 m_machinery.m_climber.manual(operator::leftY));
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // TEST
         //
         // Tester2025 tester = new Tester2025(m_machinery);
         // whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
-        //         tester.prematch());
-    }
-
-    private static Trigger whileTrue(BooleanSupplier condition, Command command) {
-        return new Trigger(condition).whileTrue(command);
-    }
-
-    private static Trigger onTrue(BooleanSupplier condition, Command command) {
-        return new Trigger(condition).onTrue(command);
+        // tester.prematch());
     }
 
 }
