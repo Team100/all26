@@ -1,11 +1,15 @@
 package org.team100.lib.sensor.gyro;
 
+import org.team100.lib.coherence.Cache;
+import org.team100.lib.coherence.DoubleCache;
+import org.team100.lib.coherence.ObjectCache;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
+import org.team100.lib.logging.LoggerFactory.IntLogger;
 import org.team100.lib.logging.LoggerFactory.Rotation2dLogger;
 import org.team100.lib.util.CanId;
 
@@ -50,6 +54,11 @@ public class ReduxGyro implements Gyro {
 
     private final Canandgyro m_gyro;
 
+    private final ObjectCache<Rotation2d> m_yaw;
+    private final DoubleCache m_yawRate;
+    private final ObjectCache<Rotation2d> m_pitch;
+    private final ObjectCache<Rotation2d> m_roll;
+
     // LOGGERS
     private final DoubleLogger m_log_age;
     private final Rotation2dLogger m_log_yaw;
@@ -62,7 +71,7 @@ public class ReduxGyro implements Gyro {
     private final DoubleLogger m_log_accel_z;
 
     private final BooleanLogger m_log_calibrating;
-    private final BooleanLogger m_log_fault;
+    private final IntLogger m_log_fault;
 
     public ReduxGyro(LoggerFactory parent, CanId canID) {
         LoggerFactory log = parent.type(this);
@@ -83,6 +92,10 @@ public class ReduxGyro implements Gyro {
         }
         m_gyro.clearStickyFaults();
         m_gyro.setYaw(0);
+        m_yaw = Cache.of(this::yaw);
+        m_yawRate = Cache.ofDouble(this::yawRate);
+        m_pitch = Cache.of(this::pitch);
+        m_roll = Cache.of(this::roll);
 
         m_log_age = log.doubleLogger(Level.TRACE, "Position frame age (s)");
         m_log_yaw = log.rotation2dLogger(Level.TRACE, "Yaw NWU (rad)");
@@ -95,22 +108,26 @@ public class ReduxGyro implements Gyro {
         m_log_accel_z = log.doubleLogger(Level.TRACE, "Accel Z (g)");
 
         m_log_calibrating = log.booleanLogger(Level.TRACE, "Calibrating");
-        m_log_fault = log.booleanLogger(Level.TRACE, "Fault");
+        m_log_fault = log.intLogger(Level.TRACE, "Fault");
 
         LogPoller.register(this::log);
     }
 
     private void log() {
+        m_log_yaw.log(() -> getYawNWU());
+        m_log_yaw_rate.log(() -> getYawRateNWU());
+        m_log_pitch.log(() -> getPitchNWU());
+        m_log_roll.log(() -> getRollNWU());
         m_log_accel_x.log(m_gyro::getAccelerationX);
         m_log_accel_y.log(m_gyro::getAccelerationY);
         m_log_accel_z.log(m_gyro::getAccelerationZ);
         m_log_calibrating.log(m_gyro::isCalibrating);
-        m_log_fault.log(m_gyro.getActiveFaults()::faultsValid);
-        // if (m_gyro.isCalibrating())
-        //     System.out.println("Redux Gyro Calibrating ......");
-        // final CanandgyroFaults activeFaults = m_gyro.getActiveFaults();
-        // if (activeFaults.faultsValid())
-        //     System.out.println("WARNING: Redux Gyro fault!");
+        CanandgyroFaults faults = m_gyro.getActiveFaults();
+        if (faults.faultsValid()) {
+            m_log_fault.log(faults::faultBitField);
+        } else {
+            m_log_fault.log(() -> 0);
+        }
     }
 
     @Override
@@ -123,9 +140,13 @@ public class ReduxGyro implements Gyro {
         return BIAS_NOISE;
     }
 
-    /** This is latency-compensated to the current Takt time. */
+    /** This is latency-compensated to the sample Takt time. */
     @Override
     public Rotation2d getYawNWU() {
+        return m_yaw.get();
+    }
+
+    private Rotation2d yaw() {
         final QuaternionFrame q = m_gyro.getAngularPositionFrame();
         final double t = q.getTimestamp();
         final double yaw = q.getYaw();
@@ -144,31 +165,35 @@ public class ReduxGyro implements Gyro {
             dt = 0;
         }
         final double correctedYaw = yaw + rate * dt;
-        final Rotation2d yawNWU = Rotation2d.fromRotations(correctedYaw);
-        m_log_yaw.log(() -> yawNWU);
-        return yawNWU;
+        return Rotation2d.fromRotations(correctedYaw);
     }
 
     @Override
     public double getYawRateNWU() {
-        final double yawRateRad_S = Units.rotationsToRadians(m_gyro.getAngularVelocityYaw());
-        m_log_yaw_rate.log(() -> yawRateRad_S);
-        return yawRateRad_S;
+        return m_yawRate.getAsDouble();
+    }
+
+    private double yawRate() {
+        return Units.rotationsToRadians(m_gyro.getAngularVelocityYaw());
     }
 
     /** Not latency-compensated. */
     @Override
     public Rotation2d getPitchNWU() {
-        final Rotation2d pitchNWU = Rotation2d.fromRotations(m_gyro.getPitch());
-        m_log_pitch.log(() -> pitchNWU);
-        return pitchNWU;
+        return m_pitch.get();
+    }
+
+    private Rotation2d pitch() {
+        return Rotation2d.fromRotations(m_gyro.getPitch());
     }
 
     /** Not latency-compensated. */
     @Override
     public Rotation2d getRollNWU() {
-        final Rotation2d rollNWU = Rotation2d.fromRotations(m_gyro.getRoll());
-        m_log_roll.log(() -> rollNWU);
-        return rollNWU;
+        return m_roll.get();
+    }
+
+    private Rotation2d roll() {
+        return Rotation2d.fromRotations(m_gyro.getRoll());
     }
 }
