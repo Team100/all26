@@ -106,11 +106,11 @@ public class ReduxGyro implements Gyro {
         m_log_accel_z.log(m_gyro::getAccelerationZ);
         m_log_calibrating.log(m_gyro::isCalibrating);
         m_log_fault.log(m_gyro.getActiveFaults()::faultsValid);
-        if (m_gyro.isCalibrating())
-            System.out.println("Redux Gyro Calibrating ......");
-        final CanandgyroFaults activeFaults = m_gyro.getActiveFaults();
-        if (activeFaults.faultsValid())
-            System.out.println("WARNING: Redux Gyro fault!");
+        // if (m_gyro.isCalibrating())
+        //     System.out.println("Redux Gyro Calibrating ......");
+        // final CanandgyroFaults activeFaults = m_gyro.getActiveFaults();
+        // if (activeFaults.faultsValid())
+        //     System.out.println("WARNING: Redux Gyro fault!");
     }
 
     @Override

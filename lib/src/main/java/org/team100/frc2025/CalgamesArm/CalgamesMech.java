@@ -11,6 +11,7 @@ import org.team100.lib.commands.MoveAndHold;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
 import org.team100.lib.config.Friction;
+import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.prr.PRREffort;
 import org.team100.lib.geometry.prr.PRRAcceleration;
@@ -58,7 +59,6 @@ import org.team100.lib.util.StrUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -177,7 +177,7 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
         double wristMinRad = -1.5;
         double wristMaxRad = 2.1;
 
-        if (RobotBase.isReal()) {
+        if (Identity.instance == Identity.LAUNDRY_BOT) {
             //
             // ELEVATOR
             //
