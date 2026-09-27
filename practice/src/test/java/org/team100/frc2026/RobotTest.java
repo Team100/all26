@@ -8,7 +8,6 @@ public class RobotTest {
     void testSimulation() {
         Robot robot = new Robot();
         try {
-            robot.robotInit();
             robot.simulationInit();
             robot.simulationPeriodic();
             robot.robotPeriodic();
@@ -21,7 +20,6 @@ public class RobotTest {
     void testDisabled() {
         Robot robot = new Robot();
         try {
-            robot.robotInit();
             robot.disabledPeriodic();
             robot.robotPeriodic();
         } finally {
@@ -33,7 +31,6 @@ public class RobotTest {
     void testAutonomous() {
         Robot robot = new Robot();
         try {
-            robot.robotInit();
             robot.autonomousInit();
             robot.autonomousPeriodic();
             robot.robotPeriodic();
@@ -46,22 +43,8 @@ public class RobotTest {
     void testTeleop() {
         Robot robot = new Robot();
         try {
-            robot.robotInit();
             robot.teleopInit();
             robot.teleopPeriodic();
-            robot.robotPeriodic();
-        } finally {
-            robot.close();
-        }
-    }
-
-    @Test
-    void testTest() {
-        Robot robot = new Robot();
-        try {
-            robot.robotInit();
-            robot.testInit();
-            robot.testPeriodic();
             robot.robotPeriodic();
         } finally {
             robot.close();

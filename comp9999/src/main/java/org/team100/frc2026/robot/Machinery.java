@@ -5,9 +5,6 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import org.team100.frc2026.field.FieldConstants2026;
-import org.team100.frc2026.subsystems.Intake;
-import org.team100.frc2026.subsystems.IntakeExtend;
-import org.team100.frc2026.subsystems.Shooter;
 import org.team100.frc2026.targeting.Targeter;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
@@ -43,15 +40,14 @@ import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.util.CanId;
 import org.team100.lib.visualization.RobotPoseVisualization;
 import org.team100.lib.visualization.TrajectoryVisualization;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.Commands;
+import org.wpilib.driverstation.DriverStation;
+import org.wpilib.framework.RobotBase;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Twist2d;
 
 /**
  * This should contain all the hardware of the robot: all the subsystems etc
@@ -85,8 +81,8 @@ public class Machinery {
         m_modules = SwerveModuleCollection.get(
                 driveLog,
                 currentLog,
-                CurrentLimits.DRIVE,
-                CurrentLimits.STEERING);
+                new CurrentLimit(90, 70),
+                new CurrentLimit(60, 30));
         Gyro gyro = GyroFactory.get(
                 driveLog,
                 m_swerveKinodynamics,
@@ -146,7 +142,7 @@ public class Machinery {
         MotorPhase phase1 = MotorPhase.FORWARD;
         MotorPhase phase2 = MotorPhase.REVERSE;
         CurrentLimit limit = new CurrentLimit(30, 30);
-        double  gearRatio = 6.0;
+        double gearRatio = 6.0;
         double wheelDiameterM = 0.025;
         Friction friction = new Friction(0.32, 0.32, 0.0, 0.5);
         PIDConstants pid = PIDConstants.makeVelocityPID(0.03);
