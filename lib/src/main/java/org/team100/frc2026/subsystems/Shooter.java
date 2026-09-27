@@ -3,7 +3,7 @@ package org.team100.frc2026.subsystems;
 import java.util.OptionalDouble;
 import java.util.function.Supplier;
 
-import org.team100.frc2026.robot.CurrentLimits;
+import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.p.PDynamics;
@@ -84,16 +84,16 @@ public class Shooter extends SubsystemBase {
             int measurementPeriod = 4;
             m1 = new NeoVortexCANSparkMotor(
                     log1, currentLog, CAN_ID_1, NeutralMode100.COAST, MotorPhase.FORWARD,
-                    CurrentLimits.SHOOTER, friction, pid, averageDepth, measurementPeriod);
+                    new CurrentLimit(60, 80), friction, pid, averageDepth, measurementPeriod);
             m2 = new NeoVortexCANSparkMotor(
                     log2, currentLog, CAN_ID_2, NeutralMode100.COAST, MotorPhase.REVERSE,
-                    CurrentLimits.SHOOTER, friction, pid, averageDepth, measurementPeriod);
+                    new CurrentLimit(60, 80), friction, pid, averageDepth, measurementPeriod);
             m3 = new NeoVortexCANSparkMotor(
                     log3, currentLog, CAN_ID_3, NeutralMode100.COAST, MotorPhase.FORWARD,
-                    CurrentLimits.SHOOTER, friction, pid, averageDepth, measurementPeriod);
+                    new CurrentLimit(60, 80), friction, pid, averageDepth, measurementPeriod);
             m4 = new NeoVortexCANSparkMotor(
                     log4, currentLog, CAN_ID_4, NeutralMode100.COAST, MotorPhase.REVERSE,
-                    CurrentLimits.SHOOTER, friction, pid, averageDepth, measurementPeriod);
+                    new CurrentLimit(60, 80), friction, pid, averageDepth, measurementPeriod);
         } else {
             m1 = new SimulatedMotor(log1, 600);
             m2 = new SimulatedMotor(log2, 600);
@@ -216,7 +216,7 @@ public class Shooter extends SubsystemBase {
                 .withName("set velocity");
     }
 
-    /////////////////////////////////////////////
+    ////////////////////////////////////////////
 
     private void reset() {
         m_servo1.reset();

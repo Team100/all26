@@ -1,6 +1,6 @@
 package org.team100.frc2026.subsystems;
 
-import org.team100.frc2026.robot.CurrentLimits;
+import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.p.PDynamics;
@@ -21,42 +21,44 @@ import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
 
-public class Conveyor extends SubsystemBase {
-    private static final CanId canID1 = new CanId(19);
-    private static final CanId canID2 = new CanId(20);
+public class Intake extends SubsystemBase {
+    private static final boolean ENABLE = false;
+    private static final CanId CAN_ID_1 = new CanId(20);
+    private static final CanId CAN_ID_2 = new CanId(16);
     private static final double TOLERANCE_M_S = 1;
-    private static final double GEAR_RATIO = 3;
-    private static final double WHEEL_DIAMETER_M = 0.035;
-    private static final double NORMAL_SPEED = 5.0;
+    private static final double GEAR_RATIO = 30.0 / 12.0;
+    private static final double WHEEL_DIAMETER_M = 0.05;
+    private static final double NORMAL_SPEED = 10;
 
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
 
-    public Conveyor(LoggerFactory parent, TotalCurrentLog currentLog) {
+    @SuppressWarnings("unused")
+    public Intake(LoggerFactory parent, TotalCurrentLog currentLog) {
         LoggerFactory log = parent.type(this);
-        LoggerFactory log1 = log.name("Conveyor1");
-        LoggerFactory log2 = log.name("Conveyor2");
+        LoggerFactory log1 = log.name("motor1");
+        LoggerFactory log2 = log.name("motor2");
         // equivalent linear dynamics for the actual drum inertia.
         PDynamics dynamics = PDynamics.drum(0.001, 0.025);
-        VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(10);
+        // VelocityProfileR1 profile = new CurrentLimitedExponentialVelocityProfileR1(
+        // 10, 10, 20, 30);
+        VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(
+                20, 50);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
-
         final Motor m1;
         final Motor m2;
-
-        if (RobotBase.isReal()) {
-            // friction test 3/12/262
-            Friction friction = new Friction(0.7, 0.7, 0.0, 0.5);
-            // tune 3/12/26
+        if (ENABLE && RobotBase.isReal()) {
+            // friction test 3/12/26
+            Friction friction = new Friction(0.5, 0.5, 0.0, 0.5);
+            // tuned 3/12/26
             PIDConstants pid = PIDConstants.makeVelocityPID(0.08);
-
             m1 = new KrakenX44Motor(
-                    log1, currentLog, canID1, NeutralMode100.COAST, MotorPhase.REVERSE,
-                    CurrentLimits.CONVEYOR, friction, pid);
+                    log1, currentLog, CAN_ID_1, NeutralMode100.COAST, MotorPhase.FORWARD,
+                    new CurrentLimit(50, 30), friction, pid);
             m2 = new KrakenX44Motor(
-                    log2, currentLog, canID2, NeutralMode100.COAST, MotorPhase.REVERSE,
-                    CurrentLimits.CONVEYOR, friction, pid);
+                    log2, currentLog, CAN_ID_2, NeutralMode100.COAST, MotorPhase.REVERSE,
+                    new CurrentLimit(50, 30), friction, pid);
         } else {
             m1 = new SimulatedMotor(log1, 600);
             m2 = new SimulatedMotor(log2, 600);
@@ -68,43 +70,37 @@ public class Conveyor extends SubsystemBase {
     }
 
     /**
-     * Use a profile to spin up the conveyor to the normal speed.
+     * Use a profile to spin up the roller to the normal speed.
      * Never ends, but stops the motor when interrupted.
      */
-    public Command convey() {
+    public Command intake() {
         return startRun(
                 this::reset,
                 () -> setVelocityProfiled(NORMAL_SPEED))
                 .finallyDo(this::stopMotor)
-                .withName("Convey");
+                .withName("Intake Normal Speed");
     }
 
-    /** Roll backwards to clear jams */
+    /**
+     * Roll backwards to clear jams.
+     */
     public Command back() {
         return startRun(
                 this::reset,
                 () -> setVelocityProfiled(-5))
-                .withName("Conveyor back");
+                .withName("Intake back");
     }
 
-    public Command testConveyor() {
-        return run(this::dutyCycleAll)
-                .withName("Conveyor Test");
-    }
-
-    public Command testConveyorBack() {
-        return run(this::dutyCycleBackAll)
-                .withName("Conveyor Test Back");
-    }
-
+    /** Stop forever */
     public Command stop() {
         return run(this::stopMotor)
-                .withName("Stop Conveyor");
+                .withName("Stop Intake");
     }
 
+    /** Stop and then end */
     public Command stopOnce() {
         return runOnce(this::stopMotor)
-                .withName("Stop Conveyor Once");
+                .withName("Stop Intake Once");
     }
 
     /** For testing friction only */
@@ -118,7 +114,7 @@ public class Conveyor extends SubsystemBase {
                 .withName("set velocity");
     }
 
-    /////////////////////////////////////////
+    ///////////////////////////////
 
     private void reset() {
         m_servo1.reset();
@@ -130,18 +126,8 @@ public class Conveyor extends SubsystemBase {
         m_servo2.stop();
     }
 
-    private void setVelocityProfiled(double goalM_S) {
-        m_servo1.setVelocityProfiled(goalM_S);
-        m_servo2.setVelocityProfiled(goalM_S);
-    }
-
-    private void dutyCycleAll() {
-        m_servo1.setDutyCycle(1);
-        m_servo2.setDutyCycle(1);
-    }
-
-    private void dutyCycleBackAll() {
-        m_servo1.setDutyCycle(-1);
-        m_servo2.setDutyCycle(-1);
+    private void setVelocityProfiled(double velocityM_S) {
+        m_servo1.setVelocityProfiled(velocityM_S);
+        m_servo2.setVelocityProfiled(velocityM_S);
     }
 }

@@ -5,15 +5,14 @@ of initialization we need to do into separate files, to reduce merge conflicts.
 
 The general idea is that all the mechanical stuff in the robot goes in
 `Machinery`, all the trigger bindings go in `Binder`, and all the
-autonomous behaviors go in `AllAutons`.
+autonomous behaviors go in `Autons`.
 
 From `Robot.java`:
 
 ```java
         m_machinery = new Machinery();
-        m_allAutons = new AllAutons(m_machinery);
+        m_allAutons = new Autons(m_machinery);
         m_binder = new Binder(m_machinery);
-        m_binder.bind();
 ```
 
 

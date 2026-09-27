@@ -8,14 +8,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.OptionalDouble;
 
 import org.junit.jupiter.api.Test;
-import org.team100.frc2026.Timeless2026;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
+import org.team100.lib.testing.Timeless;
+
 import org.wpilib.command2.Command;
 
-public class ShooterHoodTest implements Timeless2026 {
+public class ShooterHoodTest implements Timeless {
     private static final double DELTA = 0.001;
     private static final LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
     private static final TotalCurrentLog currentLog = new TotalCurrentLog(log);

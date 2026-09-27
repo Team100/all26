@@ -81,8 +81,8 @@ public class Machinery {
         m_modules = SwerveModuleCollection.get(
                 driveLog,
                 currentLog,
-                CurrentLimits.DRIVE,
-                CurrentLimits.STEERING);
+                new CurrentLimit(90, 70),
+                new CurrentLimit(60, 30));
         Gyro gyro = GyroFactory.get(
                 driveLog,
                 m_swerveKinodynamics,
@@ -142,7 +142,7 @@ public class Machinery {
         MotorPhase phase1 = MotorPhase.FORWARD;
         MotorPhase phase2 = MotorPhase.REVERSE;
         CurrentLimit limit = new CurrentLimit(30, 30);
-        double  gearRatio = 6.0;
+        double gearRatio = 6.0;
         double wheelDiameterM = 0.025;
         Friction friction = new Friction(0.32, 0.32, 0.0, 0.5);
         PIDConstants pid = PIDConstants.makeVelocityPID(0.03);

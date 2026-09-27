@@ -6,6 +6,7 @@ import java.util.function.UnaryOperator;
 
 import org.team100.frc2026.field.FieldConstants2026;
 import org.team100.frc2026.targeting.Targeter;
+import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.indicator.Beeper;
 import org.team100.lib.localization.AddOdometryNoise;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
@@ -58,14 +59,10 @@ public class Machinery {
     public final CachedSolution m_cachedSolution;
     public final Targets m_targets;
 
-    // public final Shooter m_shooter;
-    // public final Intake m_intake;
-    // public final IntakeExtend m_intakeExtend;
-
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        ////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////
         //
         // DRIVETRAIN
         //
@@ -73,8 +70,8 @@ public class Machinery {
         m_modules = RobotBase.isReal() ? new SwerveModulesPractice(
                 driveLog,
                 currentLog,
-                CurrentLimits.DRIVE,
-                CurrentLimits.STEERING)
+                new CurrentLimit(90, 70),
+                new CurrentLimit(60, 30))
                 : new SwerveModulesSim(driveLog);
         Gyro gyro = GyroFactory.get(
                 driveLog,
@@ -103,7 +100,7 @@ public class Machinery {
         m_robotViz = new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState().pose(), "robot");
 
-        ////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////
         //
         // TARGETING
         //
@@ -125,21 +122,18 @@ public class Machinery {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, (t) -> m_drive.getState(t));
 
-        ////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////
         //
         // SUBSYSTEMS
         //
-        // m_intake = new Intake(logger, currentLog);
-        // m_intakeExtend = new IntakeExtend(logger, currentLog);
-        // m_shooter = new Shooter(logger, currentLog, m_cachedSolution::speed);
 
-        ////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        ////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////
         //
         // INDICATOR
         //
