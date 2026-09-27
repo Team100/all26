@@ -9,6 +9,7 @@ import org.team100.frc2026.subsystems.Intake;
 import org.team100.frc2026.subsystems.IntakeExtend;
 import org.team100.frc2026.subsystems.Shooter;
 import org.team100.frc2026.targeting.Targeter;
+import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.indicator.Beeper;
 import org.team100.lib.localization.AddOdometryNoise;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
@@ -74,8 +75,8 @@ public class Machinery {
         m_modules = SwerveModuleCollection.get(
                 driveLog,
                 currentLog,
-                CurrentLimits.DRIVE,
-                CurrentLimits.STEERING);
+                new CurrentLimit(90, 70),
+                new CurrentLimit(60, 30));
         Gyro gyro = GyroFactory.get(
                 driveLog,
                 m_swerveKinodynamics,

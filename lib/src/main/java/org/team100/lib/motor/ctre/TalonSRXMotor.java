@@ -1,7 +1,5 @@
 package org.team100.lib.motor.ctre;
 
-import org.team100.lib.logging.Level;
-import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.Motor;
