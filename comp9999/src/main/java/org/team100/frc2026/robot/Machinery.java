@@ -32,6 +32,8 @@ import org.team100.lib.subsystems.swerve.SwerveLocal;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
+import org.team100.lib.subsystems.swerve.module.SwerveModulesComp9999;
+import org.team100.lib.subsystems.swerve.module.SwerveModulesSim;
 import org.team100.lib.targeting.CachedSolution;
 import org.team100.lib.targeting.ProxySolver;
 import org.team100.lib.targeting.Targets;
@@ -42,7 +44,7 @@ import org.team100.lib.visualization.RobotPoseVisualization;
 import org.team100.lib.visualization.TrajectoryVisualization;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.Commands;
-import org.wpilib.driverstation.DriverStation;
+import org.wpilib.driverstation.MatchState;
 import org.wpilib.framework.RobotBase;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
@@ -73,16 +75,17 @@ public class Machinery {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        ////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////
         //
         // DRIVETRAIN
         //
         m_swerveKinodynamics = SwerveKinodynamicsFactory.get();
-        m_modules = SwerveModuleCollection.get(
-                driveLog,
+        m_modules = RobotBase.isReal() ? new SwerveModulesComp9999(
+                driveLog.name("Swerve Modules"),
                 currentLog,
                 new CurrentLimit(90, 70),
-                new CurrentLimit(60, 30));
+                new CurrentLimit(60, 30))
+                : new SwerveModulesSim(driveLog.name("Swerve Modules"));
         Gyro gyro = GyroFactory.get(
                 driveLog,
                 m_swerveKinodynamics,
@@ -106,11 +109,11 @@ public class Machinery {
                 estimate,
                 swerveLocal);
         m_tagViz = new AprilTagVisualizer(
-                driveLog, fieldLogger, m_drive::getState, layout, DriverStation::getAlliance);
+                driveLog, fieldLogger, m_drive::getState, layout, MatchState::getAlliance);
         m_robotViz = new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState().pose(), "robot");
 
-        ////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////
         //
         // TARGETING
         //
@@ -132,7 +135,7 @@ public class Machinery {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, (t) -> m_drive.getState(t));
 
-        ////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////
         //
         // SUBSYSTEMS
         //
@@ -158,13 +161,13 @@ public class Machinery {
                 driveLog, currentLog, canId1, canId2, neutral, phase1, phase2, limit,
                 friction, pid, gearRatio, wheelDiameterM, dynamics, ref, 0.01, true);
 
-        ////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        ////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////
         //
         // INDICATOR
         //
