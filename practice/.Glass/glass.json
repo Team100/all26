@@ -1,0 +1,28 @@
+{
+  "NetworkTables": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Alerts": "Alerts",
+      "/SmartDashboard/Auton Command": "String Chooser",
+      "/SmartDashboard/DriveWithoutAccel": "String Chooser",
+      "/SmartDashboard/Driver Skill Level": "String Chooser",
+      "/SmartDashboard/FlushOften": "String Chooser",
+      "/SmartDashboard/HeedVision": "String Chooser",
+      "/SmartDashboard/Log Level": "String Chooser",
+      "/SmartDashboard/Scheduler": "Scheduler",
+      "/SmartDashboard/SteerWithoutVelocity": "String Chooser",
+      "/SmartDashboard/TestAutonAlert": "String Chooser",
+      "/SmartDashboard/TurretIntercept": "String Chooser",
+      "/SmartDashboard/TurretShootingMethod": "String Chooser",
+      "/SmartDashboard/UseSetpointGenerator": "String Chooser",
+      "field": "Field2d"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "100"
+  }
+}
