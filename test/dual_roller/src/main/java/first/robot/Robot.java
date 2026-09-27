@@ -42,18 +42,18 @@ public class Robot extends TimedRobot100 {
 
         // CONFIGURATION
 
-        CanId canId1 = new CanId(1);
-        CanId canId2 = new CanId(2);
+        CanId canId1 = new CanId(17);
+        CanId canId2 = new CanId(42);
         NeutralMode100 neutral = NeutralMode100.COAST;
         MotorPhase phase1 = MotorPhase.FORWARD;
         MotorPhase phase2 = MotorPhase.REVERSE;
-        CurrentLimit limit = new CurrentLimit(1, 1);
-        double gearRatio = 6.0;
+        CurrentLimit limit = new CurrentLimit(30, 30);
+        double  gearRatio = 6.0;
         double wheelDiameterM = 0.025;
         Friction friction = new Friction(0.32, 0.32, 0.0, 0.5);
-        PIDConstants pid = PIDConstants.makePositionPID(1);
+        PIDConstants pid = PIDConstants.makeVelocityPID(0.03);
         PDynamics dynamics = new PDynamics(1);
-        VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(0.25);
+        VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(10);
         double tolerance = 0.05;
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, tolerance);
@@ -65,11 +65,12 @@ public class Robot extends TimedRobot100 {
                 friction, pid, gearRatio, wheelDiameterM, dynamics, ref, 0.01, true);
 
         // BINDINGS
+        
 
         m_subsystem.setDefaultCommand(m_subsystem.stop().withName("stop"));
         m_control = new DriverXboxControl(log, 0);
-        whileTrue(m_control::leftBumper, m_subsystem.velocity(-0.1).withName("negative"));
-        whileTrue(m_control::rightBumper, m_subsystem.velocity(0.1).withName("positive"));
+        whileTrue(m_control::leftBumper, m_subsystem.velocity(-1).withName("negative"));
+        whileTrue(m_control::rightBumper, m_subsystem.velocity(1).withName("positive"));
         whileTrue(m_control::back, m_subsystem.voltage(0.5).withName("voltage"));
     }
 

@@ -1,0 +1,55 @@
+package org.team100.frc2026;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.team100.lib.coherence.Cache;
+import org.team100.lib.coherence.Takt;
+import org.team100.lib.framework.TimedRobot100;
+
+import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.simulation.DriverStationSim;
+import edu.wpi.first.wpilibj.simulation.SimHooks;
+
+public interface Timeless2026 {
+
+    /** One big method because Junit */
+    @BeforeEach
+    default void setupSim() {
+        // Do any time-related setup *in your test method* !
+        HAL.initialize(500, 0);
+        SimHooks.pauseTiming();
+        Takt.update();
+
+        // Make sure the cache doesn't try to update stale things.
+        Cache.clear();
+
+        // Simulated motors don't move unless enabled, so enable them.
+        DriverStationSim.setEnabled(true);
+        DriverStationSim.notifyNewData();
+
+        try {
+            // wait for CTRE threads
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @AfterEach
+    default void resumeTiming() {
+        SimHooks.resumeTiming();
+        HAL.shutdown();
+    }
+
+    /**
+     * Increments the clock and resets all the memoized quantities.
+     * This used to allow the time step to be specified, but it's not a realistic to
+     * require correctness in that case, so I took it out.
+     */
+    default void stepTime() {
+        SimHooks.stepTiming(TimedRobot100.LOOP_PERIOD_S);
+        Takt.update();
+        Cache.refresh();
+    }
+
+}
