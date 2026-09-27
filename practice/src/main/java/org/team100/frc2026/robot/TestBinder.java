@@ -13,9 +13,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
-
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.RobotState;
+import org.wpilib.system.RobotController;
 
 /**
  * This is a version from pre-SVR testing
@@ -258,10 +256,10 @@ public class TestBinder {
 
         // whileTrue(driver::povUp, (machinery.m_shooter.tune()));
 
-        Tester tester = new Tester(machinery);
-        onTrue(() -> RobotState.isTest(), tester.prompt());
-        whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
-                tester.prematch());
+        // Tester tester = new Tester(machinery);
+        // onTrue(() -> RobotState.isTest(), tester.prompt());
+        // whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
+        // tester.prematch());
     }
 
     /** Keeps tests from conflicting. */

@@ -11,8 +11,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
-
-import edu.wpi.first.wpilibj.RobotController;
+import org.wpilib.system.RobotController;
 
 /**
  * Binds buttons to commands. Also creates default commands.
@@ -57,8 +56,8 @@ public class Binder {
         ///
         /// DISORIENT
         ///
-        /// Back: nudge the rotation towards zero.
-        /// Start: forget the current pose, listen to camera input.
+        /// Back: nudge the rotation towards zero. Start: forget the current pose, listen
+        /// to camera input.
         ///
         /// both together: warp to the origin. FOR TESTING ONLY.
 

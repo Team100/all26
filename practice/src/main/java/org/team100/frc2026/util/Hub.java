@@ -2,8 +2,8 @@ package org.team100.frc2026.util;
 
 import java.util.Optional;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import org.wpilib.driverstation.Alliance;
+import org.wpilib.driverstation.MatchState;
 
 public class Hub {
     /**
@@ -15,7 +15,7 @@ public class Hub {
         Optional<Shift> currentShift = Shift.current();
         if (currentShift.isEmpty())
             return false;
-        Optional<Alliance> alliance = DriverStation.getAlliance();
+        Optional<Alliance> alliance = MatchState.getAlliance();
         if (alliance.isEmpty())
             return false;
         return currentShift.get().active(alliance.get());

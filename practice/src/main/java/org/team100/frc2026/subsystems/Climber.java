@@ -19,10 +19,9 @@ import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.util.CanId;
-
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.SubsystemBase;
+import org.wpilib.framework.RobotBase;
 
 public class Climber extends SubsystemBase {
     public static final double GEAR_RATIO = 28;
@@ -84,7 +83,7 @@ public class Climber extends SubsystemBase {
         return run(this::stopMotor).withName("Stop Climber");
     }
 
-    ///////////////////////////////////////
+    //////////////////////////////////////
 
     private void reset() {
         m_servo1.reset();

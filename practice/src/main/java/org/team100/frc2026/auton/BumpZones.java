@@ -1,7 +1,7 @@
 package org.team100.frc2026.auton;
 
-import edu.wpi.first.math.geometry.Rectangle2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Rectangle2d;
+import org.wpilib.math.geometry.Translation2d;
 
 public class BumpZones {
     public static final Rectangle2d BLUE_BUMP_LEFT = 
