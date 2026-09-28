@@ -1,10 +1,15 @@
 package org.team100.lib.localization;
 
+import java.util.Map;
 import java.util.function.UnaryOperator;
 
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.SideEffect;
 import org.team100.lib.coherence.Takt;
+import org.team100.lib.experiments.Experiment;
+import org.team100.lib.experiments.Experiments;
+import org.team100.lib.framework.TimedRobot100;
+import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.sensor.gyro.Gyro;
 import org.team100.lib.state.StateSE2;
@@ -23,6 +28,8 @@ import org.wpilib.math.geometry.Twist2d;
  */
 public class FusedEstimator implements StateEstimator {
     private static final boolean DEBUG = false;
+    private static final double DT = TimedRobot100.LOOP_PERIOD_S;
+
     private final Gyro m_gyro;
     private final SwerveLocal m_swerveLocal;
     private final SwerveHistory m_history;
@@ -71,6 +78,10 @@ public class FusedEstimator implements StateEstimator {
         m_odometryCache = Cache.ofSideEffect(m_odometryUpdate::update);
     }
 
+    public Map<Double, SwerveState> all() {
+        return m_history.exclusiveTailMap(0);
+    }
+
     /**
      * Estimate at the given timestamp, after applying any pending updates from
      * vision or odometry.
@@ -84,8 +95,19 @@ public class FusedEstimator implements StateEstimator {
         // run our dependencies if they haven't already
         m_localizerCache.run();
         m_odometryCache.run();
-        // query the history
-        StateSE2 state = m_history.get(timestampS);
+        final StateSE2 state;
+        if (Experiments.INSTANCE.enabled(Experiment.ImputeVelocity)) {
+            // Use consecutive poses
+            StateSE2 state0 = m_history.get(timestampS - DT);
+            StateSE2 state1 = m_history.get(timestampS);
+            VelocitySE2 v = VelocitySE2.velocity(
+                    state0.pose(),
+                    state1.pose(), DT);
+            state = new StateSE2(state1.pose(), v);
+        } else {
+            // Use the history value
+            state = m_history.get(timestampS);
+        }
         if (DEBUG) {
             System.out.printf("FreshSwerveEstimate.update() estimated pose: %s\n", state);
         }

@@ -37,7 +37,7 @@ import org.wpilib.math.geometry.Twist2d;
  * Note we use methods on the specific history implementation; the interface
  * won't work here.
  */
-public class OdometryUpdater {
+public class OdometryUpdater implements OdometryUpdaterInterface {
     private static final boolean DEBUG = false;
 
     private final SwerveKinodynamics m_kinodynamics;
@@ -103,6 +103,7 @@ public class OdometryUpdater {
      * the gyro rate overrides the rate derived from the difference to the previous
      * state.
      */
+    @Override
     public void update() {
         SwerveState newState = update(Takt.get());
         if (newState != null)
@@ -297,7 +298,8 @@ public class OdometryUpdater {
     }
 
     /** Replay odometry after the sample time. */
-    void replay(double sampleTime) {
+    @Override
+    public void replay(double sampleTime) {
         if (m_debug)
             System.out.printf("==== REPLAY FOR TIME %f\n", sampleTime);
         // Note the exclusive tailmap: we don't see the entry at timestamp.

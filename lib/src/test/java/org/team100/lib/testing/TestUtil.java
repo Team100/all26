@@ -26,6 +26,7 @@ import org.team100.lib.geometry.six_dof.SixDofAcceleration;
 import org.team100.lib.geometry.six_dof.SixDofConfig;
 import org.team100.lib.geometry.six_dof.SixDofVelocity;
 import org.team100.lib.geometry.six_dof.SphericalWristConfig;
+import org.team100.lib.state.StateSE2;
 import org.team100.lib.util.StrUtil;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Pose3d;
@@ -236,9 +237,14 @@ public class TestUtil {
     }
 
     public static void verify(VelocitySE2 expected, VelocitySE2 actual) {
-        assertEquals(expected.x(), actual.x(), 1e-3, "x");
-        assertEquals(expected.y(), actual.y(), 1e-3, "y");
-        assertEquals(expected.theta(), actual.theta(), 1e-3, "theta");
+        assertEquals(expected.x(), actual.x(), 1e-3, "vx");
+        assertEquals(expected.y(), actual.y(), 1e-3, "vy");
+        assertEquals(expected.theta(), actual.theta(), 1e-3, "omega");
+    }
+
+    public static void verify(StateSE2 expected, StateSE2 actual) {
+        verify(expected.pose(), actual.pose());
+        verify(expected.velocity(), actual.velocity());
     }
 
     public static void verify(VelocitySE3 expected, VelocitySE3 actual) {

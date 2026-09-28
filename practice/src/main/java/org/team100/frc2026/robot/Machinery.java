@@ -62,17 +62,17 @@ public class Machinery {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // DRIVETRAIN
         //
         m_swerveKinodynamics = new SwerveKinodynamicsSwerveOne();
         m_modules = RobotBase.isReal() ? new SwerveModulesPractice(
-                driveLog,
+                driveLog.name("Swerve Modules"),
                 currentLog,
                 new CurrentLimit(90, 70),
                 new CurrentLimit(60, 30))
-                : new SwerveModulesSim(driveLog);
+                : new SwerveModulesSim(driveLog.name("Swerve Modules"));
         Gyro gyro = GyroFactory.get(
                 driveLog,
                 m_swerveKinodynamics,
@@ -100,7 +100,7 @@ public class Machinery {
         m_robotViz = new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState().pose(), "robot");
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // TARGETING
         //
@@ -122,18 +122,18 @@ public class Machinery {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, (t) -> m_drive.getState(t));
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // SUBSYSTEMS
         //
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // INDICATOR
         //

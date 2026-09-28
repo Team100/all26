@@ -7,8 +7,6 @@ import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.config.CurrentLimit;
-import org.team100.lib.experiments.Experiment;
-import org.team100.lib.experiments.Experiments;
 import org.team100.lib.geometry.se2.ChassisAcceleration;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.FusedEstimator;
@@ -56,7 +54,6 @@ class SwerveDriveSubsystemTest implements Timeless {
                 estimate,
                 swerveLocal);
 
-        Experiments.INSTANCE.override(Experiment.UseSwerveLimiter, false);
         stepTime();
 
         drive.resetPose(new Pose2d(), IsotropicNoiseSE2.high());

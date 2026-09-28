@@ -127,7 +127,8 @@ public class SwerveHistory implements StateSampler {
         return m_poseBuffer.tooOld(timestamp);
     }
 
-    SortedMap<Double, SwerveState> exclusiveTailMap(double timestamp) {
+    /** SwerveStates after the timestamp */
+    public SortedMap<Double, SwerveState> exclusiveTailMap(double timestamp) {
         return m_poseBuffer.tailMap(timestamp, false);
     }
 
