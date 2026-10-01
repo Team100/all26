@@ -63,7 +63,7 @@ public class Machinery {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // DRIVETRAIN
         //
@@ -99,9 +99,9 @@ public class Machinery {
         m_tagViz = new AprilTagVisualizer(
                 driveLog, fieldLogger, m_drive::getState, layout, MatchState::getAlliance);
         m_robotViz = new RobotPoseVisualization(
-                fieldLogger, () -> m_drive.getState().pose(), "robot");
+                fieldLogger, () -> m_drive.getState(), "robot");
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // TARGETING
         //
@@ -123,18 +123,18 @@ public class Machinery {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, (t) -> m_drive.getState(t));
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // SUBSYSTEMS
         //
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // INDICATOR
         //
@@ -204,7 +204,6 @@ public class Machinery {
     /** Generally for simulation and visualization */
     public void periodic() {
         m_groundTruth.periodic();
-        m_robotViz.run();
         m_tagViz.update();
     }
 

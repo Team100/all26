@@ -12,7 +12,6 @@ import org.team100.lib.logging.LoggerFactory.Rotation2dLogger;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
-
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.kinematics.ChassisVelocities;
 
@@ -20,15 +19,19 @@ import org.wpilib.math.kinematics.ChassisVelocities;
  * A simulated gyro that uses drivetrain odometry.
  */
 public class SimulatedGyro implements Gyro {
+    private static final boolean DEBUG = false;
     private static final double SAMPLE_RATE = 100;
     /** White noise in rad/s */
-    private static final double NOISE = 4e-4 * Math.sqrt(SAMPLE_RATE);
+    private static final double DEFAULT_NOISE = 4e-4 * Math.sqrt(SAMPLE_RATE);
     private static final double BIAS_NOISE = 1e-5;
     private final Random m_rand;
     private final Rotation2dLogger m_log_yaw;
     private final DoubleLogger m_log_yaw_rate;
     private final SwerveKinodynamics m_kinodynamics;
     private final SwerveModuleCollection m_moduleCollection;
+    /** Supply zero for deterministic testing */
+    private final double m_noiseRad_S;
+    /** Supply zero for testing */
     private final double m_driftRateRad_S;
     private final DoubleCache m_headingCache;
 
@@ -41,24 +44,32 @@ public class SimulatedGyro implements Gyro {
             LoggerFactory parent,
             SwerveKinodynamics kinodynamics,
             SwerveModuleCollection collection,
-            double driftRateRad_S) {
+            double driftRateRad_S,
+            double noiseRad_S) {
         LoggerFactory log = parent.type(this);
         m_rand = new Random();
         m_log_yaw = log.rotation2dLogger(Level.TRACE, "Yaw NWU (rad)");
         m_log_yaw_rate = log.doubleLogger(Level.TRACE, "Yaw Rate NWU (rad_s)");
         m_heading = 0;
         m_time = Takt.get();
-
         m_kinodynamics = kinodynamics;
         m_moduleCollection = collection;
         m_driftRateRad_S = driftRateRad_S;
-
+        m_noiseRad_S = noiseRad_S;
         m_headingCache = Cache.ofDouble(this::update);
+    }
+
+    public SimulatedGyro(
+            LoggerFactory parent,
+            SwerveKinodynamics kinodynamics,
+            SwerveModuleCollection collection,
+            double driftRateRad_S) {
+        this(parent, kinodynamics, collection, driftRateRad_S, DEFAULT_NOISE);
     }
 
     @Override
     public double white_noise() {
-        return NOISE;
+        return m_noiseRad_S;
     }
 
     @Override
@@ -70,12 +81,19 @@ public class SimulatedGyro implements Gyro {
         double dt = dt();
         if (dt > 0.04) {
             // clock is unreliable, ignore it
+            if (DEBUG)
+                System.out.printf("SimulatedGyro dt too high %f\n", dt);
             dt = 0;
         }
         SwerveModuleStates states = m_moduleCollection.states();
+
         ChassisVelocities speeds = m_kinodynamics.toChassisVelocitiesWithDiscretization(states, 0.02);
-        double noiseRad_S = NOISE * m_rand.nextGaussian();
+        double noiseRad_S = m_noiseRad_S * m_rand.nextGaussian();
         m_heading += (speeds.omega + m_driftRateRad_S + noiseRad_S) * dt;
+        if (DEBUG)
+            System.out.printf("SimulatedGyro speed %f heading %s\n",
+                    speeds.omega, m_heading);
+
         return m_heading;
     }
 

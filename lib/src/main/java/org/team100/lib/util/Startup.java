@@ -13,6 +13,7 @@ public class Startup {
     public static void start() {
         // Print TEAM 100.
         Banner.printBanner();
+
         // Start the Redux event loop. This is really
         // only needed if you're doing setup.
         // CanandEventLoop.getInstance();

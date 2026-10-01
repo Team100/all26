@@ -94,7 +94,15 @@ public enum Experiment {
      * Useful to see the effect of dynamics.
      * This should be on by default.
      */
-    IncludeTorqueFeedForward("Include torque feedforward");
+    IncludeTorqueFeedForward("Include torque feedforward"),
+    /**
+     * Impute velocity.
+     * 
+     * Use consecutive poses in the history to impute a velocity estimate,
+     * instead of using the historical velocity directly.  This is to
+     * explore the use of imputed velocity with GTSAM.
+     */
+    ImputeVelocity("Impute velocity");
 
     /** Show this at startup */
     public final String description;

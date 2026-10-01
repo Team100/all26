@@ -25,6 +25,7 @@ import org.team100.lib.sensor.position.absolute.wpi.AS5048RotaryPositionSensor;
 import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OnboardAngularPositionServo;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
 import org.wpilib.command2.Command;
@@ -35,7 +36,9 @@ public class Climber2025 extends SubsystemBase {
 
     private final AngularPositionServo m_servo;
 
-    public Climber2025(LoggerFactory parent, TotalCurrentLog currentLog, CanId canID) {
+    public Climber2025(LoggerFactory parent,
+            TotalCurrentLog currentLog,
+            CanId canID, CanBusId busId) {
         LoggerFactory log = parent.type(this);
         // dynamics are unimportant for the climber
         RDynamicsAnalytic dyn = new RDynamicsAnalytic(0, 0, 0, 0);
@@ -45,7 +48,8 @@ public class Climber2025 extends SubsystemBase {
 
         if (RobotBase.isReal()) {
             Falcon500Motor motor = new Falcon500Motor(
-                    log, currentLog, canID, NeutralMode100.BRAKE, MotorPhase.REVERSE,
+                    log, currentLog, canID, busId,
+                    NeutralMode100.BRAKE, MotorPhase.REVERSE,
                     new CurrentLimit(20, 20),
                     new Friction(0.100, 0.065, 0.0, 0.5),
                     PIDConstants.makePositionPID(0.2));
@@ -115,7 +119,7 @@ public class Climber2025 extends SubsystemBase {
                 () -> setAngle(0));
     }
 
-    //////////////////////////////
+    ////////////////////////////
 
     private void reset() {
         m_servo.reset();

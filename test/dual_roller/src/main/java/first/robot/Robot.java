@@ -19,11 +19,13 @@ import org.team100.lib.logging.RobotLog;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
+import org.team100.lib.motor.ctre.CTREStartup;
 import org.team100.lib.profile.r1.AccelLimitedVelocityProfileR1;
 import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.subsystems.r1.DualRollerSubsystem;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.Startup;
 import org.wpilib.command2.CommandScheduler;
@@ -40,6 +42,7 @@ public class Robot extends TimedRobot100 {
 
     public Robot() {
         Startup.start();
+        CTREStartup.start();
         LoggerFactory log = Logging.instance().rootLogger;
         m_robotLog = new RobotLog(log);
         TotalCurrentLog currentLog = m_robotLog.totalCurrentLog();
@@ -52,6 +55,7 @@ public class Robot extends TimedRobot100 {
         CanId canId16 = new CanId(16);
         CanId canId17 = new CanId(17);
         CanId canId18 = new CanId(18);
+        CanBusId busId = new CanBusId(0);
         NeutralMode100 neutral = NeutralMode100.COAST;
         MotorPhase phase1 = MotorPhase.FORWARD;
         MotorPhase phase2 = MotorPhase.REVERSE;
@@ -71,15 +75,15 @@ public class Robot extends TimedRobot100 {
         // SUBSYSTEMs
 
         m_subsystem_drum_top = new DualRollerSubsystem(
-                log.name("drum top"), currentLog, canId13, canId15, neutral, phase1, phase2, limit,
+                log.name("drum top"), currentLog, canId13, canId15, busId, neutral, phase1, phase2, limit,
                 friction, pid, gearRatio, wheelDiameterM, dynamics, ref_drum, 0.01, true);
 
         m_subsystem_drum_bottom = new DualRollerSubsystem(
-                log.name("drum bottom"), currentLog, canId14, canId16, neutral, phase1, phase2, limit,
+                log.name("drum bottom"), currentLog, canId14, canId16, busId, neutral, phase1, phase2, limit,
                 friction, pid, gearRatio, wheelDiameterM, dynamics, ref_drum, 0.01, true);
 
         m_subsystem_feeder = new DualRollerSubsystem(
-                log.name("feeder"), currentLog, canId17, canId18, neutral, phase1, phase2, limit,
+                log.name("feeder"), currentLog, canId17, canId18, busId, neutral, phase1, phase2, limit,
                 friction, pid, gearRatio, wheelDiameterM, dynamics, ref_feeder, 0.01, true);
 
         // BINDINGS

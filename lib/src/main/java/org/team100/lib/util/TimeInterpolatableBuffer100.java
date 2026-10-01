@@ -142,6 +142,7 @@ public class TimeInterpolatableBuffer100<T> {
                 bottomBound.getValue(), topBound.getValue(), timeFraction);
     }
 
+    /** Items after the given timestamp */
     public SortedMap<Double, T> tailMap(double t, boolean inclusive) {
         return m_pastSnapshots.tailMap(t, inclusive);
     }

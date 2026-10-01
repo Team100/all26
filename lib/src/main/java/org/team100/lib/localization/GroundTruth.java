@@ -28,7 +28,6 @@ public class GroundTruth {
     private final SimulatedGyro m_gyro;
     private final SwerveHistory m_history;
     private final OdometryUpdater m_odometry;
-    private final RobotPoseVisualization m_viz;
     private final SimulatedTagCornerDetector m_tagSim;
     private final SimulatedTargetWriter m_targetSim;
 
@@ -67,8 +66,8 @@ public class GroundTruth {
                 m_odometry, m_history);
 
         // Visualization of the simulated "ground truth" of the robot pose.
-        m_viz = new RobotPoseVisualization(
-                fieldLogger, () -> groundTruthCache.apply(Takt.get()).pose(), "ground truth");
+        new RobotPoseVisualization(
+                fieldLogger, () -> groundTruthCache.apply(Takt.get()), "ground truth");
 
         // Simulated camera uses the ground truth because the real cameras are not aware
         // of the pose estimate.
@@ -108,8 +107,5 @@ public class GroundTruth {
         // publish the simulated tag sightings.
         m_tagSim.run();
         m_targetSim.run();
-        // publish ground truth pose
-        if (m_viz != null)
-            m_viz.run();
     }
 }

@@ -26,10 +26,11 @@ import org.wpilib.math.geometry.Translation2d;
  * weights you want at update time.
  */
 public class NudgingVisionUpdater implements VisionUpdater {
+    private static final boolean DEBUG = false;
 
     private final SwerveHistory m_history;
     /** For replay. */
-    private final OdometryUpdater m_odometryUpdater;
+    private final OdometryUpdaterInterface m_odometryUpdater;
     private final Fusor m_cartesianFusor;
     private final Fusor m_rotationFusor;
     private final SwerveStateLogger m_logState;
@@ -44,7 +45,7 @@ public class NudgingVisionUpdater implements VisionUpdater {
     public NudgingVisionUpdater(
             LoggerFactory parent,
             SwerveHistory history,
-            OdometryUpdater odometryUpdater) {
+            OdometryUpdaterInterface odometryUpdater) {
         LoggerFactory log = parent.type(this);
         m_history = history;
         m_odometryUpdater = odometryUpdater;
@@ -68,6 +69,9 @@ public class NudgingVisionUpdater implements VisionUpdater {
      */
     @Override
     public void put(double timestamp, NoisyPose2d noisyMeasurement) {
+        if (DEBUG)
+            System.out.printf("Nudging Vision Updater %6.3f %s\n",
+                    timestamp, noisyMeasurement);
         // Remember the time of this update.
         m_latestTimeS = Takt.get();
 

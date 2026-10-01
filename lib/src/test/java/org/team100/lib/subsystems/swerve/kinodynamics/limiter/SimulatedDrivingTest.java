@@ -7,8 +7,6 @@ import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.coherence.Takt;
-import org.team100.lib.experiments.Experiment;
-import org.team100.lib.experiments.Experiments;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
@@ -152,7 +150,6 @@ public class SimulatedDrivingTest implements Timeless {
      */
     @Test
     void testVeering() {
-        Experiments.INSTANCE.override(Experiment.UseSwerveLimiter, true);
         // +x and spinning. course is always zero.
         VelocityControlSE2 input = new VelocityControlSE2(2, 0, 3.5);
         for (int i = 0; i < 50; ++i) {

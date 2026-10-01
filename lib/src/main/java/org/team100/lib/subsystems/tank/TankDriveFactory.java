@@ -12,6 +12,7 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.Neo550CANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.framework.RobotBase;
 
@@ -26,6 +27,7 @@ public class TankDriveFactory {
             CurrentLimit limit,
             CanId canL,
             CanId canR,
+            CanBusId busId,
             double trackWidthM,
             double maxSpeedM_S,
             double gearRatio,
@@ -42,10 +44,10 @@ public class TankDriveFactory {
         double freeSpeedRad_S = maxSpeedM_S * gearRatio / (0.5 * wheelDiaM);
 
         Motor motorL = getMotor(
-                logL, currentLog, freeSpeedRad_S, canL,
+                logL, currentLog, freeSpeedRad_S, canL, busId,
                 MotorPhase.FORWARD, limit, friction, pid);
         Motor motorR = getMotor(
-                logR, currentLog, freeSpeedRad_S, canR,
+                logR, currentLog, freeSpeedRad_S, canR, busId,
                 MotorPhase.REVERSE, limit, friction, pid);
 
         LinearMechanism mechL = new LinearMechanism(
@@ -67,7 +69,8 @@ public class TankDriveFactory {
             LoggerFactory log,
             TotalCurrentLog currentLog,
             double freeSpeedRad_S,
-            CanId can,
+            CanId canId,
+            CanBusId busId,
             MotorPhase phase,
             CurrentLimit limit,
             Friction friction,
@@ -77,7 +80,8 @@ public class TankDriveFactory {
         int measurementPeriod = 4;
         if (RobotBase.isReal()) {
             return new Neo550CANSparkMotor(
-                    log, currentLog, can, NeutralMode100.BRAKE, phase,
+                    log, currentLog, canId, busId,
+                    NeutralMode100.BRAKE, phase,
                     limit, friction, pid, averageDepth, measurementPeriod);
         } else {
             return new SimulatedMotor(log, freeSpeedRad_S);

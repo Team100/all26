@@ -9,6 +9,10 @@ import org.team100.lib.uncertainty.VariableR1;
 
 import org.wpilib.math.geometry.Rotation2d;
 
+/**
+ * Estimates for oosition and velocity in SE2, with noise, and gyro bias.
+ * Measurements of gyro and wheels.
+ */
 public class SwerveState {
     /** Estimate for position and velocity. */
     private final StateSE2 m_state;

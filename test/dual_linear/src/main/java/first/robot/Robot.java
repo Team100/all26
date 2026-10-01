@@ -19,10 +19,12 @@ import org.team100.lib.logging.RobotLog;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
+import org.team100.lib.motor.ctre.CTREStartup;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.subsystems.r1.DualLinearSubsystem;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.Startup;
 import org.wpilib.command2.CommandScheduler;
@@ -35,6 +37,7 @@ public class Robot extends TimedRobot100 {
 
     public Robot() {
         Startup.start();
+        CTREStartup.start();
         LoggerFactory log = Logging.instance().rootLogger;
         m_robotLog = new RobotLog(log);
         TotalCurrentLog currentLog = m_robotLog.totalCurrentLog();
@@ -43,6 +46,7 @@ public class Robot extends TimedRobot100 {
 
         CanId canId1 = new CanId(1);
         CanId canId2 = new CanId(2);
+        CanBusId busId = new CanBusId(0);
         NeutralMode100 neutral = NeutralMode100.COAST;
         MotorPhase phase1 = MotorPhase.FORWARD;
         MotorPhase phase2 = MotorPhase.REVERSE;
@@ -60,7 +64,7 @@ public class Robot extends TimedRobot100 {
         // SUBSYSTEM
 
         m_subsystem = new DualLinearSubsystem(
-                log, currentLog, canId1, canId2, neutral, phase1, phase2, limit,
+                log, currentLog, canId1, canId2, busId, neutral, phase1, phase2, limit,
                 friction, pid, gearRatio, wheelDiameterM, dynamics, ref, xtolerance, vtolerance, true);
 
         // BINDINGS
