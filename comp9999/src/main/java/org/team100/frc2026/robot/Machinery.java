@@ -39,6 +39,7 @@ import org.team100.lib.targeting.ProxySolver;
 import org.team100.lib.targeting.Targets;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.visualization.RobotPoseVisualization;
 import org.team100.lib.visualization.TrajectoryVisualization;
@@ -75,7 +76,7 @@ public class Machinery {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        //////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////
         //
         // DRIVETRAIN
         //
@@ -113,7 +114,7 @@ public class Machinery {
         m_robotViz = new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState(), "robot");
 
-        //////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////
         //
         // TARGETING
         //
@@ -135,12 +136,13 @@ public class Machinery {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, (t) -> m_drive.getState(t));
 
-        //////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////
         //
         // SUBSYSTEMS
         //
         CanId canId1 = new CanId(17);
         CanId canId2 = new CanId(42);
+        CanBusId busId = new CanBusId(0);
         NeutralMode100 neutral = NeutralMode100.COAST;
         MotorPhase phase1 = MotorPhase.FORWARD;
         MotorPhase phase2 = MotorPhase.REVERSE;
@@ -158,16 +160,16 @@ public class Machinery {
         // SUBSYSTEM
 
         m_subsystem = new DualRollerSubsystem(
-                driveLog, currentLog, canId1, canId2, neutral, phase1, phase2, limit,
+                driveLog, currentLog, canId1, canId2, busId, neutral, phase1, phase2, limit,
                 friction, pid, gearRatio, wheelDiameterM, dynamics, ref, 0.01, true);
 
-        //////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        //////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////
         //
         // INDICATOR
         //

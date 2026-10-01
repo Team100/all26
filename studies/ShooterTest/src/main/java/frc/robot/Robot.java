@@ -16,6 +16,7 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.CommandScheduler;
@@ -37,6 +38,7 @@ public class Robot extends TimedRobot {
                 rootLogger.name("left"),
                 currentLog,
                 new CanId(6),
+                new CanBusId(0),
                 NeutralMode100.BRAKE,
                 MotorPhase.FORWARD,
                 new CurrentLimit(50, 50),
@@ -46,6 +48,7 @@ public class Robot extends TimedRobot {
                 rootLogger.name("right"),
                 currentLog,
                 new CanId(7),
+                new CanBusId(0),
                 NeutralMode100.BRAKE,
                 MotorPhase.REVERSE,
                 new CurrentLimit(50, 50),
@@ -55,7 +58,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
-         // Advance the drumbeat.
+        // Advance the drumbeat.
         Takt.update();
         // Take all the measurements we can, as soon and quickly as possible.
         Cache.refresh();

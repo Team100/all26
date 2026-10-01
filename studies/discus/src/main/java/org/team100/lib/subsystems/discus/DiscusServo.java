@@ -22,6 +22,7 @@ import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -62,6 +63,7 @@ public class DiscusServo extends SubsystemBase {
                     logger,
                     currentLog,
                     new CanId(36),
+                    new CanBusId(0),
                     NeutralMode100.COAST,
                     MotorPhase.REVERSE,
                     new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
@@ -106,7 +108,7 @@ public class DiscusServo extends SubsystemBase {
         m_sensor.setUnwrappedEncoderPositionRad(0);
     }
 
-    /////////////////////
+    ////////////////////
     //
     // Commands
 

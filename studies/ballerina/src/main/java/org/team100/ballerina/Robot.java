@@ -17,6 +17,7 @@ import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.subsystems.turret.Turret;
 import org.team100.lib.util.Banner;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
 import org.team100.lib.visualization.Ball;
@@ -60,6 +61,7 @@ public class Robot extends TimedRobot {
                 new CanId(0),
                 new CanId(0),
                 new CanId(0),
+                new CanBusId(0),
                 targeter::forRange,
                 m_pose::getState,
                 target);
