@@ -19,6 +19,7 @@ import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -33,6 +34,7 @@ public class Shooter extends SubsystemBase {
     private static final CanId CAN_ID_2 = new CanId(5);
     private static final CanId CAN_ID_3 = new CanId(14);
     private static final CanId CAN_ID_4 = new CanId(9);
+    private static final CanBusId busId = new CanBusId(0);
     private static final double TOLERANCE_M_S = 1;
     private static final double GEAR_RATIO = 1;
     private static final double WHEEL_DIAMETER_M = .115;
@@ -83,16 +85,16 @@ public class Shooter extends SubsystemBase {
             int averageDepth = 2;
             int measurementPeriod = 4;
             m1 = new NeoVortexCANSparkMotor(
-                    log1, currentLog, CAN_ID_1, NeutralMode100.COAST, MotorPhase.FORWARD,
+                    log1, currentLog, CAN_ID_1, busId, NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(60, 80), friction, pid, averageDepth, measurementPeriod);
             m2 = new NeoVortexCANSparkMotor(
-                    log2, currentLog, CAN_ID_2, NeutralMode100.COAST, MotorPhase.REVERSE,
+                    log2, currentLog, CAN_ID_2, busId, NeutralMode100.COAST, MotorPhase.REVERSE,
                     new CurrentLimit(60, 80), friction, pid, averageDepth, measurementPeriod);
             m3 = new NeoVortexCANSparkMotor(
-                    log3, currentLog, CAN_ID_3, NeutralMode100.COAST, MotorPhase.FORWARD,
+                    log3, currentLog, CAN_ID_3, busId, NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(60, 80), friction, pid, averageDepth, measurementPeriod);
             m4 = new NeoVortexCANSparkMotor(
-                    log4, currentLog, CAN_ID_4, NeutralMode100.COAST, MotorPhase.REVERSE,
+                    log4, currentLog, CAN_ID_4, busId, NeutralMode100.COAST, MotorPhase.REVERSE,
                     new CurrentLimit(60, 80), friction, pid, averageDepth, measurementPeriod);
         } else {
             m1 = new SimulatedMotor(log1, 600);
@@ -216,7 +218,7 @@ public class Shooter extends SubsystemBase {
                 .withName("set velocity");
     }
 
-    ////////////////////////////////////////////
+    //////////////////////////////////////////
 
     private void reset() {
         m_servo1.reset();

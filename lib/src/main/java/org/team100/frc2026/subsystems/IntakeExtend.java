@@ -16,6 +16,7 @@ import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.LinearPositionServo;
 import org.team100.lib.servo.OutboardLinearPositionServo;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -27,6 +28,7 @@ public class IntakeExtend extends SubsystemBase {
     private static final boolean ENABLE = false;
     private static final CanId CAN_ID = new CanId(19);
     private static final CanId CAN_ID2 = new CanId(17);
+    private static final CanBusId busId = new CanBusId(0);
     private static final double gearRatio = 50.0 / 18.0;
     private static final double gearDiameter = 0.025;
     private static final double RETRACTED_POSITION = 0;
@@ -55,12 +57,12 @@ public class IntakeExtend extends SubsystemBase {
             // tuned 3/12/26
             PIDConstants pid = PIDConstants.makePositionPID(1);
             motor = new KrakenX44Motor(
-                    log1, currentLog, CAN_ID,
+                    log1, currentLog, CAN_ID, busId,
                     NeutralMode100.COAST, MotorPhase.REVERSE,
                     new CurrentLimit(20, 40),
                     friction, pid);
             motor2 = new KrakenX44Motor(
-                    log2, currentLog, CAN_ID2,
+                    log2, currentLog, CAN_ID2, busId,
                     NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(20, 40),
                     friction, pid);
@@ -154,7 +156,7 @@ public class IntakeExtend extends SubsystemBase {
                 .withName("set position");
     }
 
-    ////////////////////////////////////////
+    //////////////////////////////////////
 
     private void stopServo() {
         m_servo.stop();

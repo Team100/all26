@@ -19,6 +19,7 @@ import org.team100.lib.sensor.position.absolute.ReduxPositionSensor;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.wpi.AS5048RotaryPositionSensor;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
 
@@ -62,6 +63,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             CurrentLimit driveLimit,
             CurrentLimit steerLimit,
             CanId driveMotorCanId,
+            CanBusId busId,
             DriveRatio ratio,
             CanId turningMotorCanId,
             RoboRioChannel turningEncoderChannel,
@@ -74,6 +76,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 currentLog,
                 driveLimit,
                 driveMotorCanId,
+                busId,
                 ratio);
         // this reads the steering angle directly.
         RotaryPositionSensor turningSensor = new AS5048RotaryPositionSensor(
@@ -86,6 +89,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 currentLog,
                 steerLimit,
                 turningMotorCanId,
+                busId,
                 turningSensor,
                 STEERING_RATIO,
                 neutral,
@@ -99,9 +103,11 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             CurrentLimit driveLimit,
             CurrentLimit steerLimit,
             CanId driveMotorCanId,
+            CanBusId busId,
             DriveRatio ratio,
             CanId turningMotorCanId,
-            CanId turningEncoderChannel,
+            CanId turningEncoderCanId,
+            CanBusId encoderBusId,
             double turningOffset,
             EncoderDrive encoderDrive,
             NeutralMode100 neutral,
@@ -111,12 +117,14 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 currentLog,
                 driveLimit,
                 driveMotorCanId,
+                busId,
                 ratio);
         // this reads the steering angle directly.
         LoggerFactory turnlog = parent.name("Turning");
         RotaryPositionSensor turningSensor = new ReduxPositionSensor(
                 turnlog,
-                turningEncoderChannel,
+                turningEncoderCanId,
+                encoderBusId,
                 turningOffset,
                 encoderDrive);
         RotaryMechanism steer = steerKraken(
@@ -124,6 +132,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 currentLog,
                 steerLimit,
                 turningMotorCanId,
+                busId,
                 turningSensor,
                 STEERING_RATIO,
                 neutral,
@@ -140,6 +149,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             CurrentLimit driveLimit,
             CurrentLimit steerLimit,
             CanId driveMotorCanId,
+            CanBusId busId,
             DriveRatio ratio,
             CanId turningMotorCanId,
             RoboRioChannel turningEncoderChannel,
@@ -152,12 +162,14 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 currentLog,
                 driveLimit,
                 driveMotorCanId,
+                busId,
                 ratio);
         RotaryMechanism steer = steerFalcon(
                 parent.name("Turning"),
                 currentLog,
                 steerLimit,
                 turningMotorCanId,
+                busId,
                 turningEncoderChannel,
                 turningOffset,
                 STEERING_RATIO,
@@ -176,6 +188,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             CurrentLimit driveLimit,
             CurrentLimit steerLimit,
             CanId driveMotorCanId,
+            CanBusId busId,
             DriveRatio ratio,
             CanId turningMotorCanId,
             RoboRioChannel turningEncoderChannel,
@@ -189,12 +202,14 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 currentLog,
                 driveLimit,
                 driveMotorCanId,
+                busId,
                 ratio);
         RotaryMechanism steer = steerFalcon(
                 parent.name("Turning"),
                 currentLog,
                 steerLimit,
                 turningMotorCanId,
+                busId,
                 turningEncoderChannel,
                 turningOffset,
                 STEERING_RATIO,
@@ -209,6 +224,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             TotalCurrentLog currentLog,
             CurrentLimit limit,
             CanId driveMotorCanId,
+            CanBusId busId,
             DriveRatio ratio) {
         // note (10/2/24) 0.4 produces oscillation, on carpet.
         Friction friction = new Friction(0.26, 0.26, 0.006, 0.5);
@@ -218,6 +234,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 parent,
                 currentLog,
                 driveMotorCanId,
+                busId,
                 NeutralMode100.COAST,
                 MotorPhase.FORWARD,
                 limit,
@@ -238,6 +255,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             TotalCurrentLog currentLog,
             CurrentLimit limit,
             CanId driveMotorCanId,
+            CanBusId busId,
             DriveRatio ratio) {
         Friction friction = new Friction(0.260, 0.260, 0.002, 0.5);
         PIDConstants pid = PIDConstants.makeVelocityPID(0.05);
@@ -245,6 +263,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 parent,
                 currentLog,
                 driveMotorCanId,
+                busId,
                 NeutralMode100.COAST,
                 MotorPhase.FORWARD,
                 limit,
@@ -261,6 +280,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             TotalCurrentLog currentLog,
             CurrentLimit limit,
             CanId turningMotorCanId,
+            CanBusId busId,
             RoboRioChannel turningEncoderChannel,
             double turningOffset,
             double gearRatio,
@@ -278,6 +298,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 parent,
                 currentLog,
                 turningMotorCanId,
+                busId,
                 neutral,
                 motorPhase,
                 limit,
@@ -306,6 +327,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             TotalCurrentLog currentLog,
             CurrentLimit limit,
             CanId turningMotorCanId,
+            CanBusId busId,
             RotaryPositionSensor turningSensor,
             double gearRatio,
             NeutralMode100 neutral,
@@ -321,6 +343,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 parent,
                 currentLog,
                 turningMotorCanId,
+                busId,
                 neutral,
                 motorPhase,
                 limit,

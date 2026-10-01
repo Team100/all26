@@ -14,6 +14,7 @@ import org.team100.lib.motor.rev.NeoCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.gyro.Gyro;
 import org.team100.lib.sensor.gyro.ReduxGyro;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.framework.RobotBase;
 
@@ -29,6 +30,7 @@ public class MecanumDriveFactory {
             CanId canFR,
             CanId canRL,
             CanId canRR,
+            CanBusId busId,
             double m,
             double I,
             double trackWidthM,
@@ -49,16 +51,16 @@ public class MecanumDriveFactory {
         slip = slip(slip);
 
         Motor motorFL = getMotor(
-                logFL, currentLog, canFL, MotorPhase.REVERSE,
+                logFL, currentLog, canFL, busId, MotorPhase.REVERSE,
                 limit, friction, pid);
         Motor motorFR = getMotor(
-                logFR, currentLog, canFR, MotorPhase.FORWARD,
+                logFR, currentLog, canFR, busId, MotorPhase.FORWARD,
                 limit, friction, pid);
         Motor motorRL = getMotor(
-                logRL, currentLog, canRL, MotorPhase.REVERSE,
+                logRL, currentLog, canRL, busId, MotorPhase.REVERSE,
                 limit, friction, pid);
         Motor motorRR = getMotor(
-                logRR, currentLog, canRR, MotorPhase.FORWARD,
+                logRR, currentLog, canRR, busId, MotorPhase.FORWARD,
                 limit, friction, pid);
 
         LinearMechanism mechFL = new LinearMechanism(
@@ -80,14 +82,14 @@ public class MecanumDriveFactory {
     }
 
     public static Motor getMotor(
-            LoggerFactory log, TotalCurrentLog currentLog, CanId can, MotorPhase phase,
+            LoggerFactory log, TotalCurrentLog currentLog, CanId can, CanBusId busId, MotorPhase phase,
             CurrentLimit limit, Friction friction, PIDConstants pid) {
         // parameters for velocity control
         int averageDepth = 2;
         int measurementPeriod = 4;
         if (RobotBase.isReal()) {
             return new NeoCANSparkMotor(
-                    log, currentLog, can, NeutralMode100.BRAKE, phase,
+                    log, currentLog, can, busId, NeutralMode100.BRAKE, phase,
                     limit, friction, pid, averageDepth, measurementPeriod);
         } else {
             return new SimulatedMotor(log, 600);

@@ -14,6 +14,7 @@ import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.RobotLog;
+import org.team100.lib.motor.ctre.CTREStartup;
 import org.team100.lib.network.Sync;
 import org.team100.lib.util.Startup;
 import org.team100.lib.visualization.AutonVisualization;
@@ -35,6 +36,7 @@ public class Robot extends TimedRobot100 {
 
     public Robot() {
         Startup.start();
+        CTREStartup.start();
         System.out.printf("Robot class: %s\n",
                 this.getClass().getName());
         Logging logging = Logging.instance();
@@ -69,7 +71,7 @@ public class Robot extends TimedRobot100 {
         }
     }
 
-    ////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////
     //
     // INITIALIZERS, DO NOT CHANGE THESE
     //
@@ -113,7 +115,7 @@ public class Robot extends TimedRobot100 {
         m_binder.close();
     }
 
-    ////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////
     //
     // EXIT: CLEAN UP
     //
@@ -122,7 +124,7 @@ public class Robot extends TimedRobot100 {
     public void disabledExit() {
     }
 
-    /////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////
     //
     // LEAVE ALL THESE EMPTY
     //

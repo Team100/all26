@@ -15,6 +15,7 @@ import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.LinearVelocityServo;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -28,6 +29,7 @@ public class SingleRollerSubsystem extends SubsystemBase {
             LoggerFactory parent,
             TotalCurrentLog currentLog,
             CanId canId1,
+            CanBusId busId,
             NeutralMode100 neutral,
             MotorPhase phase1,
             CurrentLimit limit,
@@ -44,7 +46,7 @@ public class SingleRollerSubsystem extends SubsystemBase {
         final Motor m1;
         if (enable && RobotBase.isReal()) {
             m1 = new KrakenX44Motor(
-                    m_log1, currentLog, canId1, neutral, phase1, limit, friction, pid);
+                    m_log1, currentLog, canId1, busId, neutral, phase1, limit, friction, pid);
         } else {
             m1 = new SimulatedMotor(m_log1, 600);
         }

@@ -16,6 +16,7 @@ import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -24,6 +25,7 @@ import org.wpilib.framework.RobotBase;
 public class Conveyor extends SubsystemBase {
     private static final CanId canID1 = new CanId(19);
     private static final CanId canID2 = new CanId(20);
+    private static final CanBusId busId = new CanBusId(0);
     private static final double TOLERANCE_M_S = 1;
     private static final double GEAR_RATIO = 3;
     private static final double WHEEL_DIAMETER_M = 0.035;
@@ -52,10 +54,12 @@ public class Conveyor extends SubsystemBase {
             PIDConstants pid = PIDConstants.makeVelocityPID(0.08);
 
             m1 = new KrakenX44Motor(
-                    log1, currentLog, canID1, NeutralMode100.COAST, MotorPhase.REVERSE,
+                    log1, currentLog, canID1, busId,
+                    NeutralMode100.COAST, MotorPhase.REVERSE,
                     new CurrentLimit(50, 30), friction, pid);
             m2 = new KrakenX44Motor(
-                    log2, currentLog, canID2, NeutralMode100.COAST, MotorPhase.REVERSE,
+                    log2, currentLog, canID2, busId,
+                    NeutralMode100.COAST, MotorPhase.REVERSE,
                     new CurrentLimit(50, 30), friction, pid);
         } else {
             m1 = new SimulatedMotor(log1, 600);
@@ -118,7 +122,7 @@ public class Conveyor extends SubsystemBase {
                 .withName("set velocity");
     }
 
-    /////////////////////////////////////////
+    //////////////////////////////////////
 
     private void reset() {
         m_servo1.reset();
