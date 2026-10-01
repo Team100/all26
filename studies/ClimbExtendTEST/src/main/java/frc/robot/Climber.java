@@ -20,6 +20,7 @@ import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.FunctionalCommand;
@@ -53,6 +54,7 @@ public class Climber extends SubsystemBase {
                     log1,
                     currentLog,
                     new CanId(18),
+                    new CanBusId(0),
                     NeutralMode100.BRAKE,
                     MotorPhase.FORWARD,
                     limit,
@@ -67,6 +69,7 @@ public class Climber extends SubsystemBase {
                     log2,
                     currentLog,
                     new CanId(19),
+                    new CanBusId(0),
                     NeutralMode100.BRAKE,
                     MotorPhase.FORWARD,
                     limit,
