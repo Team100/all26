@@ -27,12 +27,16 @@ import org.team100.lib.subsystems.r1.DualRollerSubsystem;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.Startup;
 import org.wpilib.command2.CommandScheduler;
+import org.wpilib.command2.Commands;
 import org.wpilib.networktables.NetworkTableInstance;
 
 public class Robot extends TimedRobot100 {
     private final RobotLog m_robotLog;
     private final DriverXboxControl m_control;
-    private final DualRollerSubsystem m_subsystem;
+
+    private final DualRollerSubsystem m_subsystem_drum_top;
+    private final DualRollerSubsystem m_subsystem_drum_bottom;
+    private final DualRollerSubsystem m_subsystem_feeder;
 
     public Robot() {
         Startup.start();
@@ -42,36 +46,67 @@ public class Robot extends TimedRobot100 {
 
         // CONFIGURATION
 
-        CanId canId1 = new CanId(17);
-        CanId canId2 = new CanId(42);
+        CanId canId13 = new CanId(13);
+        CanId canId14 = new CanId(14);
+        CanId canId15 = new CanId(15);
+        CanId canId16 = new CanId(16);
+        CanId canId17 = new CanId(17);
+        CanId canId18 = new CanId(18);
         NeutralMode100 neutral = NeutralMode100.COAST;
         MotorPhase phase1 = MotorPhase.FORWARD;
         MotorPhase phase2 = MotorPhase.REVERSE;
         CurrentLimit limit = new CurrentLimit(30, 30);
-        double  gearRatio = 6.0;
+        double gearRatio = 6.0;
         double wheelDiameterM = 0.025;
         Friction friction = new Friction(0.32, 0.32, 0.0, 0.5);
         PIDConstants pid = PIDConstants.makeVelocityPID(0.03);
         PDynamics dynamics = new PDynamics(1);
         VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(10);
         double tolerance = 0.05;
-        VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
+        VelocityReferenceR1 ref_drum = new VelocityProfileReferenceR1(
+                log, () -> profile, tolerance);
+        VelocityReferenceR1 ref_feeder = new VelocityProfileReferenceR1(
                 log, () -> profile, tolerance);
 
-        // SUBSYSTEM
+        // SUBSYSTEMs
 
-        m_subsystem = new DualRollerSubsystem(
-                log, currentLog, canId1, canId2, neutral, phase1, phase2, limit,
-                friction, pid, gearRatio, wheelDiameterM, dynamics, ref, 0.01, true);
+        m_subsystem_drum_top = new DualRollerSubsystem(
+                log.name("drum top"), currentLog, canId13, canId15, neutral, phase1, phase2, limit,
+                friction, pid, gearRatio, wheelDiameterM, dynamics, ref_drum, 0.01, true);
+
+        m_subsystem_drum_bottom = new DualRollerSubsystem(
+                log.name("drum bottom"), currentLog, canId14, canId16, neutral, phase1, phase2, limit,
+                friction, pid, gearRatio, wheelDiameterM, dynamics, ref_drum, 0.01, true);
+
+        m_subsystem_feeder = new DualRollerSubsystem(
+                log.name("feeder"), currentLog, canId17, canId18, neutral, phase1, phase2, limit,
+                friction, pid, gearRatio, wheelDiameterM, dynamics, ref_feeder, 0.01, true);
 
         // BINDINGS
-        
 
-        m_subsystem.setDefaultCommand(m_subsystem.stop().withName("stop"));
+        m_subsystem_drum_top.setDefaultCommand(m_subsystem_drum_top.stop().withName("stop"));
         m_control = new DriverXboxControl(log, 0);
-        whileTrue(m_control::leftBumper, m_subsystem.velocity(-1).withName("negative"));
-        whileTrue(m_control::rightBumper, m_subsystem.velocity(1).withName("positive"));
-        whileTrue(m_control::back, m_subsystem.voltage(0.5).withName("voltage"));
+        whileTrue(m_control::a,
+                Commands.parallel(
+                        m_subsystem_drum_top.velocity(-0.75),
+                        m_subsystem_drum_bottom.velocity(-0.75)).withName("drum negative"));
+        whileTrue(m_control::b,
+                Commands.parallel(
+                        m_subsystem_drum_top.velocity(0.75),
+                        m_subsystem_drum_bottom.velocity(0.75)).withName("drum positive"));
+        // whileTrue(m_control::back, m_subsystem.voltage(0.5).withName("voltage"));
+
+        m_subsystem_drum_bottom.setDefaultCommand(m_subsystem_drum_bottom.stop().withName("stop"));
+        // whileTrue(m_control::leftTrigger,
+        // m_subsystem2.velocity(-1).withName("negative"));
+        // whileTrue(m_control::rightTrigger,
+        // m_subsystem2.velocity(1).withName("positive"));
+        // whileTrue(m_control2::a, m_subsystem.voltage(0.5).withName("voltage"));
+
+        m_subsystem_feeder.setDefaultCommand(m_subsystem_feeder.stop().withName("stop"));
+        whileTrue(m_control::x, m_subsystem_feeder.velocity(-0.75).withName("feeder negative"));
+        whileTrue(m_control::y, m_subsystem_feeder.velocity(0.75).withName("feeder positive"));
+        // whileTrue(m_control3::b, m_subsystem.voltage(0.5).withName("voltage"));
     }
 
     @Override
@@ -101,7 +136,9 @@ public class Robot extends TimedRobot100 {
     @Override
     public void close() {
         super.close();
-        m_subsystem.close();
+        m_subsystem_drum_top.close();
+        m_subsystem_drum_bottom.close();
+        m_subsystem_feeder.close();
     }
 
 }
