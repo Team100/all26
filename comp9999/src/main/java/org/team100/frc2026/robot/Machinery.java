@@ -140,8 +140,8 @@ public class Machinery {
         //
         // SUBSYSTEMS
         //
-        CanId canId1 = new CanId(17);
-        CanId canId2 = new CanId(42);
+        CanId canId1 = new CanId(9);
+        CanId canId2 = new CanId(10);
         NeutralMode100 neutral = NeutralMode100.COAST;
         MotorPhase phase1 = MotorPhase.FORWARD;
         MotorPhase phase2 = MotorPhase.REVERSE;
