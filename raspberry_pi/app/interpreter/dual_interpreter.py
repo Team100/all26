@@ -42,7 +42,7 @@ class DualInterpreter(InterpreterBase):
         :analyzer_color: for color, use None if you don't need it
         """
         super().__init__(network)
-        print("\n*** Interpreter: DualInterpreter")
+        print("*** Interpreter: DualInterpreter")
 
         self._display1 = display1
         self._display2 = display2

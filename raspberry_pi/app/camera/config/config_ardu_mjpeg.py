@@ -12,7 +12,7 @@ class ConfigArduMjpeg(Config):
     """The Arducam camera, using the MJPEG encoding."""
 
     def __init__(self, size: Size) -> None:
-        print("\n*** Config: ConfigArduMjpeg")
+        print("*** Config: ConfigArduMjpeg")
         self._size = size
 
     @override

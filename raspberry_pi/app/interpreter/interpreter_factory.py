@@ -26,7 +26,7 @@ class InterpreterFactory:
         network: Network,
         timestamps: Timestamps,
     ) -> Interpreter:
-        print("\n*** InterpreterFactory selecting an interpreter", flush=True)
+        print("*** InterpreterFactory for identity:", identity)
         if USE_NULL:
             # For testing.
             return Viewfinder(display1, display2, network)

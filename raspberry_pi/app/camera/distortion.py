@@ -23,6 +23,7 @@ class Distortion:
     """
 
     def __init__(self, identity: Identity) -> None:
+        print("*** Distortion for identity:", identity)
         self._dist: NDArray[np.float32]
         self._valid: bool = True
         match identity:
@@ -76,7 +77,7 @@ class Distortion:
                 print("#                                         #")
                 print("###########################################")
 
-        print("\n*** DISTORTION")
+        print("*** DISTORTION")
         print(self._dist)
 
     def get(self) -> NDArray[np.float32]:

@@ -14,7 +14,7 @@ class ConfigGsMono(Config):
     """
 
     def __init__(self, size: Size) -> None:
-        print("\n*** Config: ConfigGsMono")
+        print("*** Config: ConfigGsMono")
         self._size = size
 
     @override

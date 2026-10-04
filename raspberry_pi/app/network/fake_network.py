@@ -50,6 +50,7 @@ class FakeNetwork(Network):
     """For testing."""
 
     def __init__(self) -> None:
+        print("*** Network: FakeNetwork")
         self.doubles: list[float] = []
         self.blips: list[Blip] = []
         self.blips_with_corners: list[BlipWithCorners] = []

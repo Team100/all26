@@ -10,7 +10,7 @@ class ConfigThriftyYuyv(Config):
     """The Thrifty Cam camera, using the YUYV encoding."""
 
     def __init__(self, size: Size) -> None:
-        print("\n*** Config: ConfigThriftyYuyv")
+        print("*** Config: ConfigThriftyYuyv")
         self._size = size
 
     @override

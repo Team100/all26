@@ -63,7 +63,7 @@ class RealNetwork(Network):
     """
 
     def __init__(self, identity: Identity, done: Event) -> None:
-        print("\n*** Network: RealNetwork", flush=True)
+        print("*** Network: RealNetwork")
         self._identity: Identity = identity
         self._inst: ntcore.NetworkTableInstance = (
             ntcore.NetworkTableInstance.getDefault()

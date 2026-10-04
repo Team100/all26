@@ -29,6 +29,7 @@ class Intrinsic:
     """
 
     def __init__(self, identity: Identity) -> None:
+        print("*** Intrinsic for identity:", identity)
         self._mtx: NDArray[np.float32]
         self._valid: bool = True
         match identity:
@@ -118,7 +119,7 @@ class Intrinsic:
                 print("#                                        #")
                 print("##########################################")
 
-        print("\n*** INTRINSIC")
+        print("*** INTRINSIC")
         print(self._mtx)
 
     def get(self) -> NDArray[np.float32]:

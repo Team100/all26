@@ -12,7 +12,7 @@ class ConfigThriftyMjpeg(Config):
     """The Thrifty Cam camera, using the MJPEG encoding."""
 
     def __init__(self, size: Size) -> None:
-        print("\n*** Config: ConfigThriftyMjpeg")
+        print("*** Config: ConfigThriftyMjpeg")
         self._size = size
 
     @override
