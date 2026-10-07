@@ -41,8 +41,8 @@ public class IntakeExtend extends SubsystemBase {
     @SuppressWarnings("unused")
     public IntakeExtend(LoggerFactory parent, TotalCurrentLog currentLog) {
         LoggerFactory log = parent.type(this);
-        LoggerFactory log1 = log.name("Extend1");
-        LoggerFactory log2 = log.name("Extend2");
+        LoggerFactory log1 = log.name("Eextend Left");
+        LoggerFactory log2 = log.name("Extend Right");
 
         // Mass is zero for now because gravity coordinate doesn't match
         // the mechanism.

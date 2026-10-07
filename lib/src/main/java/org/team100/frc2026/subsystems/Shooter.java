@@ -12,6 +12,7 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
+import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.CurrentLimitedExponentialVelocityProfileR1;
@@ -29,17 +30,18 @@ public class Shooter extends SubsystemBase {
     private static final boolean ENABLE = true;
     private static final boolean DEBUG = false;
     private static final double TUNING_SETTING = 0;
-    private static final double TEST_SPEED = 15;
-    private static final CanId CAN_ID_1 = new CanId(2);
-    private static final CanId CAN_ID_2 = new CanId(5);
-    private static final CanId CAN_ID_3 = new CanId(14);
-    private static final CanId CAN_ID_4 = new CanId(9);
+    private static final double TEST_SPEED = 35;
+    private static final CanId CAN_ID_1 = new CanId(13);
+    private static final CanId CAN_ID_2 = new CanId(14);
+    private static final CanId CAN_ID_3 = new CanId(15);
+    private static final CanId CAN_ID_4 = new CanId(16);
     private static final CanBusId busId = new CanBusId(0);
     private static final double TOLERANCE_M_S = 1;
-    private static final double GEAR_RATIO = 1;
-    private static final double WHEEL_DIAMETER_M = .115;
+    // private static final double GEAR_RATIO = 18.0 / 24.0;
+    private static final double GEAR_RATIO = 24.0 / 18.0;
+    private static final double DRUM_DIAMETER_M = .089;
 
-    // private static final double FULL_SPEED = 30;
+    //private static final double FULL_SPEED = 30;
 
     private final Supplier<OptionalDouble> m_speed;
 
@@ -53,6 +55,7 @@ public class Shooter extends SubsystemBase {
      * @param speed  speed (m/s) for auto mode
      */
     @SuppressWarnings("unused")
+
     public Shooter(
             LoggerFactory parent,
             TotalCurrentLog currentLog,
@@ -66,36 +69,37 @@ public class Shooter extends SubsystemBase {
 
         // dynamics are actually about inertia, so we find the "effective"
         // dynamics here.
-        PDynamics dynamics = PDynamics.drum(0.5, WHEEL_DIAMETER_M / 2);
+        PDynamics dynamics = PDynamics.drum(0, DRUM_DIAMETER_M / 2);
 
         // tuned 3/12/26
         VelocityProfileR1 profile = new CurrentLimitedExponentialVelocityProfileR1(
-                20, 20, 40, 60);
+                20, 20, 20, 20);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
         final Motor m1;
         final Motor m2;
         final Motor m3;
         final Motor m4;
+
         if (ENABLE && RobotBase.isReal()) {
             // friction test 3/12/262
             Friction friction = new Friction(0.3, 0.25, 0.0, 0.5);
             // tuned 3/12/26
-            PIDConstants pid = PIDConstants.makeVelocityPID(0.075);
+            PIDConstants pid = PIDConstants.makeVelocityPID(0.025);
             int averageDepth = 2;
             int measurementPeriod = 4;
-            m1 = new NeoVortexCANSparkMotor(
-                    log1, currentLog, CAN_ID_1, busId, NeutralMode100.COAST, MotorPhase.FORWARD,
-                    new CurrentLimit(60, 80), friction, pid, averageDepth, measurementPeriod);
-            m2 = new NeoVortexCANSparkMotor(
+            m1 = new KrakenX60Motor(
+                    log1, currentLog, CAN_ID_1, busId, NeutralMode100.COAST, MotorPhase.REVERSE,
+                    new CurrentLimit(60, 80), friction, pid);
+            m2 = new KrakenX60Motor(
                     log2, currentLog, CAN_ID_2, busId, NeutralMode100.COAST, MotorPhase.REVERSE,
-                    new CurrentLimit(60, 80), friction, pid, averageDepth, measurementPeriod);
-            m3 = new NeoVortexCANSparkMotor(
+                    new CurrentLimit(60, 80), friction, pid);
+            m3 = new KrakenX60Motor(
                     log3, currentLog, CAN_ID_3, busId, NeutralMode100.COAST, MotorPhase.FORWARD,
-                    new CurrentLimit(60, 80), friction, pid, averageDepth, measurementPeriod);
-            m4 = new NeoVortexCANSparkMotor(
-                    log4, currentLog, CAN_ID_4, busId, NeutralMode100.COAST, MotorPhase.REVERSE,
-                    new CurrentLimit(60, 80), friction, pid, averageDepth, measurementPeriod);
+                    new CurrentLimit(60, 80), friction, pid);
+            m4 = new KrakenX60Motor(
+                    log4, currentLog, CAN_ID_4, busId, NeutralMode100.COAST, MotorPhase.FORWARD,
+                    new CurrentLimit(60, 80), friction, pid);
         } else {
             m1 = new SimulatedMotor(log1, 600);
             m2 = new SimulatedMotor(log2, 600);
@@ -104,13 +108,13 @@ public class Shooter extends SubsystemBase {
         }
         // note different gear ratio
         m_servo1 = OutboardLinearVelocityServo.make(
-                log1, m1, dynamics, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
+                log1, m1, dynamics, ref, GEAR_RATIO, DRUM_DIAMETER_M, TOLERANCE_M_S);
         m_servo2 = OutboardLinearVelocityServo.make(
-                log2, m2, dynamics, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
+                log2, m2, dynamics, ref, GEAR_RATIO, DRUM_DIAMETER_M, TOLERANCE_M_S);
         m_servo3 = OutboardLinearVelocityServo.make(
-                log3, m3, dynamics, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
+                log3, m3, dynamics, ref, GEAR_RATIO, DRUM_DIAMETER_M, TOLERANCE_M_S);
         m_servo4 = OutboardLinearVelocityServo.make(
-                log4, m4, dynamics, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
+                log4, m4, dynamics, ref, GEAR_RATIO, DRUM_DIAMETER_M, TOLERANCE_M_S);
     }
 
     public Command tune() {
@@ -218,7 +222,7 @@ public class Shooter extends SubsystemBase {
                 .withName("set velocity");
     }
 
-    //////////////////////////////////////////
+    /////////////////////////////////////////
 
     private void reset() {
         m_servo1.reset();

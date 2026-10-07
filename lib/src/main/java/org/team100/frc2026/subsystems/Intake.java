@@ -41,7 +41,7 @@ public class Intake extends SubsystemBase {
         LoggerFactory log1 = log.name("motor1");
         LoggerFactory log2 = log.name("motor2");
         // equivalent linear dynamics for the actual drum inertia.
-        PDynamics dynamics = PDynamics.drum(0.001, 0.025);
+        PDynamics dynamics = PDynamics.drum(0.000, 0.025);
         // VelocityProfileR1 profile = new CurrentLimitedExponentialVelocityProfileR1(
         // 10, 10, 20, 30);
         VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(
@@ -54,7 +54,7 @@ public class Intake extends SubsystemBase {
             // friction test 3/12/26
             Friction friction = new Friction(0.5, 0.5, 0.0, 0.5);
             // tuned 3/12/26
-            PIDConstants pid = PIDConstants.makeVelocityPID(0.08);
+            PIDConstants pid = PIDConstants.makeVelocityPID(0.005);
             m1 = new KrakenX44Motor(
                     log1, currentLog, CAN_ID_1, busId, NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(50, 30), friction, pid);
@@ -79,7 +79,7 @@ public class Intake extends SubsystemBase {
         return startRun(
                 this::reset,
                 () -> setVelocityProfiled(NORMAL_SPEED))
-                .finallyDo(this::stopMotor)
+                // .finallyDo(this::stopMotor)
                 .withName("Intake Normal Speed");
     }
 

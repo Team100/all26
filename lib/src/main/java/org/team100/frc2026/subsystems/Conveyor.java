@@ -9,7 +9,7 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
-import org.team100.lib.motor.ctre.KrakenX44Motor;
+import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.AccelLimitedVelocityProfileR1;
 import org.team100.lib.profile.r1.VelocityProfileR1;
@@ -27,9 +27,9 @@ public class Conveyor extends SubsystemBase {
     private static final CanId canID2 = new CanId(20);
     private static final CanBusId busId = new CanBusId(1);
     private static final double TOLERANCE_M_S = 1;
-    private static final double GEAR_RATIO = 3;
-    private static final double WHEEL_DIAMETER_M = 0.035;
-    private static final double NORMAL_SPEED = 5.0;
+    private static final double GEAR_RATIO = 18.0/36.0;
+    private static final double WHEEL_DIAMETER_M = 0.05;
+    private static final double NORMAL_SPEED = 2.0;
 
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
@@ -53,11 +53,11 @@ public class Conveyor extends SubsystemBase {
             // tune 3/12/26
             PIDConstants pid = PIDConstants.makeVelocityPID(0.08);
 
-            m1 = new KrakenX44Motor(
+            m1 = new KrakenX60Motor(
                     log1, currentLog, canID1, busId,
-                    NeutralMode100.COAST, MotorPhase.REVERSE,
+                    NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(50, 30), friction, pid);
-            m2 = new KrakenX44Motor(
+            m2 = new KrakenX60Motor(
                     log2, currentLog, canID2, busId,
                     NeutralMode100.COAST, MotorPhase.REVERSE,
                     new CurrentLimit(50, 30), friction, pid);

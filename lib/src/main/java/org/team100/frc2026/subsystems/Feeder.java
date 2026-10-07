@@ -9,7 +9,7 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
-import org.team100.lib.motor.ctre.KrakenX44Motor;
+import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.profile.r1.AccelLimitedVelocityProfileR1;
 import org.team100.lib.profile.r1.VelocityProfileR1;
@@ -23,12 +23,12 @@ import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
 
 public class Feeder extends SubsystemBase {
-    public static final CanId canID1 = new CanId(8);
-    public static final CanId canID2 = new CanId(9);
+    public static final CanId canID1 = new CanId(17);
+    public static final CanId canID2 = new CanId(18);
     private static final CanBusId busId = new CanBusId(0);
     private static final double TOLERANCE_M_S = 1.0;
-    private static final double GEAR_RATIO = 3.0;
-    private static final double WHEEL_DIAMETER_M = 0.05;
+    private static final double GEAR_RATIO = 24.0/18.0;
+    private static final double WHEEL_DIAMETER_M = 0.048;
     private static final double NORMAL_SPEED = 10.0;
 
     private final OutboardLinearVelocityServo m_servo1;
@@ -38,8 +38,8 @@ public class Feeder extends SubsystemBase {
 
     public Feeder(LoggerFactory parent, TotalCurrentLog currentLog, Shooter shooter) {
         LoggerFactory log = parent.type(this);
-        LoggerFactory log1 = log.name("Feeder1");
-        LoggerFactory log2 = log.name("Feeder2");
+        LoggerFactory log1 = log.name("Feeder Left");
+        LoggerFactory log2 = log.name("Feeder Right");
         m_Shooter = shooter;
         // equivalent linear dynamics for the actual drum inertia.
         PDynamics dynamics = PDynamics.drum(0.001, 0.025);
@@ -54,11 +54,11 @@ public class Feeder extends SubsystemBase {
             // tuned 3/12/26
             PIDConstants pid = PIDConstants.makeVelocityPID(0.05);
 
-            m1 = new KrakenX44Motor(
+            m1 = new KrakenX60Motor(
                     log1, currentLog, canID1, busId, NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(50, 30), friction, pid);
-            m2 = new KrakenX44Motor(
-                    log2, currentLog, canID2, busId, NeutralMode100.COAST, MotorPhase.FORWARD,
+            m2 = new KrakenX60Motor(
+                    log2, currentLog, canID2, busId, NeutralMode100.COAST, MotorPhase.REVERSE,
                     new CurrentLimit(50, 30), friction, pid);
         } else {
             m1 = new SimulatedMotor(log1, 600);
@@ -140,7 +140,7 @@ public class Feeder extends SubsystemBase {
                 .withName("set velocity");
     }
 
-    ///////////////////////////////////////////////////
+    //////////////////////////////////////////////////
 
     private void reset() {
         m_servo1.reset();
