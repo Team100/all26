@@ -26,7 +26,7 @@ import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
 
 public class Shooter extends SubsystemBase {
-    private static final boolean ENABLE = false;
+    private static final boolean ENABLE = true;
     private static final boolean DEBUG = false;
     private static final double TUNING_SETTING = 0;
     private static final double TEST_SPEED = 15;

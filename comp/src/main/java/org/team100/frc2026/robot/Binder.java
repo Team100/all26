@@ -57,6 +57,8 @@ public class Binder {
                 machinery.m_intakeExtend.goToRetractedPosition());
         machinery.m_shooter.setDefaultCommand(
                 machinery.m_shooter.stop());
+        machinery.m_conveyor.setDefaultCommand(
+                machinery.m_conveyor.stop());
         ////////////////////////////////////////////////////
         ///
         /// DISORIENT
@@ -93,6 +95,8 @@ public class Binder {
         whileTrue(m_driver::b,
                 machinery.m_intakeExtend.goToRetractedPosition());
         whileTrue(m_driver::y, machinery.m_shooter.testShooterFullspeed());
+        whileTrue(m_driver::leftBumper,
+                machinery.m_conveyor.convey());
 
         ////////////////////////////////////////////////////
         ///

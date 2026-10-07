@@ -25,7 +25,7 @@ import org.wpilib.framework.RobotBase;
 public class Conveyor extends SubsystemBase {
     private static final CanId canID1 = new CanId(19);
     private static final CanId canID2 = new CanId(20);
-    private static final CanBusId busId = new CanBusId(0);
+    private static final CanBusId busId = new CanBusId(1);
     private static final double TOLERANCE_M_S = 1;
     private static final double GEAR_RATIO = 3;
     private static final double WHEEL_DIAMETER_M = 0.035;

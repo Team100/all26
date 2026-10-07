@@ -23,9 +23,9 @@ import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
 
 public class Intake extends SubsystemBase {
-    private static final boolean ENABLE = false;
-    private static final CanId CAN_ID_1 = new CanId(20);
-    private static final CanId CAN_ID_2 = new CanId(16);
+    private static final boolean ENABLE = true;
+    private static final CanId CAN_ID_1 = new CanId(11);
+    private static final CanId CAN_ID_2 = new CanId(12);
     private static final CanBusId busId = new CanBusId(0);
     private static final double TOLERANCE_M_S = 1;
     private static final double GEAR_RATIO = 30.0 / 12.0;
