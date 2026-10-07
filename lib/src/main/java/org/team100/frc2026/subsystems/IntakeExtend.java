@@ -26,10 +26,10 @@ import org.wpilib.math.util.MathUtil;
 /** Intake must be retracted at startup. */
 public class IntakeExtend extends SubsystemBase {
     private static final boolean ENABLE = false;
-    private static final CanId CAN_ID = new CanId(19);
-    private static final CanId CAN_ID2 = new CanId(17);
-    private static final CanBusId busId = new CanBusId(0);
-    private static final double gearRatio = 50.0 / 18.0;
+    private static final CanId CAN_ID = new CanId(9);
+    private static final CanId CAN_ID2 = new CanId(10);
+    private static final CanBusId busId = new CanBusId(4);
+    private static final double gearRatio = 20.0/ 50.0 ;
     private static final double gearDiameter = 0.025;
     private static final double RETRACTED_POSITION = 0;
     // seems fine, 3/12/26
@@ -41,8 +41,8 @@ public class IntakeExtend extends SubsystemBase {
     @SuppressWarnings("unused")
     public IntakeExtend(LoggerFactory parent, TotalCurrentLog currentLog) {
         LoggerFactory log = parent.type(this);
-        LoggerFactory log1 = log.name("Extend1");
-        LoggerFactory log2 = log.name("Extend2");
+        LoggerFactory log1 = log.name("Eextend Left");
+        LoggerFactory log2 = log.name("Extend Right");
 
         // Mass is zero for now because gravity coordinate doesn't match
         // the mechanism.

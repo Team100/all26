@@ -86,8 +86,6 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         Takt.update();
         Cache.refresh();
-        s1.periodic();
-        s2.periodic();
         CommandScheduler.getInstance().run();
         // Poll for logs after all the actuation is done
         LogPoller.log();
