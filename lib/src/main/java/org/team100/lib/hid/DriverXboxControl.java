@@ -81,6 +81,10 @@ public class DriverXboxControl {
         m_log_rightY.log(m_rightY);
         m_log_rightX.log(m_rightX);
         m_log_leftX.log(m_leftX);
+        // for (int i = 0; i < 12; ++i) {
+        //     System.out.printf("%1d", m_controller.getRawButton(i) ? 1 : 0);
+        // }
+        // System.out.println();
     }
 
     /** Axis 5, filtered */
@@ -142,12 +146,14 @@ public class DriverXboxControl {
 
     /** Button 5 */
     public boolean leftBumper() {
-        return m_controller.getLeftBumperButton();
+        return m_controller.getRawButton(4); // found by testing
+        // return m_controller.getLeftBumperButton();
     }
 
     /** Button 6 */
     public boolean rightBumper() {
-        return m_controller.getRightBumperButton();
+        return m_controller.getRawButton(5); // found by testing
+        // return m_controller.getRightBumperButton();
     }
 
     /** Button 1 */

@@ -14,6 +14,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
+import org.wpilib.command2.Commands;
 import org.wpilib.system.RobotController;
 
 /**
@@ -52,7 +53,7 @@ public class Binder {
         machinery.m_intake.setDefaultCommand(
                 machinery.m_intake.stop());
         machinery.m_intakeExtend.setDefaultCommand(
-                machinery.m_intakeExtend.goToRetractedPosition());
+                machinery.m_intakeExtend.stop());
         machinery.m_shooter.setDefaultCommand(
                 machinery.m_shooter.stop());
         machinery.m_conveyor.setDefaultCommand(
@@ -94,10 +95,14 @@ public class Binder {
                 machinery.m_intakeExtend.goToRetractedPosition());
         whileTrue(m_driver::y,
                 parallel(machinery.m_shooter.testRun(),
+                        machinery.m_conveyor.convey(),
+
+                    
                         machinery.m_feeder.normal()));
 
-                                whileTrue(m_driver::leftBumper,
+        whileTrue(m_driver::rightBumper,
                 machinery.m_conveyor.convey());
+        // whileTrue(m_driver::rightBumper, Commands.print("help me"));
 
         ////////////////////////////////////////////////////
         ///
