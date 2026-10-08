@@ -23,8 +23,8 @@ import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
 
 public class Conveyor extends SubsystemBase {
-    private static final CanId canID1 = new CanId(16);
-    private static final CanId canID2 = new CanId(17);
+    private static final CanId canID1 = new CanId(19);
+    private static final CanId canID2 = new CanId(20);
     private static final CanBusId busId = new CanBusId(1);
     private static final double TOLERANCE_M_S = 1;
     private static final double GEAR_RATIO = 18.0/36.0;
@@ -39,7 +39,7 @@ public class Conveyor extends SubsystemBase {
         LoggerFactory log1 = log.name("Conveyor1");
         LoggerFactory log2 = log.name("Conveyor2");
         // equivalent linear dynamics for the actual drum inertia.
-        PDynamics dynamics = PDynamics.drum(0.001, 0.025);
+        PDynamics dynamics = PDynamics.drum(0.00, 0.025);
         VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(10);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
@@ -51,7 +51,7 @@ public class Conveyor extends SubsystemBase {
             // friction test 3/12/262
             Friction friction = new Friction(0.7, 0.7, 0.0, 0.5);
             // tune 3/12/26
-            PIDConstants pid = PIDConstants.makeVelocityPID(0.08);
+            PIDConstants pid = PIDConstants.makeVelocityPID(0.03);
 
             m1 = new KrakenX60Motor(
                     log1, currentLog, canID1, busId,
@@ -78,7 +78,7 @@ public class Conveyor extends SubsystemBase {
     public Command convey() {
         return startRun(
                 this::reset,
-                () -> setVelocityProfiled(NORMAL_SPEED))
+                () -> setVelocityProfiled(4.0))
                 .finallyDo(this::stopMotor)
                 .withName("Convey");
     }
