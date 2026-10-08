@@ -30,7 +30,7 @@ import org.wpilib.util.struct.StructBuffer;
  * Listen for updates from the object-detector camera and remember them for
  * awhile.
  */
-public class Targets extends CameraReader<Target> {
+public class Targets {
     private static final boolean DEBUG = false;
 
     /** Ignore sightings farther away than this. */
@@ -39,6 +39,8 @@ public class Targets extends CameraReader<Target> {
     private static final double HISTORY_DURATION = 1.0;
     /** Targets closer than this to each other are combined */
     private static final double NEARNESS_THRESHOLD = 0.15;
+
+    private final CameraReader<Target> m_reader;
 
     /**
      * Ignore incoming sights older than this, because they're stale.
@@ -70,7 +72,8 @@ public class Targets extends CameraReader<Target> {
             LoggerFactory fieldLogger,
             double maxSightAge,
             StateSampler history) {
-        super(parent, "objectVision", "targets", StructBuffer.create(Target.struct));
+        m_reader = new CameraReader<>("objectVision", "targets",
+                StructBuffer.create(Target.struct));
         LoggerFactory log = parent.type(this);
         m_maxSightAgeS = maxSightAge;
         m_log_historySize = log.intLogger(Level.TRACE, "history size");
@@ -88,22 +91,46 @@ public class Targets extends CameraReader<Target> {
         m_vision = Cache.ofSideEffect(this::update);
     }
 
-    /**
-     * Clean the history, relative to the current moment.
-     * 
-     * Previously, eviction only occurred when the robot could see something.
-     */
-    @Override
-    protected void beginUpdate() {
+    public void update() {
+        // Clean the history, relative to the current moment.
+        // Previously, eviction only occurred when the robot could see something.
         double deadline = Takt.get() - HISTORY_DURATION;
         m_allTargets.evict(deadline);
         m_targets.evict(deadline);
+
+        // Read all the pending input.
+        List<CameraReader.Record<Target>> records = m_reader.getRecords();
+        for (CameraReader.Record<Target> r : records) {
+            perValue(r.camera(), r.values());
+        }
+
+        // Show the targets on the Field2d widget.
+
+        // compute the closest target
+        Pose2d robotPose = m_history.get(Takt.get()).pose();
+        m_closestTarget = ObjectPicker.closestObject(m_targets.getAll(), robotPose);
+
+        // Show the closest target on the field2d widget.
+        m_log_closestTarget.log(
+                () -> m_closestTarget.stream().flatMapToDouble(
+                        x1 -> DoubleStream.of(x1.getX(), x1.getY(), 0.0)).toArray());
+
+        // Show coalesced targets on the field2d widget.
+        m_log_coalescedTargets.log(
+                () -> m_targets.getAll().stream().flatMapToDouble(
+                        x2 -> DoubleStream.of(x2.getX(), x2.getY(), 0.0)).toArray());
+
+        // Show *all* the targets.
+        m_log_allTargets.log(
+                () -> m_allTargets.getAll().stream().flatMapToDouble(
+                        x -> DoubleStream.of(x.getX(), x.getY(), 0.0)).toArray());
+
+        m_log_historySize.log(() -> m_targets.size());
     }
 
     /**
      * Transform sightings into field-relative targets.
      */
-    @Override
     protected void perValue(Camera camera, Target[] sights) {
         for (Target sight : sights) {
             // server timestamp in sec
@@ -138,34 +165,6 @@ public class Targets extends CameraReader<Target> {
             m_allTargets.add(timeSec, t);
             m_targets.add(timeSec, t);
         }
-    }
-
-    /**
-     * Show the targets on the Field2d widget.
-     */
-    @Override
-    protected void finishUpdate() {
-        // compute the closest target
-        Pose2d robotPose = m_history.get(Takt.get()).pose();
-
-        m_closestTarget = ObjectPicker.closestObject(m_targets.getAll(), robotPose);
-
-        // Show the closest target on the field2d widget.
-        m_log_closestTarget.log(
-                () -> m_closestTarget.stream().flatMapToDouble(
-                        x -> DoubleStream.of(x.getX(), x.getY(), 0.0)).toArray());
-
-        // Show coalesced targets on the field2d widget.
-        m_log_coalescedTargets.log(
-                () -> m_targets.getAll().stream().flatMapToDouble(
-                        x -> DoubleStream.of(x.getX(), x.getY(), 0.0)).toArray());
-
-        // Show *all* the targets.
-        m_log_allTargets.log(
-                () -> m_allTargets.getAll().stream().flatMapToDouble(
-                        x -> DoubleStream.of(x.getX(), x.getY(), 0.0)).toArray());
-
-        m_log_historySize.log(() -> m_targets.size());
     }
 
     /**

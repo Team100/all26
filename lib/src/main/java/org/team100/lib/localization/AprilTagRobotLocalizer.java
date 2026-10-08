@@ -1,6 +1,7 @@
 package org.team100.lib.localization;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -35,12 +36,12 @@ import org.wpilib.util.struct.StructBuffer;
  * *estimate*. The camera input doesn't require fresh odometry, it modifies the
  * past (and replays up to the present).
  */
-public class AprilTagRobotLocalizer extends CameraReader<Blip> {
+public class AprilTagRobotLocalizer {
     private static final boolean DEBUG = false;
 
     /** Discard results further than this from the previous one. */
     private static final double VISION_CHANGE_TOLERANCE_M = 0.25;
-
+    private final CameraReader<Blip> m_reader;
     private final VisionUpdater m_visionUpdater;
     private final Supplier<Optional<Alliance>> m_alliance;
     private final AprilTagFieldLayoutWithCorrectOrientation m_layout;
@@ -85,7 +86,8 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
             AprilTagFieldLayoutWithCorrectOrientation layout,
             VisionUpdater visionUpdater,
             Supplier<Optional<Alliance>> alliance) {
-        super(parent, "vision", "blips", StructBuffer.create(Blip.struct));
+        m_reader = new CameraReader<>("vision", "blips",
+                StructBuffer.create(Blip.struct));
         LoggerFactory log = parent.type(this);
         LoggerFactory calLog = log.name("calibration");
         m_log_cameraToTag_factory = calLog.name("camera to tag");
@@ -103,10 +105,16 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
         setHeedRadiusM(3.5);
     }
 
+    public void update() {
+        List<CameraReader.Record<Blip>> records = m_reader.getRecords();
+        for (CameraReader.Record<Blip> r : records) {
+            perValue(r.camera(), r.values());
+        }
+    }
+
     /**
      * Compute the robot pose and put it in the pose estimator.
      */
-    @Override
     protected void perValue(Camera camera, Blip[] blips) {
 
         Transform3d cameraOffset = Offset.get(camera).offset();
@@ -158,7 +166,6 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
             // Estimate the tag pose in the field frame.
             double blipTimeSec = (double) blip.getTimestamp() / 1e6;
             m_log_lag.log(() -> Takt.get() - blipTimeSec);
-
 
             //////////////////////////////////////////////////////////////////
             ///

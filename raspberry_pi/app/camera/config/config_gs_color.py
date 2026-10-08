@@ -14,7 +14,7 @@ class ConfigGsColor(Config):
     """
 
     def __init__(self, size: Size) -> None:
-        print("\n*** Config: ConfigGsColor")
+        print("*** Config: ConfigGsColor")
         self._size = size
 
     @override

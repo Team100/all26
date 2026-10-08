@@ -22,13 +22,12 @@ from app.dashboard.display_protocol import Display
 from app.dashboard.display_factory import DisplayFactory
 from app.network.network_protocol import Network
 from app.network.real_network import RealNetwork
+from app.util.banner import print_banner
 from app.util.timestamps import Timestamps
 
 def main() -> None:
-    print("blarg")
-    time.sleep(5)
-    print("blarg")
-    print("\n*** main.py loop starting", flush=True)
+    print_banner()
+    print("*** Starting main.py")
     identity: Identity = Identity.get()
     done: Event = Event()  # to shut down all threads
     thread: Thread | None = None
@@ -45,11 +44,11 @@ def main() -> None:
         )
         camera_loop: CameraLoop = CameraLoop(camera, interpreter, done)
         thread = Thread(target=camera_loop.run)
-        print("\n*** Starting the main loop", flush=True)
+        print("*** Starting the looper thread")
         thread.start()
         # looper.run will return when done, so wait for that.
         thread.join()
-        print("\n*** Looper has exited", flush=True)
+        print("*** Looper has exited")
 
     finally:
         done.set()  # exit all threads cleanly

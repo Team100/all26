@@ -60,6 +60,8 @@ public class SimulatedTagDetector {
     private static final double VFOV = 0.6;
     // past about 80 degrees, you can't see the tag.
     private static final double OBLIQUE_LIMIT_RAD = 1.4;
+    // past about six meters, the tag appears too small to see.
+    private static final double MAX_RANGE_M = 6;
     // camera frame is from 85 ms ago, more or less
     private static final double MEAN_DELAY = 0.085;
     private static final double STDEV_DELAY = 0.02;
@@ -320,28 +322,25 @@ public class SimulatedTagDetector {
 
     }
 
+    static boolean closeEnough(Transform3d tagInCamera) {
+        Translation3d tagTranslationInCamera = tagInCamera.getTranslation();
+        double x = tagTranslationInCamera.getX();
+        return (x <= MAX_RANGE_M);
+    }
+
     static boolean visible(Transform3d tagInCamera) {
+        if (!closeEnough(tagInCamera)) {
+            return false;
+        }
         if (!inFront(tagInCamera)) {
-            if (DEBUG) {
-                System.out.print(" ........................................................");
-            }
             return false;
         }
-
         if (!facing(tagInCamera)) {
-            if (DEBUG) {
-                System.out.print(" ...................................");
-            }
             return false;
         }
-
         if (!inFOV(tagInCamera)) {
-            if (DEBUG) {
-                System.out.print(" ... ");
-            }
             return false;
         }
-
         return true;
     }
 

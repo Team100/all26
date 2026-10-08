@@ -21,7 +21,7 @@ class Model(Enum):
     def get(camera_properties: dict[str, str]) -> "Model":  # type:ignore
         """Use the properties to avoid import errors in tests."""
         model_str: str = camera_properties["Model"]  # type:ignore
-        print(f"\n*** Camera model string: {model_str}")
+        print("*** Camera model string:", model_str)
         model: Model = Model(model_str)
-        print(f"\n*** Camera model: {model.name}")
+        print("*** Camera model:", model)
         return model

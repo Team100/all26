@@ -52,7 +52,7 @@ class Identity(Enum):
     FUNNEL = "1e5acbaa5a7f9d10"  # 30
 
     # Calgames Partner
-    COLOR_DETECT_1 = "e1714bf12b94e414" #35
+    COLOR_DETECT_1 = "e1714bf12b94e414"  # 35
 
     # Comp bot 2026
     CLIMB_LEFT = "82c4c3fe4f941e96"  # 34
@@ -78,7 +78,7 @@ class Identity(Enum):
     def get() -> "Identity":
         """Returns UNKNOWN if serial is not recognized, and in tests."""
         serial = _serial
-        print(f"\n*** Coprocessor serial: {serial}")
+        print("*** Coprocessor serial:", serial)
         identity: Identity = Identity(serial)
-        print(f"\n*** Coprocessor identity: {identity.name}", flush=True)
+        print("*** Coprocessor identity:", identity)
         return identity
