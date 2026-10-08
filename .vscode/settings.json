@@ -1,5 +1,14 @@
 {
     "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx16G -Xms100m -Xlog:disable",
     "workbench.colorTheme": "Solarized Light",
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "files.exclude": {
+        "**/.ai": true,
+        "AGENTS.md": true,
+        "CLAUDE.md": true,
+        "GEMINI.md": true,
+        "**/.cursor": true,
+        ".cursorrules": true,
+        ".windsurfrules": true
+    }
 }
