@@ -1,6 +1,6 @@
 package org.team100.lib.subsystems.swerve.module.state;
 
-import edu.wpi.first.math.interpolation.Interpolatable;
+import org.wpilib.math.interpolation.Interpolatable;
 
 /**
  * Container for swerve module positions.

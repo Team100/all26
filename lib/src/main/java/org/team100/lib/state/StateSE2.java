@@ -9,6 +9,7 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.interpolation.Interpolatable;
 import org.wpilib.math.kinematics.ChassisVelocities;
 
 /**
