@@ -1,5 +1,6 @@
 package org.team100.lib.localization;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.DoubleStream;
@@ -35,10 +36,11 @@ import org.wpilib.util.struct.StructBuffer;
  * This is kinda useful for debugging, but it's not *that* useful. It used to be
  * part of AprilTagCornerRobotLocalizer.
  */
-public class AprilTagVisualizer extends CameraReader<BlipWithCorners> {
+public class AprilTagVisualizer {
     private static final boolean DEBUG = false;
     /** Maximum age of the sights we publish for diagnosis. */
     private static final double HISTORY_DURATION = 1.0;
+    private final CameraReader<BlipWithCorners> m_reader;
     private final PoseFromCorners m_estimator;
     private final StateSampler m_history;
     private final Supplier<Optional<Alliance>> m_alliance;
@@ -54,7 +56,7 @@ public class AprilTagVisualizer extends CameraReader<BlipWithCorners> {
             StateSampler history,
             AprilTagFieldLayoutWithCorrectOrientation layout,
             Supplier<Optional<Alliance>> alliance) {
-        super(parent, "vision", "blips_with_corners",
+        m_reader = new CameraReader<>("vision", "blips_with_corners",
                 StructBuffer.create(BlipWithCorners.struct));
         LoggerFactory log = parent.type(this);
         m_history = history;
@@ -68,18 +70,25 @@ public class AprilTagVisualizer extends CameraReader<BlipWithCorners> {
         m_log_tag_error = log.doubleLogger(Level.DEBUG, "tag error");
     }
 
-    /**
-     * Clean the history, relative to the current moment.
-     * 
-     * Previously, eviction only occurred when the robot could see something.
-     */
-    @Override
-    protected void beginUpdate() {
+    public void update() {
+        // Clean the history, relative to the current moment.
+        // Previously, eviction only occurred when the robot could see something.
         double deadline = Takt.get() - HISTORY_DURATION;
         m_allTags.evict(deadline);
+
+        // Read all the pending input.
+        List<CameraReader.Record<BlipWithCorners>> records = m_reader.getRecords();
+        for (CameraReader.Record<BlipWithCorners> r : records) {
+            perValue(r.camera(), r.values());
+        }
+
+        // Show the tags on the Field2d widget and AdvantageScope.
+        m_pub_tags.set(m_allTags.getAll().toArray(new Pose3d[0]));
+        m_log_allTags.log(
+                () -> m_allTags.getAll().stream().flatMapToDouble(
+                        x -> DoubleStream.of(x.getX(), x.getY(), x.toPose2d().getRotation().getDegrees())).toArray());
     }
 
-    @Override
     protected void perValue(Camera camera, BlipWithCorners[] blips) {
         if (!Experiments.INSTANCE.enabled(Experiment.ShowTags))
             return;
@@ -123,15 +132,6 @@ public class AprilTagVisualizer extends CameraReader<BlipWithCorners> {
                 continue;
             }
         }
-    }
-
-    /** * Show the tags on the Field2d widget and AdvantageScope. */
-    @Override
-    protected void finishUpdate() {
-        m_pub_tags.set(m_allTags.getAll().toArray(new Pose3d[0]));
-        m_log_allTags.log(
-                () -> m_allTags.getAll().stream().flatMapToDouble(
-                        x -> DoubleStream.of(x.getX(), x.getY(), x.toPose2d().getRotation().getDegrees())).toArray());
     }
 
     /** Log the norm of the translational error of the tag. */

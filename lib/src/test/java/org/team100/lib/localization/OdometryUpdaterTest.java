@@ -35,7 +35,6 @@ public class OdometryUpdaterTest {
         positions = SwerveModulePositions.kZero();
         SwerveHistory history = new SwerveHistory(
                 log,
-                kinodynamics,
                 0.2,
                 Rotation2d.kZero,
                 VariableR1.fromVariance(0, 1),
@@ -54,7 +53,7 @@ public class OdometryUpdaterTest {
         // high bias sigma compared to the real value
         VariableR1 bias = VariableR1.fromStdDev(0, 0.001);
         SwerveState sample = new SwerveState(
-                sampleState, stateNoise, positions, yaw, bias);
+                sampleState, stateNoise, positions, yaw, bias, null);
 
         // measurements haven't moved
         Rotation2d gyroYaw = new Rotation2d();
@@ -96,7 +95,6 @@ public class OdometryUpdaterTest {
         positions = SwerveModulePositions.kZero();
         SwerveHistory history = new SwerveHistory(
                 log,
-                kinodynamics,
                 0.2,
                 Rotation2d.kZero,
                 VariableR1.fromVariance(0, 1),
@@ -115,7 +113,7 @@ public class OdometryUpdaterTest {
         Rotation2d yaw = new Rotation2d();
         VariableR1 bias = VariableR1.fromStdDev(0, 0.001);
         SwerveState sample = new SwerveState(
-                sampleState, stateNoise, positions, yaw, bias);
+                sampleState, stateNoise, positions, yaw, bias, null);
 
         // 0.1m ahead (this is max speed)
         Rotation2d gyroYaw = new Rotation2d();
@@ -144,7 +142,6 @@ public class OdometryUpdaterTest {
         positions = SwerveModulePositions.kZero();
         SwerveHistory history = new SwerveHistory(
                 log,
-                kinodynamics,
                 0.2,
                 Rotation2d.kZero,
                 VariableR1.fromVariance(0, 1),
@@ -164,7 +161,7 @@ public class OdometryUpdaterTest {
         // initial bias estimate is zero
         VariableR1 bias = VariableR1.fromStdDev(0, 0.001);
         SwerveState sample = new SwerveState(
-                sampleState, stateNoise, positions, yaw, bias);
+                sampleState, stateNoise, positions, yaw, bias, null);
 
         // odometry says we're not rotating, but the gyro thinks we are.
         // this is 0.02 rad in 0.02 s so the bias is 1 rad/s
@@ -211,7 +208,6 @@ public class OdometryUpdaterTest {
         positions = SwerveModulePositions.kZero();
         SwerveHistory history = new SwerveHistory(
                 log,
-                kinodynamics,
                 0.2,
                 Rotation2d.kZero,
                 VariableR1.fromVariance(0, 1),
@@ -230,7 +226,7 @@ public class OdometryUpdaterTest {
         Rotation2d yaw = new Rotation2d();
         VariableR1 bias = VariableR1.fromStdDev(0, 0.001);
         SwerveState sample = new SwerveState(
-                sampleState, stateNoise, positions, yaw, bias);
+                sampleState, stateNoise, positions, yaw, bias, null);
 
         // much slower, so odometry is more trustworthy.
         Rotation2d gyroYaw = new Rotation2d(0.02);

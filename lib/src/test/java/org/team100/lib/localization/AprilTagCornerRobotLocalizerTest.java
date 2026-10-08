@@ -10,8 +10,6 @@ import org.team100.lib.camera.Camera;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
-import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
@@ -58,15 +56,12 @@ public class AprilTagCornerRobotLocalizerTest {
         assertEquals(1.914, tag4pose.getY(), DELTA);
         assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-        SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest();
-
         SwerveModulePosition100 p0 = new SwerveModulePosition100(0, Optional.of(Rotation2d.kZero));
 
         SwerveModulePositions positionZero = new SwerveModulePositions(p0, p0, p0, p0);
 
         SwerveHistory history = new SwerveHistory(
                 logger,
-                kinodynamics,
                 0.2,
                 Rotation2d.kZero,
                 VariableR1.fromVariance(0, 1),

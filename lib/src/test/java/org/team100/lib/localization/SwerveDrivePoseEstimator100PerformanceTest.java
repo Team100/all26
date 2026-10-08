@@ -65,7 +65,6 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
         Gyro gyro = new MockGyro();
         SwerveHistory history = new SwerveHistory(
                 logger,
-                kinodynamics,
                 0.2,
                 Rotation2d.kZero,
                 VariableR1.fromVariance(0, 1),

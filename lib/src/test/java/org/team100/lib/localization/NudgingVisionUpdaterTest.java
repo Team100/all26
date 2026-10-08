@@ -191,7 +191,7 @@ public class NudgingVisionUpdaterTest {
         Rotation2d yaw = new Rotation2d();
         VariableR1 bias = VariableR1.fromVariance(0, 0.001);
         SwerveState sample = new SwerveState(
-                sampleState, stateNoise, positions, yaw, bias);
+                sampleState, stateNoise, positions, yaw, bias, null);
 
         // camera thinks we're at 1, and it's pretty sure.
         Pose2d visionPose = new Pose2d(1, 0, new Rotation2d());
@@ -217,7 +217,7 @@ public class NudgingVisionUpdaterTest {
         Rotation2d yaw = new Rotation2d();
         VariableR1 bias = VariableR1.fromVariance(0, 0.001);
         SwerveState sample = new SwerveState(
-                sampleState, stateNoise, positions, yaw, bias);
+                sampleState, stateNoise, positions, yaw, bias, null);
 
         // camera thinks we're at 1, and it's pretty sure.
         Pose2d visionPose = new Pose2d(1, 0, new Rotation2d());

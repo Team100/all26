@@ -43,8 +43,13 @@ to understand and modify their own tools.
 These are not complex systems, they should not be
 magic black boxes.
 
+The code is organized into many small files, which may be
+confusing on first read.  Read the
+[code walkthrough](walkthrough.md) to learn what's where.
+
 ## "How to" content
 
+* [Code walkthrough](walkthrough.md)
 * [Setup your dev environment](setup.md)
 * [Run the code and the tests on your laptop](run_locally.md)
 * [Setup a Raspberry Pi](pi_setup.md)

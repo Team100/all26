@@ -1,5 +1,7 @@
 package org.team100.lib.subsystems.swerve.module.state;
 
+import edu.wpi.first.math.interpolation.Interpolatable;
+
 /**
  * Container for swerve module positions.
  * 
@@ -10,7 +12,17 @@ public record SwerveModulePositions(
         SwerveModulePosition100 frontLeft,
         SwerveModulePosition100 frontRight,
         SwerveModulePosition100 rearLeft,
-        SwerveModulePosition100 rearRight) {
+        SwerveModulePosition100 rearRight)
+        implements Interpolatable<SwerveModulePositions> {
+
+    @Override
+    public SwerveModulePositions interpolate(SwerveModulePositions end, double t) {
+        return new SwerveModulePositions(
+                frontLeft().interpolate(end.frontLeft(), t),
+                frontRight().interpolate(end.frontRight(), t),
+                rearLeft().interpolate(end.rearLeft(), t),
+                rearRight().interpolate(end.rearRight(), t));
+    }
 
     /** For when you don't care about which is which. */
     public SwerveModulePosition100[] all() {

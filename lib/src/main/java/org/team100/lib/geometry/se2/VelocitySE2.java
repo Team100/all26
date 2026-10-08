@@ -6,6 +6,7 @@ import org.team100.lib.hid.DriverVelocity;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.interpolation.Interpolatable;
 import org.wpilib.math.linalg.Matrix;
 import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.linalg.Vector;
@@ -24,7 +25,8 @@ import org.wpilib.math.numbers.N3;
  * 
  * See README.md for details.
  */
-public record VelocitySE2(double x, double y, double theta) {
+public record VelocitySE2(double x, double y, double theta)
+        implements Interpolatable<VelocitySE2> {
 
     public static final VelocitySE2 ZERO = new VelocitySE2(0, 0, 0);
 
@@ -162,5 +164,10 @@ public record VelocitySE2(double x, double y, double theta) {
                 maxSpeed * Math.clamp(twist.x(), -1, 1),
                 maxSpeed * Math.clamp(twist.y(), -1, 1),
                 maxRot * Math.clamp(twist.theta(), -1, 1));
+    }
+
+    @Override
+    public VelocitySE2 interpolate(VelocitySE2 end, double t) {
+        return plus(end.minus(this).times(t));
     }
 }

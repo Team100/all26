@@ -14,6 +14,7 @@ class Yuv420Decoder(Decoder):
     """Adapts buffers encoded as YUV420."""
 
     def __init__(self, size: Size):
+        print("*** Decoder: Yuv420Decoder")
         self._size = size
         self._y_len = size.width * size.height
 

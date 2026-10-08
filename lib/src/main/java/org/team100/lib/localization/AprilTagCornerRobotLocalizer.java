@@ -1,6 +1,7 @@
 package org.team100.lib.localization;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -35,10 +36,11 @@ import org.wpilib.util.struct.StructBuffer;
  * *estimate*. The camera input doesn't require fresh odometry, it modifies the
  * past (and replays up to the present).
  */
-public class AprilTagCornerRobotLocalizer extends CameraReader<BlipWithCorners> {
+public class AprilTagCornerRobotLocalizer {
     private static final boolean DEBUG = false;
     /** Discard results further than this from the previous one. */
     private static final double VISION_CHANGE_TOLERANCE_M = 0.25;
+    private final CameraReader<BlipWithCorners> m_reader;
     private final PoseFromCorners m_estimator;
     private final VisionUpdater m_visionUpdater;
     private final Supplier<Optional<Alliance>> m_alliance;
@@ -67,7 +69,7 @@ public class AprilTagCornerRobotLocalizer extends CameraReader<BlipWithCorners> 
             AprilTagFieldLayoutWithCorrectOrientation layout,
             VisionUpdater visionUpdater,
             Supplier<Optional<Alliance>> alliance) {
-        super(parent, "vision", "blips_with_corners",
+        m_reader = new CameraReader<>("vision", "blips_with_corners",
                 StructBuffer.create(BlipWithCorners.struct));
         LoggerFactory log = parent.type(this);
         LoggerFactory calLog = log.name("calibration");
@@ -85,10 +87,16 @@ public class AprilTagCornerRobotLocalizer extends CameraReader<BlipWithCorners> 
         setHeedRadiusM(3.5);
     }
 
+    public void update() {
+        List<CameraReader.Record<BlipWithCorners>> records = m_reader.getRecords();
+        for (CameraReader.Record<BlipWithCorners> r : records) {
+            perValue(r.camera(), r.values());
+        }
+    }
+
     /**
      * Compute the robot pose and put it in the pose estimator.
      */
-    @Override
     protected void perValue(Camera camera, BlipWithCorners[] blips) {
         Transform3d cameraOffset = Offset.get(camera).offset();
 

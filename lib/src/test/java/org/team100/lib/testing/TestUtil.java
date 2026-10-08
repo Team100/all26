@@ -27,6 +27,7 @@ import org.team100.lib.geometry.six_dof.SixDofConfig;
 import org.team100.lib.geometry.six_dof.SixDofVelocity;
 import org.team100.lib.geometry.six_dof.SphericalWristConfig;
 import org.team100.lib.state.StateSE2;
+import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.util.StrUtil;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Pose3d;
@@ -69,6 +70,11 @@ public class TestUtil {
         assertEquals(expected.getX(), actual.getX(), 1e-3, "x");
         assertEquals(expected.getY(), actual.getY(), 1e-3, "y");
         assertEquals(expected.getRotation().getRadians(), actual.getRotation().getRadians(), 1e-3, "r");
+    }
+
+    public static void verify(IsotropicNoiseSE2 expected, IsotropicNoiseSE2 actual) {
+        assertEquals(expected.cartesian(), actual.cartesian(), 1e-3, "cartesian");
+        assertEquals(expected.rotation(), actual.rotation(), 1e-3, "rotation");
     }
 
     public static void verify(Pose3d expected, Pose3d actual) {

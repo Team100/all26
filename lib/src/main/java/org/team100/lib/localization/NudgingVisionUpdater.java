@@ -81,6 +81,7 @@ public class NudgingVisionUpdater implements VisionUpdater {
         }
 
         // Sample the history at the measurement time.
+        // This is always interpolated.
         SwerveState sample = m_history.getRecord(timestamp);
 
         // Nudge the sample towards the measurement.
@@ -96,32 +97,25 @@ public class NudgingVisionUpdater implements VisionUpdater {
     }
 
     /**
-     * Compute the new state, based on the sample.
+     * Return a state that is somewhere between the sample and the measurement.
      * 
-     * Position and gyro measurements are left alone.
+     * The nudged state uses the nudged pose and **but the sample velocity**.
+     * 
+     * The nudged noise may be more, or less, than the sample noise.
+     * 
+     * Uses the sample velocity, position, gyro measurement, and gyro bias.
+     * 
+     * Uses the verbatim measurement.
      */
-    SwerveState newState(SwerveState sample, NoisyPose2d noisyMeasurement) {
-
-        // Nudge the sample pose towards the measurement.
-        StateSE2 sampleState = sample.state();
-
-        NoisyPose2d noisySample = new NoisyPose2d(sampleState.pose(), sample.noise());
-
-        NoisyPose2d nudged = nudge(noisySample, noisyMeasurement);
-
-        // Velocity is unchanged.
-        StateSE2 newState = new StateSE2(nudged.pose(), sampleState.velocity());
-
-        IsotropicNoiseSE2 noise = nudged.noise();
-
-        // Odometry and gyro measurements are unchanged.
-        SwerveState swerveState = new SwerveState(
-                newState,
-                noise,
+    SwerveState newState(SwerveState sample, NoisyPose2d measurement) {
+        NoisyPose2d nudged = nudge(sample.noisyPose(), measurement);
+        return new SwerveState(
+                new StateSE2(nudged.pose(), sample.velocity()),
+                nudged.noise(),
                 sample.positions(),
                 sample.gyroYaw(),
-                sample.gyroBias());
-        return swerveState;
+                sample.gyroBias(),
+                measurement);
     }
 
     /**

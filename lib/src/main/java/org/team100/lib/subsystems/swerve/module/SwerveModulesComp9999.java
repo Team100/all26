@@ -23,7 +23,7 @@ public class SwerveModulesComp9999 extends SwerveModuleCollection {
                         new CanId(3), // drive
                         new CanBusId(0),
                         DriveRatio.MEDIUM,
-                        new CanId(44), // steer
+                        new CanId(6), // steer
                         new RoboRioChannel(8),
                         0.228237,
                         EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
@@ -32,7 +32,7 @@ public class SwerveModulesComp9999 extends SwerveModuleCollection {
                         new CanId(8), // drive
                         new CanBusId(0),
                         DriveRatio.MEDIUM,
-                        new CanId(7), // steer
+                        new CanId(5), // steer
                         new RoboRioChannel(6),
                         0.817243,
                         EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
@@ -41,7 +41,7 @@ public class SwerveModulesComp9999 extends SwerveModuleCollection {
                         new CanId(2), // drive
                         new CanBusId(0),
                         DriveRatio.MEDIUM,
-                        new CanId(50), // steer
+                        new CanId(7), // steer
                         new RoboRioChannel(7),
                         0.147507,
                         EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
@@ -50,7 +50,7 @@ public class SwerveModulesComp9999 extends SwerveModuleCollection {
                         new CanId(4), // drive
                         new CanBusId(0),
                         DriveRatio.MEDIUM,
-                        new CanId(62), // steer
+                        new CanId(8), // steer
                         new RoboRioChannel(0),
                         0.835573,
                         EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
