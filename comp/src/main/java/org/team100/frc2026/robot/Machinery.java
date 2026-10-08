@@ -5,6 +5,9 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import org.team100.frc2026.field.FieldConstants2026;
+import org.team100.frc2026.subsystems.Conveyor;
+import org.team100.frc2026.subsystems.Feeder;
+import org.team100.frc2026.subsystems.Conveyor;
 import org.team100.frc2026.subsystems.Intake;
 import org.team100.frc2026.subsystems.IntakeExtend;
 import org.team100.frc2026.subsystems.Shooter;
@@ -64,6 +67,9 @@ public class Machinery {
     public final Shooter m_shooter;
     public final Intake m_intake;
     public final IntakeExtend m_intakeExtend;
+    public final Feeder m_feeder;
+    public final Conveyor m_conveyor;
+
 
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
@@ -135,6 +141,9 @@ public class Machinery {
         m_intake = new Intake(logger, currentLog);
         m_intakeExtend = new IntakeExtend(logger, currentLog);
         m_shooter = new Shooter(logger, currentLog, m_cachedSolution::speed);
+        m_feeder= new Feeder(logger, currentLog, null);
+        m_conveyor = new Conveyor(logger, currentLog);
+
 
         ///////////////////////////////////////////////////////////
         //

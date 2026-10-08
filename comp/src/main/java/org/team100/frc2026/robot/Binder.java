@@ -14,8 +14,8 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
+import org.wpilib.command2.Commands;
 import org.wpilib.system.RobotController;
-
 
 /**
  * Binds buttons to commands. Also creates default commands.
@@ -39,7 +39,6 @@ public class Binder {
                 machinery.m_swerveKinodynamics,
                 RobotController::getBatteryVoltage);
 
-
         ////////////////////////////////////////////////////
         ///
         /// DEFAULT COMMANDS
@@ -54,15 +53,17 @@ public class Binder {
         machinery.m_intake.setDefaultCommand(
                 machinery.m_intake.stop());
         machinery.m_intakeExtend.setDefaultCommand(
-                machinery.m_intakeExtend.goToRetractedPosition());
+                machinery.m_intakeExtend.stop());
         machinery.m_shooter.setDefaultCommand(
                 machinery.m_shooter.stop());
+        machinery.m_conveyor.setDefaultCommand(
+                machinery.m_conveyor.stop());
         ////////////////////////////////////////////////////
         ///
         /// DISORIENT
         ///
-        /// Back: nudge the rotation towards zero.
-        /// Start: forget the current pose, listen to camera input.
+        /// Back: nudge the rotation towards zero. Start: forget the current pose, listen
+        /// to camera input.
         ///
         /// both together: warp to the origin. FOR TESTING ONLY.
 
@@ -92,7 +93,16 @@ public class Binder {
                 machinery.m_intakeExtend.goToExtendedPositionEndlessly());
         whileTrue(m_driver::b,
                 machinery.m_intakeExtend.goToRetractedPosition());
-        whileTrue(m_driver::y, machinery.m_shooter.testShooterFullspeed());
+        whileTrue(m_driver::y,
+                parallel(machinery.m_shooter.testRun(),
+                        machinery.m_conveyor.convey(),
+
+                    
+                        machinery.m_feeder.normal()));
+
+        whileTrue(m_driver::rightBumper,
+                machinery.m_conveyor.convey());
+        // whileTrue(m_driver::rightBumper, Commands.print("help me"));
 
         ////////////////////////////////////////////////////
         ///
