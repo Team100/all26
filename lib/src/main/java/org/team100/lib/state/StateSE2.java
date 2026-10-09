@@ -9,6 +9,7 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 /**
@@ -25,7 +26,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
  * Note: the metric used here is not the SE(2) geodesic, it treats the XY plane
  * and rotation dimensions independently.
  */
-public class StateSE2 {
+public class StateSE2 implements Interpolatable<StateSE2> {
     private final StateR1 m_x;
     private final StateR1 m_y;
     private final StateR1 m_theta;
@@ -148,7 +149,15 @@ public class StateSE2 {
                 new StateR1(thetax, thetav));
     }
 
+    @Override
     public String toString() {
         return "StateSE2(" + m_x + ", " + m_y + ", " + m_theta + ")";
+    }
+
+    @Override
+    public StateSE2 interpolate(StateSE2 end, double t) {
+        Pose2d poseLerp = pose().interpolate(end.pose(), t);
+        VelocitySE2 velocityLerp = velocity().interpolate(end.velocity(), t);
+        return new StateSE2(poseLerp, velocityLerp);
     }
 }

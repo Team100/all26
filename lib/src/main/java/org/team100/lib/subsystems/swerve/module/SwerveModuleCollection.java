@@ -7,16 +7,9 @@ import org.team100.lib.config.Identity;
 import org.team100.lib.dynamics.swerve.SwerveEffort;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
-import org.team100.lib.motor.MotorPhase;
-import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.music.Player;
-import org.team100.lib.sensor.position.absolute.EncoderDrive;
-import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
-import org.team100.lib.subsystems.swerve.module.WCPSwerveModule100.DriveRatio;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
-import org.team100.lib.util.CanId;
-import org.team100.lib.util.RoboRioChannel;
 
 /**
  * Represents the modules in the drivetrain.
@@ -68,141 +61,21 @@ public class SwerveModuleCollection implements Player {
             TotalCurrentLog currentLog,
             CurrentLimit driveLimit,
             CurrentLimit steerLimit) {
-        LoggerFactory collectionLogger = parent.name("Swerve Modules");
-        LoggerFactory frontLeftLogger = collectionLogger.name("Front Left");
-        LoggerFactory frontRightLogger = collectionLogger.name("Front Right");
-        LoggerFactory rearLeftLogger = collectionLogger.name("Rear Left");
-        LoggerFactory rearRightLogger = collectionLogger.name("Rear Right");
-
+        LoggerFactory log = parent.name("Swerve Modules");
         switch (Identity.instance) {
             case SQUAREBOT:
-                System.out.println("************** WCP MODULES w/Duty-Cycle Encoders **************");
-                return new SwerveModuleCollection(
-                        WCPSwerveModule100.getKrakenDriveKrakenSteer(
-                                frontLeftLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(1), // drive
-                                DriveRatio.MEDIUM,
-                                new CanId(3), // steer
-                                new RoboRioChannel(8),
-                                0.109162,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
-                        WCPSwerveModule100.getKrakenDriveKrakenSteer(
-                                frontRightLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(22), // drive
-                                DriveRatio.MEDIUM,
-                                new CanId(18), // steer
-                                new RoboRioChannel(6),
-                                0.361342,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
-                        WCPSwerveModule100.getKrakenDriveKrakenSteer(
-                                rearLeftLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(8), // drive
-                                DriveRatio.MEDIUM,
-                                new CanId(7), // steer
-                                new RoboRioChannel(7),
-                                0.611814,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
-                        WCPSwerveModule100.getKrakenDriveKrakenSteer(
-                                rearRightLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(23), // drive
-                                DriveRatio.MEDIUM,
-                                new CanId(21), // steer
-                                new RoboRioChannel(0),
-                                0.279052,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
+                return new SwerveModulesSquare(
+                        log, currentLog, driveLimit, steerLimit);
             case SWERVE_ONE:
-                System.out.println("************** WCP MODULES w/Duty-Cycle Encoders **************");
-                return new SwerveModuleCollection(
-                        WCPSwerveModule100.getFalconDriveFalconSteer(
-                                frontLeftLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(12), // drive
-                                DriveRatio.FAST,
-                                new CanId(32), // steer
-                                new RoboRioChannel(6),
-                                0.648451,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
-                        WCPSwerveModule100.getFalconDriveFalconSteer(
-                                frontRightLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(11), // drive
-                                DriveRatio.FAST,
-                                new CanId(30), // steer
-                                new RoboRioChannel(8),
-                                0.875511,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
-                        WCPSwerveModule100.getFalconDriveFalconSteer(
-                                rearLeftLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(21), // drive
-                                DriveRatio.FAST,
-                                new CanId(31), // steer
-                                new RoboRioChannel(7),
-                                0.409354,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
-                        WCPSwerveModule100.getFalconDriveFalconSteer(
-                                rearRightLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(22), // drive
-                                DriveRatio.FAST,
-                                new CanId(33), // steer
-                                new RoboRioChannel(9),
-                                0.029534,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
+                return new SwerveModulesPractice(
+                        log, currentLog, driveLimit, steerLimit);
             case BETA_BOT, LAUNDRY_BOT:
-                System.out.println("************** WCP MODULES w/Duty-Cycle Encoders **************");
-                return new SwerveModuleCollection(
-                        WCPSwerveModule100.getKrakenDriveKrakenSteer(
-                                frontLeftLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(3), // drive
-                                DriveRatio.MEDIUM,
-                                new CanId(44), // steer
-                                new RoboRioChannel(8),
-                                0.228237,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
-                        WCPSwerveModule100.getKrakenDriveKrakenSteer(
-                                frontRightLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(8), // drive
-                                DriveRatio.MEDIUM,
-                                new CanId(7), // steer
-                                new RoboRioChannel(6),
-                                0.817243,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
-                        WCPSwerveModule100.getKrakenDriveKrakenSteer(
-                                rearLeftLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(2), // drive
-                                DriveRatio.MEDIUM,
-                                new CanId(50), // steer
-                                new RoboRioChannel(7),
-                                0.147507,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
-                        WCPSwerveModule100.getKrakenDriveKrakenSteer(
-                                rearRightLogger, currentLog, driveLimit, steerLimit,
-                                new CanId(4), // drive
-                                DriveRatio.MEDIUM,
-                                new CanId(62), // steer
-                                new RoboRioChannel(0),
-                                0.835573,
-                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
-
+                return new SwerveModulesComp9999(
+                        log, currentLog, driveLimit, steerLimit);
             case BLANK:
             default:
-                if (DEBUG)
-                    System.out.println("************** SIMULATED MODULES **************");
-                /*
-                 * Uses simulated position sensors, must be used with clock control (e.g.
-                 * {@link Timeless}).
-                 */
-                return new SwerveModuleCollection(
-                        SimulatedSwerveModule100.get(frontLeftLogger),
-                        SimulatedSwerveModule100.get(frontRightLogger),
-                        SimulatedSwerveModule100.get(rearLeftLogger),
-                        SimulatedSwerveModule100.get(rearRightLogger));
+                return new SwerveModulesSim(log);
         }
-    }
-
-    public static SwerveModuleCollection forTest(LoggerFactory log, SwerveKinodynamics kinodynamics) {
-        return new SwerveModuleCollection(
-                SimulatedSwerveModule100.get(log),
-                SimulatedSwerveModule100.get(log),
-                SimulatedSwerveModule100.get(log),
-                SimulatedSwerveModule100.get(log));
     }
 
     //////////////////////////////////////////////////

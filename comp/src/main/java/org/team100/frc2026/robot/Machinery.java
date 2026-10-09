@@ -9,6 +9,7 @@ import org.team100.frc2026.subsystems.Intake;
 import org.team100.frc2026.subsystems.IntakeExtend;
 import org.team100.frc2026.subsystems.Shooter;
 import org.team100.frc2026.targeting.Targeter;
+import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.indicator.Beeper;
 import org.team100.lib.localization.AddOdometryNoise;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
@@ -30,6 +31,7 @@ import org.team100.lib.targeting.Targets;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.visualization.RobotPoseVisualization;
+import org.team100.lib.visualization.SwerveHistoryVisualization;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -75,8 +77,8 @@ public class Machinery {
         m_modules = SwerveModuleCollection.get(
                 driveLog,
                 currentLog,
-                CurrentLimits.DRIVE,
-                CurrentLimits.STEERING);
+                new CurrentLimit(90, 70),
+                new CurrentLimit(60, 30));
         Gyro gyro = GyroFactory.get(
                 driveLog,
                 m_swerveKinodynamics,
@@ -102,7 +104,8 @@ public class Machinery {
         m_tagViz = new AprilTagVisualizer(
                 driveLog, fieldLogger, m_drive::getState, layout, DriverStation::getAlliance);
         m_robotViz = new RobotPoseVisualization(
-                fieldLogger, () -> m_drive.getState().pose(), "robot");
+                fieldLogger, () -> m_drive.getState(), "robot");
+        new SwerveHistoryVisualization(fieldLogger, estimate);
 
         ////////////////////////////////////////////////////////////
         //
@@ -210,7 +213,6 @@ public class Machinery {
     /** Generally for simulation and visualization */
     public void periodic() {
         m_groundTruth.periodic();
-        m_robotViz.run();
         m_tagViz.update();
     }
 

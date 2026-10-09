@@ -11,6 +11,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
@@ -26,7 +27,8 @@ import edu.wpi.first.math.numbers.N3;
  * 
  * See README.md for details.
  */
-public record VelocitySE2(double x, double y, double theta) {
+public record VelocitySE2(double x, double y, double theta)
+        implements Interpolatable<VelocitySE2> {
 
     public static final VelocitySE2 ZERO = new VelocitySE2(0, 0, 0);
 
@@ -164,5 +166,10 @@ public record VelocitySE2(double x, double y, double theta) {
                 maxSpeed * MathUtil.clamp(twist.x(), -1, 1),
                 maxSpeed * MathUtil.clamp(twist.y(), -1, 1),
                 maxRot * MathUtil.clamp(twist.theta(), -1, 1));
+    }
+
+    @Override
+    public VelocitySE2 interpolate(VelocitySE2 end, double t) {
+        return plus(end.minus(this).times(t));
     }
 }

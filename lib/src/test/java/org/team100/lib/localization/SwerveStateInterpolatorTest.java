@@ -7,8 +7,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.state.StateR1;
 import org.team100.lib.state.StateSE2;
-import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
-import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
@@ -17,8 +15,6 @@ import org.team100.lib.uncertainty.VariableR1;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class SwerveStateInterpolatorTest {
-    // this is a 0.5 m square.
-    private final SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest();
 
     @Test
     void testInterp0() {
@@ -33,7 +29,7 @@ public class SwerveStateInterpolatorTest {
                 new SwerveModulePosition100(0, Optional.empty()));
         Rotation2d gyroYaw0 = new Rotation2d();
         VariableR1 gyroBias = VariableR1.fromVariance(0, 0.001);
-        SwerveState r0 = new SwerveState(s0, n0, p0, gyroYaw0, gyroBias);
+        SwerveState r0 = new SwerveState(s0, n0, p0, gyroYaw0, gyroBias, null);
 
         StateSE2 s1 = new StateSE2(new StateR1(), new StateR1(), new StateR1(1, 1));
         IsotropicNoiseSE2 n1 = IsotropicNoiseSE2.fromStdDev(1, 1);
@@ -51,9 +47,9 @@ public class SwerveStateInterpolatorTest {
 
         // current speed is 1 rad/s
         VariableR1 gyroBias2 = VariableR1.fromVariance(0, 1);
-        SwerveState r1 = new SwerveState(s1, n1, p1, gyroYaw1, gyroBias2);
+        SwerveState r1 = new SwerveState(s1, n1, p1, gyroYaw1, gyroBias2, null);
 
-        SwerveStateInterpolator interpolator = new SwerveStateInterpolator(kinodynamics.getKinematics());
+        SwerveStateInterpolator interpolator = new SwerveStateInterpolator();
 
         {
             // t=0 should return r0. note "t" is not time
@@ -92,7 +88,7 @@ public class SwerveStateInterpolatorTest {
         Rotation2d gyroYaw0 = new Rotation2d();
         VariableR1 gyroBias = VariableR1.fromVariance(0, 1);
         SwerveState r0 = new SwerveState(
-                s0, n0, p0, gyroYaw0, gyroBias);
+                s0, n0, p0, gyroYaw0, gyroBias, null);
 
         StateSE2 s1 = new StateSE2(new StateR1(), new StateR1(), new StateR1(1, 1));
         IsotropicNoiseSE2 n1 = IsotropicNoiseSE2.fromStdDev(1, 1);
@@ -110,9 +106,9 @@ public class SwerveStateInterpolatorTest {
         // current speed is 1 rad/s
         VariableR1 gyroBias2 = VariableR1.fromVariance(0, 1);
         SwerveState r1 = new SwerveState(
-                s1, n1, p1, gyroYaw1, gyroBias2);
+                s1, n1, p1, gyroYaw1, gyroBias2, null);
 
-        SwerveStateInterpolator interpolator = new SwerveStateInterpolator(kinodynamics.getKinematics());
+        SwerveStateInterpolator interpolator = new SwerveStateInterpolator();
 
         {
             // t=0 should return r0. note "t" is not time

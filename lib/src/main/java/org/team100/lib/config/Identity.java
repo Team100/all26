@@ -16,15 +16,15 @@ import edu.wpi.first.wpilibj.RobotController;
  * Note that the ID string may change when you reflash the RoboRIO.
  */
 public enum Identity {
-    TEST_BOARD_B0("030628b0"),
+    TEST_BOARD_4("030628b0"),
     ROOKIE_BOT("03063c8d"),
-    FRC_100_ea4("0306cea4"),
+    TEST_BOARD_1("0306cea4"),
     TEST_BOARD_6B("030d286b"),
     DEMO_BOT("03126d76"),
-    TEAM100_2018("0313baf3"),
+    TEST_BOARD_2("0313baf3"),
     BETA_BOT("0315db43"),
     SQUAREBOT("031e31e3"),
-    SWERVE_TWO("0317f285"),
+    TEST_BOARD_3("0317f285"),
 
     LAUNDRY_BOT("03238232"), // Amy changed from COMP_BOT 9/16
     SWERVE_ONE("032363AC"),

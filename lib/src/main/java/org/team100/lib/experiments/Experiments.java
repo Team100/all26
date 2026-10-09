@@ -4,8 +4,6 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.team100.lib.config.Identity;
-
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -23,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Experiments.INSTANCE.show();
  */
 public class Experiments {
-    public static final Experiments INSTANCE = new Experiments(Identity.instance);
+    public static final Experiments INSTANCE = new Experiments();
 
     /** These experiments are enabled by default. */
     private final Set<Experiment> m_defaults = Set.of(
@@ -34,7 +32,7 @@ public class Experiments {
     /** Key = experiment, value = enabled. */
     private final Map<Experiment, Boolean> m_enabled;
 
-    private Experiments(Identity identity) {
+    private Experiments() {
         m_enabled = new EnumMap<>(Experiment.class);
         System.out.println("===============================================================");
         System.out.println("== EXPERIMENTS");

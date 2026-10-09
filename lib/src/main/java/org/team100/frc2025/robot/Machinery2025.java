@@ -109,7 +109,7 @@ public class Machinery2025 {
         m_tagViz = new AprilTagVisualizer(
                 driveLog, fieldLogger, m_drive::getState, layout, DriverStation::getAlliance);
         m_robotViz = new RobotPoseVisualization(
-                fieldLogger, () -> m_drive.getState().pose(), "robot");
+                fieldLogger, () -> m_drive.getState(), "robot");
 
         ////////////////////////////////////////////////////////////
         //
@@ -151,7 +151,6 @@ public class Machinery2025 {
     public void periodic() {
         m_groundTruth.periodic();
         m_leds.periodic();
-        m_robotViz.run();
         m_combinedViz.run();
         m_climberViz.run();
         m_tagViz.update();

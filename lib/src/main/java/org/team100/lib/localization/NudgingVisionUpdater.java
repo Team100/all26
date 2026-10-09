@@ -26,10 +26,11 @@ import edu.wpi.first.math.geometry.Translation2d;
  * weights you want at update time.
  */
 public class NudgingVisionUpdater implements VisionUpdater {
+    private static final boolean DEBUG = false;
 
     private final SwerveHistory m_history;
     /** For replay. */
-    private final OdometryUpdater m_odometryUpdater;
+    private final OdometryUpdaterInterface m_odometryUpdater;
     private final Fusor m_cartesianFusor;
     private final Fusor m_rotationFusor;
     private final SwerveStateLogger m_logState;
@@ -44,7 +45,7 @@ public class NudgingVisionUpdater implements VisionUpdater {
     public NudgingVisionUpdater(
             LoggerFactory parent,
             SwerveHistory history,
-            OdometryUpdater odometryUpdater) {
+            OdometryUpdaterInterface odometryUpdater) {
         LoggerFactory log = parent.type(this);
         m_history = history;
         m_odometryUpdater = odometryUpdater;
@@ -68,6 +69,9 @@ public class NudgingVisionUpdater implements VisionUpdater {
      */
     @Override
     public void put(double timestamp, NoisyPose2d noisyMeasurement) {
+        if (DEBUG)
+            System.out.printf("Nudging Vision Updater %6.3f %s\n",
+                    timestamp, noisyMeasurement);
         // Remember the time of this update.
         m_latestTimeS = Takt.get();
 
@@ -77,6 +81,7 @@ public class NudgingVisionUpdater implements VisionUpdater {
         }
 
         // Sample the history at the measurement time.
+        // This is always interpolated.
         SwerveState sample = m_history.getRecord(timestamp);
 
         // Nudge the sample towards the measurement.
@@ -92,32 +97,25 @@ public class NudgingVisionUpdater implements VisionUpdater {
     }
 
     /**
-     * Compute the new state, based on the sample.
+     * Return a state that is somewhere between the sample and the measurement.
      * 
-     * Position and gyro measurements are left alone.
+     * The nudged state uses the nudged pose and **but the sample velocity**.
+     * 
+     * The nudged noise may be more, or less, than the sample noise.
+     * 
+     * Uses the sample velocity, position, gyro measurement, and gyro bias.
+     * 
+     * Uses the verbatim measurement.
      */
-    SwerveState newState(SwerveState sample, NoisyPose2d noisyMeasurement) {
-
-        // Nudge the sample pose towards the measurement.
-        StateSE2 sampleState = sample.state();
-
-        NoisyPose2d noisySample = new NoisyPose2d(sampleState.pose(), sample.noise());
-
-        NoisyPose2d nudged = nudge(noisySample, noisyMeasurement);
-
-        // Velocity is unchanged.
-        StateSE2 newState = new StateSE2(nudged.pose(), sampleState.velocity());
-
-        IsotropicNoiseSE2 noise = nudged.noise();
-
-        // Odometry and gyro measurements are unchanged.
-        SwerveState swerveState = new SwerveState(
-                newState,
-                noise,
+    SwerveState newState(SwerveState sample, NoisyPose2d measurement) {
+        NoisyPose2d nudged = nudge(sample.noisyPose(), measurement);
+        return new SwerveState(
+                new StateSE2(nudged.pose(), sample.velocity()),
+                nudged.noise(),
                 sample.positions(),
                 sample.gyroYaw(),
-                sample.gyroBias());
-        return swerveState;
+                sample.gyroBias(),
+                measurement);
     }
 
     /**

@@ -13,7 +13,7 @@ class WindowsDisplay(Display):
     so use MjpegServer instead."""
 
     def __init__(self, name: str, width: int, height: int) -> None:
-        print("\n*** Display: WindowsDisplay")
+        print("*** Display: WindowsDisplay")
         self._width: int = width
         self._height: int = height
         self._stream = Stream(name, (width, height), quality=50, fps=30)

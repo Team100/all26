@@ -7,6 +7,8 @@ package org.team100.lib.uncertainty;
  * https://docs.google.com/spreadsheets/d/1StMbOyksydpzFmpHbZBL7ICMQtHnOBubrOMeYSx0M6E
  */
 public class VisionNoise {
+    private static final boolean DEBUG = false;
+
     /**
      * Standard deviation of vision updates in SE(2).
      * 
@@ -31,6 +33,9 @@ public class VisionNoise {
         double rotationErrorRad = figure6(offAxisAngleRad) + 0.01;
         double rotationEffectM = distanceM * rotationErrorRad;
         double maxCartesian = Math.max(cartesianErrorM, rotationEffectM);
+        if (DEBUG)
+            System.out.printf("VisionNoise %6.3f %6.3f %6.3f\n",
+                    distanceM, cartesianErrorM, rotationEffectM);
         return IsotropicNoiseSE2.fromStdDev(maxCartesian, rotationErrorRad);
     }
 

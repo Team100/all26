@@ -1,76 +1,67 @@
 package org.team100.lib.localization;
 
-import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.state.StateSE2;
-import org.team100.lib.subsystems.swerve.kinodynamics.SwerveDriveKinematics100;
-import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDeltas;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.uncertainty.VariableR1;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.Interpolator;
 
 /**
- * Use a separate interpolator class since it has some state (the kinematics).
+ * This used to interpolate wheel positions to find a "twist" to apply
+ * to the start pose, but we don't do it that way as of 10/4/26.
  * 
- * Interpolates the wheel positions.
- * Integrates wheel positions to find the interpolated pose.
- * Interpolates the velocity.
+ * Now we just interpolate each field separately.
+ * 
+ * TODO: remove this class, make SwerveState interpolatable.
  */
 public class SwerveStateInterpolator implements Interpolator<SwerveState> {
-    private final SwerveDriveKinematics100 m_kinematics;
-
-    public SwerveStateInterpolator(SwerveDriveKinematics100 kinematics) {
-        m_kinematics = kinematics;
-    }
 
     @Override
     public SwerveState interpolate(
             SwerveState startValue, SwerveState endValue, double t) {
+
+        // Check bounds on t
         if (t <= 0) {
             return startValue;
         }
         if (t >= 1) {
             return endValue;
         }
-        // Find the new wheel distances.
-        SwerveModulePositions wheelLerp = new SwerveModulePositions(
-                startValue.positions().frontLeft().interpolate(
-                        endValue.positions().frontLeft(), t),
-                startValue.positions().frontRight().interpolate(
-                        endValue.positions().frontRight(), t),
-                startValue.positions().rearLeft().interpolate(
-                        endValue.positions().rearLeft(), t),
-                startValue.positions().rearRight().interpolate(
-                        endValue.positions().rearRight(), t));
 
-        // Create a twist to represent the change based on the interpolated
-        // sensor inputs.
-        SwerveModuleDeltas delta = SwerveModuleDeltas.modulePositionDelta(
-                startValue.positions(), wheelLerp);
-        Twist2d twist = m_kinematics.forward(delta);
-        Pose2d pose = startValue.state().pose().exp(twist);
+        StateSE2 startState = startValue.state();
+        StateSE2 endState = endValue.state();
 
-        // These lerps are wrong but maybe close enough
-        VelocitySE2 startVelocity = startValue.state().velocity();
-        VelocitySE2 endVelocity = endValue.state().velocity();
-        VelocitySE2 velocity = startVelocity.plus(
-                endVelocity.minus(startVelocity).times(t));
+        // Interpolate the state.
+        StateSE2 stateLerp = startState.interpolate(endState, t);
 
-        StateSE2 newState = new StateSE2(pose, velocity);
-        IsotropicNoiseSE2 newNoise = startValue.noise().interpolate(
+        // Interpolate the noise.
+        IsotropicNoiseSE2 noiseLerp = startValue.noise().interpolate(
                 endValue.noise(), t);
 
+        // Interpolate the wheel positions.
+        SwerveModulePositions startPositions = startValue.positions();
+        SwerveModulePositions endPositions = endValue.positions();
+        SwerveModulePositions wheelLerp = startPositions.interpolate(endPositions, t);
+
+        // Interpolate the gyro measurement.
         Rotation2d gyroLerp = startValue.gyroYaw().interpolate(
                 endValue.gyroYaw(), t);
+
+        // Interpolate the gyro bias estimate.
         VariableR1 gyroBiasLerp = startValue.gyroBias().interpolate(
                 endValue.gyroBias(), t);
 
+        NoisyPose2d measurementLerp = null;
+        if (startValue.visionMeasurement() != null && endValue.visionMeasurement() != null) {
+            measurementLerp = startValue.visionMeasurement()
+                    .interpolate(endValue.visionMeasurement(), t);
+        }
+
         return new SwerveState(
-                newState, newNoise, wheelLerp, gyroLerp, gyroBiasLerp);
+                stateLerp, noiseLerp, wheelLerp, gyroLerp, gyroBiasLerp, measurementLerp);
     }
 
 }

@@ -32,7 +32,7 @@ class Blobs(ColorAnalysis):
         :object_lower: ([H, S, V]) lower bound
         :object_higher: ([H, S, V]) upper bound
         """
-        print("\n*** ColorAnalysis: Blobs")
+        print("*** ColorAnalysis: Blobs")
         self._mtx = cam.get_intrinsic()
         self._dist = cam.get_dist()
         size: Size = cam.get_size()
