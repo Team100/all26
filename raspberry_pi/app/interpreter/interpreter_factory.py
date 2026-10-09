@@ -8,7 +8,7 @@ from app.dashboard.display_protocol import Display
 from app.interpreter.interpreter_protocol import Interpreter
 from app.interpreter.viewfinder import Viewfinder
 from app.analysis.apriltags import AprilTags
-from app.analysis.blobs import Blobs
+from app.analysis.balls import Balls
 from app.interpreter.dual_interpreter import DualInterpreter
 from app.network.network_protocol import Network
 from app.util.timestamps import Timestamps
@@ -69,7 +69,7 @@ class InterpreterFactory:
                     network,
                     timestamps,
                     None,
-                    Blobs(cam, network, object_lower, object_higher),
+                    Balls(cam, network, object_lower, object_higher),
                 )
             case (
                 Identity.DEV
@@ -101,7 +101,7 @@ class InterpreterFactory:
                     network,
                     timestamps,
                     AprilTags(identity, cam, network),
-                    Blobs(cam, network, object_lower, object_higher),
+                    Balls(cam, network, object_lower, object_higher),
                 )
             case _:
                 return DualInterpreter(
