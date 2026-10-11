@@ -57,10 +57,10 @@ public class Intake extends SubsystemBase {
             PIDConstants pid = PIDConstants.makeVelocityPID(0.005);
             m1 = new KrakenX44Motor(
                     log1, currentLog, CAN_ID_1, busId, NeutralMode100.COAST, MotorPhase.FORWARD,
-                    new CurrentLimit(50, 30), friction, pid);
+                    new CurrentLimit(50, 60), friction, pid);
             m2 = new KrakenX44Motor(
                     log2, currentLog, CAN_ID_2, busId, NeutralMode100.COAST, MotorPhase.REVERSE,
-                    new CurrentLimit(50, 30), friction, pid);
+                    new CurrentLimit(50, 60), friction, pid);
         } else {
             m1 = new SimulatedMotor(log1, 600);
             m2 = new SimulatedMotor(log2, 600);

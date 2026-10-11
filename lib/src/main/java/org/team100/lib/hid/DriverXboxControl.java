@@ -33,6 +33,8 @@ public class DriverXboxControl {
     private final LinearFilter m_filterRightY;
     private final LinearFilter m_filterRightX;
     private final LinearFilter m_filterLeftX;
+    private final LinearFilter m_filterLeftY;
+
 
     /** Cache of smoothed input */
     private final DoubleCache m_rightY;
@@ -40,10 +42,14 @@ public class DriverXboxControl {
     private final DoubleCache m_rightX;
     /** Cache of smoothed input */
     private final DoubleCache m_leftX;
+    private final DoubleCache m_leftY;
+
 
     private final DoubleLogger m_log_rightY;
     private final DoubleLogger m_log_rightX;
     private final DoubleLogger m_log_leftX;
+    private final DoubleLogger m_log_leftY;
+
 
     public DriverXboxControl(LoggerFactory parent, int port) {
         LoggerFactory log = parent.type(this);
@@ -52,12 +58,16 @@ public class DriverXboxControl {
         m_filterRightY = LinearFilter.movingAverage(BOXCAR);
         m_filterRightX = LinearFilter.movingAverage(BOXCAR);
         m_filterLeftX = LinearFilter.movingAverage(BOXCAR);
+        m_filterLeftY = LinearFilter.movingAverage(BOXCAR);
         m_rightY = Cache.ofDouble(this::rightY);
         m_rightX = Cache.ofDouble(this::rightX);
         m_leftX = Cache.ofDouble(this::leftX);
+        m_leftY = Cache.ofDouble(this::leftY);
         m_log_rightY = log.doubleLogger(Level.DEBUG, "right Y");
         m_log_rightX = log.doubleLogger(Level.DEBUG, "right X");
         m_log_leftX = log.doubleLogger(Level.DEBUG, "left X");
+        m_log_leftY = log.doubleLogger(Level.DEBUG, "left Y");
+
         LogPoller.register(this::log);
     }
 
@@ -89,17 +99,17 @@ public class DriverXboxControl {
 
     /** Axis 5, filtered */
     public double rightY() {
-        return m_filterRightY.calculate(m_controller.getRawAxis(5));
+        return m_filterRightY.calculate(m_controller.getRightY());
     }
 
     /** Axis 4, filtered */
     public double rightX() {
-        return m_filterRightX.calculate(m_controller.getRawAxis(4));
+        return m_filterRightX.calculate(m_controller.getRightX());
     }
 
     /** Axis 0, filtered */
     public double leftX() {
-        return m_filterLeftX.calculate(m_controller.getRawAxis(0));
+        return m_filterLeftX.calculate(m_controller.getLeftX());
     }
 
     public Rotation2d pov() {
@@ -146,14 +156,12 @@ public class DriverXboxControl {
 
     /** Button 5 */
     public boolean leftBumper() {
-        return m_controller.getRawButton(4); // found by testing
-        // return m_controller.getLeftBumperButton();
+        return m_controller.getLeftBumperButton();
     }
 
     /** Button 6 */
     public boolean rightBumper() {
-        return m_controller.getRawButton(5); // found by testing
-        // return m_controller.getRightBumperButton();
+        return m_controller.getRightBumperButton();
     }
 
     /** Button 1 */
@@ -180,5 +188,10 @@ public class DriverXboxControl {
     public double leftY() {
         return m_controller.getLeftY();
     }
-
+    public double RightTriggerAxis(){
+        return m_controller.getRightTriggerAxis();
+    }
+    public double LeftTriggerAxis(){
+        return m_controller.getRightTriggerAxis();
+    }
 }
