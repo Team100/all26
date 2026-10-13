@@ -1,0 +1,8 @@
+# cloud-init network-config.  build_image.sh replaces this for each Pi
+# with a static address (see doc/pi_setup.md).  This default uses DHCP.
+network:
+  version: 2
+  ethernets:
+    eth0:
+      dhcp4: true
+      optional: true

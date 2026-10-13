@@ -1,0 +1,18 @@
+#!/bin/sh
+# Grow the root partition and filesystem to fill the SD card, like
+# Raspberry Pi OS does on first boot.
+set -eu
+
+src=$(readlink -f "$(findmnt -no SOURCE /)")
+part=$(basename "$src")
+disk=/dev/$(basename "$(readlink -f "/sys/class/block/$part/..")")
+num=$(cat "/sys/class/block/$part/partition")
+
+# growpart exits 1 when the partition is already as big as it can be.
+rc=0
+growpart "$disk" "$num" || rc=$?
+[ "$rc" -le 1 ]
+resize2fs "$src"
+
+mkdir -p /var/lib/team100
+touch /var/lib/team100/growroot.done
