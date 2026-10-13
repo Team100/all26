@@ -1,0 +1,18 @@
+# METABEGIN
+# X-Env-Layer-Name: team100-base
+# X-Env-Layer-Category: suite
+# X-Env-Layer-Desc: rpi-image-gen's trixie-minbase, but networked like
+#  Raspberry Pi OS: NetworkManager instead of systemd-networkd, so that
+#  cloud-init and netplan can apply network-config from the boot partition.
+#  No wifi layers, since the radios are disabled.
+# X-Env-Layer-Version: 1.0.0
+# X-Env-Layer-Requires: debian-trixie-arm64-multi,
+#  rpi-debian-trixie,
+#  rpi-misc-utils,
+#  rpi-essential-base,
+#  rpi-misc-skel,
+#  network-manager,
+#  openssh-server,
+#  systemd-timesyncd
+# METAEND
+---
