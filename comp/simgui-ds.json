@@ -1,7 +1,7 @@
 {
       "FMS": {"window": {"visible": false}},
-      "Joysticks": {"window": {"visible": false}},
       "System Joysticks": {"window": {"enabled": false}},
+      "dashboardOpModes": true,
       "keyboardJoysticks": [{
         "axisConfig": [{
           "decKey": 549,
@@ -47,5 +47,6 @@
         "buttonCount": 0,
         "povCount": 0
       }],
-      "robotJoysticks": [{"guid": "Keyboard0"}]
+      "robotJoysticks": [{}, {"guid": "Keyboard0"}],
+      "useEstopHotkey": true
     }

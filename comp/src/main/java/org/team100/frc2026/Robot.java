@@ -69,6 +69,13 @@ public class Robot extends TimedRobot100 {
         if (Experiments.INSTANCE.enabled(Experiment.FlushOften)) {
             NetworkTableInstance.getDefault().flush();
         }
+    //    System.out.printf("leftX %f\n",  m_binder.m_driver.leftX());
+    //    System.out.printf("RightX %f\n",  m_binder.m_driver.rightX());
+    //    System.out.printf("RightY %f\n",  m_binder.m_driver.rightY());
+    //    System.out.printf("leftY %f\n",  m_binder.m_driver.leftY());
+    //    System.out.printf("Right Trigger %f\n",  m_binder.m_driver.RightTriggerAxis());
+    //    System.out.printf(" Left Trigger %f\n",  m_binder.m_driver.LeftTriggerAxis());
+      
     }
 
     ///////////////////////////////////////////////////////////////

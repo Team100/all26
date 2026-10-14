@@ -29,7 +29,7 @@ public class Feeder extends SubsystemBase {
     private static final double TOLERANCE_M_S = 1.0;
     private static final double GEAR_RATIO = 24.0 / 18.0;
     private static final double WHEEL_DIAMETER_M = 0.048;
-    private static final double NORMAL_SPEED = 20.0;
+    private static final double NORMAL_SPEED = 25.0;
 
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
@@ -168,7 +168,7 @@ public class Feeder extends SubsystemBase {
         double shooterSlowness = Math.max(0, meanError);
         // if we're 1 m/s slow, feed at 100%
         // if we're 2 m/s slow, feed at 0%
-        double feedFraction = Math.clamp((20 - shooterSlowness) / 20, 0, 1);
+        double feedFraction = Math.clamp((25 - shooterSlowness) / 25, 0, 1);
         double feedSpeed = NORMAL_SPEED * feedFraction;
         setVelocityDirect(feedSpeed);
         //System.out.printf("%f %f %f\n", feedSpeed, feedFraction, shooterSlowness);

@@ -19,6 +19,7 @@ import org.team100.lib.servo.OutboardLinearPositionServo;
 import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
+import org.wpilib.command2.Commands;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
 import org.wpilib.math.util.MathUtil;
@@ -33,7 +34,7 @@ public class IntakeExtend extends SubsystemBase {
     private static final double gearDiameter = 0.025;
     private static final double RETRACTED_POSITION = 0;
     // seems fine, 3/12/26
-    private static final double EXTENDED_POSITION = 2.140017; // tune this from glass
+    private static final double EXTENDED_POSITION = 0.4; // tune this from glass
 
     private final LinearPositionServo m_servo;
     private final LinearPositionServo m_Servo2;
@@ -47,7 +48,7 @@ public class IntakeExtend extends SubsystemBase {
         // Mass is zero for now because gravity coordinate doesn't match
         // the mechanism.
         PDynamics dynamics = new PDynamics(0);
-        TrapezoidProfileR1 profile = new TrapezoidProfileR1(4, 8, 0.1);
+        TrapezoidProfileR1 profile = new TrapezoidProfileR1(4, 30, 2);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.1, 0.05);
         final Motor motor;
         final Motor motor2;
@@ -107,6 +108,32 @@ public class IntakeExtend extends SubsystemBase {
                 .withName("Intake Extend GoToExtendedPositionEndlessly");
     }
 
+    public Command AgitationPosition() {
+        return runOnce(this::reset)
+                .andThen(
+                        Commands.repeatingSequence(
+                                run(() -> actuateWithVelocity(2)).withTimeout(0.5),
+                                run(() -> actuateWithVelocity(-2)).withTimeout(0.5)))
+                .finallyDo(this::stopServo)
+                .withName("Agitiate");
+    }
+
+    public Command MoveBackward() {
+        return startRun(
+                this::reset,
+                () -> actuateWithVelocity(-2))
+                .finallyDo(this::stopServo)
+                .withName("Agitiate");
+    }
+
+    public Command MoveForward() {
+        return startRun(
+                this::reset,
+                () -> actuateWithVelocity(2))
+                .finallyDo(this::stopServo)
+                .withName("Agitiate");
+    }
+
     /** Servo is at goal. False immediately after reset. */
     public boolean atGoal() {
         return m_servo.atGoal() && m_Servo2.atGoal();
@@ -156,7 +183,7 @@ public class IntakeExtend extends SubsystemBase {
                 .withName("set position");
     }
 
-    //////////////////////////////////////
+    //////////////////////////////
 
     private void stopServo() {
         m_servo.stop();
@@ -171,6 +198,11 @@ public class IntakeExtend extends SubsystemBase {
     private void actuateWithProfile(double value) {
         m_servo.setPositionProfiled(value);
         m_Servo2.setPositionProfiled(value);
+    }
+
+    private void actuateWithVelocity(double value) {
+        m_servo.setVelocity(value);
+        m_Servo2.setVelocity(value);
     }
 
     public boolean atExtendedPosition() {
