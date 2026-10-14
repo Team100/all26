@@ -14,17 +14,17 @@ import gtsam.noiseModel.Base;
  * In that case, use a very noisy prior.
  */
 public class Prior {
-    private final Solver estimate;
+    private final Solver solver;
 
     public Prior(Solver e) {
-        estimate = e;
+        solver = e;
     }
 
     public void add(
             Key key,
             Pose2 value,
             shared_ptr<? extends Base> noise) throws Throwable {
-        estimate.add(PriorFactor.PriorFactorPose2(
+        solver.add(PriorFactor.PriorFactorPose2(
                 key, value, noise));
     }
 
@@ -32,7 +32,7 @@ public class Prior {
             Key key,
             double value,
             shared_ptr<? extends Base> noise) throws Throwable {
-        estimate.add(PriorFactor.PriorFactorDouble(
+        solver.add(PriorFactor.PriorFactorDouble(
                 key, value, noise));
     }
 }

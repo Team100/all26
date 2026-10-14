@@ -2,13 +2,11 @@ package org.team100.frc2026.robot;
 
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 import org.team100.frc2026.field.FieldConstants2026;
 import org.team100.frc2026.targeting.Targeter;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.indicator.Beeper;
-import org.team100.lib.localization.AddOdometryNoise;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.AprilTagVisualizer;
 import org.team100.lib.localization.FusedEstimator;
@@ -23,6 +21,7 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsSwerveOne;
 import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
 import org.team100.lib.subsystems.swerve.module.SwerveModulesPractice;
+import org.team100.lib.subsystems.swerve.module.SwerveModulesSim;
 import org.team100.lib.subsystems.swerve.module.SwerveModulesSim;
 import org.team100.lib.targeting.CachedSolution;
 import org.team100.lib.targeting.ProxySolver;
@@ -45,8 +44,6 @@ import org.wpilib.math.geometry.Twist2d;
  * that the Binder and Auton classes may want to use.
  */
 public class Machinery {
-    private final RobotPoseVisualization m_robotViz;
-    private final AprilTagVisualizer m_tagViz;
     private final SwerveModuleCollection m_modules;
     private final GroundTruth m_groundTruth;
 
@@ -62,17 +59,17 @@ public class Machinery {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // DRIVETRAIN
         //
         m_swerveKinodynamics = new SwerveKinodynamicsSwerveOne();
         m_modules = RobotBase.isReal() ? new SwerveModulesPractice(
-                driveLog,
+                driveLog.name("Swerve Modules"),
                 currentLog,
                 new CurrentLimit(90, 70),
                 new CurrentLimit(60, 30))
-                : new SwerveModulesSim(driveLog);
+                : new SwerveModulesSim(driveLog.name("Swerve Modules"));
         Gyro gyro = GyroFactory.get(
                 driveLog,
                 m_swerveKinodynamics,
@@ -82,12 +79,11 @@ public class Machinery {
                 driveLog,
                 m_swerveKinodynamics,
                 m_modules);
-        UnaryOperator<Twist2d> odometryNoise = RobotBase.isReal() ? UnaryOperator.identity() : new AddOdometryNoise();
         FusedEstimator estimate = new FusedEstimator(
                 driveLog,
                 fieldLogger,
                 m_swerveKinodynamics,
-                odometryNoise,
+                RobotBase.isSimulation(),
                 layout,
                 gyro,
                 swerveLocal);
@@ -95,12 +91,12 @@ public class Machinery {
                 driveLog,
                 estimate,
                 swerveLocal);
-        m_tagViz = new AprilTagVisualizer(
+        new AprilTagVisualizer(
                 driveLog, fieldLogger, m_drive::getState, layout, MatchState::getAlliance);
-        m_robotViz = new RobotPoseVisualization(
-                fieldLogger, () -> m_drive.getState().pose(), "robot");
+        new RobotPoseVisualization(
+                fieldLogger, () -> m_drive.getState(), "robot");
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // TARGETING
         //
@@ -122,18 +118,18 @@ public class Machinery {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, (t) -> m_drive.getState(t));
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // SUBSYSTEMS
         //
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // INDICATOR
         //
@@ -160,7 +156,7 @@ public class Machinery {
      * Purge the history and assert the given pose as the current estimate.
      */
     public void resetPose(NoisyPose2d p) {
-        m_drive.resetPose(p.pose(), p.noise());
+        m_drive.reset(p.pose(), p.noise());
         // also reset the ground truth, otherwise the cameras retain the old pose
         m_groundTruth.resetPose(p.pose());
     }
@@ -203,8 +199,6 @@ public class Machinery {
     /** Generally for simulation and visualization */
     public void periodic() {
         m_groundTruth.periodic();
-        m_robotViz.run();
-        m_tagViz.update();
     }
 
     /**

@@ -5,14 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.controller.se2.ControllerFactorySE2;
 import org.team100.lib.controller.se2.ControllerSE2;
-import org.team100.lib.experiments.Experiment;
-import org.team100.lib.experiments.Experiments;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.FusedEstimator;
 import org.team100.lib.logging.LoggerFactory;
@@ -144,10 +141,6 @@ public class DriveWithTrajectoryTest implements Timeless {
      */
     @Test
     void testRealDrive() throws IOException {
-
-        // this test depends on the behavior of the setpoint generator, so make sure
-        // it's on (otherwise it's in whatever state the previous test left it)
-        Experiments.INSTANCE.override(Experiment.UseSwerveLimiter, true);
         // 1m along +x, no rotation.
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest();
         SwerveModuleCollection collection = SwerveModuleCollection.get(
@@ -169,10 +162,9 @@ public class DriveWithTrajectoryTest implements Timeless {
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
 
         SwerveLocal swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
-        UnaryOperator<Twist2d> odometryNoise = UnaryOperator.identity();
 
         FusedEstimator estimate = new FusedEstimator(
-                logger, fieldLogger, swerveKinodynamics, odometryNoise, layout, gyro, swerveLocal);
+                logger, fieldLogger, swerveKinodynamics, false, layout, gyro, swerveLocal);
 
         SwerveDriveSubsystem drive = new SwerveDriveSubsystem(
                 logger,

@@ -27,6 +27,7 @@ import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.state.StateR1;
 import org.team100.lib.state.StateSE2;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.StrUtil;
 import org.wpilib.command2.SubsystemBase;
@@ -74,17 +75,17 @@ public class RRRArmIndependent extends SubsystemBase implements RRRArm {
         final Motor m3;
         if (RobotBase.isReal()) {
             m1 = new Falcon500Motor(
-                    q1, m_currentLog, new CanId(5),
+                    q1, m_currentLog, new CanId(5), new CanBusId(0),
                     NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(20, 20), new Friction(0, 0, 0, 0),
                     PIDConstants.makePositionPID(1));
             m2 = new Falcon500Motor(
-                    q2, m_currentLog, new CanId(21),
+                    q2, m_currentLog, new CanId(21), new CanBusId(0),
                     NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(20, 20), new Friction(0, 0, 0, 0),
                     PIDConstants.makePositionPID(1));
             m3 = new Neo550CANSparkMotor(
-                    q3, m_currentLog, new CanId(14),
+                    q3, m_currentLog, new CanId(14), new CanBusId(0),
                     NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(20, 20), new Friction(0, 0, 0, 0),
                     PIDConstants.makePositionPID(1), 0, 0);

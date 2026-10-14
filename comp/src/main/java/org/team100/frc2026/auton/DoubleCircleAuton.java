@@ -3,10 +3,10 @@ package org.team100.frc2026.auton;
 import static org.wpilib.command2.Commands.parallel;
 import static org.wpilib.command2.Commands.repeatingSequence;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.team100.frc2026.field.FieldConstants2026;
 import org.team100.frc2026.robot.Machinery;
@@ -26,7 +26,6 @@ import org.team100.lib.trajectory.se2.constraint.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.SwerveDriveDynamicsConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
-import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
 import org.team100.lib.trajectory.se2.constraint.YawRateConstraint;
 import org.wpilib.command2.Command;
 import org.wpilib.math.geometry.Pose2d;
@@ -35,10 +34,10 @@ import org.wpilib.math.geometry.Rotation2d;
 /** Full speed sweep, shoot-on-the-move, repeat */
 public class DoubleCircleAuton implements AnnotatedCommand {
     private final LoggerFactory log;
-    private final ControllerSE2 controller;
     private final Machinery machinery;
     private final TrajectorySE2Planner planner;
     private final Solver m_solver;
+    private final Command command;
 
     public DoubleCircleAuton(
             LoggerFactory parent,
@@ -47,28 +46,55 @@ public class DoubleCircleAuton implements AnnotatedCommand {
             Solver solver,
             Machinery machinery) {
         log = parent.name(name());
-        this.controller = controller;
         m_solver = solver;
         this.machinery = machinery;
 
         double bumpV = 2; // cartesian velocity over the bump
-        List<TimingConstraint> new_constraints = new ArrayList<>(List.of(
-                // high velocity, moderate accel
-                new ConstantConstraint(5, 20),
-                // absolute maxima
-                new SwerveDriveDynamicsConstraint(kinodynamics, 1, 1),
-                // high yaw limits
-                new YawRateConstraint(10, 20),
-                // moderate capsize limits. Note we're not actually concerned about capsize
-                // here, we just want to limit tire tread shear
-                new CapsizeAccelerationConstraint(5, 20),
-                new VelocityLimitRegionConstraint(BumpZones.BLUE_BUMP_LEFT, bumpV),
-                new VelocityLimitRegionConstraint(BumpZones.BLUE_BUMP_RIGHT, bumpV),
-                new VelocityLimitRegionConstraint(BumpZones.RED_BUMP_LEFT, bumpV),
-                new VelocityLimitRegionConstraint(BumpZones.RED_BUMP_RIGHT, bumpV)));
+        List<TimingConstraint> new_constraints = Stream.concat(
+                BumpZones.constraint(bumpV).stream(),
+                List.of(
+                        // high velocity, moderate accel
+                        new ConstantConstraint(5, 20),
+                        // absolute maxima
+                        new SwerveDriveDynamicsConstraint(kinodynamics, 1, 1),
+                        // high yaw limits
+                        new YawRateConstraint(10, 20),
+                        // moderate capsize limits. Note we're not actually concerned about capsize
+                        // here, we just want to limit tire tread shear
+                        new CapsizeAccelerationConstraint(5, 20)).stream())
+                .toList();
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(new_constraints);
         PathSE2Factory pathFactory = new PathSE2Factory();
         planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
+        DriveWithTrajectoryFunctionWithOverride navigate = new DriveWithTrajectoryFunctionWithOverride(
+                log,
+                machinery.m_drive,
+                controller,
+                machinery.m_trajectoryViz,
+                this::t1, m_solver,
+                this::inAllianceZone);
+        Command extendWhenInNeutralZone = toggle(
+                this::inNeutralZone,
+                machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
+                machinery.m_intakeExtend.goToRetractedPosition());
+        Command rollWhenExtended = toggle(
+                this::intakeExtended,
+                machinery.m_intake.intake(),
+                machinery.m_intake.stop());
+        // this doesn't intake because of the parallel requirement issue.
+        Command shootWhenInAllianceZone = toggle(
+                this::inAllianceZone,
+                parallel(
+                        // machinery.m_intake.intake(),
+                        machinery.m_shooter.auto()),
+                parallel(
+                        // machinery.m_intake.intake(),
+                        machinery.m_shooter.stop()));
+        command = parallel(
+                navigate,
+                extendWhenInNeutralZone,
+                rollWhenExtended,
+                shootWhenInAllianceZone);
     }
 
     @Override
@@ -115,36 +141,7 @@ public class DoubleCircleAuton implements AnnotatedCommand {
 
     @Override
     public Command command() {
-        DriveWithTrajectoryFunctionWithOverride bigLoop = new DriveWithTrajectoryFunctionWithOverride(
-                log,
-                machinery.m_drive,
-                controller,
-                machinery.m_trajectoryViz,
-                this::t1, m_solver,
-                this::inAllianceZone);
-
-        return parallel(
-                // navigate
-                bigLoop,
-                // extend when in neutral zone
-                toggle(
-                        this::inNeutralZone,
-                        machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
-                        machinery.m_intakeExtend.goToRetractedPosition()),
-                // roll when extended
-                toggle(
-                        this::intakeExtended,
-                        machinery.m_intake.intake(),
-                        machinery.m_intake.stop()),
-                // shoot when in alliance zone
-                toggle(
-                        this::inAllianceZone,
-                        parallel(
-                                machinery.m_intake.intake(),
-                                machinery.m_shooter.auto()),
-                        parallel(
-                                machinery.m_intake.intake(),
-                                machinery.m_shooter.stop())));
+        return command;
     }
 
     @Override

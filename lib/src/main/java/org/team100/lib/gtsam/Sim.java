@@ -3,24 +3,8 @@ package org.team100.lib.gtsam;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Transform2d;
-import org.wpilib.smartdashboard.Field2d;
-import org.wpilib.smartdashboard.FieldObject2d;
-import org.wpilib.smartdashboard.SmartDashboard;
-
 import org.team100.lib.gtsam.config.CameraConfig;
 import org.team100.lib.gtsam.field.FieldMap;
-import gtsam.Key;
-import gtsam.Point2;
-import gtsam.Point3;
-import gtsam.Pose2;
-import gtsam.Vector;
-import gtsam.Vector1;
-import gtsam.Vector3;
-import gtsam.noiseModel.Diagonal;
-import org.team100.lib.gtsam.kinodynamics.Kinematics.SwerveModulePositions;
 import org.team100.lib.gtsam.pose_estimator.BetweenGyro;
 import org.team100.lib.gtsam.pose_estimator.Gyro;
 import org.team100.lib.gtsam.pose_estimator.Odometry;
@@ -32,223 +16,252 @@ import org.team100.lib.gtsam.simulation.SimulatedGyro;
 import org.team100.lib.gtsam.simulation.SimulatedOdometry;
 import org.team100.lib.gtsam.simulation.SimulatedRobot;
 import org.team100.lib.gtsam.util.Geometry;
+import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Transform2d;
+import org.wpilib.smartdashboard.Field2d;
+import org.wpilib.smartdashboard.FieldObject2d;
+import org.wpilib.smartdashboard.SmartDashboard;
+
+import gtsam.Key;
+import gtsam.Marginals;
+import gtsam.Matrix;
+import gtsam.NonlinearFactorGraph;
+import gtsam.Point2;
+import gtsam.Point3;
+import gtsam.Pose2;
+import gtsam.Values;
+import gtsam.Vector;
+import gtsam.Vector1;
+import gtsam.Vector3;
+import gtsam.noiseModel.Diagonal;
 
 /**
  * Outer simulation loop. Call "run" periodically.
  */
 public class Sim {
-    private static final boolean USE_GYRO = false;
-    private static final boolean NEW_GYRO = true;
-    private static final boolean USE_ODO = true;
-    private static final boolean USE_VISION = false;
-    private final Solver m_solver;
-    private final Field2d m_field;
-    private final List<Point3> m_landmarks;
+    private static final boolean DEBUG = false;
+
+    public final Solver m_solver;
+    public final Field2d m_field;
+    public final List<Point3> m_landmarks;
 
     // simulated measurements
-    private final SimulatedOdometry m_simulatedOdometry;
-    private final SimulatedRobot m_simulatedRobot;
-    private final SimulatedCamera m_simulatedCamera;
-    private final SimulatedGyro m_simulatedGyro;
+    public final SimulatedOdometry m_simulatedOdometry;
+    public final SimulatedRobot m_simulatedRobot;
+    public final SimulatedCamera m_simulatedCamera;
+    public final SimulatedGyro m_simulatedGyro;
 
     // factors
-    private final Vision m_vision;
-    private final Gyro m_gyro;
-    private final BetweenGyro m_betweenGyro;
-    private final Odometry m_odometry;
-    // private final Prior m_prior;
-    private final boolean m_initialized;
+    public final Vision m_vision;
+    // private final Gyro m_gyro;
+    public final BetweenGyro m_betweenGyro;
+    public final Odometry m_odometry;
+    public final Prior m_prior;
 
+    public Pose2d m_groundTruthPose;
     /** Estimate from the solver. */
-    private Pose2 m_estimatedPose;
-    private int m_loopCount;
+    public Pose2 m_estimatedPose;
+    public int m_loopCount;
 
     // the verbosity here is to trap the exception.
-    public Sim() {
+    public Sim() throws Throwable {
 
-        Solver solver = null;
-        Pose2 estimatedPose = null;
-        boolean initialized = false;
-        List<Point3> landmarks = null;
-        CameraConfig conf = null;
+        int lagMicroseconds = 100000;
+        m_solver = new Solver(lagMicroseconds);
 
+        m_estimatedPose = new Pose2();
+
+        //
+        // LANDMARKS
+        //
+        List<Point3> tag = new FieldMap().get(0);
+        m_landmarks = List.of(tag.get(0), tag.get(1), tag.get(2), tag.get(3));
+        FieldMap fieldMap = new FieldMap();
+        m_field = new Field2d();
+        m_field.getObject("tag0").setPose(new Pose2d(tag.get(0).x(), tag.get(0).y(), new Rotation2d(0)));
+        m_field.getObject("tag1").setPose(new Pose2d(tag.get(1).x(), tag.get(1).y(), new Rotation2d(0)));
+        m_field.getObject("tag2").setPose(new Pose2d(tag.get(2).x(), tag.get(2).y(), new Rotation2d(0)));
+        m_field.getObject("tag3").setPose(new Pose2d(tag.get(3).x(), tag.get(3).y(), new Rotation2d(0)));
+
+        CameraConfig conf = new CameraConfig();
+
+        //
         // SIMULATED MEASUREMENTS
-        SimulatedRobot simulatedRobot = null;
-        SimulatedOdometry simulatedOdometry = null;
-        SimulatedCamera simulatedCamera = null;
-        SimulatedGyro simulatedGyro = null;
+        //
+        m_simulatedRobot = new SimulatedRobot();
+        Pose2d initial = m_simulatedRobot.pose(0);
+        m_simulatedCamera = new SimulatedCamera(m_landmarks, conf);
+        m_simulatedGyro = new SimulatedGyro(true);
 
+        //
         // FACTORS
-        Vision vision = null;
-        Gyro gyro = null;
-        BetweenGyro betweenGyro = null;
-        Odometry odometry = null;
-        Prior prior = null;
+        //
+        m_vision = new Vision(m_solver, conf);
+        // m_gyro = new Gyro(m_solver);
+        m_betweenGyro = new BetweenGyro(m_solver);
+        m_odometry = new Odometry(m_solver);
+        m_prior = new Prior(m_solver);
 
-        Field2d field = null;
+        // Initial pose.
+        Pose2 p0 = new Pose2(0, 0, 0);
+        Key x0 = Key.X(0);
+        m_solver.addVariable(x0, 0, p0);
+        m_prior.add(x0, p0, Diagonal.Sigmas(new Vector3(100, 100, 100)));
 
-        try {
+        // Initial gyro bias.
 
-            int lagMicroseconds = 100000;
-            solver = new Solver(lagMicroseconds);
+        Key b0 = Key.B(0);
+        m_solver.addVariable(b0, 0, 0);
+        // // try a very low bias prior
+        m_prior.add(b0, 0, Diagonal.Sigmas(new Vector1(0.001)));
+        m_betweenGyro.add(0, m_simulatedGyro.yaw(0, initial));
 
-            estimatedPose = new Pose2();
+        // Record the initial timestamp and positions.
+        m_simulatedOdometry = new SimulatedOdometry(fieldMap, initial);
 
-            //
-            // LANDMARKS
-            //
-            List<Point3> tag = new FieldMap().get(0);
-            landmarks = List.of(tag.get(0), tag.get(1), tag.get(2), tag.get(3));
-            FieldMap fieldMap = new FieldMap();
-            field = new Field2d();
-            field.getObject("tag0").setPose(new Pose2d(tag.get(0).x(), tag.get(0).y(), new Rotation2d(0)));
-            field.getObject("tag1").setPose(new Pose2d(tag.get(1).x(), tag.get(1).y(), new Rotation2d(0)));
-            field.getObject("tag2").setPose(new Pose2d(tag.get(2).x(), tag.get(2).y(), new Rotation2d(0)));
-            field.getObject("tag3").setPose(new Pose2d(tag.get(3).x(), tag.get(3).y(), new Rotation2d(0)));
+        m_odometry.add(0, m_simulatedOdometry.positions(initial));
 
-            conf = new CameraConfig();
-
-            //
-            // SIMULATED MEASUREMENTS
-            //
-            simulatedRobot = new SimulatedRobot();
-            Pose2d initial = simulatedRobot.pose(0);
-            simulatedCamera = new SimulatedCamera(landmarks, conf);
-            simulatedGyro = new SimulatedGyro(NEW_GYRO);
-
-            //
-            // FACTORS
-            //
-            vision = new Vision(solver, conf);
-            gyro = new Gyro(solver);
-            betweenGyro = new BetweenGyro(solver);
-            odometry = new Odometry(solver);
-            prior = new Prior(solver);
-
-            // Initial pose.
-            Pose2 p0 = new Pose2(0, 0, 0);
-            Key x0 = Key.X(0);
-            solver.addVariable(x0, 0, p0);
-            prior.add(x0, p0, Diagonal.Sigmas(new Vector3(100, 100, 100)));
-
-            // Initial gyro bias.
-            if (USE_GYRO) {
-                if (NEW_GYRO) {
-                    Key b0 = Key.B(0);
-                    solver.addVariable(b0, 0, 0);
-                    // try a very low bias prior
-                    prior.add(b0, 0, Diagonal.Sigmas(new Vector1(0.001)));
-                    betweenGyro.add(0, simulatedGyro.yaw(0, initial));
-                }
-            }
-
-            // Record the initial timestamp and positions.
-            simulatedOdometry = new SimulatedOdometry(fieldMap, initial);
-            if (USE_ODO) {
-                odometry.add(0, simulatedOdometry.positions(initial));
-            }
-
-            initialized = true;
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-
-        m_solver = solver;
-        m_estimatedPose = estimatedPose;
-        m_field = field;
         m_loopCount = 1;
-        m_landmarks = landmarks;
-        // simulated measurements
-        m_simulatedCamera = simulatedCamera;
-        m_simulatedGyro = simulatedGyro;
-        m_simulatedRobot = simulatedRobot;
-        m_simulatedOdometry = simulatedOdometry;
-        // factors
-        m_vision = vision;
-        m_gyro = gyro;
-        m_betweenGyro = betweenGyro;
-        m_odometry = odometry;
-        // m_prior = prior;
+
         SmartDashboard.putData("Field", m_field);
-        m_initialized = initialized;
+    }
+
+    /** Constructor without exception */
+    public static Sim make() {
+        try {
+            return new Sim();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void run() {
-        if (!m_initialized)
-            return;
         try {
-            SmartDashboard.putNumber("i", m_loopCount);
-
-            // Nanosecond timer to see how long the solver takes.
-            long t0_ns = System.nanoTime();
-
-            // Current simulation time in microseconds.
-            long t1_us = 20000 * m_loopCount;
-
-            // Compute ground truth and plot it.
-            Pose2d groundTruthPose = m_simulatedRobot.pose(t1_us);
-            m_field.getObject("gt").setPose(groundTruthPose);
-
-            // System.out.println("==> Initial value is the previous estimate.");
-            Key x1 = Key.X(t1_us);
-            m_solver.addVariable(x1, t1_us, m_estimatedPose);
-
-            // System.out.println("==> Add odometry factors.");
-            if (USE_ODO) {
-                applyOdometry(t1_us, groundTruthPose);
-            }
-
-            // System.out.println("==> Add gyro factors.");
-            if (USE_GYRO) {
-                if (NEW_GYRO) {
-                    applyBetweenGyro(t1_us, groundTruthPose);
-                } else {
-                    applyGyro(t1_us, groundTruthPose);
-                }
-            }
-
-            // System.out.println("==> Add camera factors.");
-            if (USE_VISION) {
-                applyCamera(t1_us, groundTruthPose);
-            }
-            // System.out.println("==> Run the solver.");
-            m_solver.update();
-
-            // System.out.println("==> Log a little about the iteration.");
-            logET(t0_ns);
-
-            // System.out.println("==> Retrieve the estimated pose.");
-            m_estimatedPose = m_solver.mean_pose2(x1);
-
-            // System.out.println("==> Show the estimate, and errors.");
-            plotEstimatedPose(groundTruthPose);
-            // System.out.println("==> Show samples on the field.");
-            plotSamples(t1_us);
-
-            // System.out.println("==> Show the estimated bias.");
-
-            if (USE_GYRO) {
-                if (NEW_GYRO) {
-                    double b = m_solver.mean_double(Key.B(t1_us));
-                    SmartDashboard.putNumber("bias", b);
-                }
-            }
-
-            Vector poseSigma = m_solver.sigma_pose2(x1);
-            SmartDashboard.putNumber("pose sigma x (m)", poseSigma.at(0));
-            SmartDashboard.putNumber("pose sigma y (m)", poseSigma.at(1));
-            SmartDashboard.putNumber("pose sigma (rad)", poseSigma.at(2));
-
-            if (USE_GYRO) {
-                if (NEW_GYRO) {
-                    Vector biasSigma = m_solver.sigma_pose2(Key.B(t1_us));
-                    SmartDashboard.putNumber("bias sigma (rad)", biasSigma.at(0));
-                }
-            }
-            ++m_loopCount;
+            run0();
         } catch (Throwable e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+    }
+
+    public void run0() throws Throwable {
+
+        if (DEBUG)
+            System.out.printf("==> Loop count %d\n", m_loopCount);
+        SmartDashboard.putNumber("i", m_loopCount);
+
+        // Nanosecond timer to see how long the solver takes.
+        long t0_ns = System.nanoTime();
+
+        // Current simulation time in microseconds.
+        long t1_us = 20000 * m_loopCount;
+
+        // Compute ground truth and plot it.
+        m_groundTruthPose = m_simulatedRobot.pose(t1_us);
+        m_field.getObject("gt").setPose(m_groundTruthPose);
+
+        if (DEBUG)
+            System.out.println("==> Initial value is the previous estimate.");
+        Key x1 = Key.X(t1_us);
+        m_solver.addVariable(x1, t1_us, m_estimatedPose);
+
+        if (DEBUG)
+            System.out.println("==> Add odometry factors.");
+
+        applyOdometry(t1_us, m_groundTruthPose);
+
+        if (DEBUG)
+            System.out.println("==> Add gyro factors.");
+
+        applyBetweenGyro(t1_us, m_groundTruthPose);
+
+        if (DEBUG)
+            System.out.println("==> Add camera factors.");
+
+        applyCamera(t1_us, m_groundTruthPose);
+
+        if (DEBUG)
+            System.out.println("==> Run the solver.");
+        m_solver.update();
+
+        if (DEBUG)
+            System.out.println("==> Print the graph.");
+        NonlinearFactorGraph factors = m_solver.getFactors();
+        if (DEBUG)
+            factors.print("factors");
+
+        if (DEBUG)
+            System.out.println("==> Print the values.");
+        Values values = m_solver.result();
+        if (DEBUG)
+            values.print("values");
+
+        if (DEBUG)
+            System.out.println("==> Print factors and errors.");
+        if (DEBUG)
+            factors.printErrors(values, "factors and errors");
+
+        if (DEBUG)
+            System.out.println("==> Log a little about the iteration.");
+        logET(t0_ns);
+
+        if (DEBUG)
+            System.out.println("==> Retrieve the estimated pose.");
+        m_estimatedPose = m_solver.mean_pose2(x1);
+        if (DEBUG)
+            System.out.printf("==> Estimated pose %s", m_estimatedPose.toString());
+
+        if (DEBUG)
+            System.out.println("==> Show the estimate, and errors.");
+        plotEstimatedPose(m_groundTruthPose);
+        if (DEBUG)
+            System.out.println("==> Show samples on the field.");
+        plotSamples(t1_us);
+
+        if (DEBUG)
+            System.out.println("==> Show the estimated bias.");
+
+        double b = m_solver.mean_double(Key.B(t1_us));
+        if (DEBUG)
+            System.out.printf("==> Estimated bias is %f\n", b);
+        SmartDashboard.putNumber("bias", b);
+
+        Vector poseSigma = m_solver.sigma_pose2(x1);
+        double x = poseSigma.at(0);
+        double y = poseSigma.at(1);
+        double s = poseSigma.at(2);
+        if (DEBUG)
+            System.out.printf("==> Pose sigma %f %f %f\n", x, y, s);
+        SmartDashboard.putNumber("pose sigma x (m)", x);
+        SmartDashboard.putNumber("pose sigma y (m)", y);
+        SmartDashboard.putNumber("pose sigma (rad)", s);
+
+        if (DEBUG)
+            System.out.println("==> Get the marginals");
+        Marginals m = m_solver.marginal_covariance();
+        if (DEBUG)
+            System.out.println("print the marginals");
+        if (DEBUG)
+            m.print("marginals");
+
+        if (DEBUG)
+            System.out.println("==> Find the bias sigma 2");
+        // this is the step that fails,
+        // so maybe just don't do that?
+        Matrix s1 = m.marginalCovariance(Key.B(t1_us));
+        if (DEBUG)
+            System.out.println("==> Find the bias sigma 3");
+        Vector biasSigma = s1.diagonal_cwiseSqrt();
+        if (DEBUG)
+            System.out.println("==> Find the bias sigma 4");
+        double bs = biasSigma.at(0);
+        if (DEBUG)
+            System.out.printf("==> Bias sigma is %f\n", bs);
+        SmartDashboard.putNumber("bias sigma (rad)", bs);
+
+        ++m_loopCount;
+
     }
 
     /** Plot the estimated pose and the error from ground truth. */
@@ -291,25 +304,27 @@ public class Sim {
         o.setPoses(samples);
     }
 
-    private void applyGyro(long t1_us, Pose2d gtPose2d) throws Throwable {
-        double measurement = m_simulatedGyro.yaw(t1_us, gtPose2d);
-        m_gyro.add(t1_us, measurement);
-    }
+    // private void applyGyro(long t1_us, Pose2d gtPose2d) throws Throwable {
+    // double measurement = m_simulatedGyro.yaw(t1_us, gtPose2d);
+    // m_gyro.add(t1_us, measurement);
+    // }
 
-    private void applyBetweenGyro(long t1_us, Pose2d gtPose2d) throws Throwable {
+    void applyBetweenGyro(long t1_us, Pose2d gtPose2d) throws Throwable {
         double measurement = m_simulatedGyro.yaw(t1_us, gtPose2d);
         Key b = Key.B(t1_us);
         m_solver.addVariable(b, t1_us, 0);
+        // try a very loose prior? this does not help.
+        // m_prior.add(b, 0, Diagonal.Sigmas(new Vector1(1)));
         m_betweenGyro.add(t1_us, measurement);
     }
 
-    private void applyOdometry(long t1_us, Pose2d gtPose2d) throws Throwable {
+    void applyOdometry(long t1_us, Pose2d gtPose2d) throws Throwable {
         SwerveModulePositions positions = m_simulatedOdometry.positions(gtPose2d);
         m_odometry.add(t1_us, positions);
     }
 
     /** Retrieve simulated camera measurements and apply them to the graph. */
-    private void applyCamera(long t1_us, Pose2d gtPose2d) throws Throwable {
+    void applyCamera(long t1_us, Pose2d gtPose2d) throws Throwable {
         List<Point2> measurements = m_simulatedCamera.pixels(gtPose2d);
         if (m_landmarks.size() != measurements.size())
             return;

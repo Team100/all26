@@ -35,23 +35,23 @@ class RealCamera(Camera):
     """
 
     def __init__(self, identity: Identity) -> None:
-        print("\n*** Camera: RealCamera", flush=True)
+        print("*** Camera: RealCamera")
         Picamera2.set_logging(Picamera2.INFO)  # type: ignore
         # debug logs with every frame (!)
         # Picamera2.set_logging(Picamera2.DEBUG)  # type: ignore
 
-        print("\n*** GLOBAL CAMERA INFO")
+        print("*** GLOBAL CAMERA INFO")
         pprint(Picamera2.global_camera_info())  # type: ignore
 
         self._cam: Picamera2 = Picamera2()  # type: ignore
 
-        print("\n*** SENSOR MODES AVAILABLE")
+        print("*** SENSOR MODES AVAILABLE")
         pprint(self._cam.sensor_modes)  # type:ignore
 
-        print("\n*** CAMERA CONTROLS")
+        print("*** CAMERA CONTROLS")
         pprint(self._cam.camera_controls)  # type:ignore
 
-        print("\n*** RAW MODES")
+        print("*** RAW MODES")
         pprint(self._cam._raw_modes)  # type:ignore
 
         self._mtx: Intrinsic = Intrinsic(identity)
@@ -61,18 +61,20 @@ class RealCamera(Camera):
         self._size: Size = Size.from_model(model)
 
         config: Config = ConfigFactory.get(identity, self._size)
+        print("*** CONFIG")
+        pprint(config)
         self._camera_config: dict[str, Any] = self._get_config(  # type: ignore
             config, identity, self._cam  # type: ignore
         )
         self._decoder: Decoder = config.decoder()
         self._timestamp: CaptureTimestamp = CaptureTimestamp(config)
 
-        print("\n*** REQUESTED CONFIG")
+        print("*** REQUESTED CONFIG")
         pprint(self._camera_config)
 
         # optimal alignment makes the ISP a little faster
         self._cam.align_configuration(self._camera_config, optimal=True)  # type:ignore
-        print("\n*** ALIGNED CONFIG")
+        print("*** ALIGNED CONFIG")
         pprint(self._camera_config)
 
         self._cam.configure(self._camera_config)  # type:ignore
@@ -83,7 +85,7 @@ class RealCamera(Camera):
         # or AeEnable doesn't do anything!
         self._cam.set_controls(config.controls())  # type:ignore
         self._frame_time = Timer.time_ns()
-        print("\n*** Camera setup complete", flush=True)
+        print("*** Camera setup complete")
 
     @override
     def capture_request(self) -> Request:
@@ -97,7 +99,7 @@ class RealCamera(Camera):
     @override
     def stop(self) -> None:
         self._cam.stop()  # type: ignore
-        print("\n*** Camera stop")
+        print("*** Camera stop")
 
     @override
     def get_size(self) -> Size:
@@ -125,7 +127,7 @@ class RealCamera(Camera):
         UVC cameras, so it's gone.  There's just one "main"
         stream."""
         controls = conf.controls()
-        print("\n*** REQUESTED CONTROLS:")
+        print("*** REQUESTED CONTROLS:")
         pprint(controls)
         return cam.create_still_configuration(  # type:ignore
             buffer_count=conf.buffer_count(),
@@ -139,8 +141,10 @@ class RealCamera(Camera):
 
     def _check_config(self, config: Config):
         """Verify the requested config matches the camera config."""
+        print("*** CONFIG CHECK")
+        pprint(self._camera_config)
+        pprint(self._cam.camera_config)  # type:ignore
         if not config.ok(self._camera_config, self._cam.camera_config):  # type:ignore
-            print("\n*** CONFIG CHECK FAIL")
-            pprint(self._camera_config)
-            pprint(self._cam.camera_config)  # type:ignore
             raise ValueError("Config check fail")
+        else:
+            print("CONFIG CHECK GOOD")

@@ -10,6 +10,7 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -35,11 +36,12 @@ public class OpenLoopSubsystem extends SubsystemBase {
         LoggerFactory log = parent.type(this);
         if (RobotBase.isReal()) {
             CanId canId = new CanId(1);
+            CanBusId busId = new CanBusId(0);
             CurrentLimit limit = new CurrentLimit(90, 60);
             PIDConstants pid = PIDConstants.makeVelocityPID(0.05);
             Friction friction = new Friction(0.100, 0.100, 0.0, 0.1);
             m_motor = new Falcon500Motor(
-                    log, currentLog, canId,
+                    log, currentLog, canId, busId,
                     NeutralMode100.COAST, MotorPhase.FORWARD,
                     limit, friction, pid);
         } else {
@@ -48,7 +50,7 @@ public class OpenLoopSubsystem extends SubsystemBase {
         }
     }
 
-    /////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
     //
     // ACTIONS
     //
@@ -62,7 +64,7 @@ public class OpenLoopSubsystem extends SubsystemBase {
         m_motor.setVelocity(velocity, 0);
     }
 
-    /////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
     //
     // COMMANDS
     //

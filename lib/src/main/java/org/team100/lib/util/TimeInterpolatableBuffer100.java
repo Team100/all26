@@ -1,7 +1,9 @@
 package org.team100.lib.util;
 
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -26,7 +28,7 @@ public class TimeInterpolatableBuffer100<T> {
     /** Length of the buffer in seconds */
     private final double m_historyS;
     /** Key is timestamp in seconds */
-    private final NavigableMap<Double, T> m_pastSnapshots = new ConcurrentSkipListMap<>();
+    private final NavigableMap<Double, T> m_pastSnapshots;
 
     /**
      * We allow concurrent operations on the map, with one exception: when we want
@@ -35,20 +37,38 @@ public class TimeInterpolatableBuffer100<T> {
      * that takes the "write" (exclusive) lock, and the write operations take the
      * "read" (non-exclusive) lock.
      */
-    private final ReadWriteLock m_lock = new ReentrantReadWriteLock();
+    private final ReadWriteLock m_lock;
 
     public TimeInterpolatableBuffer100(
             Interpolator<T> interpolator,
             double historyS,
             double timeS,
             T initialValue) {
+        m_pastSnapshots = new ConcurrentSkipListMap<>();
+        m_lock = new ReentrantReadWriteLock();
         m_interpolator = interpolator;
         m_historyS = historyS;
         m_pastSnapshots.put(timeS, initialValue);
     }
 
+    /** For the read-only copy. */
+    public TimeInterpolatableBuffer100(
+            Set<Map.Entry<Double, T>> entries,
+            Interpolator<T> interpolator,
+            double historyS) {
+        m_pastSnapshots = new ConcurrentSkipListMap<>();
+        for (Map.Entry<Double, T> e : entries) {
+            m_pastSnapshots.put(e.getKey(), e.getValue());
+        }
+        m_lock = new ReentrantReadWriteLock();
+        m_interpolator = interpolator;
+        m_historyS = historyS;
+    }
+
     /**
      * Remove stale entries and add the new one.
+     * 
+     * TODO: I think this locking stuff can be deleted since we don't have threads
      */
     public void put(double timeS, T value) {
         if (DEBUG) {
@@ -91,8 +111,15 @@ public class TimeInterpolatableBuffer100<T> {
         }
     }
 
+    /** Get the entry for t, if it exists, otherwise null. */
+    public T getExact(double t) {
+        return m_pastSnapshots.get(t);
+    }
+
     /**
-     * Sample the buffer at the given time.
+     * Sample the buffer at the given time. May return an entry exactly, if the
+     * timestamp matches a known timestamp exactly. Otherwise returns an
+     * interpolated value.
      */
     public T get(double timeSeconds) {
         // Special case for when the requested time is the same as a sample
@@ -142,6 +169,7 @@ public class TimeInterpolatableBuffer100<T> {
                 bottomBound.getValue(), topBound.getValue(), timeFraction);
     }
 
+    /** Items after the given timestamp, optionally inclusive */
     public SortedMap<Double, T> tailMap(double t, boolean inclusive) {
         return m_pastSnapshots.tailMap(t, inclusive);
     }
@@ -153,26 +181,36 @@ public class TimeInterpolatableBuffer100<T> {
         return timestampS < oldestAcceptableS;
     }
 
+    /** Return entry for key strictly smaller than t. */
     public Entry<Double, T> lowerEntry(double t) {
         return m_pastSnapshots.lowerEntry(t);
     }
 
-    public Entry<Double, T> ceilingEntry(double arg0) {
-        return m_pastSnapshots.ceilingEntry(arg0);
+    /** Return entry for key strictly greater than t */
+    public Entry<Double, T> ceilingEntry(double t) {
+        return m_pastSnapshots.ceilingEntry(t);
     }
 
     public int size() {
         return m_pastSnapshots.size();
     }
 
-    /** Timestamp of the most-recent snapshot. */
+    /** Key of the most-recent snapshot. */
     public double lastKey() {
         return m_pastSnapshots.lastKey();
     }
 
+    public Set<Map.Entry<Double, T>> entrySet() {
+        return m_pastSnapshots.entrySet();
+    }
+
+    public Map<Double, T> all() {
+        return m_pastSnapshots;
+    }
+
     /** Print the entire buffer */
     public void dump() {
-        for (var x : m_pastSnapshots.entrySet()) {
+        for (var x : entrySet()) {
             System.out.printf("%s: %s\n", x.getKey(), x.getValue());
         }
     }

@@ -18,6 +18,7 @@ import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -48,12 +49,12 @@ public class Climber extends SubsystemBase {
             Friction friction = new Friction(0, 0, 0, 0);
             PIDConstants pid = new PIDConstants(1, 0, 0, 0, 0, 0);
             m1 = new KrakenX60Motor(
-                    log1, currentLog, new CanId(6),
+                    log1, currentLog, new CanId(6), new CanBusId(0),
                     NeutralMode100.BRAKE, MotorPhase.FORWARD,
                     limit,
                     friction, pid);
             m2 = new KrakenX60Motor(
-                    log2, currentLog, new CanId(7),
+                    log2, currentLog, new CanId(7), new CanBusId(0),
                     NeutralMode100.BRAKE, MotorPhase.FORWARD,
                     limit,
                     friction, pid);

@@ -15,13 +15,13 @@ import gtsam.noiseModel.Diagonal;
  * Use PlanarProjectionFactor to model camera measurements.
  */
 public class Vision {
-    private final Solver estimate;
+    private final Solver solver;
     private final Pose3 camera_offset;
     private final Cal3DS2 calib;
     private final shared_ptr<Diagonal> noise;
 
     public Vision(Solver e, CameraConfig conf) throws Throwable {
-        estimate = e;
+        solver = e;
         camera_offset = conf.camera_offset;
         calib = conf.calib;
         // pixel noise is small. mistakes in calibration will result
@@ -34,7 +34,7 @@ public class Vision {
      */
     public void add(long t1_us, Point3 landmark, Point2 measurement)
             throws Throwable {
-        estimate.add(PlanarProjectionFactor1.newPlanarProjectionFactor1(
+        solver.add(PlanarProjectionFactor1.newPlanarProjectionFactor1(
                 Key.X(t1_us),
                 landmark,
                 measurement,

@@ -7,6 +7,7 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.subsystems.swerve.module.WCPSwerveModule100.DriveRatio;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
 
@@ -23,6 +24,7 @@ public class SwerveModulesPractice extends SwerveModuleCollection {
                 WCPSwerveModule100.getFalconDriveFalconSteer(
                         log.name("Front Left"), currentLog, driveLimit, steerLimit,
                         new CanId(12), // drive
+                        new CanBusId(0),
                         DriveRatio.FAST,
                         new CanId(32), // steer
                         new RoboRioChannel(6),
@@ -31,6 +33,7 @@ public class SwerveModulesPractice extends SwerveModuleCollection {
                 WCPSwerveModule100.getFalconDriveFalconSteer(
                         log.name("Front Right"), currentLog, driveLimit, steerLimit,
                         new CanId(11), // drive
+                        new CanBusId(0),
                         DriveRatio.FAST,
                         new CanId(30), // steer
                         new RoboRioChannel(8),
@@ -39,6 +42,7 @@ public class SwerveModulesPractice extends SwerveModuleCollection {
                 WCPSwerveModule100.getFalconDriveFalconSteer(
                         log.name("Rear Left"), currentLog, driveLimit, steerLimit,
                         new CanId(21), // drive
+                        new CanBusId(0),
                         DriveRatio.FAST,
                         new CanId(31), // steer
                         new RoboRioChannel(7),
@@ -47,6 +51,7 @@ public class SwerveModulesPractice extends SwerveModuleCollection {
                 WCPSwerveModule100.getFalconDriveFalconSteer(
                         log.name("Rear Right"), currentLog, driveLimit, steerLimit,
                         new CanId(22), // drive
+                        new CanBusId(0),
                         DriveRatio.FAST,
                         new CanId(33), // steer
                         new RoboRioChannel(9),

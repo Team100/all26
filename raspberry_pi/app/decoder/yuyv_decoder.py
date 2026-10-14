@@ -13,6 +13,7 @@ class YuyvDecoder(Decoder):
     """Adapts buffers encoded as YUYV."""
 
     def __init__(self, size: Size):
+        print("*** Decoder: YuyvDecoder")
         self._size = size
 
     @override

@@ -13,6 +13,7 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.CommandScheduler;
@@ -27,7 +28,7 @@ public class Robot extends TimedRobot {
     private final KrakenX60Motor left;
     // private final KrakenX60Motor right;
 
-    private static final LoggerFactory rootLogger = Logging.instance().rootLogger;
+    private static final LoggerFactory rootLogger = Logging.root();
     private static final TotalCurrentLog currentLog = new TotalCurrentLog(rootLogger);
 
     public Robot() {
@@ -50,7 +51,7 @@ public class Robot extends TimedRobot {
         // new CurrentLimit(1, 1),
         // new Friction(0, 0, 0, 0),
         // PIDConstants.makeVelocityPID(1), 0, 0);
-        left = new KrakenX60Motor(rootLogger, currentLog, new CanId(6), NeutralMode100.BRAKE, MotorPhase.FORWARD,
+        left = new KrakenX60Motor(rootLogger, currentLog, new CanId(6), new CanBusId(0), NeutralMode100.BRAKE, MotorPhase.FORWARD,
                 new CurrentLimit(1, 1), new Friction(0, 0, 0, 0), PIDConstants.zero());
     //     right = new KrakenX60Motor(rootLogger, currentLog, new CanId(7), NeutralMode100.BRAKE, MotorPhase.FORWARD,
     //             new CurrentLimit(1, 1), new Friction(0, 0, 0, 0), PIDConstants.zero());

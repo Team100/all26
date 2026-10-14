@@ -26,7 +26,7 @@ class InterpreterFactory:
         network: Network,
         timestamps: Timestamps,
     ) -> Interpreter:
-        print("\n*** InterpreterFactory selecting an interpreter", flush=True)
+        print("*** InterpreterFactory for identity:", identity)
         if USE_NULL:
             # For testing.
             return Viewfinder(display1, display2, network)
@@ -61,7 +61,7 @@ class InterpreterFactory:
                     AprilTags(identity, cam, network),
                     None,
                 )
-            case Identity.GAME_PIECE | Identity.COLOR_DETECT_1:
+            case Identity.GAME_PIECE:
                 return DualInterpreter(
                     cam,
                     display1,
@@ -102,6 +102,26 @@ class InterpreterFactory:
                     timestamps,
                     AprilTags(identity, cam, network),
                     Blobs(cam, network, object_lower, object_higher),
+                )
+            case Identity.CAMERA_2A:
+                return DualInterpreter(
+                    cam,
+                    display1,
+                    display2,
+                    network,
+                    timestamps,
+                    AprilTags(identity, cam, network),
+                    None,
+                )
+            case Identity.COLOR_DETECT_1:
+                return DualInterpreter(
+                    cam,
+                    display1,
+                    display2,
+                    network,
+                    timestamps,
+                    AprilTags(identity, cam, network),
+                    None,
                 )
             case _:
                 return DualInterpreter(

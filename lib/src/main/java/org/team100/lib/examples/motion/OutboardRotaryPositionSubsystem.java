@@ -20,6 +20,7 @@ import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -66,6 +67,7 @@ public class OutboardRotaryPositionSubsystem extends SubsystemBase {
                     log,
                     currentLog,
                     new CanId(0),
+                    new CanBusId(0),
                     NeutralMode100.BRAKE,
                     MotorPhase.FORWARD,
                     new CurrentLimit(10, 10), // Stator current limit, amps

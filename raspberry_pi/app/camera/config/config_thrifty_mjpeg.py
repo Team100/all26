@@ -9,10 +9,14 @@ from app.decoder.mjpeg_decoder import MjpegDecoder
 
 
 class ConfigThriftyMjpeg(Config):
-    """The Thrifty Cam camera, using the MJPEG encoding."""
+    """The Thrifty Cam camera, using the MJPEG encoding.
+    
+    The MJPEG encoding seems better for all uses than the
+    YUYV encoding, because YUYV moves much more data.
+    """
 
     def __init__(self, size: Size) -> None:
-        print("\n*** Config: ConfigThriftyMjpeg")
+        print("*** Config: ConfigThriftyMjpeg")
         self._size = size
 
     @override

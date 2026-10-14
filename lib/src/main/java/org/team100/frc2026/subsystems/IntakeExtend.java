@@ -1,5 +1,7 @@
 package org.team100.frc2026.subsystems;
 
+import java.util.List;
+
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
@@ -11,27 +13,32 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX44Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
+import org.team100.lib.music.Music;
+import org.team100.lib.music.Player;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.LinearPositionServo;
 import org.team100.lib.servo.OutboardLinearPositionServo;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
+import org.wpilib.command2.Commands;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
 import org.wpilib.math.util.MathUtil;
 
 /** Intake must be retracted at startup. */
-public class IntakeExtend extends SubsystemBase {
-    private static final boolean ENABLE = false;
-    private static final CanId CAN_ID = new CanId(19);
-    private static final CanId CAN_ID2 = new CanId(17);
+public class IntakeExtend extends SubsystemBase implements Music {
+    private static final boolean ENABLE = true;
+    private static final CanId CAN_ID = new CanId(9);
+    private static final CanId CAN_ID2 = new CanId(10);
+    private static final CanBusId busId = new CanBusId(1);
     private static final double gearRatio = 50.0 / 18.0;
     private static final double gearDiameter = 0.025;
     private static final double RETRACTED_POSITION = 0;
     // seems fine, 3/12/26
-    private static final double EXTENDED_POSITION = 2.140017;
+    private static final double EXTENDED_POSITION = 0.4; // tune this from glass
 
     private final LinearPositionServo m_servo;
     private final LinearPositionServo m_Servo2;
@@ -39,13 +46,13 @@ public class IntakeExtend extends SubsystemBase {
     @SuppressWarnings("unused")
     public IntakeExtend(LoggerFactory parent, TotalCurrentLog currentLog) {
         LoggerFactory log = parent.type(this);
-        LoggerFactory log1 = log.name("Extend1");
-        LoggerFactory log2 = log.name("Extend2");
+        LoggerFactory log1 = log.name("Extend Left");
+        LoggerFactory log2 = log.name("Extend Right");
 
         // Mass is zero for now because gravity coordinate doesn't match
         // the mechanism.
         PDynamics dynamics = new PDynamics(0);
-        TrapezoidProfileR1 profile = new TrapezoidProfileR1(4, 8, 0.1);
+        TrapezoidProfileR1 profile = new TrapezoidProfileR1(4, 30, 2);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.1, 0.05);
         final Motor motor;
         final Motor motor2;
@@ -55,13 +62,13 @@ public class IntakeExtend extends SubsystemBase {
             // tuned 3/12/26
             PIDConstants pid = PIDConstants.makePositionPID(1);
             motor = new KrakenX44Motor(
-                    log1, currentLog, CAN_ID,
-                    NeutralMode100.COAST, MotorPhase.REVERSE,
+                    log1, currentLog, CAN_ID, busId,
+                    NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(20, 40),
                     friction, pid);
             motor2 = new KrakenX44Motor(
-                    log2, currentLog, CAN_ID2,
-                    NeutralMode100.COAST, MotorPhase.FORWARD,
+                    log2, currentLog, CAN_ID2, busId,
+                    NeutralMode100.COAST, MotorPhase.REVERSE,
                     new CurrentLimit(20, 40),
                     friction, pid);
         } else {
@@ -103,6 +110,32 @@ public class IntakeExtend extends SubsystemBase {
                 () -> actuateWithProfile(EXTENDED_POSITION))
                 .finallyDo(this::stopServo)
                 .withName("Intake Extend GoToExtendedPositionEndlessly");
+    }
+
+    public Command AgitationPosition() {
+        return runOnce(this::reset)
+                .andThen(
+                        Commands.repeatingSequence(
+                                run(() -> actuateWithVelocity(2)).withTimeout(0.5),
+                                run(() -> actuateWithVelocity(-2)).withTimeout(0.5)))
+                .finallyDo(this::stopServo)
+                .withName("Agitiate");
+    }
+
+    public Command MoveBackward() {
+        return startRun(
+                this::reset,
+                () -> actuateWithVelocity(-2))
+                .finallyDo(this::stopServo)
+                .withName("Agitiate");
+    }
+
+    public Command MoveForward() {
+        return startRun(
+                this::reset,
+                () -> actuateWithVelocity(2))
+                .finallyDo(this::stopServo)
+                .withName("Agitiate");
     }
 
     /** Servo is at goal. False immediately after reset. */
@@ -154,7 +187,18 @@ public class IntakeExtend extends SubsystemBase {
                 .withName("set position");
     }
 
-    ////////////////////////////////////////
+    @Override
+    public Command play(double freq) {
+        return run(() -> {
+            m_servo.play(freq);
+            m_Servo2.play(freq);
+        });
+    }
+
+    @Override
+    public List<Player> players() {
+        return List.of(m_servo, m_Servo2);
+    }
 
     private void stopServo() {
         m_servo.stop();
@@ -169,6 +213,11 @@ public class IntakeExtend extends SubsystemBase {
     private void actuateWithProfile(double value) {
         m_servo.setPositionProfiled(value);
         m_Servo2.setPositionProfiled(value);
+    }
+
+    private void actuateWithVelocity(double value) {
+        m_servo.setVelocity(value);
+        m_Servo2.setVelocity(value);
     }
 
     public boolean atExtendedPosition() {

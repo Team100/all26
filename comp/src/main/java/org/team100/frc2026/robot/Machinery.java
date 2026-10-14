@@ -2,20 +2,24 @@ package org.team100.frc2026.robot;
 
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 import org.team100.frc2026.field.FieldConstants2026;
+import org.team100.frc2026.subsystems.Conveyor;
+import org.team100.frc2026.subsystems.Feeder;
+import org.team100.frc2026.subsystems.Conveyor;
 import org.team100.frc2026.subsystems.Intake;
 import org.team100.frc2026.subsystems.IntakeExtend;
 import org.team100.frc2026.subsystems.Shooter;
 import org.team100.frc2026.targeting.Targeter;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.indicator.Beeper;
-import org.team100.lib.localization.AddOdometryNoise;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.AprilTagVisualizer;
 import org.team100.lib.localization.FusedEstimator;
 import org.team100.lib.localization.GroundTruth;
+import org.team100.lib.localization.NoEstimate;
+import org.team100.lib.localization.StateEstimator;
+import org.team100.lib.localization.StateEstimatorProxy;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.sensor.gyro.Gyro;
@@ -31,6 +35,7 @@ import org.team100.lib.targeting.Targets;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.visualization.RobotPoseVisualization;
+import org.team100.lib.visualization.SwerveHistoryVisualization;
 import org.team100.lib.visualization.TrajectoryVisualization;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.Commands;
@@ -45,11 +50,10 @@ import org.wpilib.math.geometry.Twist2d;
  * This should contain all the hardware of the robot: all the subsystems etc
  * that the Binder and Auton classes may want to use.
  */
-public class Machinery {
-    private final RobotPoseVisualization m_robotViz;
-    private final AprilTagVisualizer m_tagViz;
+public class Machinery implements AutoCloseable {
     private final SwerveModuleCollection m_modules;
     private final GroundTruth m_groundTruth;
+    private final StateEstimator m_proxyEstimator;
 
     public final TrajectoryVisualization m_trajectoryViz;
     public final SwerveKinodynamics m_swerveKinodynamics;
@@ -63,6 +67,9 @@ public class Machinery {
     public final Shooter m_shooter;
     public final Intake m_intake;
     public final IntakeExtend m_intakeExtend;
+    public final Feeder m_feeder;
+    public final Conveyor m_conveyor;
+
 
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
@@ -86,23 +93,25 @@ public class Machinery {
                 driveLog,
                 m_swerveKinodynamics,
                 m_modules);
-        UnaryOperator<Twist2d> odometryNoise = RobotBase.isReal() ? UnaryOperator.identity() : new AddOdometryNoise();
-        FusedEstimator estimate = new FusedEstimator(
+        FusedEstimator fusedEstimate = new FusedEstimator(
                 driveLog,
                 fieldLogger,
                 m_swerveKinodynamics,
-                odometryNoise,
+                RobotBase.isSimulation(),
                 layout,
                 gyro,
                 swerveLocal);
+        m_proxyEstimator = new StateEstimatorProxy(
+                fusedEstimate, new NoEstimate());
         m_drive = new SwerveDriveSubsystem(
                 driveLog,
-                estimate,
+                m_proxyEstimator,
                 swerveLocal);
-        m_tagViz = new AprilTagVisualizer(
+        new AprilTagVisualizer(
                 driveLog, fieldLogger, m_drive::getState, layout, MatchState::getAlliance);
-        m_robotViz = new RobotPoseVisualization(
-                fieldLogger, () -> m_drive.getState().pose(), "robot");
+        new RobotPoseVisualization(
+                fieldLogger, () -> m_drive.getState(), "robot");
+        new SwerveHistoryVisualization(fieldLogger, m_drive);
 
         //////////////////////////////////////////////////////////
         //
@@ -124,7 +133,7 @@ public class Machinery {
 
         // Targeting from 2025: the cameras are looking for game pieces.
 
-        m_targets = new Targets(driveLog, fieldLogger, 0.2, (t) -> m_drive.getState(t));
+        m_targets = new Targets(driveLog, fieldLogger, 0.2, m_drive::getState);
 
         ///////////////////////////////////////////////////////////
         //
@@ -133,6 +142,9 @@ public class Machinery {
         m_intake = new Intake(logger, currentLog);
         m_intakeExtend = new IntakeExtend(logger, currentLog);
         m_shooter = new Shooter(logger, currentLog, m_cachedSolution::speed);
+        m_feeder= new Feeder(logger, currentLog, m_shooter);
+        m_conveyor = new Conveyor(logger, currentLog);
+
 
         ///////////////////////////////////////////////////////////
         //
@@ -167,7 +179,7 @@ public class Machinery {
      * Purge the history and assert the given pose as the current estimate.
      */
     public void resetPose(NoisyPose2d p) {
-        m_drive.resetPose(p.pose(), p.noise());
+        m_drive.reset(p.pose(), p.noise());
         // also reset the ground truth, otherwise the cameras retain the old pose
         m_groundTruth.resetPose(p.pose());
     }
@@ -210,16 +222,17 @@ public class Machinery {
     /** Generally for simulation and visualization */
     public void periodic() {
         m_groundTruth.periodic();
-        m_robotViz.run();
-        m_tagViz.update();
+        // m_tagViz.update();
     }
 
     /**
      * Keeps the tests from conflicting via the use of simulated HAL ports.
      */
+    @Override
     public void close() {
         m_modules.close();
         m_solver.close();
+        m_proxyEstimator.close();
     }
 
 }

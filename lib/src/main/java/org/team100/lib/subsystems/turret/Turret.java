@@ -46,6 +46,7 @@ import org.team100.lib.targeting.FiringParameters;
 import org.team100.lib.targeting.Solution;
 import org.team100.lib.targeting.Solver;
 import org.team100.lib.targeting.TimeOfFlightRecursion;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -96,6 +97,7 @@ public class Turret extends SubsystemBase {
             CanId azimuthCanId,
             CanId elevationCanId,
             CanId drumCanId,
+            CanBusId busId,
             DoubleFunction<Optional<FiringParameters>> rangeToParams,
             Supplier<StateSE2> state,
             Supplier<Optional<Translation2d>> target) {
@@ -106,9 +108,9 @@ public class Turret extends SubsystemBase {
         m_log_field_target = field.doubleArrayLogger(Level.COMP, "target");
         m_state = state;
         m_target = target;
-        m_pivot = pivot(log.name("azimuth"), currentLog, azimuthCanId);
-        m_elevation = elevation(log.name("elevation"), currentLog, elevationCanId);
-        m_drum = drum(log.name("drum"), currentLog, drumCanId);
+        m_pivot = pivot(log.name("azimuth"), currentLog, azimuthCanId, busId);
+        m_elevation = elevation(log.name("elevation"), currentLog, elevationCanId, busId);
+        m_drum = drum(log.name("drum"), currentLog, drumCanId, busId);
         // Laser solver always works
         // m_solver = new LaserSolver(rangeToParams);
         m_solver = new TimeOfFlightRecursion(rangeToParams, 0.01);
@@ -120,7 +122,8 @@ public class Turret extends SubsystemBase {
     private static AngularPositionServo pivot(
             LoggerFactory log,
             TotalCurrentLog currentLog,
-            CanId canId) {
+            CanId canId,
+            CanBusId busId) {
         // TODO: the pivot inertia is definitely not a disc.
         RDynamics dyn = new Disc(0.005);
         ProfileR1 profile = new TrapezoidProfileR1(5, 10, 0.05);
@@ -129,7 +132,7 @@ public class Turret extends SubsystemBase {
         Motor motor;
         if (RobotBase.isReal()) {
             motor = new KrakenX44Motor(
-                    log, currentLog, canId,
+                    log, currentLog, canId, busId,
                     NeutralMode100.BRAKE, MotorPhase.FORWARD,
                     new CurrentLimit(1, 1),
                     new Friction(0, 0, 0, 0),
@@ -151,7 +154,8 @@ public class Turret extends SubsystemBase {
     private static AngularPositionServo elevation(
             LoggerFactory log,
             TotalCurrentLog currentLog,
-            CanId canId) {
+            CanId canId,
+            CanBusId busId) {
         RDynamicsAnalytic dyn = new RDynamicsAnalytic(0, 0, 0, 0);
         ProfileR1 profile = new TrapezoidProfileR1(5, 10, 0.05);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
@@ -159,7 +163,7 @@ public class Turret extends SubsystemBase {
         Motor motor;
         if (RobotBase.isReal()) {
             motor = new KrakenX44Motor(
-                    log, currentLog, canId,
+                    log, currentLog, canId, busId,
                     NeutralMode100.BRAKE, MotorPhase.FORWARD,
                     new CurrentLimit(1, 1),
                     new Friction(0, 0, 0, 0),
@@ -181,7 +185,8 @@ public class Turret extends SubsystemBase {
     private static LinearVelocityServo drum(
             LoggerFactory log,
             TotalCurrentLog currentLog,
-            CanId canId) {
+            CanId canId,
+            CanBusId busId) {
         PDynamics dyn = PDynamics.drum(0.0001, DRUM_DIAMETER / 2);
         VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(10);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
@@ -189,7 +194,7 @@ public class Turret extends SubsystemBase {
         Motor motor;
         if (RobotBase.isReal()) {
             motor = new KrakenX44Motor(
-                    log, currentLog, canId,
+                    log, currentLog, canId, busId,
                     NeutralMode100.BRAKE, MotorPhase.FORWARD,
                     new CurrentLimit(1, 1),
                     new Friction(0, 0, 0, 0),

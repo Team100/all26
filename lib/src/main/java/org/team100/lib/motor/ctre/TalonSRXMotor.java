@@ -6,6 +6,7 @@ import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 
 // import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -31,6 +32,7 @@ public class TalonSRXMotor implements Motor {
             LoggerFactory parent,
             TotalCurrentLog currentLog,
             CanId canID,
+            CanBusId busId,
             MotorPhase phase,
             NeutralMode100 neutral,
             double supplyLimit,

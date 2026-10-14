@@ -12,7 +12,7 @@ class LinuxDisplay(Display):
     See localhost: 1181, 1182, etc"""
 
     def __init__(self, name: str, width: int, height: int) -> None:
-        print("\n*** Display: LinuxDisplay", flush=True)
+        print("*** Display: LinuxDisplay")
         self._width: int = width
         self._height: int = height
         self._cvsource = CameraServer.putVideo(name, width, height)

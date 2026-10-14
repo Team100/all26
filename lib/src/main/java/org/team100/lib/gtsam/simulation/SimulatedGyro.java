@@ -14,8 +14,8 @@ public class SimulatedGyro {
 
     public SimulatedGyro(boolean drift) {
         if (drift) {
-            m_drift = 0;
-            // m_drift = 1e-3;
+            // m_drift = 0;
+            m_drift = 1e-3;
         } else {
             m_drift = 0;
         }
@@ -26,11 +26,11 @@ public class SimulatedGyro {
         // return noisy(t_us, gtPose2d);
     }
 
-    private double gt(double t_us, Pose2d gtPose2d) {
+    public double gt(double t_us, Pose2d gtPose2d) {
         return gtPose2d.getRotation().getRadians();
     }
 
-    private double noisy(double t_us, Pose2d gtPose2d) {
+    public double noisy(double t_us, Pose2d gtPose2d) {
         Rotation2d gtRot = gtPose2d.getRotation();
         Rotation2d driftRot = new Rotation2d(m_drift * t_us * 1e-6);
         Rotation2d noiseRot = new Rotation2d(RANDOM.nextGaussian(0, NOISE));

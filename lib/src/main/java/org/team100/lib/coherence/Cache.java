@@ -29,7 +29,7 @@ import com.ctre.phoenix6.StatusCode;
 public class Cache {
     private static final boolean DEBUG = false;
     /** How long it takes to update the cache. */
-    private static final DoubleLogger m_log_update = Logging.instance().rootLogger.name("Cache")
+    private static final DoubleLogger m_log_update = Logging.root().name("Cache")
             .doubleLogger(Level.COMP, "update time (s)");
     private static final List<ObjectCache<?>> caches = new ArrayList<>();
     private static final List<DoubleCache> doubles = new ArrayList<>();
@@ -117,13 +117,16 @@ public class Cache {
         if (DEBUG) {
             System.out.printf("Cache update %d\n", caches.size());
         }
-        if (!signals.isEmpty()) {
-            StatusCode result = BaseStatusSignal.refreshAll(signals.toArray(new BaseStatusSignal[0]));
-            if (result != StatusCode.OK) {
-          //      System.out.printf("WARNING: RefreshAll failed: %s: %s\n",
-           //             result.toString(), result.getDescription());
-            }
+        for (BaseStatusSignal signal : signals) {
+            BaseStatusSignal.refreshAll(signal);
         }
+        // if (!signals.isEmpty()) {
+        //     StatusCode result = BaseStatusSignal.refreshAll(signals.toArray(new BaseStatusSignal[0]));
+        //     if (result != StatusCode.OK) {
+        //   //      System.out.printf("WARNING: RefreshAll failed: %s: %s\n",
+        //    //             result.toString(), result.getDescription());
+        //     }
+        // }
         for (ObjectCache<?> r : caches) {
             if (DEBUG) {
                 System.out.printf("update %s\n", r.get().getClass().getSimpleName());

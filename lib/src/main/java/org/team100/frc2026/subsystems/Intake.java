@@ -1,5 +1,7 @@
 package org.team100.frc2026.subsystems;
 
+import java.util.List;
+
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
@@ -11,20 +13,24 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX44Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
+import org.team100.lib.music.Music;
+import org.team100.lib.music.Player;
 import org.team100.lib.profile.r1.AccelLimitedVelocityProfileR1;
 import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
 
-public class Intake extends SubsystemBase {
-    private static final boolean ENABLE = false;
-    private static final CanId CAN_ID_1 = new CanId(20);
-    private static final CanId CAN_ID_2 = new CanId(16);
+public class Intake extends SubsystemBase implements Music {
+    private static final boolean ENABLE = true;
+    private static final CanId CAN_ID_1 = new CanId(11);
+    private static final CanId CAN_ID_2 = new CanId(12);
+    private static final CanBusId busId = new CanBusId(1);
     private static final double TOLERANCE_M_S = 1;
     private static final double GEAR_RATIO = 30.0 / 12.0;
     private static final double WHEEL_DIAMETER_M = 0.05;
@@ -39,7 +45,7 @@ public class Intake extends SubsystemBase {
         LoggerFactory log1 = log.name("motor1");
         LoggerFactory log2 = log.name("motor2");
         // equivalent linear dynamics for the actual drum inertia.
-        PDynamics dynamics = PDynamics.drum(0.001, 0.025);
+        PDynamics dynamics = PDynamics.drum(0.000, 0.025);
         // VelocityProfileR1 profile = new CurrentLimitedExponentialVelocityProfileR1(
         // 10, 10, 20, 30);
         VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(
@@ -52,13 +58,13 @@ public class Intake extends SubsystemBase {
             // friction test 3/12/26
             Friction friction = new Friction(0.5, 0.5, 0.0, 0.5);
             // tuned 3/12/26
-            PIDConstants pid = PIDConstants.makeVelocityPID(0.08);
+            PIDConstants pid = PIDConstants.makeVelocityPID(0.005);
             m1 = new KrakenX44Motor(
-                    log1, currentLog, CAN_ID_1, NeutralMode100.COAST, MotorPhase.FORWARD,
-                    new CurrentLimit(50, 30), friction, pid);
+                    log1, currentLog, CAN_ID_1, busId, NeutralMode100.COAST, MotorPhase.FORWARD,
+                    new CurrentLimit(50, 60), friction, pid);
             m2 = new KrakenX44Motor(
-                    log2, currentLog, CAN_ID_2, NeutralMode100.COAST, MotorPhase.REVERSE,
-                    new CurrentLimit(50, 30), friction, pid);
+                    log2, currentLog, CAN_ID_2, busId, NeutralMode100.COAST, MotorPhase.REVERSE,
+                    new CurrentLimit(50, 60), friction, pid);
         } else {
             m1 = new SimulatedMotor(log1, 600);
             m2 = new SimulatedMotor(log2, 600);
@@ -76,8 +82,8 @@ public class Intake extends SubsystemBase {
     public Command intake() {
         return startRun(
                 this::reset,
-                () -> setVelocityProfiled(NORMAL_SPEED))
-                .finallyDo(this::stopMotor)
+                () -> setVelocityProfiled(5))
+                // .finallyDo(this::stopMotor)
                 .withName("Intake Normal Speed");
     }
 
@@ -114,7 +120,18 @@ public class Intake extends SubsystemBase {
                 .withName("set velocity");
     }
 
-    ///////////////////////////////
+    @Override
+    public Command play(double freq) {
+        return run(() -> {
+            m_servo1.play(freq);
+            m_servo2.play(freq);
+        });
+    }
+
+    @Override
+    public List<Player> players() {
+        return List.of(m_servo1, m_servo2);
+    }
 
     private void reset() {
         m_servo1.reset();

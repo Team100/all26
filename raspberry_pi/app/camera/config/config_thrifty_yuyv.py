@@ -6,11 +6,18 @@ from app.camera.config.config_protocol import Config
 from app.camera.size import Size
 from app.decoder.yuyv_decoder import YuyvDecoder
 
+
 class ConfigThriftyYuyv(Config):
-    """The Thrifty Cam camera, using the YUYV encoding."""
+    """The Thrifty Cam camera, using the YUYV encoding.
+
+    The YUYV encoding seems worse for all uses than the
+    MJPEG encoding, because YUYV moves much more data,
+    and because YUYV is an interleaved encoding, so it
+    is not particuarly fast to decode.
+    """
 
     def __init__(self, size: Size) -> None:
-        print("\n*** Config: ConfigThriftyYuyv")
+        print("*** Config: ConfigThriftyYuyv")
         self._size = size
 
     @override

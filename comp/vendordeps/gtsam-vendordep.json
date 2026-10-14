@@ -23,7 +23,8 @@
             "skipInvalidPlatforms": true,
             "isJar": false,
             "validPlatforms": [
-                "linuxx86-64"
+                "linuxx86-64",
+                "linuxsystemcore"
             ]
         }
     ],

@@ -20,6 +20,7 @@ import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.music.Music;
 import org.team100.lib.music.Player;
 import org.team100.lib.sensor.distance.LaserCan100;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -55,21 +56,20 @@ public class Manipulator extends SubsystemBase implements Music {
         if (RobotBase.isReal()) {
             // Set specific parameters for the competition robot
             KrakenX60Motor leftMotor = new KrakenX60Motor(
-                    leftMotorLog, currentLog, new CanId(19),
-                    NeutralMode100.COAST,
-                    MotorPhase.FORWARD,
+                    leftMotorLog, currentLog, new CanId(19), new CanBusId(0),
+                    NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(40, 40),
                     new Friction(0.900, 0.900, 0.0, 0.5),
                     PIDConstants.zero());
             KrakenX60Motor rightMotor = new KrakenX60Motor(
-                    rightMotorLog, currentLog, new CanId(20), NeutralMode100.COAST,
-                    MotorPhase.REVERSE,
+                    rightMotorLog, currentLog, new CanId(20), new CanBusId(0),
+                    NeutralMode100.COAST, MotorPhase.REVERSE,
                     new CurrentLimit(40, 40),
                     new Friction(0.900, 0.900, 0.0, 0.5),
                     PIDConstants.zero());
             KrakenX60Motor algaeMotor = new KrakenX60Motor(
-                    algaeMotorLog, currentLog, new CanId(21), NeutralMode100.COAST,
-                    MotorPhase.FORWARD,
+                    algaeMotorLog, currentLog, new CanId(21), new CanBusId(0),
+                    NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(120, 120),
                     new Friction(0.900, 0.900, 0.0, 0.5),
                     PIDConstants.zero());
@@ -201,7 +201,7 @@ public class Manipulator extends SubsystemBase implements Music {
         return m_algaeMotor.getStatorCurrent() > 50;
     }
 
-    /////////////////////////////////////////////
+    //////////////////////////////////////////
     //
     // COMMANDS
 
@@ -243,7 +243,7 @@ public class Manipulator extends SubsystemBase implements Music {
         return run(this::ejectCenterBack);
     }
 
-    //////////////////////////////////////////////
+    ///////////////////////////////////////////
 
     /**
      * Set high current limits.
@@ -278,7 +278,7 @@ public class Manipulator extends SubsystemBase implements Music {
     private void log() {
         coralLogger.log(this::hasCoral);
     }
-    ///////////////////////////////////////////
+    ////////////////////////////////////////
 
     // private static boolean coralIsClose(LaserCan100 sensor) {
     // Measurement m = sensor.getMeasurement();

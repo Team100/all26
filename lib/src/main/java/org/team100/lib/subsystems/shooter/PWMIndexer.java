@@ -4,10 +4,9 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.util.RoboRioChannel;
-
-import org.wpilib.hardware.discrete.PWM;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
+import org.wpilib.hardware.discrete.PWM;
 
 /**
  * Indexer using continuous-rotation servo or PWM controller.
@@ -21,6 +20,7 @@ public class PWMIndexer extends SubsystemBase implements ShooterIndexer {
         LoggerFactory logger = parent.type(this);
         m_log_dutyCycle = logger.doubleLogger(Level.TRACE, "duty cycle");
         m_pwm = new PWM(channel.channel);
+        throw new UnsupportedOperationException("not yet working for 2027");
     }
 
     @Override
@@ -38,8 +38,8 @@ public class PWMIndexer extends SubsystemBase implements ShooterIndexer {
     public Command stop() {
         return run(this::zero);
     }
-    
-    //////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////////////
 
     private void full() {
         set(1);

@@ -1,5 +1,7 @@
 package org.team100.lib.subsystems.r1;
 
+import java.util.List;
+
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
@@ -12,15 +14,18 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX44Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
+import org.team100.lib.music.Music;
+import org.team100.lib.music.Player;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
 
-public class SingleAngularSubsystem extends SubsystemBase {
+public class SingleAngularSubsystem extends SubsystemBase implements Music {
     private final LoggerFactory m_log1;
     private final AngularPositionServo m_servo1;
 
@@ -28,6 +33,7 @@ public class SingleAngularSubsystem extends SubsystemBase {
             LoggerFactory parent,
             TotalCurrentLog currentLog,
             CanId canId1,
+            CanBusId busId,
             NeutralMode100 neutral,
             MotorPhase phase1,
             CurrentLimit limit,
@@ -45,7 +51,7 @@ public class SingleAngularSubsystem extends SubsystemBase {
         final Motor m1;
         if (enable && RobotBase.isReal()) {
             m1 = new KrakenX44Motor(
-                    m_log1, currentLog, canId1, neutral, phase1, limit, friction, pid);
+                    m_log1, currentLog, canId1, busId, neutral, phase1, limit, friction, pid);
         } else {
             m1 = new SimulatedMotor(m_log1, 600);
         }
@@ -77,6 +83,18 @@ public class SingleAngularSubsystem extends SubsystemBase {
 
     public Command zero() {
         return runOnce(this::setZero);
+    }
+
+        @Override
+    public Command play(double freq) {
+        return run(() -> {
+            m_servo1.play(freq);
+        });
+    }
+
+    @Override
+    public List<Player> players() {
+        return List.of(m_servo1);
     }
 
     public boolean atGoal() {

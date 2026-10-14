@@ -151,7 +151,6 @@ public abstract class CANSparkMotor implements Motor {
         m_revLimitSwitch = m_motor.getReverseLimitSwitch();
 
         // CACHES
-        // TODO: fix for 2027
         m_position = Cache.ofDouble(() -> m_encoder.getPosition().get() * 2 * Math.PI);
         m_velocity = Cache.ofDouble(() -> m_encoder.getVelocity().get() * 2 * Math.PI / 60);
         m_acceleration = Cache.ofDouble(() -> m_smoothDerivative.calculate(m_velocity.getAsDouble()));

@@ -18,6 +18,7 @@ import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -53,8 +54,8 @@ public class FiveBarBare extends SubsystemBase {
         m_kinematics = new FiveBarKinematics(logger);
 
         if (RobotBase.isReal()) {
-            m_motorP1 = makeMotor(loggerP1, currentLog, new CanId(1));
-            m_motorP5 = makeMotor(loggerP5, currentLog, new CanId(5));
+            m_motorP1 = makeMotor(loggerP1, currentLog, new CanId(1), new CanBusId(0));
+            m_motorP5 = makeMotor(loggerP5, currentLog, new CanId(5), new CanBusId(0));
         } else {
             m_motorP1 = new SimulatedMotor(loggerP1, 600);
             m_motorP5 = new SimulatedMotor(loggerP5, 600);
@@ -71,15 +72,18 @@ public class FiveBarBare extends SubsystemBase {
         return m_kinematics.forward(m_scenario, q1, q5);
     }
 
-    ///////////////////
+    /////////////////
 
-    private Motor makeMotor(LoggerFactory logger, TotalCurrentLog currentLog, CanId canId) {
+    private Motor makeMotor(LoggerFactory logger,
+            TotalCurrentLog currentLog,
+            CanId canId, CanBusId busId) {
         Friction friction = new Friction(0, 0, 0, 0);
         PIDConstants pid = PIDConstants.makePositionPID(2.0);
         return new Falcon500Motor(
                 logger,
                 currentLog,
                 canId,
+                busId,
                 NeutralMode100.COAST,
                 MotorPhase.REVERSE,
                 new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
@@ -92,7 +96,7 @@ public class FiveBarBare extends SubsystemBase {
         m_motorP5.setDutyCycle(p5);
     }
 
-    ///////////////////
+    /////////////////
     //
     // Commands
 

@@ -17,6 +17,7 @@ import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.LinearPositionServo;
 import org.team100.lib.servo.OutboardLinearPositionServo;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
@@ -42,7 +43,7 @@ public class ClimberExtension extends SubsystemBase {
             Friction friction = new Friction(0, 0, 0, 0);
             PIDConstants pid = new PIDConstants(1, 0, 0, 0, 0, 0);
             motor = new NeoVortexCANSparkMotor(
-                    log, currentLog, new CanId(2),
+                    log, currentLog, new CanId(2), new CanBusId(0),
                     NeutralMode100.BRAKE, MotorPhase.FORWARD,
                     limit, friction, pid, 0, 0);
         } else {

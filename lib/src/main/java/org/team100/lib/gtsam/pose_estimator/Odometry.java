@@ -1,47 +1,51 @@
 package org.team100.lib.gtsam.pose_estimator;
 
-import java.util.List;
+import java.util.Optional;
+
+import org.team100.lib.subsystems.swerve.kinodynamics.SwerveDriveKinematics100;
+import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDeltas;
+import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
+import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Twist2d;
 
 import gtsam.BetweenFactorPose2;
 import gtsam.Key;
 import gtsam.Pose2;
 import gtsam.Vector3;
 import gtsam.shared_ptr;
-import gtsam.noiseModel.Base;
 import gtsam.noiseModel.Diagonal;
-import org.team100.lib.gtsam.kinodynamics.DriveUtil;
-import org.team100.lib.gtsam.kinodynamics.Kinematics;
-import org.team100.lib.gtsam.kinodynamics.Kinematics.PointR2;
 
 /**
  * Odometry uses "betweeen" factors to represent the difference between poses
  * derived from the drive module positions.
  */
 public class Odometry {
-    private final Solver estimate;
-    private final Kinematics.SwerveDriveKinematics100 kinematics;
+    private static final boolean DEBUG = false;
+    private final Solver solver;
+    private final SwerveDriveKinematics100 kinematics;
 
-    private Kinematics.SwerveModulePositions positions;
+    private SwerveModulePositions positions;
     private Long t0_us = null;
 
     public Odometry(Solver e) throws Throwable {
-        estimate = e;
-        kinematics = new Kinematics.SwerveDriveKinematics100(
-                List.of(
-                        new PointR2(0.5, 0.5),
-                        new PointR2(0.5, -0.5),
-                        new PointR2(-0.5, 0.5),
-                        new PointR2(-0.5, -0.5)));
+        solver = e;
+        kinematics = new SwerveDriveKinematics100(
+                new Translation2d(0.5, 0.5),
+                new Translation2d(0.5, -0.5),
+                new Translation2d(-0.5, 0.5),
+                new Translation2d(-0.5, -0.5));
 
-        positions = new Kinematics.SwerveModulePositions(
-                new Kinematics.SwerveModulePosition100(
-                        0, new Kinematics.RotR2(1, 0)),
-                new Kinematics.SwerveModulePosition100(
-                        0, new Kinematics.RotR2(1, 0)),
-                new Kinematics.SwerveModulePosition100(
-                        0, new Kinematics.RotR2(1, 0)),
-                new Kinematics.SwerveModulePosition100(
-                        0, new Kinematics.RotR2(1, 0)));
+        positions = new SwerveModulePositions(
+                new SwerveModulePosition100(
+                        0, Optional.of(new Rotation2d(1, 0))),
+                new SwerveModulePosition100(
+                        0, Optional.of(new Rotation2d(1, 0))),
+                new SwerveModulePosition100(
+                        0, Optional.of(new Rotation2d(1, 0))),
+                new SwerveModulePosition100(
+                        0, Optional.of(new Rotation2d(1, 0))));
     }
 
     /**
@@ -54,7 +58,9 @@ public class Odometry {
      */
     public void add(
             long t1_us,
-            Kinematics.SwerveModulePositions newPositions) throws Throwable {
+            SwerveModulePositions newPositions) throws Throwable {
+        if (DEBUG)
+            System.out.printf("add odometry factor %d\n", t1_us);
 
         if (t0_us == null) {
             this.positions = newPositions;
@@ -62,16 +68,16 @@ public class Odometry {
             return;
         }
 
-        Kinematics.SwerveModuleDeltas deltas = DriveUtil.module_position_delta(
+        SwerveModuleDeltas deltas = SwerveModuleDeltas.modulePositionDelta(
                 positions, newPositions);
 
         // Tangent-space (twist) measurement.
-        Kinematics.Twist2d twist = kinematics.to_twist_2d(deltas);
+        Twist2d twist = kinematics.forward(deltas);
         // Twist as a GTSAM vector.
         Vector3 twistVector = new Vector3(
-                twist.x(),
-                twist.y(),
-                twist.theta());
+                twist.dx,
+                twist.dy,
+                twist.dtheta);
         // Factor measurement.
         Pose2 measurement = new Pose2().expmap(twistVector);
 
@@ -79,7 +85,7 @@ public class Odometry {
         // twist:
         //
         // pose1.compose(betweenpose) = pose2.
-        estimate.add(BetweenFactorPose2.newBetweenFactorPose2(
+        solver.add(BetweenFactorPose2.newBetweenFactorPose2(
                 Key.X(t0_us), Key.X(t1_us), measurement, noise(twistVector)));
 
         positions = newPositions;

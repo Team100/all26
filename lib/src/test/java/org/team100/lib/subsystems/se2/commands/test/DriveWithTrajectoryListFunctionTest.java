@@ -6,15 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.controller.se2.ControllerFactorySE2;
 import org.team100.lib.controller.se2.ControllerSE2;
-import org.team100.lib.experiments.Experiment;
-import org.team100.lib.experiments.Experiments;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.FusedEstimator;
@@ -69,10 +66,8 @@ class DriveWithTrajectoryListFunctionTest implements Timeless {
 
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
 
-        UnaryOperator<Twist2d> odometryNoise = UnaryOperator.identity();
-
         StateEstimator estimate = new FusedEstimator(
-                logger, fieldLogger, swerveKinodynamics, odometryNoise, layout, gyro, swerveLocal);
+                logger, fieldLogger, swerveKinodynamics, false, layout, gyro, swerveLocal);
 
         SwerveDriveSubsystem drive = new SwerveDriveSubsystem(
                 logger,
@@ -86,7 +81,6 @@ class DriveWithTrajectoryListFunctionTest implements Timeless {
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         // this initial step is required since the timebase is different?
         stepTime();
-        Experiments.INSTANCE.override(Experiment.UseSwerveLimiter, true);
         ControllerSE2 control = ControllerFactorySE2.test(logger);
         DriveWithTrajectoryListFunction c = new DriveWithTrajectoryListFunction(
                 logger,

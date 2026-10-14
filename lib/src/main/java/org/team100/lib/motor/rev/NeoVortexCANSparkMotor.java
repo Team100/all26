@@ -7,6 +7,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 
 import com.revrobotics.spark.SparkFlex;
@@ -22,6 +23,7 @@ public class NeoVortexCANSparkMotor extends CANSparkMotor {
             LoggerFactory parent,
             TotalCurrentLog currentLog,
             CanId canId,
+            CanBusId busId,
             NeutralMode100 neutral,
             MotorPhase motorPhase,
             CurrentLimit limit,
@@ -29,9 +31,8 @@ public class NeoVortexCANSparkMotor extends CANSparkMotor {
             PIDConstants pid,
             int averageDepth,
             int measurementPeriod) {
-        // TODO: fix for 2027
         super(parent, currentLog,
-                new SparkFlex(0, canId.id, MotorType.kBrushless),
+                new SparkFlex(busId.id, canId.id, MotorType.kBrushless),
                 neutral, motorPhase, limit, friction, pid,
                 0, averageDepth, measurementPeriod, true);
     }

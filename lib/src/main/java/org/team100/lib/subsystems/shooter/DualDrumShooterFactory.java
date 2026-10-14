@@ -17,6 +17,7 @@ import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.framework.RobotBase;
 
@@ -37,6 +38,7 @@ public class DualDrumShooterFactory {
     private final CurrentLimit limit;
     private final CanId canL;
     private final CanId canR;
+    private final CanBusId busId;
     private final double gearRatio;
     private final double wheelDiaM;
     private final boolean profiled;
@@ -50,6 +52,7 @@ public class DualDrumShooterFactory {
             CurrentLimit limit,
             CanId canL,
             CanId canR,
+            CanBusId busId,
             double gearRatio,
             double wheelDiaM,
             boolean profiled,
@@ -61,6 +64,7 @@ public class DualDrumShooterFactory {
         this.limit = limit;
         this.canL = canL;
         this.canR = canR;
+        this.busId = busId;
         this.gearRatio = gearRatio;
         this.wheelDiaM = wheelDiaM;
         this.profiled = profiled;
@@ -81,11 +85,11 @@ public class DualDrumShooterFactory {
         PIDConstants pid = PIDConstants.makeVelocityPID(0.005);
 
         Motor left = getMotor(
-                limit, logL, currentLog, 600, canL,
+                limit, logL, currentLog, 600, canL, busId,
                 MotorPhase.FORWARD, friction, pid);
 
         Motor right = getMotor(
-                limit, logR, currentLog, 600, canR,
+                limit, logR, currentLog, 600, canR, busId,
                 MotorPhase.REVERSE, friction, pid);
 
         return new DualDrumDutyCycleShooter(
@@ -104,11 +108,11 @@ public class DualDrumShooterFactory {
         double freeSpeedRad_S = maxSpeedM_S * gearRatio / (0.5 * wheelDiaM);
 
         LinearMechanism mechL = getMech(
-                currentLog, limit, canL, gearRatio, wheelDiaM, logL, friction, pid,
+                currentLog, limit, canL, busId, gearRatio, wheelDiaM, logL, friction, pid,
                 freeSpeedRad_S, MotorPhase.REVERSE);
 
         LinearMechanism mechR = getMech(
-                currentLog, limit, canR, gearRatio, wheelDiaM, logR, friction, pid,
+                currentLog, limit, canR, busId, gearRatio, wheelDiaM, logR, friction, pid,
                 freeSpeedRad_S, MotorPhase.FORWARD);
 
         VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(10);
@@ -127,6 +131,7 @@ public class DualDrumShooterFactory {
             TotalCurrentLog currentLog,
             CurrentLimit limit,
             CanId canId,
+            CanBusId busId,
             double gearRatio,
             double wheelDiaM,
             LoggerFactory log,
@@ -135,7 +140,7 @@ public class DualDrumShooterFactory {
             double freeSpeedRad_S,
             MotorPhase motorPhase) {
         Motor motor = getMotor(
-                limit, log, currentLog, freeSpeedRad_S, canId,
+                limit, log, currentLog, freeSpeedRad_S, canId, busId,
                 motorPhase, friction, pid);
         LinearMechanism mech = new LinearMechanism(
                 log, motor, motor.encoder(), gearRatio, wheelDiaM,
@@ -149,6 +154,7 @@ public class DualDrumShooterFactory {
             TotalCurrentLog currentLog,
             double freeSpeedRad_S,
             CanId canId,
+            CanBusId busId,
             MotorPhase phase,
             Friction friction,
             PIDConstants pid) {
@@ -157,7 +163,7 @@ public class DualDrumShooterFactory {
         int measurementPeriod = 4;
         if (RobotBase.isReal()) {
             return new MinionSparkMotor(
-                    log, currentLog, canId, NeutralMode100.BRAKE, phase,
+                    log, currentLog, canId, busId, NeutralMode100.BRAKE, phase,
                     limit, friction, pid, averageDepth, measurementPeriod);
         } else {
             return new SimulatedMotor(log, freeSpeedRad_S);

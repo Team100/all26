@@ -1,7 +1,5 @@
 package org.team100.frc2025.robot;
 
-import java.util.function.UnaryOperator;
-
 import org.team100.frc2025.CalgamesArm.CalgamesMech;
 import org.team100.frc2025.CalgamesArm.CalgamesViz;
 import org.team100.frc2025.Climber.Climber2025;
@@ -11,13 +9,14 @@ import org.team100.frc2025.grip.Manipulator;
 import org.team100.frc2025.indicator.LEDIndicator;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.indicator.Beeper;
-import org.team100.lib.localization.AddOdometryNoise;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.AprilTagVisualizer;
 import org.team100.lib.localization.FusedEstimator;
 import org.team100.lib.localization.GroundTruth;
+import org.team100.lib.localization.NoEstimate;
+import org.team100.lib.localization.StateEstimator;
+import org.team100.lib.localization.StateEstimatorProxy;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.sensor.gyro.Gyro;
 import org.team100.lib.sensor.gyro.GyroFactory;
@@ -27,13 +26,13 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
 import org.team100.lib.targeting.Targets;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.visualization.RobotPoseVisualization;
 import org.team100.lib.visualization.TrajectoryVisualization;
 import org.wpilib.driverstation.MatchState;
 import org.wpilib.framework.RobotBase;
 import org.wpilib.math.geometry.Twist2d;
-
 
 /**
  * This should contain all the hardware of the robot: all the subsystems etc
@@ -50,13 +49,9 @@ public class Machinery2025 {
     // acceleration) to keep from browning out.
     private static final double DRIVE_SUPPLY_LIMIT = 90;
     private static final double DRIVE_STATOR_LIMIT = 110;
-    private static final LoggerFactory logger = Logging.instance().rootLogger;
-    private static final LoggerFactory fieldLogger = Logging.instance().fieldLogger;
+    private final LoggerFactory logger;
+    private final LoggerFactory fieldLogger;
 
-    private final RobotPoseVisualization m_robotViz;
-    private final AprilTagVisualizer m_tagViz;
-    private final Runnable m_combinedViz;
-    private final Runnable m_climberViz;
     private final SwerveModuleCollection m_modules;
     private final LEDIndicator m_leds;
     private final GroundTruth m_groundTruth;
@@ -71,10 +66,12 @@ public class Machinery2025 {
     final SwerveDriveSubsystem m_drive;
     final Beeper m_beeper;
 
-    public Machinery2025(TotalCurrentLog currentLog) {
+    public Machinery2025(LoggerFactory root, LoggerFactory field, TotalCurrentLog currentLog) {
+        logger = root;
+        fieldLogger = field;
         LoggerFactory driveLog = logger.name("Drive");
 
-        ////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////
         //
         // DRIVETRAIN
         //
@@ -93,48 +90,49 @@ public class Machinery2025 {
                 driveLog,
                 m_swerveKinodynamics,
                 m_modules);
-        UnaryOperator<Twist2d> odometryNoise = RobotBase.isReal() ? UnaryOperator.identity() : new AddOdometryNoise();
-        FusedEstimator estimate = new FusedEstimator(
+        FusedEstimator fusedEstimate = new FusedEstimator(
                 driveLog,
                 fieldLogger,
                 m_swerveKinodynamics,
-                odometryNoise,
+                RobotBase.isSimulation(),
                 layout,
                 gyro,
                 swerveLocal);
+        StateEstimator proxyEstimator = new StateEstimatorProxy(
+                fusedEstimate, new NoEstimate());
         m_drive = new SwerveDriveSubsystem(
                 driveLog,
-                estimate,
+                proxyEstimator,
                 swerveLocal);
-        m_tagViz = new AprilTagVisualizer(
+        new AprilTagVisualizer(
                 driveLog, fieldLogger, m_drive::getState, layout, MatchState::getAlliance);
-        m_robotViz = new RobotPoseVisualization(
-                fieldLogger, () -> m_drive.getState().pose(), "robot");
+        new RobotPoseVisualization(
+                fieldLogger, () -> m_drive.getState(), "robot");
 
-        ////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////
         //
         // TARGETING
         //
-        m_targets = new Targets(driveLog, fieldLogger, 0.2, (t) -> m_drive.getState(t));
+        m_targets = new Targets(driveLog, fieldLogger, 0.2, m_drive::getState);
 
-        ////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////
         //
         // SUBSYSTEMS
         //
         m_mech = new CalgamesMech(logger, currentLog, 0.5, 0.343);
         m_manipulator = new Manipulator(logger, currentLog);
-        m_climber = new Climber2025(logger, currentLog, new CanId(13));
-        m_climberIntake = new ClimberIntake(logger, currentLog, new CanId(14));
+        m_climber = new Climber2025(logger, currentLog, new CanId(13), new CanBusId(0));
+        m_climberIntake = new ClimberIntake(logger, currentLog, new CanId(14), new CanBusId(0));
 
-        ////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
-        m_combinedViz = new CalgamesViz(m_mech);
-        m_climberViz = new ClimberVisualization(m_climber, m_climberIntake);
+        new CalgamesViz(m_mech);
+        new ClimberVisualization(m_climber, m_climberIntake);
 
-        ////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////
         //
         // LED INDICATOR
         //
@@ -151,10 +149,6 @@ public class Machinery2025 {
     public void periodic() {
         m_groundTruth.periodic();
         m_leds.periodic();
-        m_robotViz.run();
-        m_combinedViz.run();
-        m_climberViz.run();
-        m_tagViz.update();
     }
 
     public void close() {

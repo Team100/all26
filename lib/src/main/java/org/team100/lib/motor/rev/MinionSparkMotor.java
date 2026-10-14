@@ -7,6 +7,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
+import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -31,6 +32,7 @@ public class MinionSparkMotor extends CANSparkMotor {
             LoggerFactory parent,
             TotalCurrentLog currentLog,
             CanId canId,
+            CanBusId busId,
             NeutralMode100 neutral,
             MotorPhase motorPhase,
             CurrentLimit limit,
@@ -38,9 +40,8 @@ public class MinionSparkMotor extends CANSparkMotor {
             PIDConstants pid,
             int averageDepth,
             int measurementPeriod) {
-        // TODO: fix for 2027
         super(parent, currentLog,
-                new SparkMax(0, canId.id, MotorType.kBrushless),
+                new SparkMax(busId.id, canId.id, MotorType.kBrushless),
                 neutral, motorPhase, limit, friction, pid,
                 COMMUTATION_DEGREES, averageDepth, measurementPeriod,
                 false);

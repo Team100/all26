@@ -8,7 +8,7 @@ class FakeDisplay(Display):
     """A display for unit tests."""
 
     def __init__(self) -> None:
-        print("\n*** Display: FakeDisplay")
+        print("*** Display: FakeDisplay")
         self.frame_count = 0
 
     @override

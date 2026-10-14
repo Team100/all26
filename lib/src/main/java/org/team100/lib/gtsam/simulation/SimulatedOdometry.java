@@ -1,17 +1,21 @@
 package org.team100.lib.gtsam.simulation;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
-import org.wpilib.math.geometry.Pose2d;
-
 import org.team100.lib.gtsam.field.FieldMap;
+import org.team100.lib.gtsam.util.Geometry;
+import org.team100.lib.subsystems.swerve.kinodynamics.SwerveDriveKinematics100;
+import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDeltas;
+import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
+import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Twist2d;
+
 import gtsam.Pose2;
 import gtsam.Vector3;
-import org.team100.lib.gtsam.kinodynamics.Kinematics;
-import org.team100.lib.gtsam.kinodynamics.Kinematics.PointR2;
-import org.team100.lib.gtsam.kinodynamics.Kinematics.Twist2d;
-import org.team100.lib.gtsam.util.Geometry;
 
 /**
  * Computes odometry based on robot pose.
@@ -19,30 +23,29 @@ import org.team100.lib.gtsam.util.Geometry;
 public class SimulatedOdometry {
     private static Random RANDOM = new Random(42);
 
-    private final Kinematics.SwerveDriveKinematics100 kinematics;
+    private final SwerveDriveKinematics100 kinematics;
 
     /** Previous positions. */
-    private Kinematics.SwerveModulePositions positions;
+    private SwerveModulePositions positions;
     /** Previous pose */
     private Pose2 pose;
 
     public SimulatedOdometry(FieldMap fieldMap, Pose2d initial) throws Throwable {
-        kinematics = new Kinematics.SwerveDriveKinematics100(
-                List.of(
-                        new PointR2(0.5, 0.5),
-                        new PointR2(0.5, -0.5),
-                        new PointR2(-0.5, 0.5),
-                        new PointR2(-0.5, -0.5)));
+        kinematics = new SwerveDriveKinematics100(
+                new Translation2d(0.5, 0.5),
+                new Translation2d(0.5, -0.5),
+                new Translation2d(-0.5, 0.5),
+                new Translation2d(-0.5, -0.5));
         // Positions start at zero.
-        positions = new Kinematics.SwerveModulePositions(
-                new Kinematics.SwerveModulePosition100(
-                        0, new Kinematics.RotR2(1, 0)),
-                new Kinematics.SwerveModulePosition100(
-                        0, new Kinematics.RotR2(1, 0)),
-                new Kinematics.SwerveModulePosition100(
-                        0, new Kinematics.RotR2(1, 0)),
-                new Kinematics.SwerveModulePosition100(
-                        0, new Kinematics.RotR2(1, 0)));
+        positions = new SwerveModulePositions(
+                new SwerveModulePosition100(
+                        0, Optional.of(new Rotation2d(1, 0))),
+                new SwerveModulePosition100(
+                        0, Optional.of(new Rotation2d(1, 0))),
+                new SwerveModulePosition100(
+                        0, Optional.of(new Rotation2d(1, 0))),
+                new SwerveModulePosition100(
+                        0, Optional.of(new Rotation2d(1, 0))));
         pose = Geometry.toPose2(initial);
     }
 
@@ -52,7 +55,7 @@ public class SimulatedOdometry {
      * 
      * @param gtPose2 current ground-truth pose.
      */
-    public Kinematics.SwerveModulePositions positions(
+    public SwerveModulePositions positions(
             Pose2d gtPose2d) throws Throwable {
         final Pose2 newPose = Geometry.toPose2(gtPose2d);
 
@@ -62,9 +65,10 @@ public class SimulatedOdometry {
 
         Vector3 tNoise = new Vector3(
                 noise(twist.at(0)), noise(twist.at(1)), noise(twist.at(2)));
-        Twist2d twist2d = Twist2d.fromVector(twist.plus(tNoise));
+        Twist2d twist2d = Geometry.twistFromVector(twist.plus(tNoise));
         // transform the twist to update the module positions.
-        positions = kinematics.to_swerve_module_positions(positions, twist2d);
+        SwerveModuleDeltas d = kinematics.inverse(twist2d);
+        positions = SwerveModulePositions.modulePositionFromDelta(positions, d);
         return positions;
     }
 
