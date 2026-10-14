@@ -1,5 +1,7 @@
 package org.team100.frc2026.subsystems;
 
+import java.util.List;
+
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
@@ -11,6 +13,8 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX44Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
+import org.team100.lib.music.Music;
+import org.team100.lib.music.Player;
 import org.team100.lib.profile.r1.AccelLimitedVelocityProfileR1;
 import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
@@ -22,7 +26,7 @@ import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
 
-public class Intake extends SubsystemBase {
+public class Intake extends SubsystemBase implements Music {
     private static final boolean ENABLE = true;
     private static final CanId CAN_ID_1 = new CanId(11);
     private static final CanId CAN_ID_2 = new CanId(12);
@@ -57,10 +61,10 @@ public class Intake extends SubsystemBase {
             PIDConstants pid = PIDConstants.makeVelocityPID(0.005);
             m1 = new KrakenX44Motor(
                     log1, currentLog, CAN_ID_1, busId, NeutralMode100.COAST, MotorPhase.FORWARD,
-                    new CurrentLimit(50, 30), friction, pid);
+                    new CurrentLimit(50, 60), friction, pid);
             m2 = new KrakenX44Motor(
                     log2, currentLog, CAN_ID_2, busId, NeutralMode100.COAST, MotorPhase.REVERSE,
-                    new CurrentLimit(50, 30), friction, pid);
+                    new CurrentLimit(50, 60), friction, pid);
         } else {
             m1 = new SimulatedMotor(log1, 600);
             m2 = new SimulatedMotor(log2, 600);
@@ -116,7 +120,18 @@ public class Intake extends SubsystemBase {
                 .withName("set velocity");
     }
 
-    ////////////////////////////
+    @Override
+    public Command play(double freq) {
+        return run(() -> {
+            m_servo1.play(freq);
+            m_servo2.play(freq);
+        });
+    }
+
+    @Override
+    public List<Player> players() {
+        return List.of(m_servo1, m_servo2);
+    }
 
     private void reset() {
         m_servo1.reset();

@@ -40,6 +40,16 @@ class Distortion:
                 self._dist = np.array(
                     [-0.2961790762, 0.09865662084, -0.0001707410996, 0.0002482554604]
                 )
+            case Identity.CAMERA_2A:
+                # Calibrated 10/12.
+                self._dist = np.array(
+                    [-0.2961790762, 0.09865662084, -0.0001707410996, 0.0002482554604]
+                )
+            case Identity.COLOR_DETECT_1:
+                # Calibrated never.
+                self._dist = np.array(
+                    [-0.006934480214, -0.009133184923, 0.0006250697999, 0.001300785576]
+                )
             case Identity.FUNNEL:
                 self._dist = np.array(
                     [-0.03226, 0.01730, 0.00105, 0.00284]

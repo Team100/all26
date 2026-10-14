@@ -57,9 +57,8 @@ public class Robot extends TimedRobot100 {
 
         System.out.printf("Robot class: %s\n",
                 this.getClass().getName());
-        Logging logging = Logging.instance();
-        LoggerFactory log = logging.rootLogger;
-        LoggerFactory fieldLogger = logging.fieldLogger;
+        LoggerFactory log = Logging.root();
+        LoggerFactory fieldLogger = Logging.field();
         m_robotLog = new RobotLog(log);
         m_sync = new Sync(NetworkTableInstance.getDefault());
         m_machinery = new Machinery(log, fieldLogger, m_robotLog.totalCurrentLog());
@@ -68,6 +67,7 @@ public class Robot extends TimedRobot100 {
         m_autoViz = new AutonVisualization(fieldLogger);
         m_autons.onChange(m_autoViz::show);
         Prewarmer.init(m_machinery);
+        System.out.printf("Total Logger Keys: %d\n", Logging.keyCount());
     }
 
     /** Called in the main loop. */
@@ -87,6 +87,13 @@ public class Robot extends TimedRobot100 {
         if (Experiments.INSTANCE.enabled(Experiment.FlushOften)) {
             NetworkTableInstance.getDefault().flush();
         }
+    //    System.out.printf("leftX %f\n",  m_binder.m_driver.leftX());
+    //    System.out.printf("RightX %f\n",  m_binder.m_driver.rightX());
+    //    System.out.printf("RightY %f\n",  m_binder.m_driver.rightY());
+    //    System.out.printf("leftY %f\n",  m_binder.m_driver.leftY());
+    //    System.out.printf("Right Trigger %f\n",  m_binder.m_driver.RightTriggerAxis());
+    //    System.out.printf(" Left Trigger %f\n",  m_binder.m_driver.LeftTriggerAxis());
+      
     }
 
     /////////////////////////////////////////////////////////////

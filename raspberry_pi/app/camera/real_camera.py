@@ -61,6 +61,8 @@ class RealCamera(Camera):
         self._size: Size = Size.from_model(model)
 
         config: Config = ConfigFactory.get(identity, self._size)
+        print("*** CONFIG")
+        pprint(config)
         self._camera_config: dict[str, Any] = self._get_config(  # type: ignore
             config, identity, self._cam  # type: ignore
         )
@@ -139,8 +141,10 @@ class RealCamera(Camera):
 
     def _check_config(self, config: Config):
         """Verify the requested config matches the camera config."""
+        print("*** CONFIG CHECK")
+        pprint(self._camera_config)
+        pprint(self._cam.camera_config)  # type:ignore
         if not config.ok(self._camera_config, self._cam.camera_config):  # type:ignore
-            print("*** CONFIG CHECK FAIL")
-            pprint(self._camera_config)
-            pprint(self._cam.camera_config)  # type:ignore
             raise ValueError("Config check fail")
+        else:
+            print("CONFIG CHECK GOOD")

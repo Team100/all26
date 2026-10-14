@@ -35,8 +35,7 @@ public class Robot extends TimedRobot100 {
         Banner.printBanner();
         Experiments.INSTANCE.show();
         RobotController.setBrownoutVoltage(6.3); // RoboRIO 1.0 value
-        Logging log = Logging.instance();
-        LoggerFactory robotLog = log.rootLogger;
+        LoggerFactory robotLog = Logging.root();
         m_controller = new DriverXboxControl(robotLog, 0);
         m_subsystem = new BatteryTester(robotLog);
         m_viz = new LightBulbVisualizer(m_subsystem::temperature);

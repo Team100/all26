@@ -17,7 +17,6 @@ import org.team100.lib.localization.NoEstimate;
 import org.team100.lib.localization.StateEstimator;
 import org.team100.lib.localization.StateEstimatorProxy;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.sensor.gyro.Gyro;
 import org.team100.lib.sensor.gyro.GyroFactory;
@@ -50,8 +49,8 @@ public class Machinery2025 {
     // acceleration) to keep from browning out.
     private static final double DRIVE_SUPPLY_LIMIT = 90;
     private static final double DRIVE_STATOR_LIMIT = 110;
-    private static final LoggerFactory logger = Logging.instance().rootLogger;
-    private static final LoggerFactory fieldLogger = Logging.instance().fieldLogger;
+    private final LoggerFactory logger;
+    private final LoggerFactory fieldLogger;
 
     private final SwerveModuleCollection m_modules;
     private final LEDIndicator m_leds;
@@ -67,7 +66,9 @@ public class Machinery2025 {
     final SwerveDriveSubsystem m_drive;
     final Beeper m_beeper;
 
-    public Machinery2025(TotalCurrentLog currentLog) {
+    public Machinery2025(LoggerFactory root, LoggerFactory field, TotalCurrentLog currentLog) {
+        logger = root;
+        fieldLogger = field;
         LoggerFactory driveLog = logger.name("Drive");
 
         //////////////////////////////////////////////////////////

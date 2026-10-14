@@ -6,7 +6,7 @@ public class LoggingTest {
     @Test
     void test0() {
         // it should be constructable
-        Logging.instance();
+        Logging.root();
     }
 
 }

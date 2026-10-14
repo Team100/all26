@@ -5,7 +5,7 @@ import java.util.List;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.Subsystem;
 
-/** This is a subsystem so that we can require it */
+/** A subsystem that can play a note. */
 public interface Music extends Subsystem {
     /** Play sound in unison. */
     Command play(double freq);

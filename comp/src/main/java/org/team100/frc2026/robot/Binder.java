@@ -23,7 +23,7 @@ import org.wpilib.system.RobotController;
  * https://docs.google.com/document/d/15HcburjCvwOEBL8ZtQdk-7iotF5qATGK3fO7c5HyWCk
  */
 public class Binder {
-    private final DriverXboxControl m_driver;
+    public final DriverXboxControl m_driver;
 
     public Binder(LoggerFactory rootLogger, Machinery machinery) {
         LoggerFactory log = rootLogger.type(this);
@@ -68,46 +68,64 @@ public class Binder {
         /// both together: warp to the origin. FOR TESTING ONLY.
 
         onTrue(m_driver::back, machinery.zeroRotation());
-        onTrue(m_driver::start, machinery.disorient());
+        //onTrue(m_driver::start, machinery.disorient());
+       /// onTrue(m_driver::start, machinery.m_intakeExtend.());
         onTrue(() -> m_driver.start() && m_driver.back(), machinery.zeroPose());
 
         ////////////////////////////////////////////////////
         ///
         /// DEFENSE X POSITION
         ///
-        whileTrue(m_driver::povDown, machinery.m_drive.defend());
+        //whileTrue(m_driver::povDown, machinery.m_drive.defend());
 
-        whileTrue(m_driver::rightTrigger,
-
-                parallel(
-                        machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
-                        sequence(
-                                waitUntil(machinery.m_intakeExtend::atGoal),
-                                parallel(
-                                        machinery.m_intake.intake(),
-                                        machinery.m_shooter.shooterFullspeed()))));
+        // whileTrue(m_driver::rightTrigger,
+ 
+        // parallel(
+        // machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
+        // sequence(
+        // waitUntil(machinery.m_intakeExtend::atGoal),
+        // parallel(
+        // machinery.m_intake.intake(),
+        // machinery.m_conveyor.convey(),
+        // machinery.m_feeder.normal(),
+        // machinery.m_shooter.shooterFullspeed()))));
+        // whileTrue(m_driver::rightTrigger,
+        //         machinery.m_intake.intake());
 
         whileTrue(m_driver::x,
                 machinery.m_intake.intake());
         whileTrue(m_driver::a,
-                machinery.m_intakeExtend.goToExtendedPositionEndlessly());
+                machinery.m_intakeExtend.MoveForward());
         whileTrue(m_driver::b,
-                machinery.m_intakeExtend.goToRetractedPosition());
-        whileTrue(m_driver::y,
+                machinery.m_intakeExtend.MoveBackward());
+        whileTrue(m_driver::rightTrigger, machinery.m_shooter.testRun().withTimeout(1).andThen(
                 parallel(machinery.m_shooter.testRun(),
                         machinery.m_conveyor.convey(),
+                        machinery.m_feeder.proportional(),
+                        machinery.m_intakeExtend.AgitationPosition(),
+                        machinery.m_intake.intake())));
 
-                    
-                        machinery.m_feeder.normal()));
-
-        whileTrue(m_driver::rightBumper,
-                machinery.m_conveyor.convey());
+        whileTrue(m_driver::leftBumper,  machinery.m_intakeExtend.goToExtendedPositionEndlessly());
+        
+        whileTrue(m_driver::leftTrigger,  machinery.m_intake.intake());
         // whileTrue(m_driver::rightBumper, Commands.print("help me"));
+        // whileTrue(m_driver::rightBumper, Commands.print("rightBumper"));
+        // whileTrue(m_driver::rightTrigger, Commands.print("rightTrigger"));
+        // whileTrue(m_driver::a, Commands.print("a"));
+        // whileTrue(m_driver::b, Commands.print("b"));
+        // whileTrue(m_driver::x, Commands.print("x"));
+        // whileTrue(m_driver::y, Commands.print("y"));
+        // whileTrue(m_driver::start, Commands.print("start"));
+        // whileTrue(m_driver::back, Commands.print("back"));
+        //  whileTrue(m_driver::leftBumper, Commands.print("leftBumper"));
+        // whileTrue(m_driver::leftTrigger, Commands.print("leftTrigger"));
 
-        ////////////////////////////////////////////////////
+
+       
         ///
         /// AIM
         ///
+        /// 
         /// Left bumper: rotate the robot to hit the target
 
         FeedbackR1 thetaFeedback = new FullStateFeedback(
@@ -118,16 +136,16 @@ public class Binder {
                 log,
                 machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
                 thetaFeedback);
-        whileTrue(() -> m_driver.leftBumper(),
-                new DriveMovingTargetLock(
-                        log,
-                        machinery.m_swerveKinodynamics,
-                        aim,
-                        m_driver::velocity,
-                        limiter,
-                        machinery.m_cachedSolution,
-                        machinery.m_drive)
-                        .withName("Target lock"));
+        // whileTrue(() -> m_driver.leftBumper(),
+        //         new DriveMovingTargetLock(
+        //                 log,
+        //                 machinery.m_swerveKinodynamics,
+        //                 aim,
+        //                 m_driver::velocity,
+        //                 limiter,
+        //                 machinery.m_cachedSolution,
+        //                 machinery.m_drive)
+        //                 .withName("Target lock"));
     }
 
     /** Keeps tests from conflicting. */

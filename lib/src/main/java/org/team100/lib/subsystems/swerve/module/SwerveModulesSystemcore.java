@@ -28,7 +28,7 @@ public class SwerveModulesSystemcore extends SwerveModuleCollection {
                         new CanId(2), // steer
                         new CanId(1), // encoder
                         new CanBusId(3),
-                        -0.993286,
+                        0.483765,
                         EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                 WCPSwerveModule100.getKrakenDriveKrakenSteerRedux(
                         log.name("Front Right"), currentLog, driveLimit, steerLimit,
@@ -38,7 +38,7 @@ public class SwerveModulesSystemcore extends SwerveModuleCollection {
                         new CanId(4), // steer
                         new CanId(2), // encoder
                         new CanBusId(3),
-                        0.000427,
+                        0.657837,
                         EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                 WCPSwerveModule100.getKrakenDriveKrakenSteerRedux(
                         log.name("Rear Left"), currentLog, driveLimit, steerLimit,
@@ -47,8 +47,8 @@ public class SwerveModulesSystemcore extends SwerveModuleCollection {
                         DriveRatio.MEDIUM,
                         new CanId(6), // steer
                         new CanId(3), // encoder
-                        new CanBusId(1),
-                        -0.003967,
+                        new CanBusId(3),
+                        0.993896,
                         EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                 WCPSwerveModule100.getKrakenDriveKrakenSteerRedux(
                         log.name("Rear Right"), currentLog, driveLimit, steerLimit,
@@ -58,7 +58,8 @@ public class SwerveModulesSystemcore extends SwerveModuleCollection {
                         new CanId(8), // steer
                         new CanId(4), // encoder
                         new CanBusId(3),
-                        -0.001465,
+                        0.257202,
+
                         EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
         System.out.println("************** Kraken Drive, Kraken Steer, Redux Encoders **************");
 

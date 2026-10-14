@@ -37,7 +37,7 @@ public class ClimberVisualization {
     }
 
     private void run() {
-        if (Logging.instance().getLevel().admit(Level.TRACE)) {
+        if (Logging.admit(Level.TRACE)) {
             m_arm.setAngle(Math.toDegrees(m_climber.angle()));
             m_wheels.setColor(m_intake.isIn()
                     ? new Color8Bit(Color.RED)

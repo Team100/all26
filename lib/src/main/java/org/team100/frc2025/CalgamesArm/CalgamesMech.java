@@ -62,7 +62,8 @@ import org.wpilib.framework.RobotBase;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 
-public class CalgamesMech extends SubsystemBase implements Music, PositionSubsystemSE2, SubsystemPRR {
+public class CalgamesMech extends SubsystemBase
+        implements Music, PositionSubsystemSE2, SubsystemPRR {
     private static final boolean DEBUG = false;
     private boolean DISABLED = false;
 

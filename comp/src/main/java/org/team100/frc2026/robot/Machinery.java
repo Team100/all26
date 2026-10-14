@@ -50,7 +50,7 @@ import org.wpilib.math.geometry.Twist2d;
  * This should contain all the hardware of the robot: all the subsystems etc
  * that the Binder and Auton classes may want to use.
  */
-public class Machinery {
+public class Machinery implements AutoCloseable {
     private final SwerveModuleCollection m_modules;
     private final GroundTruth m_groundTruth;
     private final StateEstimator m_proxyEstimator;
@@ -142,7 +142,7 @@ public class Machinery {
         m_intake = new Intake(logger, currentLog);
         m_intakeExtend = new IntakeExtend(logger, currentLog);
         m_shooter = new Shooter(logger, currentLog, m_cachedSolution::speed);
-        m_feeder= new Feeder(logger, currentLog, null);
+        m_feeder= new Feeder(logger, currentLog, m_shooter);
         m_conveyor = new Conveyor(logger, currentLog);
 
 
@@ -228,6 +228,7 @@ public class Machinery {
     /**
      * Keeps the tests from conflicting via the use of simulated HAL ports.
      */
+    @Override
     public void close() {
         m_modules.close();
         m_solver.close();
