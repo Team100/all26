@@ -20,10 +20,9 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.se2.examples.TrajectoryExamples;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
 
 public class TrajectoryPursuitReferenceSE2Test {
     private static final double DELTA = 0.001;

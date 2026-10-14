@@ -10,9 +10,8 @@ import org.team100.lib.music.EventIterator;
 import org.team100.lib.music.Note;
 import org.team100.lib.music.Polyphony;
 import org.team100.lib.music.ShortMessageCommand;
-
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
+import org.wpilib.system.Timer;
 
 public class Play extends Command {
     private static final boolean DEBUG = false;

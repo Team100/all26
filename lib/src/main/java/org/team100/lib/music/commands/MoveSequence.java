@@ -4,9 +4,8 @@ import java.util.List;
 
 import org.team100.lib.music.MusicEvent;
 import org.team100.lib.music.Player;
-
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
+import org.wpilib.system.Timer;
 
 /** Move according to a schedule. */
 public class MoveSequence extends Command {

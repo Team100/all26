@@ -13,8 +13,7 @@ import org.team100.lib.state.StateSE2;
 import org.team100.lib.trajectory.se2.TrajectorySE2;
 import org.team100.lib.trajectory.se2.TrajectorySE2Entry;
 import org.team100.lib.trajectory.se2.TrajectorySE2Point;
-
-import edu.wpi.first.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation2d;
 
 /**
  * Use the current position to choose trajectory references.
@@ -100,7 +99,7 @@ public class TrajectoryPursuitReferenceSE2 implements ReferenceSE2 {
         return goal;
     }
 
-    /////////////////////////////////////
+    ////////////////////////////////////
 
     /** Time of closest approach */
     private double tca() {

@@ -9,7 +9,7 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 
-import edu.wpi.first.wpilibj.Filesystem;
+import org.wpilib.system.Filesystem;
 
 public class MidiUtil {
     public static Sequence sequence(String filepath) {
