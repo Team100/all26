@@ -1,5 +1,7 @@
 package org.team100.frc2026.subsystems;
 
+import java.util.List;
+
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
@@ -11,6 +13,8 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
+import org.team100.lib.music.Music;
+import org.team100.lib.music.Player;
 import org.team100.lib.profile.r1.AccelLimitedVelocityProfileR1;
 import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
@@ -22,7 +26,7 @@ import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
 
-public class Conveyor extends SubsystemBase {
+public class Conveyor extends SubsystemBase implements Music {
     private static final CanId canID1 = new CanId(19);
     private static final CanId canID2 = new CanId(20);
     private static final CanBusId busId = new CanBusId(1);
@@ -121,7 +125,18 @@ public class Conveyor extends SubsystemBase {
                 .withName("set velocity");
     }
 
-    //////////////////////////////////////
+    @Override
+    public Command play(double freq) {
+        return run(() -> {
+            m_servo1.play(freq);
+            m_servo2.play(freq);
+        });
+    }
+
+    @Override
+    public List<Player> players() {
+        return List.of(m_servo1, m_servo2);
+    }
 
     private void reset() {
         m_servo1.reset();

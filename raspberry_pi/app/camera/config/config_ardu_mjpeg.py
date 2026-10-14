@@ -44,7 +44,7 @@ class ConfigArduMjpeg(Config):
             # Must be true for outside or in bright sun.
             # "AeEnable": True,
             "AeEnable": False,
-            #
+        
             # EXPOSURE TIME (microseconds)
-            "ExposureTime": 1000,
+            "ExposureTime": 10000,
         }

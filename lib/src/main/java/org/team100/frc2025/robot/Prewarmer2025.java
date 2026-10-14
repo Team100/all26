@@ -95,7 +95,7 @@ public class Prewarmer2025 {
             System.out.println("Done!");
         } catch (InterruptedException e) {
         }
-        System.out.printf("Total Logger Keys: %d\n", Logging.instance().keyCount());
+        System.out.printf("Total Logger Keys: %d\n", Logging.keyCount());
         System.out.printf("\n*** PREWARM END ET: %f\n", endS - startS);
     }
 

@@ -1,5 +1,6 @@
 package org.team100.frc2026.subsystems;
 
+import java.util.List;
 import java.util.OptionalDouble;
 import java.util.function.Supplier;
 
@@ -15,6 +16,8 @@ import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
+import org.team100.lib.music.Music;
+import org.team100.lib.music.Player;
 import org.team100.lib.profile.r1.CurrentLimitedExponentialVelocityProfileR1;
 import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
@@ -26,7 +29,7 @@ import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
 
-public class Shooter extends SubsystemBase {
+public class Shooter extends SubsystemBase implements Music {
     private static final boolean ENABLE = true;
     private static final boolean DEBUG = false;
     private static final double TUNING_SETTING = 0;
@@ -222,7 +225,20 @@ public class Shooter extends SubsystemBase {
                 .withName("set velocity");
     }
 
-    /////////////////////////////////////////
+    @Override
+    public Command play(double freq) {
+        return run(() -> {
+            m_servo1.play(freq);
+            m_servo2.play(freq);
+            m_servo3.play(freq);
+            m_servo4.play(freq);
+        });
+    }
+
+    @Override
+    public List<Player> players() {
+        return List.of(m_servo1, m_servo2, m_servo3, m_servo4);
+    }
 
     private void reset() {
         m_servo1.reset();
