@@ -18,7 +18,6 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.trajectory.se2.TrajectorySE2;
 import org.team100.lib.trajectory.se2.TrajectorySE2Factory;
 import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
-import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 import org.wpilib.command2.Command;
 import org.wpilib.math.geometry.Pose2d;
@@ -27,12 +26,10 @@ import org.wpilib.math.geometry.Rotation2d;
 /** An example of a simple sequence */
 public class LeftSequenceExample implements AnnotatedCommand {
     private final LoggerFactory log;
-    private final ControllerSE2 controller;
-    private final Machinery machinery;
-    private final List<TimingConstraint> constraints;
     private final TrajectorySE2Factory trajectoryFactory;
     private final PathSE2Factory pathFactory;
     private final TrajectorySE2Planner planner;
+    private final Command command;
 
     public LeftSequenceExample(
             LoggerFactory parent,
@@ -40,12 +37,19 @@ public class LeftSequenceExample implements AnnotatedCommand {
             ControllerSE2 controller,
             Machinery machinery) {
         log = parent.name(name());
-        this.controller = controller;
-        this.machinery = machinery;
-        constraints = new TimingConstraintFactory(kinodynamics).auto();
-        trajectoryFactory = new TrajectorySE2Factory(constraints);
+        trajectoryFactory = new TrajectorySE2Factory(new TimingConstraintFactory(kinodynamics).auto());
         pathFactory = new PathSE2Factory();
         planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
+        DriveWithTrajectoryFunction n1 = new DriveWithTrajectoryFunction(
+                log, machinery.m_drive, controller,
+                machinery.m_trajectoryViz, this::t1);
+        DriveWithTrajectoryFunction n2 = new DriveWithTrajectoryFunction(
+                log, machinery.m_drive, controller,
+                machinery.m_trajectoryViz, this::t2);
+        command = sequence(
+                n1.until(n1::isDone),
+                waitSeconds(1),
+                n2.until(n2::isDone));
     }
 
     @Override
@@ -75,16 +79,7 @@ public class LeftSequenceExample implements AnnotatedCommand {
 
     @Override
     public Command command() {
-        DriveWithTrajectoryFunction n1 = new DriveWithTrajectoryFunction(
-                log, machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t1);
-        DriveWithTrajectoryFunction n2 = new DriveWithTrajectoryFunction(
-                log, machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t2);
-        return sequence(
-                n1.until(n1::isDone),
-                waitSeconds(1),
-                n2.until(n2::isDone));
+        return command;
     }
 
     @Override

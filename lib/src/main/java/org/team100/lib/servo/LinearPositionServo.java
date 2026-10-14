@@ -1,11 +1,13 @@
 package org.team100.lib.servo;
 
+import org.team100.lib.music.Player;
+
 /**
  * Linear position control, e.g. for elevators.
  * 
  * The "servo" layer wraps the mechanism control with a profile, if desired.
  */
-public interface LinearPositionServo {
+public interface LinearPositionServo extends Player {
     /**
      * Zeros controller errors, sets setpoint and goal to current measurement.
      * 

@@ -29,7 +29,7 @@ import com.ctre.phoenix6.StatusCode;
 public class Cache {
     private static final boolean DEBUG = false;
     /** How long it takes to update the cache. */
-    private static final DoubleLogger m_log_update = Logging.instance().rootLogger.name("Cache")
+    private static final DoubleLogger m_log_update = Logging.root().name("Cache")
             .doubleLogger(Level.COMP, "update time (s)");
     private static final List<ObjectCache<?>> caches = new ArrayList<>();
     private static final List<DoubleCache> doubles = new ArrayList<>();

@@ -15,8 +15,7 @@ public class SetupBare implements Runnable {
     private final ArmVisualization m_viz;
 
     public SetupBare(TotalCurrentLog currentLog) {
-        Logging logging = Logging.instance();
-        LoggerFactory logger = logging.rootLogger;
+        LoggerFactory logger = Logging.root();
         Gamepad controller = new Gamepad(0);
 
         m_discus = new DiscusBare(logger, currentLog);

@@ -21,7 +21,7 @@ import org.wpilib.command2.Command;
  * In 2026, the field is rotationally symmetric, so there's no need to fill out
  * the "Alliance" part of the annotated command.
  */
-public class Autons {
+public class Autons implements AutoCloseable {
     private final AutonChooser m_autonChooser;
 
     public Autons(LoggerFactory rootLogger, Machinery machinery) {
@@ -155,6 +155,7 @@ public class Autons {
         m_autonChooser.onChange(listener);
     }
 
+    @Override
     public void close() {
         m_autonChooser.close();
     }
