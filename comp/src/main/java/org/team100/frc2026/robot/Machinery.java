@@ -3,11 +3,11 @@ package org.team100.frc2026.robot;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 import org.team100.frc2026.field.FieldConstants2026;
 import org.team100.frc2026.subsystems.Conveyor;
 import org.team100.frc2026.subsystems.Feeder;
-import org.team100.frc2026.subsystems.Conveyor;
 import org.team100.frc2026.subsystems.Intake;
 import org.team100.frc2026.subsystems.IntakeExtend;
 import org.team100.frc2026.subsystems.Shooter;
@@ -21,6 +21,10 @@ import org.team100.lib.localization.FusedEstimator;
 import org.team100.lib.localization.GroundTruth;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
+import org.team100.lib.music.Player;
+import org.team100.lib.music.Polyphony;
+import org.team100.lib.music.Unison;
+import org.team100.lib.music.commands.Play;
 import org.team100.lib.sensor.gyro.Gyro;
 import org.team100.lib.sensor.gyro.GyroFactory;
 import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
@@ -69,11 +73,10 @@ public class Machinery implements AutoCloseable {
     public final Feeder m_feeder;
     public final Conveyor m_conveyor;
 
-
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        //////////////////////////////////////////////////////////
+        /////////////////////////////////////
         //
         // DRIVETRAIN
         //
@@ -111,7 +114,7 @@ public class Machinery implements AutoCloseable {
                 fieldLogger, () -> m_drive.getState(), "robot");
         new SwerveHistoryVisualization(fieldLogger, estimate);
 
-        //////////////////////////////////////////////////////////
+        /////////////////////////////////////
         //
         // TARGETING
         //
@@ -133,24 +136,23 @@ public class Machinery implements AutoCloseable {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, (t) -> m_drive.getState(t));
 
-        ///////////////////////////////////////////////////////////
+        //////////////////////////////////////
         //
         // SUBSYSTEMS
         //
         m_intake = new Intake(logger, currentLog);
         m_intakeExtend = new IntakeExtend(logger, currentLog);
         m_shooter = new Shooter(logger, currentLog, m_cachedSolution::speed);
-        m_feeder= new Feeder(logger, currentLog, m_shooter);
+        m_feeder = new Feeder(logger, currentLog, m_shooter);
         m_conveyor = new Conveyor(logger, currentLog);
 
-
-        ///////////////////////////////////////////////////////////
+        //////////////////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        ///////////////////////////////////////////////////////////
+        //////////////////////////////////////
         //
         // INDICATOR
         //
@@ -215,6 +217,26 @@ public class Machinery implements AutoCloseable {
             System.out.printf("*** ZERO ROTATION: %s\n", np);
             resetPose(np);
         }, m_drive);
+    }
+
+    public Command play() {
+        // six
+        Unison voice1 = new Unison(
+                Stream.concat(
+                        m_feeder.players().stream(),
+                        m_shooter.players().stream()).toArray(Player[]::new));
+        // six
+        Unison voice2 = new Unison(
+                Stream.concat(
+                        Stream.concat(
+                                m_conveyor.players().stream(),
+                                m_intake.players().stream()),
+                        m_intakeExtend.players().stream()).toArray(Player[]::new));
+        // eight
+        Unison voice3 = new Unison(
+                m_drive.players().toArray(Player[]::new));
+        Polyphony allVoices = new Polyphony(voice1, voice2, voice3);
+        return new Play("waltz-no-2-trio.mid", 1.0, allVoices);
     }
 
     /** Generally for simulation and visualization */

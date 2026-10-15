@@ -6,6 +6,8 @@ import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 
+import org.team100.lib.experiments.Experiment;
+import org.team100.lib.experiments.Experiments;
 import org.team100.lib.music.EventIterator;
 import org.team100.lib.music.Note;
 import org.team100.lib.music.Polyphony;
@@ -33,6 +35,12 @@ public class Play extends Command {
 
     @Override
     public void execute() {
+        if (Experiments.INSTANCE.enabled(Experiment.Quiet)) {
+            for (int i = 0; i < m_ensemble.size(); ++i) {
+                m_ensemble.play(i, 0);
+            }
+            return;
+        }
         double nowSec = m_timer.get();
         Map<Integer, MidiEvent> events = m_iter.get(nowSec);
         if (events == null) {
