@@ -35,7 +35,6 @@ public class DriverXboxControl {
     private final LinearFilter m_filterLeftX;
     private final LinearFilter m_filterLeftY;
 
-
     /** Cache of smoothed input */
     private final DoubleCache m_rightY;
     /** Cache of smoothed input */
@@ -44,12 +43,10 @@ public class DriverXboxControl {
     private final DoubleCache m_leftX;
     private final DoubleCache m_leftY;
 
-
     private final DoubleLogger m_log_rightY;
     private final DoubleLogger m_log_rightX;
     private final DoubleLogger m_log_leftX;
     private final DoubleLogger m_log_leftY;
-
 
     public DriverXboxControl(LoggerFactory parent, int port) {
         LoggerFactory log = parent.type(this);
@@ -92,17 +89,17 @@ public class DriverXboxControl {
         m_log_rightX.log(m_rightX);
         m_log_leftX.log(m_leftX);
         // for (int i = 0; i < 12; ++i) {
-        //     System.out.printf("%1d", m_controller.getRawButton(i) ? 1 : 0);
+        // System.out.printf("%1d", m_controller.getRawButton(i) ? 1 : 0);
         // }
         // System.out.println();
     }
 
-    /** Axis 5, filtered */
+    /** Axis 3, filtered */
     public double rightY() {
         return m_filterRightY.calculate(m_controller.getRightY());
     }
 
-    /** Axis 4, filtered */
+    /** Axis 2, filtered */
     public double rightX() {
         return m_filterRightX.calculate(m_controller.getRightX());
     }
@@ -112,8 +109,12 @@ public class DriverXboxControl {
         return m_filterLeftX.calculate(m_controller.getLeftX());
     }
 
+    /**
+     * WARNING! ALWAYS RETURNS ZERO!
+     * 
+     * TODO: fix for 2027
+     */
     public Rotation2d pov() {
-        // TODO: fix for 2027
         return Rotation2d.kZero;
         // return ControlUtil.pov(m_controller::getPOV);
     }
@@ -134,52 +135,52 @@ public class DriverXboxControl {
         return pov.equals(Rotation2d.kPi);
     }
 
-    /** Button 7 */
+    /** Button 4 */
     public boolean back() {
         return m_controller.getBackButton();
     }
 
-    /** Button 8 */
+    /** Button 6 */
     public boolean start() {
         return m_controller.getStartButton();
     }
 
-    /** Left trigger (axis 2) is all the way in */
+    /** Left trigger (axis 4) is all the way in */
     public boolean leftTrigger() {
         return m_controller.getLeftTriggerAxis() > 0.9;
     }
 
-    /** Right trigger (axis 3) is all the way in. */
+    /** Right trigger (axis 5) is all the way in. */
     public boolean rightTrigger() {
         return m_controller.getRightTriggerAxis() > 0.9;
     }
 
-    /** Button 5 */
+    /** Button 9 */
     public boolean leftBumper() {
         return m_controller.getLeftBumperButton();
     }
 
-    /** Button 6 */
+    /** Button 10 */
     public boolean rightBumper() {
         return m_controller.getRightBumperButton();
     }
 
-    /** Button 1 */
+    /** Button 0 */
     public boolean a() {
         return m_controller.getSouthFaceButton();
     }
 
-    /** Button 2 */
+    /** Button 1 */
     public boolean b() {
         return m_controller.getEastFaceButton();
     }
 
-    /** Button 3 */
+    /** Button 2 */
     public boolean x() {
         return m_controller.getWestFaceButton();
     }
 
-    /** Button 4 */
+    /** Button 3 */
     public boolean y() {
         return m_controller.getNorthFaceButton();
     }
@@ -188,10 +189,14 @@ public class DriverXboxControl {
     public double leftY() {
         return m_controller.getLeftY();
     }
-    public double RightTriggerAxis(){
+
+    /** Axis 5 */
+    public double RightTriggerAxis() {
         return m_controller.getRightTriggerAxis();
     }
-    public double LeftTriggerAxis(){
-        return m_controller.getRightTriggerAxis();
+
+    /** Axis 4 */
+    public double LeftTriggerAxis() {
+        return m_controller.getLeftTriggerAxis();
     }
 }
