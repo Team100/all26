@@ -41,7 +41,7 @@ public class Shooter extends SubsystemBase {
     private static final double GEAR_RATIO = 24.0 / 18.0;
     private static final double DRUM_DIAMETER_M = .089;
 
-    private static final double FULL_SPEED = 13;
+    private static final double FULL_SPEED = 8.8;
 
     private final Supplier<OptionalDouble> m_speed;
 
