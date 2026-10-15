@@ -13,7 +13,7 @@ public class Unison implements Player {
 
     @Override
     public void play(double freq) {
-        Arrays.stream(m_players).forEach(p -> play(freq));
+        Arrays.stream(m_players).forEach(p -> p.play(freq));
     }
 
     @Override
