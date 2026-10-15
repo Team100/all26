@@ -98,8 +98,8 @@ public class Binder {
                 machinery.m_intakeExtend.MoveForward());
         whileTrue(m_driver::b,
                 machinery.m_intakeExtend.MoveBackward());
-        whileTrue(m_driver::rightTrigger, machinery.m_shooter.testRun().withTimeout(1).andThen(
-                parallel(machinery.m_shooter.testRun(),
+        whileTrue(m_driver::rightTrigger, machinery.m_shooter.shooterFullspeed().withTimeout(2).andThen(
+                parallel(machinery.m_shooter.shooterFullspeed(),
                         machinery.m_conveyor.convey(),
                         machinery.m_feeder.proportional(),
                         machinery.m_intakeExtend.AgitationPosition(),
