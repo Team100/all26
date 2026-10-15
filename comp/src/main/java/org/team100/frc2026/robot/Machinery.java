@@ -76,7 +76,7 @@ public class Machinery implements AutoCloseable {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        /////////////////////////////////////
+        ///////////////////////////////////
         //
         // DRIVETRAIN
         //
@@ -114,7 +114,7 @@ public class Machinery implements AutoCloseable {
                 fieldLogger, () -> m_drive.getState(), "robot");
         new SwerveHistoryVisualization(fieldLogger, estimate);
 
-        /////////////////////////////////////
+        ///////////////////////////////////
         //
         // TARGETING
         //
@@ -136,7 +136,7 @@ public class Machinery implements AutoCloseable {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, (t) -> m_drive.getState(t));
 
-        //////////////////////////////////////
+        ////////////////////////////////////
         //
         // SUBSYSTEMS
         //
@@ -146,13 +146,13 @@ public class Machinery implements AutoCloseable {
         m_feeder = new Feeder(logger, currentLog, m_shooter);
         m_conveyor = new Conveyor(logger, currentLog);
 
-        //////////////////////////////////////
+        ////////////////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        //////////////////////////////////////
+        ////////////////////////////////////
         //
         // INDICATOR
         //
@@ -164,6 +164,14 @@ public class Machinery implements AutoCloseable {
         /// GROUND TRUTH
         ///
         m_groundTruth = new GroundTruth(fieldLogger, logger, m_swerveKinodynamics, m_modules, layout);
+
+        ///////////////////////////////////
+        /// 
+        /// EXPERIMENT OVERRIDES
+        /// 
+
+        // Without cameras, this should always be on.
+        // Experiments.INSTANCE.override(Experiment.PerfectGyro, true);
     }
 
     /**
