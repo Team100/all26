@@ -26,7 +26,7 @@ public enum Level {
         this.priority = priority;
     }
 
-    public boolean admit(Level other) {
+    boolean admit(Level other) {
         return this.priority >= other.priority;
     }
 }

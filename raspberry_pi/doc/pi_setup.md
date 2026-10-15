@@ -49,7 +49,7 @@ network:
   ethernets:
     eth0:
       addresses: 
-        - 10.1.0.31/24
+        - 10.1.0.34/24
       nameservers:
         addresses:
           - 8.8.8.8

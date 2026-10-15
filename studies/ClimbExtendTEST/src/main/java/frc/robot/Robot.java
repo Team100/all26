@@ -17,8 +17,7 @@ import org.wpilib.networktables.NetworkTableInstance;
 
 public class Robot extends TimedRobot {
     private final Machinery m_machinery;
-    private final Logging logging = Logging.instance();
-    private final LoggerFactory logger = logging.rootLogger;
+    private final LoggerFactory logger = Logging.root();
     private final DriverXboxControl driver = new DriverXboxControl(logger, 0);
 
     public Robot() {

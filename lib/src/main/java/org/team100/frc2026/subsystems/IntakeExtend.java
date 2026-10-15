@@ -1,5 +1,7 @@
 package org.team100.frc2026.subsystems;
 
+import java.util.List;
+
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
@@ -11,6 +13,8 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX44Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
+import org.team100.lib.music.Music;
+import org.team100.lib.music.Player;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
@@ -25,7 +29,7 @@ import org.wpilib.framework.RobotBase;
 import org.wpilib.math.util.MathUtil;
 
 /** Intake must be retracted at startup. */
-public class IntakeExtend extends SubsystemBase {
+public class IntakeExtend extends SubsystemBase implements Music {
     private static final boolean ENABLE = true;
     private static final CanId CAN_ID = new CanId(9);
     private static final CanId CAN_ID2 = new CanId(10);
@@ -183,7 +187,18 @@ public class IntakeExtend extends SubsystemBase {
                 .withName("set position");
     }
 
-    //////////////////////////////
+    @Override
+    public Command play(double freq) {
+        return run(() -> {
+            m_servo.play(freq);
+            m_Servo2.play(freq);
+        });
+    }
+
+    @Override
+    public List<Player> players() {
+        return List.of(m_servo, m_Servo2);
+    }
 
     private void stopServo() {
         m_servo.stop();
