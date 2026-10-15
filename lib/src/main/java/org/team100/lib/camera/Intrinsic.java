@@ -20,6 +20,10 @@ public class Intrinsic {
             { 935.0, 0.0, 550.0 }, //
             { 0.0, 935.0, 550.0 }, //
             { 0.0, 0.0, 1.0 } });
+    private static final Intrinsic COLOR_DETECT_1 = new Intrinsic(new double[][] { //
+            {872.4186642, 0.0, 871.2316943}, //
+            {0.0, 967.5641454, 610.2786945}, //
+            { 0, 0, 1} });
     private static final Map<Camera, Intrinsic> intrinsics;
 
     static {

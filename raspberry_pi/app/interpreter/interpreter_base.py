@@ -24,6 +24,8 @@ class InterpreterBase(Interpreter):
         # To keep track of images to write
         self.img_ts_sec: int = 0
         # Make a place to put example images.
+        cwd = os.getcwd()
+        print("*** CWD:", cwd)
         if not os.path.exists(IMAGE_DIR):
             os.mkdir(IMAGE_DIR)
 
