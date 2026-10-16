@@ -32,6 +32,7 @@ public class Robot extends TimedRobot100 {
     private final AutonVisualization m_autoViz;
     private final Autons m_autons;
     private final Binder m_binder;
+    private final Command m_play;
 
     public Robot() {
         Startup.start();
@@ -44,7 +45,9 @@ public class Robot extends TimedRobot100 {
         m_autons = new Autons(log, m_machinery);
         m_autoViz = new AutonVisualization(fieldLogger);
         m_autons.onChange(m_autoViz::show);
+        m_play = Commands.repeatingSequence(m_machinery.play());
         Prewarmer.init(m_machinery);
+        System.out.printf("Total Logger Keys: %d\n", Logging.keyCount());
     }
 
     /** Called in the main loop. */
@@ -109,6 +112,7 @@ public class Robot extends TimedRobot100 {
     public void disabledExit() {
         // only show the auton when disabled
         m_autoViz.clear();
+        CommandScheduler.getInstance().cancelAll();
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -124,6 +128,8 @@ public class Robot extends TimedRobot100 {
     public void disabledInit() {
         // show the auton again when disabling.
         m_autoViz.show(m_autons.getAnnotated());
+        // play music
+        CommandScheduler.getInstance().schedule(m_play);
     }
 
     @Override
