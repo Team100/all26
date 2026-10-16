@@ -83,16 +83,16 @@ public class Binder {
                 log,
                 machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
                 thetaFeedback);
-        whileTrue(() -> m_driver.leftBumper(),
-                new DriveMovingTargetLock(
-                        log,
-                        machinery.m_swerveKinodynamics,
-                        aim,
-                        m_driver::velocity,
-                        limiter,
-                        machinery.m_cachedSolution,
-                        machinery.m_drive)
-                        .withName("Target lock"));
+        // whileTrue(() -> m_driver.leftBumper(),
+        //         new DriveMovingTargetLock(
+        //                 log,
+        //                 machinery.m_swerveKinodynamics,
+        //                 aim,
+        //                 m_driver::velocity,
+        //                 limiter,
+        //                 machinery.m_cachedSolution,
+        //                 machinery.m_drive)
+        //                 .withName("Target lock"));
 
     }
 

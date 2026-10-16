@@ -38,6 +38,11 @@ public class Autons {
 
         // These are for training, see
         // https://docs.google.com/document/d/1sSncYjKAp9Fh6xd_zrAt39hOhBcCyGkcvSjClX0NMxk
+        m_autonChooser.add(new IntakeOutake(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
         m_autonChooser.add(new AheadTwoMeters(
                 log,
                 machinery.m_swerveKinodynamics,
@@ -48,7 +53,12 @@ public class Autons {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-        m_autonChooser.add(new UTurnWithRotation(
+        m_autonChooser.add(new Scallop2(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+        m_autonChooser.add(new IntakeOutput(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
