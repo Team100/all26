@@ -20,10 +20,14 @@ public class Intrinsic {
             { 935.0, 0.0, 550.0 }, //
             { 0.0, 935.0, 550.0 }, //
             { 0.0, 0.0, 1.0 } });
-    private static final Intrinsic COLOR_DETECT_1 = new Intrinsic(new double[][] { //
+    private static final Intrinsic COLOR_DETECTi = new Intrinsic(new double[][] { //
             {872.4186642, 0.0, 871.2316943}, //
             {0.0, 967.5641454, 610.2786945}, //
             { 0, 0, 1} });
+    private static final Intrinsic CAMERA_2Ai = new Intrinsic(new double[][] { //
+            {874.8730398, 0.0, 875.8991441},
+            {0.0, 954.7454588, 609.6603374},
+            {0, 0, 1} });
     private static final Map<Camera, Intrinsic> intrinsics;
 
     static {
@@ -32,6 +36,10 @@ public class Intrinsic {
         intrinsics.put(Camera.SIM1, SIM_DEFAULT);
         intrinsics.put(Camera.SIM2, SIM_DEFAULT);
         intrinsics.put(Camera.SIM3, SIM_DEFAULT);
+        intrinsics.put(Camera.COLOR_DETECT_1, COLOR_DETECTi);
+        intrinsics.put(Camera.CAMERA_2A, CAMERA_2Ai);
+
+
         // TODO: more cameras
     }
 

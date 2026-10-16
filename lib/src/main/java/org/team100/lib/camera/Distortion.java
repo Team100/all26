@@ -13,8 +13,10 @@ import org.opencv.core.MatOfDouble;
 public class Distortion {
     private static final Distortion DEFAULT = new Distortion(
             new double[] { 0.0, 0.0, 0.0, 0.0 });
-    private static final Distortion COLOR_DETECT_1 = new Distortion(
+    private static final Distortion COLOR_DETECTd = new Distortion(
             new double[] {-0.006934480214, -0.009133184923, 0.0006250697999, 0.001300785576});
+    private static final Distortion CAMERA_2Ad = new Distortion(
+            new double[] {-0.006602056847, -0.009068537579, 0.000719102838, -0.0005465737481});
     private static final Map<Camera, Distortion> distortions;
 
     static {
@@ -23,6 +25,8 @@ public class Distortion {
         distortions.put(Camera.SIM1, DEFAULT);
         distortions.put(Camera.SIM2, DEFAULT);
         distortions.put(Camera.SIM3, DEFAULT);
+        distortions.put(Camera.COLOR_DETECT_1, COLOR_DETECTd);
+        distortions.put(Camera.CAMERA_2A, CAMERA_2Ad);
         // TODO: more cameras
     }
 
