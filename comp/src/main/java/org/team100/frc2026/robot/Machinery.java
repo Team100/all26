@@ -84,8 +84,8 @@ public class Machinery implements AutoCloseable {
         m_modules = SwerveModuleCollection.get(
                 driveLog,
                 currentLog,
-                new CurrentLimit(90, 70),
-                new CurrentLimit(60, 30));
+                new CurrentLimit(67.5, 52.5),
+                new CurrentLimit(45, 22.5));
         Gyro gyro = GyroFactory.get(
                 driveLog,
                 m_swerveKinodynamics,
