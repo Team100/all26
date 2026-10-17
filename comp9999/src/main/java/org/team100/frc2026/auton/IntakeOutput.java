@@ -1,6 +1,6 @@
 package org.team100.frc2026.auton;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static org.wpilib.command2.Commands.parallel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +22,9 @@ import org.team100.lib.trajectory.se2.constraint.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 public class IntakeOutput implements AnnotatedCommand {
     private final LoggerFactory log;
@@ -83,16 +83,16 @@ public class IntakeOutput implements AnnotatedCommand {
         return parallel(
                 fn
         // extend when in neutral zone
-         //toggle(
-         //this::inNeutralZone,
-         //machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
-         //machinery.m_intakeExtend.goToRetractedPosition()),
-        //roll when extended
-         //toggle(
-         //this::intakeExtended,
-        //parallel( machinery.m_intake.intake(),
-         //machinery.m_shooter.shooterFullspeed()),
-         //machinery.m_intake.stop())
+        // toggle(
+        // this::inNeutralZone,
+        // machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
+        // machinery.m_intakeExtend.goToRetractedPosition()),
+        // roll when extended
+        // toggle(
+        // this::intakeExtended,
+        // parallel( machinery.m_intake.intake(),
+        // machinery.m_shooter.shooterFullspeed()),
+        // machinery.m_intake.stop())
         );
     }
 
@@ -105,17 +105,17 @@ public class IntakeOutput implements AnnotatedCommand {
     TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose, new DirectionSE2(1, 0, 1),
-                         1),
+                        1),
                 new WaypointSE2(new Pose2d(5.7, 0.6, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(1, 0, 0),
                         1),
-                new WaypointSE2(new Pose2d(7.5, 7, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(0, 1, 0), 
+                new WaypointSE2(new Pose2d(7.5, 7, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(0, 1, 0),
                         1),
-                 new WaypointSE2(new Pose2d(8, 7, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 
-                        1),       
-                new WaypointSE2(new Pose2d(8.3, 7, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, 0, 1), 
+                new WaypointSE2(new Pose2d(8, 7, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(1, 0, 0),
                         1),
-                new WaypointSE2(new Pose2d(8.3, 1, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, 1, 0), 
-                        1)   
+                new WaypointSE2(new Pose2d(8.3, 7, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, 0, 1),
+                        1),
+                new WaypointSE2(new Pose2d(8.3, 1, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, 1, 0),
+                        1)
 
         //
         );
