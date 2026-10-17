@@ -244,7 +244,7 @@ public class Machinery implements AutoCloseable {
         Unison voice3 = new Unison(
                 m_drive.players().toArray(Player[]::new));
         Polyphony allVoices = new Polyphony(voice1, voice2, voice3);
-        return new Play("waltz-no-2-trio.mid", 1.0, allVoices);
+        return new Play("jupiter.mid", 1.0, allVoices);
     }
 
     /** Generally for simulation and visualization */
