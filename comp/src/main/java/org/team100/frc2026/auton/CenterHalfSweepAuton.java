@@ -71,8 +71,10 @@ public class CenterHalfSweepAuton implements AnnotatedCommand {
                                         .isInAllianceZone(machinery.m_drive.getState().translation())),
                                 parallel(
                                         machinery.m_intake.stop(),
-                                        machinery.m_intakeExtend.goToRetractedPosition(),
-                                        machinery.m_shooter.auto()))));
+                                        machinery.m_intakeExtend.AgitationPosition(),
+                                        machinery.m_feeder.proportional(),
+                                        machinery.m_conveyor.convey(),
+                                        machinery.m_shooter.shooterFullspeed()))));
     }
 
     @Override
@@ -84,7 +86,7 @@ public class CenterHalfSweepAuton implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
                         new DirectionSE2(0, 1, 0), 1),
-                new WaypointSE2(StartingPositions.LEFT_BUMP,
+                new WaypointSE2(StartingPositions.LEFT_TRENCH,
                         new DirectionSE2(1, 0, 0), 1),
                 new WaypointSE2(AutonPositions.ABOVE_BALL_FIELD,
                         new DirectionSE2(1, 1, 0), 1),
@@ -92,7 +94,7 @@ public class CenterHalfSweepAuton implements AnnotatedCommand {
                         new DirectionSE2(0, -1, 0), 1),
                 new WaypointSE2(new Pose2d(6.5, 5.5, new Rotation2d(0 * (Math.PI / 180))),
                         new DirectionSE2(-1, 0, 0), 1),
-                new WaypointSE2(StartingPositions.LEFT_BUMP,
+                new WaypointSE2(StartingPositions.LEFT_TRENCH,
                         new DirectionSE2(-1, 0, 0), 1),
                 new WaypointSE2(AutonPositions.SHOOT_LEFT,
                         new DirectionSE2(-1, -1, 0), 1));
