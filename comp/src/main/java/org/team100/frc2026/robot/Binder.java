@@ -111,7 +111,7 @@ public class Binder {
         // whileTrue(m_driver::a, Commands.print("a"));
         // whileTrue(m_driver::b, Commands.print("b"));
         // whileTrue(m_driver::x, Commands.print("x"));
-        // whileTrue(m_driver::y, Commands.print("y"));
+        whileTrue(m_driver::y, machinery.m_intake.back());
         // whileTrue(m_driver::start, Commands.print("start"));
         // whileTrue(m_driver::back, Commands.print("back"));
         // whileTrue(m_driver::leftBumper, Commands.print("leftBumper"));

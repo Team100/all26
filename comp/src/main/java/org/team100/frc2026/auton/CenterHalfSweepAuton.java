@@ -64,7 +64,7 @@ public class CenterHalfSweepAuton implements AnnotatedCommand {
                         sequence(
                                 Commands.waitUntil(() -> FieldConstants2026
                                         .isInNeutralZone(machinery.m_drive.getState().translation())),
-                                (machinery.m_intakeExtend.goToExtendedPosition()
+                                parallel(machinery.m_intakeExtend.goToExtendedPosition()
                                         .andThen(machinery.m_intake.intake())).withTimeout(3),
 
                                 Commands.waitUntil(() -> FieldConstants2026
@@ -90,7 +90,7 @@ public class CenterHalfSweepAuton implements AnnotatedCommand {
                         new DirectionSE2(1, 1, 0), 1),
                 new WaypointSE2(AutonPositions.MIDDLE_BALL_FIELD,
                         new DirectionSE2(0, -1, 0), 1),
-                new WaypointSE2(new Pose2d(6.5, 5.5, new Rotation2d(0 * (Math.PI / 180))),
+                new WaypointSE2(AutonPositions.ABOVE_BALL_FIELD,
                         new DirectionSE2(-1, 0, 0), 1),
                 new WaypointSE2(StartingPositions.LEFT_TRENCH,
                         new DirectionSE2(-1, 0, 0), 1),

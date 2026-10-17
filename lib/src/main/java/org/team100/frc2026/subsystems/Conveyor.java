@@ -44,7 +44,7 @@ public class Conveyor extends SubsystemBase implements Music {
         LoggerFactory log2 = log.name("Conveyor2");
         // equivalent linear dynamics for the actual drum inertia.
         PDynamics dynamics = PDynamics.drum(0.00, 0.025);
-        VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(10);
+        VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(30);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
 
