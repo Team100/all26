@@ -64,12 +64,12 @@ public class Offset {
                         new Transform3d(0.812, 0.192, -0.354, new Rotation3d(-0.016, 0.630, -0.040)))));
         offsets.put(Camera.CAMERA_2A, new Offset(
                 fromCalibration(
-                        new Transform3d(1, 0, 0.42, new Rotation3d(0, 0, 0)),
+                        new Transform3d(1, 0, 0.45, new Rotation3d(0, 0, 0)),
                         new Transform3d(0.651, -0.0641, -0.0852, new Rotation3d(0.0715, 0.4975, -0.084)))));
         offsets.put(Camera.COLOR_DETECT_1, new Offset(
                 fromCalibration(
                         new Transform3d(0.31, -1, 0.26, new Rotation3d(0, 0, -(Math.PI / 2))),
-                        new Transform3d(0.812, 0.192, -0.354, new Rotation3d(-0.016, 0.630, -0.040)))));
+                        new Transform3d(0.795, -0.456, 0.178, new Rotation3d(0.031, 0.342, -0.113)))));
 
         //////////////////////////////////////
         //
