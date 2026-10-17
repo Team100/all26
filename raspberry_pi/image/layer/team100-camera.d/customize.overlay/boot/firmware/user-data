@@ -1,0 +1,4 @@
+#cloud-config
+# cloud-init user-data.  build_image.sh replaces this for each Pi.
+hostname: camera
+manage_etc_hosts: true
