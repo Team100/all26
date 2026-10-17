@@ -79,15 +79,13 @@ public class CenterHalfSweepAuton implements AnnotatedCommand {
 
     @Override
     public String name() {
-        return "Half Sweep from Center";
+        return "Half Sweep from left";
     }
 
     TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
-                        new DirectionSE2(0, 1, 0), 1),
-                new WaypointSE2(StartingPositions.LEFT_TRENCH,
-                        new DirectionSE2(1, 0, 0), 1),
+                        new DirectionSE2(1, 0, 0), Math.PI),
                 new WaypointSE2(AutonPositions.ABOVE_BALL_FIELD,
                         new DirectionSE2(1, 1, 0), 1),
                 new WaypointSE2(AutonPositions.MIDDLE_BALL_FIELD,
@@ -108,7 +106,7 @@ public class CenterHalfSweepAuton implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return AutonPositions.CENTER;
+        return StartingPositions.LEFT_TRENCH;
     }
 
     @Override
