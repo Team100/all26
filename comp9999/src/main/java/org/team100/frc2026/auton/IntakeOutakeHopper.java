@@ -27,13 +27,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class IntakeOutake2 implements AnnotatedCommand {
+public class IntakeOutakeHopper implements AnnotatedCommand {
     private final LoggerFactory log;
     private final ControllerSE2 controller;
     private final Machinery machinery;
     private final TrajectorySE2Planner planner;
 
-    public IntakeOutake2(
+    public IntakeOutakeHopper(
             LoggerFactory parent,
             SwerveKinodynamics kinodynamics,
             ControllerSE2 controller,
@@ -64,12 +64,12 @@ public class IntakeOutake2 implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return StartingPositions.LEFT_TRENCH_OUTER;
+        return StartingPositions.CENTER_BACK;
     }
 
     @Override
     public String name() {
-        return "IntakeOutake2";
+        return "IntakeOutakeHopper";
     }
 
     @Override
@@ -106,17 +106,19 @@ public class IntakeOutake2 implements AnnotatedCommand {
 
     TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose, new DirectionSE2(1, 0, 0), 1),
+                new WaypointSE2(startingPose, new DirectionSE2(0, -1, 0), 1),
 
-                //new WaypointSE2(new Pose2d(6, 7.2, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1,-1, 0), 1),
+                new WaypointSE2(new Pose2d(3, 0.7, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(7, 6.8, new Rotation2d(315 * (Math.PI / 180))), new DirectionSE2(1,-1, 0), 1),
+                new WaypointSE2(new Pose2d(6.2, 0.7, new Rotation2d(60 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(8, 4, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, -1, -1), 1),
+                new WaypointSE2(new Pose2d(8, 3, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(0, 1, 0), 1),
 
-                new WaypointSE2(new Pose2d(5.1, 0.7, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(8, 5, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(0, 1, 0), 1),
 
-                new WaypointSE2(new Pose2d(1.5, 0.7, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1)
+                new WaypointSE2(new Pose2d(5.1, 7.3, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1),
+
+                new WaypointSE2(new Pose2d(1.5, 7.3, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1)
         );
         return planner.restToRest(waypoints);
     }
