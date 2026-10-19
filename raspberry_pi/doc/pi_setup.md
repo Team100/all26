@@ -245,8 +245,53 @@ then restart NetworkManager:
 sudo systemctl restart NetworkManager
 ```
 
+Another kind of misconfiguration that can happen is that there might be no
+NetworkManager connection at all, i.e. no file in
+`/etc/NetworkManager/system-connections`.
 
+So edit the connection:
 
+```
+sudo nmcli connection edit
+```
+
+brings up a somewhat-interactive editor.  For connection type
+enter `ethernet`
+
+then to see the connection properties, you can type something like
+
+```
+print ipv4
+```
+
+then change the ones you want
+
+```
+set ipv4.method manual
+set ipv4.addresses 10.1.0.34/24
+set ipv6.method disabled
+```
+then (don't forget!) to save the changes
+```
+save persistent
+```
+and you should see the changes:
+```
+ifconfig -a
+```
+
+The older ethernet config might still exist:
+```
+nmcli connection show
+```
+so delete it
+```
+nmcli connection delete "Wired connection 1"
+```
+then restart to make sure your changes "stick"
+```
+sudo /sbin/reboot now
+````
 ## References
 
 * [cloud-init format](https://docs.cloud-init.io/en/latest/reference/network-config.html) 
