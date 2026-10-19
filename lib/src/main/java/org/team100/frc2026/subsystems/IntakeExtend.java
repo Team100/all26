@@ -116,8 +116,8 @@ public class IntakeExtend extends SubsystemBase implements Music {
         return runOnce(this::reset)
                 .andThen(
                         Commands.repeatingSequence(
-                                run(() -> actuateWithVelocity(2)).withTimeout(0.5),
-                                run(() -> actuateWithVelocity(-2)).withTimeout(0.5)))
+                                run(() -> actuateWithVelocity(0.5)).withTimeout(0.175),
+                                run(() -> actuateWithVelocity(-0.5)).withTimeout(0.175)))
                 .finallyDo(this::stopServo)
                 .withName("Agitiate");
     }

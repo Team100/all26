@@ -59,12 +59,16 @@ public class RightBumpHalfSweepAuton implements AnnotatedCommand {
                                 .andThen(machinery.m_intake.intake().withTimeout(3)))
                         .until(IntakeSetUp::isDone),
                 parallel(
-                        machinery.m_shooter.auto()));
+                    machinery.m_intake.stop(),
+                    machinery.m_intakeExtend.AgitationPosition(),
+                    machinery.m_feeder.proportional(),
+                    machinery.m_conveyor.convey(),
+                    machinery.m_shooter.shooterFullspeed()));
     }
 
     @Override
     public String name() {
-        return "Half Sweep from Right Bump";
+        return "Half Sweep from Right Trench";
     }
 
     TrajectorySE2 t1(Pose2d startingPose) {
@@ -75,9 +79,7 @@ public class RightBumpHalfSweepAuton implements AnnotatedCommand {
                         new DirectionSE2(0, 1, 0), 1),
                 new WaypointSE2(new Pose2d(7.75, 4, Rotation2d.kCW_90deg),
                         new DirectionSE2(-1, -1, 0), 1),
-                new WaypointSE2(new Pose2d(5.2, 2.5, new Rotation2d(0 * (Math.PI / 180))),
-                        new DirectionSE2(-1, 0, 0), 1),
-                new WaypointSE2(StartingPositions.RIGHT_BUMP,
+                new WaypointSE2(StartingPositions.RIGHT_TRENCH,
                         new DirectionSE2(-1, 0, 0), 1),
                 new WaypointSE2(AutonPositions.SHOOT_RIGHT,
                         new DirectionSE2(-1, 1, 0), 1));
@@ -91,7 +93,7 @@ public class RightBumpHalfSweepAuton implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return StartingPositions.RIGHT_BUMP;
+        return StartingPositions.RIGHT_TRENCH;
     }
 
     @Override

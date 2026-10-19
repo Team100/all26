@@ -93,7 +93,7 @@ public class Intake extends SubsystemBase implements Music {
     public Command back() {
         return startRun(
                 this::reset,
-                () -> setVelocityProfiled(-5))
+                () -> setVelocityProfiled(NORMAL_SPEED))
                 .withName("Intake back");
     }
 
