@@ -27,13 +27,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class IntakeOutake2 implements AnnotatedCommand {
+public class IntakeOutakeHStartSwoop implements AnnotatedCommand {
     private final LoggerFactory log;
     private final ControllerSE2 controller;
     private final Machinery machinery;
     private final TrajectorySE2Planner planner;
 
-    public IntakeOutake2(
+    public IntakeOutakeHStartSwoop(
             LoggerFactory parent,
             SwerveKinodynamics kinodynamics,
             ControllerSE2 controller,
@@ -45,14 +45,14 @@ public class IntakeOutake2 implements AnnotatedCommand {
         double bumpV = 2; // cartesian velocity over the bump
         List<TimingConstraint> new_constraints = new ArrayList<>(List.of(
                 // high velocity, moderate accel
-                new ConstantConstraint(8, 20),
+                new ConstantConstraint(8, 80),
                 // absolute maxima
                 // new SwerveDriveDynamicsConstraint(log, kinodynamics, 1, 1),
                 // high yaw limits
                 // new YawRateConstraint(log, 8, 20),
                 // moderate capsize limits. Note we're not actually concerned about capsize
                 // here, we just want to limit tire tread shear
-                new CapsizeAccelerationConstraint(8, 20),
+                new CapsizeAccelerationConstraint(8, 80),
                 new VelocityLimitRegionConstraint(BumpZones.BLUE_BUMP_LEFT, bumpV),
                 new VelocityLimitRegionConstraint(BumpZones.BLUE_BUMP_RIGHT, bumpV),
                 new VelocityLimitRegionConstraint(BumpZones.RED_BUMP_LEFT, bumpV),
@@ -64,12 +64,12 @@ public class IntakeOutake2 implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return StartingPositions.LEFT_TRENCH_OUTER;
+        return StartingPositions.CENTER_BACK;
     }
 
     @Override
     public String name() {
-        return "IntakeOutake2";
+        return "IntakeOutakeHStartSwoop";
     }
 
     @Override
@@ -83,7 +83,7 @@ public class IntakeOutake2 implements AnnotatedCommand {
 
         return parallel(
             fn,
-        machinery.m_subsystem.velocity(1).withTimeout(3.5)
+        machinery.m_subsystem.velocity(1).withTimeout(8)
         .andThen(machinery.m_subsystem.velocity(-1).withTimeout(3))
         // // extend when in neutral zone
         // toggle(
@@ -106,17 +106,27 @@ public class IntakeOutake2 implements AnnotatedCommand {
 
     TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose, new DirectionSE2(1, 0, 0), 1),
+                new WaypointSE2(startingPose, new DirectionSE2(-1, 0, 0), 1),
 
-                //new WaypointSE2(new Pose2d(6, 7.2, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1,-1, 0), 1),
+                new WaypointSE2(new Pose2d(4.4, 7.5, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(7, 6.8, new Rotation2d(315 * (Math.PI / 180))), new DirectionSE2(1,-1, 0), 1),
+                new WaypointSE2(new Pose2d(7.7, 6.1, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, -1, 0), 1),
+                
+                new WaypointSE2(new Pose2d(7.7, 1.2, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, -1, 0), 1),
 
-                new WaypointSE2(new Pose2d(8, 4, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, -1, -1), 1),
+                new WaypointSE2(new Pose2d(9, 1.2, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(0, 1, 0), 1),
 
-                new WaypointSE2(new Pose2d(5.1, 0.7, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(9, 6.1, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(0, 1, 0), 1),
 
-                new WaypointSE2(new Pose2d(1.5, 0.7, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1)
+                new WaypointSE2(new Pose2d(4.4, 7.4, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1),
+
+                new WaypointSE2(new Pose2d(2.5, 7.5, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(-1, 1, 0), 1),
+
+                new WaypointSE2(new Pose2d(4.4, 7.5, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
+
+                new WaypointSE2(new Pose2d(7.7, 6.1, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(1, -1, 0), 1)
+
+                
         );
         return planner.restToRest(waypoints);
     }
