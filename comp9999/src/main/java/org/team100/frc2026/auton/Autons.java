@@ -79,21 +79,6 @@ public class Autons {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-            m_autonChooser.add(new IntakeOutakeRTrench(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-            m_autonChooser.add(new IntakeOutakeHopper(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-            m_autonChooser.add(new IntakeOutakeRTrenchReturn(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
             m_autonChooser.add(new IntakeOutakeHStartSwoop(
                 log,
                 machinery.m_swerveKinodynamics,
