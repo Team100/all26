@@ -1,0 +1,26 @@
+# METABEGIN
+# X-Env-Layer-Name: team100-base
+# X-Env-Layer-Category: suite
+# X-Env-Layer-Desc: rpi-image-gen's trixie-minbase, but networked like
+#  Raspberry Pi OS: NetworkManager instead of systemd-networkd, so that
+#  cloud-init and netplan can apply network-config from the boot partition.
+#  No wifi layers, since the radios are disabled.
+# X-Env-Layer-Version: 1.0.0
+# X-Env-Layer-Requires: debian-trixie-arm64-multi,
+#  rpi-debian-trixie,
+#  rpi-misc-utils,
+#  rpi-essential-base,
+#  rpi-misc-skel,
+#  network-manager,
+#  openssh-server,
+#  systemd-timesyncd
+# METAEND
+---
+mmdebstrap:
+  customize-hooks:
+    # Keep the kernel's interface names (eth0), as the network-config in
+    # doc/pi_setup.md expects.  trixie-minbase gets this from systemd-net-min,
+    # which we leave out; without it the Pi 5's ethernet would be "end0".
+    - mkdir -p $1/etc/systemd/network
+    - ln -sf /dev/null $1/etc/systemd/network/99-default.link
+    - ln -sf /dev/null $1/etc/systemd/network/73-usb-net-by-mac.link
