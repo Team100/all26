@@ -29,7 +29,7 @@ public class Robot extends TimedRobot {
     private final KrakenX60Motor left;
     private final KrakenX60Motor right;
 
-    private static final LoggerFactory rootLogger = Logging.instance().rootLogger;
+    private static final LoggerFactory rootLogger = Logging.root();
     private static final TotalCurrentLog currentLog = new TotalCurrentLog(rootLogger);
 
     public Robot() {

@@ -14,6 +14,7 @@ class ConfigFactory:
 
     @staticmethod
     def get(identity: Identity, size: Size) -> Config:
+        print("*** CameraFactory for identity:", identity)
         match identity:
             case Identity.FUNNEL:
                 # test the RPi GS camera
@@ -27,7 +28,11 @@ class ConfigFactory:
                 return ConfigGsColor(size)
             case Identity.SHOOTER:
                 return ConfigGsMono(size)
-            case Identity.CAMERA_FRONT| Identity.COLOR_DETECT_1:
+            case Identity.CAMERA_FRONT:
+                return ConfigArduMjpeg(size)
+            case Identity.CAMERA_2A:
+                return ConfigArduMjpeg(size)
+            case Identity.COLOR_DETECT_1:
                 return ConfigArduMjpeg(size)
             case _:
                 return ConfigGsMono(size)

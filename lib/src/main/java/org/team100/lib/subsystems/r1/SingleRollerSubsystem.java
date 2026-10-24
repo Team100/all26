@@ -1,5 +1,7 @@
 package org.team100.lib.subsystems.r1;
 
+import java.util.List;
+
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
@@ -12,6 +14,8 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX44Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
+import org.team100.lib.music.Music;
+import org.team100.lib.music.Player;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.LinearVelocityServo;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
@@ -21,7 +25,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class SingleRollerSubsystem extends SubsystemBase {
+public class SingleRollerSubsystem extends SubsystemBase implements Music {
     private final LoggerFactory m_log1;
     private final LinearVelocityServo m_servo1;
 
@@ -67,6 +71,18 @@ public class SingleRollerSubsystem extends SubsystemBase {
 
     public Command stop() {
         return run(this::stopServo);
+    }
+
+        @Override
+    public Command play(double freq) {
+        return run(() -> {
+            m_servo1.play(freq);
+        });
+    }
+
+    @Override
+    public List<Player> players() {
+        return List.of(m_servo1);
     }
 
     public boolean atGoal() {

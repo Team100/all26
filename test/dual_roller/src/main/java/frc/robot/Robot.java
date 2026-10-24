@@ -41,7 +41,7 @@ public class Robot extends TimedRobot100 {
 
     public Robot() {
         Startup.start();
-        LoggerFactory log = Logging.instance().rootLogger;
+        LoggerFactory log = Logging.root();
         m_robotLog = new RobotLog(log);
         TotalCurrentLog currentLog = m_robotLog.totalCurrentLog();
 

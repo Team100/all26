@@ -21,7 +21,9 @@ public interface AnnotatedCommand {
     String name();
 
     /**
-     * Command to run
+     * Command to run. It's convenient if the command is a constant instantiated in
+     * the constructor (so that its log fields are shown immediately), and just
+     * returned here.
      */
     Command command();
 

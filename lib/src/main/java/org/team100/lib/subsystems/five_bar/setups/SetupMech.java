@@ -5,7 +5,6 @@ import static org.team100.lib.util.TriggerUtil.whileTrue;
 
 import org.team100.lib.kinematics.five_bar.Scenario;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.subsystems.five_bar.FiveBarMech;
 import org.team100.lib.subsystems.five_bar.Pen;
@@ -19,13 +18,11 @@ public class SetupMech implements Runnable {
     private final Pen m_pen;
     private final FiveBarVisualization m_viz;
 
-    public SetupMech(Scenario scenario) {
-        final Logging logging = Logging.instance();
-        final LoggerFactory logger = logging.rootLogger;
-        TotalCurrentLog currentLog = new TotalCurrentLog(logger);
+    public SetupMech(LoggerFactory log, Scenario scenario) {
+        TotalCurrentLog currentLog = new TotalCurrentLog(log);
         XboxController controller = new XboxController(0);
 
-        m_fiveBar = new FiveBarMech(logger, currentLog, scenario);
+        m_fiveBar = new FiveBarMech(log, currentLog, scenario);
         m_pen = new Pen();
         m_viz = new FiveBarVisualization(scenario, m_fiveBar::getJointPositions);
         m_fiveBar.setDefaultCommand(m_fiveBar.position(

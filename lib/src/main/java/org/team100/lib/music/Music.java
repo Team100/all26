@@ -5,7 +5,7 @@ import java.util.List;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
-/** This is a subsystem so that we can require it */
+/** A subsystem that can play a note. */
 public interface Music extends Subsystem {
     /** Play sound in unison. */
     Command play(double freq);

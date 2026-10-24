@@ -95,6 +95,7 @@ class RealNetwork(Network):
 
     @override
     def calibrate(self) -> bool:
+        #return True
         return self._calibrate.get()
 
     @override

@@ -17,7 +17,6 @@ import org.team100.lib.localization.AprilTagVisualizer;
 import org.team100.lib.localization.FusedEstimator;
 import org.team100.lib.localization.GroundTruth;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.sensor.gyro.Gyro;
 import org.team100.lib.sensor.gyro.GyroFactory;
@@ -50,10 +49,9 @@ public class Machinery2025 {
     // acceleration) to keep from browning out.
     private static final double DRIVE_SUPPLY_LIMIT = 90;
     private static final double DRIVE_STATOR_LIMIT = 110;
-    private static final LoggerFactory logger = Logging.instance().rootLogger;
-    private static final LoggerFactory fieldLogger = Logging.instance().fieldLogger;
+    private final LoggerFactory logger;
+    private final LoggerFactory fieldLogger;
 
-    private final RobotPoseVisualization m_robotViz;
     private final AprilTagVisualizer m_tagViz;
     private final Runnable m_combinedViz;
     private final Runnable m_climberViz;
@@ -71,7 +69,9 @@ public class Machinery2025 {
     final SwerveDriveSubsystem m_drive;
     final Beeper m_beeper;
 
-    public Machinery2025(TotalCurrentLog currentLog) {
+    public Machinery2025(LoggerFactory root, LoggerFactory field, TotalCurrentLog currentLog) {
+        logger = root;
+        fieldLogger = field;
         LoggerFactory driveLog = logger.name("Drive");
 
         ////////////////////////////////////////////////////////////
@@ -108,7 +108,7 @@ public class Machinery2025 {
                 swerveLocal);
         m_tagViz = new AprilTagVisualizer(
                 driveLog, fieldLogger, m_drive::getState, layout, DriverStation::getAlliance);
-        m_robotViz = new RobotPoseVisualization(
+        new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState(), "robot");
 
         ////////////////////////////////////////////////////////////

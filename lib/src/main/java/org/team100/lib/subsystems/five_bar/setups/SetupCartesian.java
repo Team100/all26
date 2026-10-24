@@ -6,7 +6,6 @@ import static org.team100.lib.util.TriggerUtil.whileTrue;
 
 import org.team100.lib.kinematics.five_bar.Scenario;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.subsystems.five_bar.FiveBarCartesian;
 import org.team100.lib.visualization.FiveBarVisualization;
@@ -21,13 +20,11 @@ public class SetupCartesian implements Runnable {
     private final FiveBarCartesian m_fiveBar;
     private final FiveBarVisualization m_viz;
 
-    public SetupCartesian(Scenario scenario) {
-        final Logging logging = Logging.instance();
-        final LoggerFactory logger = logging.rootLogger;
-        TotalCurrentLog currentLog = new TotalCurrentLog(logger);
+    public SetupCartesian(LoggerFactory log, Scenario scenario) {
+        TotalCurrentLog currentLog = new TotalCurrentLog(log);
         XboxController controller = new XboxController(0);
 
-        m_fiveBar = new FiveBarCartesian(logger, currentLog, scenario);
+        m_fiveBar = new FiveBarCartesian(log, currentLog, scenario);
         m_viz = new FiveBarVisualization(scenario, m_fiveBar::getJointPositions);
         m_fiveBar.setDefaultCommand(m_fiveBar.position(
                 () -> new Translation2d(

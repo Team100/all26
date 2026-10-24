@@ -15,7 +15,6 @@ import org.team100.lib.hid.Buttons2025;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.hid.OperatorXboxControl;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.Logging;
 import org.team100.lib.profile.se2.HolonomicProfileFactory;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.subsystems.prr.commands.FollowJointProfiles;
@@ -31,11 +30,13 @@ import edu.wpi.first.wpilibj.RobotState;
  * Binds buttons to commands. Also creates default commands.
  */
 public class Binder2025 {
-    private static final LoggerFactory rootLogger = Logging.instance().rootLogger;
-    private static final LoggerFactory fieldLogger = Logging.instance().fieldLogger;
+    private final LoggerFactory rootLogger;
+    private final LoggerFactory fieldLogger;
     private final Machinery2025 m_machinery;
 
-    public Binder2025(Machinery2025 machinery) {
+    public Binder2025(LoggerFactory root, LoggerFactory field, Machinery2025 machinery) {
+        rootLogger = root;
+        fieldLogger = field;
         m_machinery = machinery;
     }
 

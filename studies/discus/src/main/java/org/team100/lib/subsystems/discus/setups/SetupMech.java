@@ -17,8 +17,7 @@ public class SetupMech implements Runnable {
     private final ArmVisualization m_viz;
 
     public SetupMech(TotalCurrentLog currentLog) {
-        final Logging logging = Logging.instance();
-        final LoggerFactory logger = logging.rootLogger;
+        final LoggerFactory logger = Logging.root();
         XboxController controller = new XboxController(0);
 
         m_discus = new DiscusMech(logger, currentLog);

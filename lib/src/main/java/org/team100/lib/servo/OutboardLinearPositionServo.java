@@ -160,6 +160,11 @@ public class OutboardLinearPositionServo implements LinearPositionServo {
         actuate(new SetpointsR1(c, c));
     }
 
+    @Override
+    public void play(double freq) {
+        m_mechanism.play(freq);
+    }
+
     /**
      * Pass the setpoint directly to the mechanism's position controller.
      * For outboard control we only use the "next" setpoint.

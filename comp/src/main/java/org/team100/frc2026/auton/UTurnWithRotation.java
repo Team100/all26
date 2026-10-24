@@ -15,7 +15,6 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.trajectory.se2.TrajectorySE2;
 import org.team100.lib.trajectory.se2.TrajectorySE2Factory;
 import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
-import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -30,12 +29,11 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class UTurnWithRotation implements AnnotatedCommand {
     private final LoggerFactory log;
-    private final ControllerSE2 controller;
     private final Machinery machinery;
-    private final List<TimingConstraint> constraints;
     private final TrajectorySE2Factory trajectoryFactory;
     private final PathSE2Factory pathFactory;
     private final TrajectorySE2Planner planner;
+    private final Command command;
 
     public UTurnWithRotation(
             LoggerFactory parent,
@@ -43,13 +41,15 @@ public class UTurnWithRotation implements AnnotatedCommand {
             ControllerSE2 controller,
             Machinery machinery) {
         log = parent.name(name());
-        this.controller = controller;
         this.machinery = machinery;
         // Note slow constraints here
-        constraints = new TimingConstraintFactory(kinodynamics).slow();
-        trajectoryFactory = new TrajectorySE2Factory(constraints);
+        trajectoryFactory = new TrajectorySE2Factory(new TimingConstraintFactory(kinodynamics).slow());
         pathFactory = new PathSE2Factory();
         planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
+        DriveWithTrajectoryFunction n1 = new DriveWithTrajectoryFunction(
+                log, machinery.m_drive, controller,
+                machinery.m_trajectoryViz, this::t1);
+        command = n1.until(n1::isDone);
     }
 
     TrajectorySE2 t1(Pose2d p1) {
@@ -75,10 +75,7 @@ public class UTurnWithRotation implements AnnotatedCommand {
 
     @Override
     public Command command() {
-        DriveWithTrajectoryFunction n1 = new DriveWithTrajectoryFunction(
-                log, machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t1);
-        return n1.until(n1::isDone);
+        return command;
     }
 
     @Override
