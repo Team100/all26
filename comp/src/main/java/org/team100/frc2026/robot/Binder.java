@@ -95,7 +95,7 @@ public class Binder {
                 machinery.m_intakeExtend.MoveForward());
         whileTrue(m_driver::b,
                 machinery.m_intakeExtend.MoveBackward());
-        whileTrue(m_driver::rightTrigger, machinery.m_shooter.shooterFullspeed().withTimeout(2).andThen(
+        whileTrue(m_driver::rightTrigger, machinery.m_shooter.shooterFullspeed().withTimeout(0.8).andThen(
                 parallel(machinery.m_shooter.shooterFullspeed(),
                         machinery.m_conveyor.convey(),
                         machinery.m_feeder.proportional(),
@@ -104,14 +104,14 @@ public class Binder {
 
         whileTrue(m_driver::leftBumper, machinery.m_intakeExtend.goToExtendedPositionEndlessly());
 
-        whileTrue(m_driver::leftTrigger, machinery.m_intake.intake());
+        whileTrue(m_driver::leftTrigger,machinery.m_intake.intake());
         // whileTrue(m_driver::rightBumper, Commands.print("help me"));
         // whileTrue(m_driver::rightBumper, Commands.print("rightBumper"));
         // whileTrue(m_driver::rightTrigger, Commands.print("rightTrigger"));
         // whileTrue(m_driver::a, Commands.print("a"));
         // whileTrue(m_driver::b, Commands.print("b"));
         // whileTrue(m_driver::x, Commands.print("x"));
-        whileTrue(m_driver::y, machinery.m_intake.back());
+        whileTrue(m_driver::y,parallel(machinery.m_intake.back(), machinery.m_conveyor.back()));
         // whileTrue(m_driver::start, Commands.print("start"));
         // whileTrue(m_driver::back, Commands.print("back"));
         // whileTrue(m_driver::leftBumper, Commands.print("leftBumper"));
