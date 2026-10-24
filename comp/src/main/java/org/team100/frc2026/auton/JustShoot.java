@@ -20,7 +20,7 @@ public class JustShoot implements AnnotatedCommand {
             Machinery machinery) {
         m_machinery = machinery;
         command = parallel(
-                m_machinery.m_shooter.auto()).withName("Shoot").withTimeout(5);
+                m_machinery.m_shooter.shooterFullspeed()).withName("Shoot").withTimeout(5);
     }
 
     @Override

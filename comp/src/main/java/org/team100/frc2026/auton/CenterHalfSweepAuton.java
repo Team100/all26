@@ -59,7 +59,7 @@ public class CenterHalfSweepAuton implements AnnotatedCommand {
         // Intake, score
         command = sequence(
                 parallel(
-                        IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(8),
+                        IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(6),
                         // Assumed that the intake shouldn't deploy over the bump
                         sequence(
                                 Commands.waitUntil(() -> FieldConstants2026
