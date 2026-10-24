@@ -135,6 +135,7 @@ python -m pip install opencv-python
 python -m pip install robotpy
 python -m pip install robotpy-apriltag
 python -m pip install robotpy-cscore
+python -m pip install ultralytics 
 ```
 
 ## Install Supervisord

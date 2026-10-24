@@ -63,5 +63,5 @@ class DisplayUtil:
         w, l = size
         vertex_1 = (x - w//2, y - l//2)
         vertex_2 = (x + w//2, y + l//2)
-        cv2.rectangle(image, vertex_1, vertex_2, color)
+        cv2.rectangle(image, vertex_1, vertex_2, color, thickness=3)
 

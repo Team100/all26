@@ -5,6 +5,7 @@ from app.camera.camera_protocol import Camera, Size
 from app.analysis.analysis_protocol import ColorAnalysis
 from app.network.network_protocol import Network
 from app.dashboard.display_util import DisplayUtil
+from ultralytics import YOLO
 
 
 from app.analysis.analysis_protocol import ColorAnalysis # type: ignore
@@ -35,7 +36,11 @@ class Balls(ColorAnalysis):
         self._height: int = size.height
         # network output for target sightings
         self._targets = network.get_target_sender()
-        #self._model = YOLO("best.pt")
+        try:
+            self._model = YOLO("/home/pi/models/ball-detection_ncnn_model", task="detect")
+        except:
+            self._model = None
+            print("Model loading failed")
 
     @override
     def analyze_color(
@@ -50,7 +55,12 @@ class Balls(ColorAnalysis):
         :img: 24-bit color, distorted, for detection
         :img_display: distorted, for display, annotated.
         :servertime: drift-corrected server-time microsecond timestamp"""
-        DisplayUtil.rectangle(img_display, (10, 10), (2, 2), (1, 1, 1))
+        # DisplayUtil.rectangle(img_display, (200, 200), (50, 50), (0, 255, 0))
+        if self._model is not None:
+            result = self._model.predict(source=img, imgsz=512, conf=0.5, verbose=False)[0] # type: ignore
+            for(cx, cy, w, h) in result.boxes.xywh.tolist(): # type: ignore
+                if img_display is not None:
+                    DisplayUtil.rectangle(img_display, (int(cx), int(cy)), (int(w), int(h)), (0, 255, 0)) # type: ignore
 #         result = self._model.predict(source=img, conf=0.25, verbose=False)[0]
 
 #         names.getattr(self._model,"names",{}) or {}

@@ -69,7 +69,7 @@ class InterpreterFactory:
                     network,
                     timestamps,
                     None,
-                    Balls(cam, network, object_lower, object_higher),
+                    Balls(cam, network),
                 )
             case (
                 Identity.DEV
@@ -93,7 +93,7 @@ class InterpreterFactory:
                     AprilTags(identity, cam, network),
                     None,
                 )
-            case Identity.CAMERA_FRONT | Identity.DEV2:
+            case Identity.CAMERA_FRONT | Identity.DEV2 | Identity.BALL_DETECT:
                 return DualInterpreter(
                     cam,
                     display1,
@@ -101,7 +101,7 @@ class InterpreterFactory:
                     network,
                     timestamps,
                     AprilTags(identity, cam, network),
-                    Balls(cam, network, object_lower, object_higher),
+                    Balls(cam, network),
                 )
             case Identity.CAMERA_2A:
                 return DualInterpreter(
