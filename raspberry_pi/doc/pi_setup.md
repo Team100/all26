@@ -6,6 +6,29 @@ use the unmaintained "WPILibPi" distribution.
 We use only the Raspberry Pi 5.  We have a bunch of 4's,
 but we don't use them, they're too slow.
 
+## Shortcut: build the image on a Linux laptop
+
+On a Debian or Ubuntu laptop, `image/build_image.sh` does everything
+in this doc up to "Install Supervisord" (inclusive), using
+[rpi-image-gen](https://github.com/raspberrypi/rpi-image-gen).
+It installs its own dependencies, asks for the camera's IP address,
+and writes the SD card:
+
+```
+cd raspberry_pi/image
+./build_image.sh
+```
+
+The first run takes a while; after that, making a card for another Pi
+is quick.  Run `./build_image.sh --help` for options.  Then skip to
+"Set up your laptop network" below.
+
+The script writes the same `bootfs` files described below
+(`network-config`, plus `user-data` with the hostname), so you can
+still edit them from any laptop.  Unlike stock Raspberry Pi OS,
+changes to `network-config` take effect on every boot, not just the
+first.
+
 ## Burn the SD Card
 
 * Make sure your laptop is connected to the internet.
@@ -135,6 +158,9 @@ python -m pip install opencv-python
 python -m pip install robotpy
 python -m pip install robotpy-apriltag
 python -m pip install robotpy-cscore
+python -m pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
+python -m pip install ultralytics==8.4.187
+python -m pip install ncnn pnnx==20260526
 ```
 
 ## Install Supervisord

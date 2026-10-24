@@ -2,3 +2,6 @@
 *.swp
 build/
 __pycache__
+image/.rpi-image-gen/
+image/work/
+image/out/

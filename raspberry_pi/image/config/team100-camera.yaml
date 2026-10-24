@@ -1,0 +1,42 @@
+# Team 100 camera Pi image, equivalent to doc/pi_setup.md.
+#
+# Build it with ../build_image.sh, which also writes the per-Pi cloud-init
+# files (hostname and network-config) into each copy of the image.
+
+include:
+  file: trixie-minbase.yaml
+
+device:
+  layer: rpi5
+  # cloud-init sets the real name from user-data on the boot partition.
+  hostname: camera
+  user1: pi
+  # Raspberry Pi OS default.  The password is set by the team100-camera layer.
+  user1sudo: nopasswd
+
+image:
+  name: team100-camera
+  # Find root and boot by PARTUUID, like Raspberry Pi OS.  The default
+  # (/dev/disk/by-slot/*) never appeared on a real Pi 5: the initramfs
+  # gave up waiting for /dev/disk/by-slot/system.
+  devid_scheme: partuuid
+
+deploy:
+  compression: none
+
+locale:
+  default: en_US.UTF-8
+  keyboard_keymap: us
+  keyboard_layout: English (US)
+  timezone: America/Los_Angeles
+
+ssh:
+  # Password login, as with the Imager "enable SSH with password" option.
+  pubkey_only: n
+
+layer:
+  base: team100-base
+  app: team100-camera
+
+team100:
+  supervisor_conf: ${@SRCROOT}/../supervisor/supervisord.conf

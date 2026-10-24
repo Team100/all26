@@ -1,0 +1,82 @@
+# METABEGIN
+# X-Env-Layer-Name: team100-camera
+# X-Env-Layer-Category: app
+# X-Env-Layer-Desc: Team 100 camera Pi. Implements doc/pi_setup.md: wifi and
+#  bluetooth off, cloud-init reading network-config etc from the boot
+#  partition as on Raspberry Pi OS, camera packages, a python venv with
+#  robotpy, and supervisord.
+# X-Env-Layer-Version: 1.0.0
+# X-Env-Layer-Requires: device-user-admin,network-manager,rpi-boot-firmware
+#
+# X-Env-VarPrefix: team100
+#
+# X-Env-Var-password: raspberry
+# X-Env-Var-password-Desc: Login password for the user1 account. Set here
+#  instead of device.user1pass because "raspberry" doesn't meet that
+#  variable's complexity rules.
+# X-Env-Var-password-Required: n
+# X-Env-Var-password-Valid: string
+# X-Env-Var-password-Set: y
+#
+# X-Env-Var-supervisor_conf:
+# X-Env-Var-supervisor_conf-Desc: Path on the build host to the
+#  supervisord.conf to install as /etc/supervisor/supervisord.conf.
+# X-Env-Var-supervisor_conf-Required: y
+# X-Env-Var-supervisor_conf-Valid: string
+# X-Env-Var-supervisor_conf-Set: y
+#
+# X-Env-Var-pip_packages: numpy opencv-python robotpy robotpy-apriltag robotpy-cscore ultralytics==8.4.187 ncnn pnnx==20260526
+# X-Env-Var-pip_packages-Desc: Space-separated packages to pip install into
+#  the venv at /home/<user1>/env.  ncnn and pnnx let `yolo export
+#  format=ncnn` work on a Pi without internet.  Each ultralytics release
+#  wants one exact pnnx version (see check_requirements in its
+#  ultralytics/utils/export/ncnn.py), so bump the two together.
+# X-Env-Var-pip_packages-Required: n
+# X-Env-Var-pip_packages-Valid: string
+# X-Env-Var-pip_packages-Set: y
+#
+# X-Env-Var-torch_packages: torch torchvision
+# X-Env-Var-torch_packages-Desc: Packages to pip install from PyTorch's
+#  CPU-only index before pip_packages, so that ultralytics doesn't pull in
+#  PyPI's arm64 torch, which brings gigabytes of CUDA libraries.
+# X-Env-Var-torch_packages-Required: n
+# X-Env-Var-torch_packages-Valid: string
+# X-Env-Var-torch_packages-Set: y
+# METAEND
+---
+# team100-camera.d/customize.overlay holds files copied verbatim into the
+# image, including default cloud-init files in /boot/firmware that
+# build_image.sh replaces for each Pi.
+mmdebstrap:
+  packages:
+    - libcamera-dev
+    - python3-picamera2
+    - python3-venv
+    - python3-pip
+    - supervisor
+    # Raspberry Pi OS's cloud-init setup: NoCloud datasource reading
+    # /boot/firmware, netplan rendering to NetworkManager.
+    - cloud-init
+    - rpi-cloud-init-mods
+    # growpart, for team100-growroot
+    - cloud-guest-utils
+  customize-hooks:
+    - printf '%s:%s\n' "$IGconf_device_user1" "$IGconf_team100_password" | chroot $1 chpasswd
+    # FRC prohibits the radios.
+    - |-
+      set -eu
+      cfg=$1/boot/firmware/config.txt
+      test -f "$cfg"
+      { printf '# Team 100: FRC prohibits wifi and bluetooth\n'
+        printf 'dtoverlay=disable-wifi-pi5\ndtoverlay=disable-bt-pi5\n\n'
+        cat "$cfg"; } > "$cfg.new"
+      mv "$cfg.new" "$cfg"
+    - |-
+      set -eu
+      uchroot $1 "python3 -m venv --system-site-packages \$HOME/env \
+        && \$HOME/env/bin/python -m pip install --no-cache-dir --upgrade pip \
+        && \$HOME/env/bin/python -m pip install --no-cache-dir \
+          --index-url https://download.pytorch.org/whl/cpu $IGconf_team100_torch_packages \
+        && \$HOME/env/bin/python -m pip install --no-cache-dir $IGconf_team100_pip_packages"
+    - install -m 644 "$IGconf_team100_supervisor_conf" $1/etc/supervisor/supervisord.conf
+    - $BDEBSTRAP_HOOKS/enable-units "$1" supervisor team100-growroot
