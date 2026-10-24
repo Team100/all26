@@ -25,12 +25,23 @@
 # X-Env-Var-supervisor_conf-Valid: string
 # X-Env-Var-supervisor_conf-Set: y
 #
-# X-Env-Var-pip_packages: numpy opencv-python robotpy robotpy-apriltag robotpy-cscore
+# X-Env-Var-pip_packages: numpy opencv-python robotpy robotpy-apriltag robotpy-cscore ultralytics==8.4.187 ncnn pnnx==20260526
 # X-Env-Var-pip_packages-Desc: Space-separated packages to pip install into
-#  the venv at /home/<user1>/env.
+#  the venv at /home/<user1>/env.  ncnn and pnnx let `yolo export
+#  format=ncnn` work on a Pi without internet.  Each ultralytics release
+#  wants one exact pnnx version (see check_requirements in its
+#  ultralytics/utils/export/ncnn.py), so bump the two together.
 # X-Env-Var-pip_packages-Required: n
 # X-Env-Var-pip_packages-Valid: string
 # X-Env-Var-pip_packages-Set: y
+#
+# X-Env-Var-torch_packages: torch torchvision
+# X-Env-Var-torch_packages-Desc: Packages to pip install from PyTorch's
+#  CPU-only index before pip_packages, so that ultralytics doesn't pull in
+#  PyPI's arm64 torch, which brings gigabytes of CUDA libraries.
+# X-Env-Var-torch_packages-Required: n
+# X-Env-Var-torch_packages-Valid: string
+# X-Env-Var-torch_packages-Set: y
 # METAEND
 ---
 # team100-camera.d/customize.overlay holds files copied verbatim into the
@@ -64,6 +75,8 @@ mmdebstrap:
       set -eu
       uchroot $1 "python3 -m venv --system-site-packages \$HOME/env \
         && \$HOME/env/bin/python -m pip install --no-cache-dir --upgrade pip \
+        && \$HOME/env/bin/python -m pip install --no-cache-dir \
+          --index-url https://download.pytorch.org/whl/cpu $IGconf_team100_torch_packages \
         && \$HOME/env/bin/python -m pip install --no-cache-dir $IGconf_team100_pip_packages"
     - install -m 644 "$IGconf_team100_supervisor_conf" $1/etc/supervisor/supervisord.conf
     - $BDEBSTRAP_HOOKS/enable-units "$1" supervisor team100-growroot

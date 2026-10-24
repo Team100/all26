@@ -154,6 +154,9 @@ python -m pip install opencv-python
 python -m pip install robotpy
 python -m pip install robotpy-apriltag
 python -m pip install robotpy-cscore
+python -m pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
+python -m pip install ultralytics==8.4.187
+python -m pip install ncnn pnnx==20260526
 ```
 
 ## Install Supervisord
