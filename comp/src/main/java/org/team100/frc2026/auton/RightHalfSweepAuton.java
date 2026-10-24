@@ -59,13 +59,13 @@ public class RightHalfSweepAuton implements AnnotatedCommand {
         // Intake, score
         command = sequence(
                 parallel(
-                        IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(8),
+                        IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(3),
                         // Assumed that the intake shouldn't deploy over the bump
                         sequence(
                                 Commands.waitUntil(() -> FieldConstants2026
                                         .isInNeutralZone(machinery.m_drive.getState().translation())),
-                                (machinery.m_intakeExtend.goToExtendedPosition()
-                                        .andThen(machinery.m_intake.intake())).withTimeout(3),
+                                (machinery.m_intakeExtend.MoveForward().withTimeout(1)),
+                                    (machinery.m_intake.intake()).withTimeout(3),
 
                                 Commands.waitUntil(() -> FieldConstants2026
                                         .isInAllianceZone(machinery.m_drive.getState().translation())),
@@ -86,11 +86,11 @@ public class RightHalfSweepAuton implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
                         new DirectionSE2(1, 0, 0), Math.PI),
-                new WaypointSE2(AutonPositions.ABOVE_BALL_FIELD,
+                new WaypointSE2(AutonPositions.BELOW_BALL_FIELD,
                         new DirectionSE2(1, 1, 0), 1),
                 new WaypointSE2(AutonPositions.MIDDLE_BALL_FIELD,
                         new DirectionSE2(0, -1, 0), 1),
-                new WaypointSE2(new Pose2d(6.5, 5.5, new Rotation2d(0 * (Math.PI / 180))),
+                new WaypointSE2(AutonPositions.BELOW_BALL_FIELD,
                         new DirectionSE2(-1, 0, 0), 1),
                 new WaypointSE2(StartingPositions.RIGHT_TRENCH,
                         new DirectionSE2(-1, 0, 0), 1),

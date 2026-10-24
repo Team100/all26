@@ -33,7 +33,7 @@ public class Conveyor extends SubsystemBase implements Music {
     private static final double TOLERANCE_M_S = 1;
     private static final double GEAR_RATIO = 18.0/36.0;
     private static final double WHEEL_DIAMETER_M = 0.05;
-    private static final double NORMAL_SPEED = 2.0;
+    private static final double NORMAL_SPEED = 4.0;
 
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
@@ -82,7 +82,7 @@ public class Conveyor extends SubsystemBase implements Music {
     public Command convey() {
         return startRun(
                 this::reset,
-                () -> setVelocityProfiled(4.0))
+                () -> setVelocityProfiled(NORMAL_SPEED))
                 .withName("Convey");
     }
 
@@ -90,7 +90,7 @@ public class Conveyor extends SubsystemBase implements Music {
     public Command back() {
         return startRun(
                 this::reset,
-                () -> setVelocityProfiled(-5))
+                () -> setVelocityProfiled(-NORMAL_SPEED))
                 .withName("Conveyor back");
     }
 
