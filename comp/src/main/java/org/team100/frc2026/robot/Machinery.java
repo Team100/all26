@@ -48,7 +48,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
  * that the Binder and Auton classes may want to use.
  */
 public class Machinery implements AutoCloseable {
-    private final AprilTagVisualizer m_tagViz;
     private final SwerveModuleCollection m_modules;
     private final GroundTruth m_groundTruth;
     private final StateEstimator m_proxyEstimator;
@@ -102,7 +101,7 @@ public class Machinery implements AutoCloseable {
                 driveLog,
                 m_proxyEstimator,
                 swerveLocal);
-        m_tagViz = new AprilTagVisualizer(
+        new AprilTagVisualizer(
                 driveLog, fieldLogger, m_drive::getState, layout, DriverStation::getAlliance);
         new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState(), "robot");
