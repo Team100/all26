@@ -18,6 +18,8 @@ public interface Gyro {
      * 
      * Typical published values range from 1e-4 to 5e-3 rad/s.
      * 
+     * This should be a constant.
+     * 
      * @see https://stechschulte.net/2023/10/11/imu-specs.html
      */
     double white_noise();
@@ -26,6 +28,8 @@ public interface Gyro {
      * Noise standard deviation of the gyro bias (i.e. drift), in rad/s.
      * 
      * This is the "bias stability", typically 10 degrees/hour or 5e-5 rad/s.
+     * 
+     * This should be a constant.
      * 
      * @see https://stechschulte.net/2023/10/11/imu-specs.html
      */

@@ -1,6 +1,7 @@
 package org.team100.frc2025.Climber;
 
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.Logging;
 
 import org.wpilib.smartdashboard.Mechanism2d;
@@ -10,7 +11,7 @@ import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.util.Color;
 import org.wpilib.util.Color8Bit;
 
-public class ClimberVisualization implements Runnable {
+public class ClimberVisualization {
 
     private final Climber2025 m_climber;
     private final ClimberIntake m_intake;
@@ -32,10 +33,10 @@ public class ClimberVisualization implements Runnable {
         m_wheels = new MechanismLigament2d("wheels", 10, 0);
         m_arm.append(m_wheels);
         SmartDashboard.putData("Climber", m_view);
+        LogPoller.register(this::run);
     }
 
-    @Override
-    public void run() {
+    private void run() {
         if (Logging.admit(Level.TRACE)) {
             m_arm.setAngle(Math.toDegrees(m_climber.angle()));
             m_wheels.setColor(m_intake.isIn()

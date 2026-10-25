@@ -1,7 +1,5 @@
 package org.team100.frc2025.robot;
 
-import java.util.function.UnaryOperator;
-
 import org.team100.frc2025.CalgamesArm.CalgamesMech;
 import org.team100.frc2025.CalgamesArm.CalgamesViz;
 import org.team100.frc2025.Climber.Climber2025;
@@ -11,11 +9,13 @@ import org.team100.frc2025.grip.Manipulator;
 import org.team100.frc2025.indicator.LEDIndicator;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.indicator.Beeper;
-import org.team100.lib.localization.AddOdometryNoise;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.AprilTagVisualizer;
 import org.team100.lib.localization.FusedEstimator;
 import org.team100.lib.localization.GroundTruth;
+import org.team100.lib.localization.NoEstimate;
+import org.team100.lib.localization.StateEstimator;
+import org.team100.lib.localization.StateEstimatorProxy;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.sensor.gyro.Gyro;
@@ -52,9 +52,6 @@ public class Machinery2025 {
     private final LoggerFactory logger;
     private final LoggerFactory fieldLogger;
 
-    private final AprilTagVisualizer m_tagViz;
-    private final Runnable m_combinedViz;
-    private final Runnable m_climberViz;
     private final SwerveModuleCollection m_modules;
     private final LEDIndicator m_leds;
     private final GroundTruth m_groundTruth;
@@ -93,20 +90,21 @@ public class Machinery2025 {
                 driveLog,
                 m_swerveKinodynamics,
                 m_modules);
-        UnaryOperator<Twist2d> odometryNoise = RobotBase.isReal() ? UnaryOperator.identity() : new AddOdometryNoise();
-        FusedEstimator estimate = new FusedEstimator(
+        FusedEstimator fusedEstimate = new FusedEstimator(
                 driveLog,
                 fieldLogger,
                 m_swerveKinodynamics,
-                odometryNoise,
+                RobotBase.isSimulation(),
                 layout,
                 gyro,
                 swerveLocal);
+        StateEstimator proxyEstimator = new StateEstimatorProxy(
+                fusedEstimate, new NoEstimate());
         m_drive = new SwerveDriveSubsystem(
                 driveLog,
-                estimate,
+                proxyEstimator,
                 swerveLocal);
-        m_tagViz = new AprilTagVisualizer(
+        new AprilTagVisualizer(
                 driveLog, fieldLogger, m_drive::getState, layout, MatchState::getAlliance);
         new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState(), "robot");
@@ -115,7 +113,7 @@ public class Machinery2025 {
         //
         // TARGETING
         //
-        m_targets = new Targets(driveLog, fieldLogger, 0.2, (t) -> m_drive.getState(t));
+        m_targets = new Targets(driveLog, fieldLogger, 0.2, m_drive::getState);
 
         //////////////////////////////////////////////////////////
         //
@@ -131,8 +129,8 @@ public class Machinery2025 {
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
-        m_combinedViz = new CalgamesViz(m_mech);
-        m_climberViz = new ClimberVisualization(m_climber, m_climberIntake);
+        new CalgamesViz(m_mech);
+        new ClimberVisualization(m_climber, m_climberIntake);
 
         //////////////////////////////////////////////////////////
         //
@@ -151,9 +149,6 @@ public class Machinery2025 {
     public void periodic() {
         m_groundTruth.periodic();
         m_leds.periodic();
-        m_combinedViz.run();
-        m_climberViz.run();
-        m_tagViz.update();
     }
 
     public void close() {

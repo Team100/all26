@@ -1,10 +1,9 @@
 package org.team100.lib.localization;
 
 import java.util.Map;
-import java.util.function.UnaryOperator;
 
 import org.team100.lib.coherence.Cache;
-import org.team100.lib.coherence.SideEffect;
+import org.team100.lib.coherence.ObjectCache;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
@@ -19,12 +18,14 @@ import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VariableR1;
 import org.wpilib.driverstation.MatchState;
 import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Twist2d;
 
 /**
  * Provides state estimates after updating vision and odometry.
  * 
  * The underlying updaters use "Fusors" and replay.
+ * 
+ * The result is stored as an immutable copy, which is a step
+ * towards the GTSAM way, where the computation is elsewhere.
  */
 public class FusedEstimator implements StateEstimator {
     private static final boolean DEBUG = false;
@@ -33,17 +34,14 @@ public class FusedEstimator implements StateEstimator {
     private final Gyro m_gyro;
     private final SwerveLocal m_swerveLocal;
     private final SwerveHistory m_history;
-    private final AprilTagCornerRobotLocalizer m_localizer;
-    private final OdometryUpdater m_odometryUpdate;
-    /** Side effect mutates history. */
-    private final SideEffect m_localizerCache;
-    /** Side effect mutates history. */
-    private final SideEffect m_odometryCache;
+    private final AprilTagCornerReader m_tagReader;
+    private final GardenUpdater m_updater;
+    private final ObjectCache<ImmutableSwerveHistory> m_immutable;
 
     public FusedEstimator(LoggerFactory driveLog,
             LoggerFactory fieldLogger,
             SwerveKinodynamics swerveKinodynamics,
-            UnaryOperator<Twist2d> odometryNoise,
+            boolean noisy,
             AprilTagFieldLayoutWithCorrectOrientation layout,
             Gyro gyro,
             SwerveLocal swerveLocal) {
@@ -58,27 +56,36 @@ public class FusedEstimator implements StateEstimator {
                 Pose2d.kZero,
                 IsotropicNoiseSE2.high(),
                 Takt.get());
-        m_odometryUpdate = new OdometryUpdater(
+        OdometryEstimator odometryEstimate = new OdometryEstimator(
                 driveLog,
                 swerveKinodynamics,
-                gyro,
-                m_history,
-                swerveLocal::positions,
-                odometryNoise,
+                gyro.white_noise(),
+                gyro.bias_noise(),
+                m_history::lowerEntry,
+                noisy,
                 false);
-        NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(
-                driveLog, m_history, m_odometryUpdate);
-        m_localizer = new AprilTagCornerRobotLocalizer(
-                driveLog,
-                layout,
-                visionUpdater,
-                MatchState::getAlliance);
-        m_localizerCache = Cache.ofSideEffect(m_localizer::update);
-        m_odometryCache = Cache.ofSideEffect(m_odometryUpdate::update);
+        OdometryReplayer or = new OdometryReplayer(m_history, odometryEstimate);
+        NudgingVisionEstimator visionEstimate = new NudgingVisionEstimator(
+                driveLog, m_history::getRecord);
+        m_tagReader = new AprilTagCornerReader(
+                driveLog, layout, MatchState::getAlliance);
+        HistoryGardener gardener = new HistoryGardener(
+                m_history, odometryEstimate, or, visionEstimate);
+        m_updater = new GardenUpdater(
+                m_gyro, m_swerveLocal::positions, m_tagReader::read, gardener);
+        m_immutable = Cache.of(this::makeImmutable);
+    }
+
+    /** Update the history and then make a copy */
+    ImmutableSwerveHistory makeImmutable() {
+        // mutates history
+        m_updater.update(Takt.get());
+        return m_history.immutableCopy();
     }
 
     public Map<Double, SwerveState> all() {
-        return m_history.exclusiveTailMap(0);
+        ImmutableSwerveHistory h = m_immutable.get();
+        return h.all();
     }
 
     /**
@@ -90,22 +97,21 @@ public class FusedEstimator implements StateEstimator {
      * arbitrarily smooth.
      */
     @Override
-    public StateSE2 get(double timestampS) {
+    public StateSE2 getState(double timestampS) {
         // run our dependencies if they haven't already
-        m_localizerCache.run();
-        m_odometryCache.run();
+        ImmutableSwerveHistory h = m_immutable.get();
         final StateSE2 state;
         if (Experiments.INSTANCE.enabled(Experiment.ImputeVelocity)) {
             // Use consecutive poses
-            StateSE2 state0 = m_history.get(timestampS - DT);
-            StateSE2 state1 = m_history.get(timestampS);
+            StateSE2 state0 = h.get(timestampS - DT);
+            StateSE2 state1 = h.get(timestampS);
             VelocitySE2 v = VelocitySE2.velocity(
                     state0.pose(),
                     state1.pose(), DT);
             state = new StateSE2(state1.pose(), v);
         } else {
             // Use the history value
-            state = m_history.get(timestampS);
+            state = h.get(timestampS);
         }
         if (DEBUG) {
             System.out.printf("FreshSwerveEstimate.update() estimated pose: %s\n", state);
@@ -126,8 +132,7 @@ public class FusedEstimator implements StateEstimator {
                 Takt.get(),
                 m_gyro.getYawNWU(),
                 VariableR1.fromVariance(0, 1));
-        m_localizerCache.reset();
-        m_odometryCache.reset();
+        m_immutable.reset();
     }
 
     /**
@@ -135,7 +140,11 @@ public class FusedEstimator implements StateEstimator {
      */
     @Override
     public void setHeedRadiusM(double heedRadiusM) {
-        m_localizer.setHeedRadiusM(heedRadiusM);
+        m_tagReader.setHeedRadiusM(heedRadiusM);
+    }
+
+    @Override
+    public void close() {
     }
 
 }

@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,10 +66,8 @@ class DriveWithTrajectoryListFunctionTest implements Timeless {
 
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
 
-        UnaryOperator<Twist2d> odometryNoise = UnaryOperator.identity();
-
         StateEstimator estimate = new FusedEstimator(
-                logger, fieldLogger, swerveKinodynamics, odometryNoise, layout, gyro, swerveLocal);
+                logger, fieldLogger, swerveKinodynamics, false, layout, gyro, swerveLocal);
 
         SwerveDriveSubsystem drive = new SwerveDriveSubsystem(
                 logger,

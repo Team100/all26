@@ -1,7 +1,7 @@
 package org.team100.frc2025.CalgamesArm;
 
-
 import org.team100.lib.geometry.prr.PRRConfig;
+import org.team100.lib.logging.LogPoller;
 
 import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.smartdashboard.Mechanism2d;
@@ -9,7 +9,7 @@ import org.wpilib.smartdashboard.MechanismLigament2d;
 import org.wpilib.smartdashboard.MechanismRoot2d;
 import org.wpilib.smartdashboard.SmartDashboard;
 
-public class CalgamesViz implements Runnable {
+public class CalgamesViz {
     private static final double SCALE = 100;
     private static final Translation2d ORIGIN = new Translation2d(50, 0);
     private final CalgamesMech m_mech;
@@ -40,10 +40,10 @@ public class CalgamesViz implements Runnable {
                 wristAngle(q));
         m_arm.append(m_hand);
         SmartDashboard.putData("View", m_view);
+        LogPoller.register(this::run);
     }
 
-    @Override
-    public void run() {
+    private void run() {
         PRRConfig q = m_mech.getConfig();
         m_elevator.setLength(shoulderHeight(q));
         m_arm.setAngle(shoulderAngle(q));
