@@ -14,7 +14,6 @@ import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
-import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.music.Music;
 import org.team100.lib.music.Player;
@@ -32,7 +31,7 @@ import org.wpilib.framework.RobotBase;
 public class Shooter extends SubsystemBase implements Music {
     private static final boolean ENABLE = true;
     private static final boolean DEBUG = false;
-    private static final double TUNING_SETTING = 0;
+    private static final double TUNING_SETTING = 7;
     private static final double TEST_SPEED = 16;
     private static final CanId CAN_ID_1 = new CanId(13);
     private static final CanId CAN_ID_2 = new CanId(14);
@@ -44,7 +43,7 @@ public class Shooter extends SubsystemBase implements Music {
     private static final double GEAR_RATIO = 24.0 / 18.0;
     private static final double DRUM_DIAMETER_M = .089;
 
-    private static final double FULL_SPEED = 13;
+    private static final double FULL_SPEED = 8.8;
 
     private final Supplier<OptionalDouble> m_speed;
 
@@ -76,7 +75,7 @@ public class Shooter extends SubsystemBase implements Music {
 
         // tuned 3/12/26
         VelocityProfileR1 profile = new CurrentLimitedExponentialVelocityProfileR1(
-                60, 40, 20, 20);
+                60, 60, 20, 20);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
         final Motor m1;
@@ -130,7 +129,7 @@ public class Shooter extends SubsystemBase implements Music {
     public Command shooterFullspeed() {
         return startRun(
                 this::reset,
-                 () -> setVelocityProfiled(FULL_SPEED))
+                () -> setVelocityProfiled(FULL_SPEED))
                 // () -> dutyCycleAll())
                 .withName("Shoot full speed");
     }
@@ -205,7 +204,7 @@ public class Shooter extends SubsystemBase implements Music {
      * Note this is quite noisy.
      */
     public double meanError() {
-        return (m_servo1.error() + m_servo2.error() + m_servo3.error()+m_servo4.error()) / 4;
+        return (m_servo1.error() + m_servo2.error() + m_servo3.error() + m_servo4.error()) / 4;
     }
 
     public Boolean atSpeed() {

@@ -20,4 +20,8 @@ public class Polyphony {
         if (i < m_players.length)
             m_players[i].play(freq);
     }
+
+    public int size() {
+        return m_players.length;
+    }
 }

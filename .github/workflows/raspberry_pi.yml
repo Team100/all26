@@ -30,6 +30,9 @@ jobs:
       - run: pip install robotpy-cscore
       - run: pip install robotpy-apriltag
       - run: pip install opencv-python
+      - run: pip install ultralytics==8.4.187
+      - run: pip install ncnn
+      - run: pip install pnnx==20260526
         
       - run: pytest --forked -vv -rA --full-trace tests/analysis
         if: ${{ always() }}

@@ -1,0 +1,11 @@
+[Unit]
+Description=Team 100: grow root filesystem to fill the SD card
+ConditionPathExists=!/var/lib/team100/growroot.done
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/team100-growroot
+
+[Install]
+WantedBy=multi-user.target

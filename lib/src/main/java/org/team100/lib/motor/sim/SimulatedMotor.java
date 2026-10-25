@@ -210,5 +210,7 @@ public class SimulatedMotor implements Motor {
 
     @Override
     public void play(double freq) {
+        if (DEBUG)
+            System.out.printf("%s: %.0f\n", m_log.getRoot(), freq);
     }
 }

@@ -22,7 +22,6 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
 import org.team100.lib.targeting.CachedSolution;
 import org.team100.lib.targeting.Solution;
-
 import org.wpilib.command2.Command;
 
 /**
@@ -63,7 +62,6 @@ public class DriveMovingTargetLock extends Command {
             SwerveDriveSubsystem drive) {
         LoggerFactory log = parent.type(this);
         m_log_aiming = log.booleanLogger(Level.TRACE, "aiming");
-        log.doubleLogger(Level.TRACE, "max omega").log(swerveKinodynamics::getMaxAngleSpeedRad_S);
         m_swerveKinodynamics = swerveKinodynamics;
         m_twistSupplier = twistSupplier;
         m_limiter = limiter;
@@ -86,6 +84,15 @@ public class DriveMovingTargetLock extends Command {
         actuate(getOmega());
     }
 
+    @Override
+    public void end(boolean interrupted) {
+        // don't appear to be aiming when the command is not running
+        m_log_aiming.log(() -> false);
+    }
+
+    /**
+     * Compute omega override; null if there is no feasible solution.
+     */
     private Double getOmega() {
         Optional<Solution> oSolution = m_solver.get();
         if (oSolution.isEmpty()) {
@@ -101,9 +108,9 @@ public class DriveMovingTargetLock extends Command {
     }
 
     /**
-     * Null to skip override.
+     * Actuate the drivetrain with driver input and an optional omega override.
      * 
-     * @param omega override. avoid noise in this input.
+     * @param omega override, null means don't override.
      */
     private void actuate(Double omega) {
         // Clip and scale user input.
@@ -134,7 +141,5 @@ public class DriveMovingTargetLock extends Command {
 
         // Actuate the drivetrain.
         m_drive.set(new VelocityControlSE2(v, a));
-
     }
-
 }

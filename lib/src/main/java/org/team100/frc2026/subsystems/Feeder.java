@@ -47,7 +47,7 @@ public class Feeder extends SubsystemBase implements Music {
         m_Shooter = shooter;
         // equivalent linear dynamics for the actual drum inertia.
         PDynamics dynamics = PDynamics.drum(0.001, 0.025);
-        VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(40);
+        VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(60);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
         final Motor m1;

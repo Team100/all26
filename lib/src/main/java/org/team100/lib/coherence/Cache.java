@@ -10,7 +10,6 @@ import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.Logging;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 
 /**
  * List of caches to be managed coherently.
@@ -95,7 +94,7 @@ public class Cache {
         sideEffects.clear();
     }
 
-    /////////////////////////////////////////////////
+    ///////////////////////////////////////////////
 
     /**
      * Forgets all the stored values.
@@ -121,11 +120,12 @@ public class Cache {
             BaseStatusSignal.refreshAll(signal);
         }
         // if (!signals.isEmpty()) {
-        //     StatusCode result = BaseStatusSignal.refreshAll(signals.toArray(new BaseStatusSignal[0]));
-        //     if (result != StatusCode.OK) {
-        //   //      System.out.printf("WARNING: RefreshAll failed: %s: %s\n",
-        //    //             result.toString(), result.getDescription());
-        //     }
+        // StatusCode result = BaseStatusSignal.refreshAll(signals.toArray(new
+        // BaseStatusSignal[0]));
+        // if (result != StatusCode.OK) {
+        // // System.out.printf("WARNING: RefreshAll failed: %s: %s\n",
+        // // result.toString(), result.getDescription());
+        // }
         // }
         for (ObjectCache<?> r : caches) {
             if (DEBUG) {

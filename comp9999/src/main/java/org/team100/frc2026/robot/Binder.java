@@ -3,13 +3,11 @@ package org.team100.frc2026.robot;
 import static org.team100.lib.util.TriggerUtil.onTrue;
 import static org.team100.lib.util.TriggerUtil.whileTrue;
 
-import org.team100.lib.controller.r1.AzimuthController;
 import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.FullStateFeedback;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
-import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
 import org.wpilib.system.RobotController;
 
@@ -51,8 +49,8 @@ public class Binder {
         ///
         /// DISORIENT
         ///
-        /// Back: nudge the rotation towards zero.
-        /// Start: forget the current pose, listen to camera input.
+        /// Back: nudge the rotation towards zero. Start: forget the current pose, listen
+        /// to camera input.
         ///
         /// both together: warp to the origin. FOR TESTING ONLY.
 
@@ -64,10 +62,10 @@ public class Binder {
         ///
         /// DEFENSE X POSITION
         ///
-        whileTrue(m_driver::povDown, machinery.m_drive.defend());
+        // whileTrue(m_driver::povDown, machinery.m_drive.defend());
         whileTrue(m_driver::leftBumper, machinery.m_subsystem.velocity(-1).withName("negative"));
         whileTrue(m_driver::rightBumper, machinery.m_subsystem.velocity(1).withName("positive"));
-        // whileTrue(m_driver::back, machinery.m_subsystem.voltage(0.5).withName("voltage"));
+        whileTrue(m_driver::back, machinery.m_subsystem.voltage(0.5).withName("voltage"));
 
         ////////////////////////////////////////////////////
         ///
@@ -78,21 +76,21 @@ public class Binder {
         FeedbackR1 thetaFeedback = new FullStateFeedback(
                 log, 6, 0.1, true, 0.025, 0.25);
 
-        // button 6
-        AzimuthController aim = new AzimuthController(
-                log,
-                machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
-                thetaFeedback);
-        whileTrue(() -> m_driver.leftBumper(),
-                new DriveMovingTargetLock(
-                        log,
-                        machinery.m_swerveKinodynamics,
-                        aim,
-                        m_driver::velocity,
-                        limiter,
-                        machinery.m_cachedSolution,
-                        machinery.m_drive)
-                        .withName("Target lock"));
+        // // button 6
+        // AzimuthController aim = new AzimuthController(
+        // log,
+        // machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
+        // thetaFeedback);
+        // whileTrue(() -> m_driver.leftBumper(),
+        // new DriveMovingTargetLock(
+        // log,
+        // machinery.m_swerveKinodynamics,
+        // aim,
+        // m_driver::velocity,
+        // limiter,
+        // machinery.m_cachedSolution,
+        // machinery.m_drive)
+        // .withName("Target lock"));
 
     }
 
