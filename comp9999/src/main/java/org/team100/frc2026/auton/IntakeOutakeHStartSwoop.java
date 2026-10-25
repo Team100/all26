@@ -1,6 +1,6 @@
 package org.team100.frc2026.auton;
 
-import static org.wpilib.command2.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,17 +22,18 @@ import org.team100.lib.trajectory.se2.constraint.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
-import org.wpilib.command2.Command;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
 
-public class IntakeOutput implements AnnotatedCommand {
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
+
+public class IntakeOutakeHStartSwoop implements AnnotatedCommand {
     private final LoggerFactory log;
     private final ControllerSE2 controller;
     private final Machinery machinery;
     private final TrajectorySE2Planner planner;
 
-    public IntakeOutput(
+    public IntakeOutakeHStartSwoop(
             LoggerFactory parent,
             SwerveKinodynamics kinodynamics,
             ControllerSE2 controller,
@@ -44,14 +45,14 @@ public class IntakeOutput implements AnnotatedCommand {
         double bumpV = 2; // cartesian velocity over the bump
         List<TimingConstraint> new_constraints = new ArrayList<>(List.of(
                 // high velocity, moderate accel
-                new ConstantConstraint(8, 20),
+                new ConstantConstraint(8, 80),
                 // absolute maxima
                 // new SwerveDriveDynamicsConstraint(log, kinodynamics, 1, 1),
                 // high yaw limits
                 // new YawRateConstraint(log, 8, 20),
                 // moderate capsize limits. Note we're not actually concerned about capsize
                 // here, we just want to limit tire tread shear
-                new CapsizeAccelerationConstraint(8, 20),
+                new CapsizeAccelerationConstraint(8, 80),
                 new VelocityLimitRegionConstraint(BumpZones.BLUE_BUMP_LEFT, bumpV),
                 new VelocityLimitRegionConstraint(BumpZones.BLUE_BUMP_RIGHT, bumpV),
                 new VelocityLimitRegionConstraint(BumpZones.RED_BUMP_LEFT, bumpV),
@@ -63,12 +64,12 @@ public class IntakeOutput implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return StartingPositions.RIGHT_TRENCH;
+        return StartingPositions.CENTER_BACK;
     }
 
     @Override
     public String name() {
-        return "IntakeOutput";
+        return "IntakeOutakeHStartSwoop";
     }
 
     @Override
@@ -81,13 +82,15 @@ public class IntakeOutput implements AnnotatedCommand {
                 this::t1);
 
         return parallel(
-                fn
-        // extend when in neutral zone
+            fn,
+        machinery.m_subsystem.velocity(1).withTimeout(8)
+        .andThen(machinery.m_subsystem.velocity(-1).withTimeout(3))
+        // // extend when in neutral zone
         // toggle(
         // this::inNeutralZone,
         // machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
         // machinery.m_intakeExtend.goToRetractedPosition()),
-        // roll when extended
+        // // roll when extended
         // toggle(
         // this::intakeExtended,
         // parallel( machinery.m_intake.intake(),
@@ -100,24 +103,30 @@ public class IntakeOutput implements AnnotatedCommand {
     public List<Function<Pose2d, TrajectorySE2>> trajectoryFns() {
         return List.of(this::t1);
     }
-    // for future reference write down what the auton is supposed to do
 
     TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose, new DirectionSE2(1, 0, 1),
-                        1),
-                new WaypointSE2(new Pose2d(5.7, 0.6, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(1, 0, 0),
-                        1),
-                new WaypointSE2(new Pose2d(7.5, 7, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(0, 1, 0),
-                        1),
-                new WaypointSE2(new Pose2d(8, 7, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(1, 0, 0),
-                        1),
-                new WaypointSE2(new Pose2d(8.3, 7, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, 0, 1),
-                        1),
-                new WaypointSE2(new Pose2d(8.3, 1, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, 1, 0),
-                        1)
+                new WaypointSE2(startingPose, new DirectionSE2(-1, 0, 0), 1),
 
-        //
+                new WaypointSE2(new Pose2d(4.4, 7.5, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
+
+                new WaypointSE2(new Pose2d(7.7, 6.1, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, -1, 0), 1),
+                
+                new WaypointSE2(new Pose2d(7.7, 1.2, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, -1, 0), 1),
+
+                new WaypointSE2(new Pose2d(9, 1.2, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(0, 1, 0), 1),
+
+                new WaypointSE2(new Pose2d(9, 6.1, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(0, 1, 0), 1),
+
+                new WaypointSE2(new Pose2d(4.4, 7.4, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1),
+
+                new WaypointSE2(new Pose2d(2.5, 7.5, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(-1, 1, 0), 1),
+
+                new WaypointSE2(new Pose2d(4.4, 7.5, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
+
+                new WaypointSE2(new Pose2d(7.7, 6.1, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(1, -1, 0), 1)
+
+                
         );
         return planner.restToRest(waypoints);
     }

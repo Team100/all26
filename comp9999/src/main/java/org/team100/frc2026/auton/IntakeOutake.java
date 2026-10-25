@@ -75,13 +75,13 @@ public class IntakeOutake implements AnnotatedCommand {
         return Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving"))
                 .andThen(driveCommand.until(driveCommand::isDone))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Turning Left")))
-                .andThen(turnCommand.until(turnCommand::isDone))
+                .andThen(turnCommand.until(turnCommand::isDone).withTimeout(3))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving Forward After")))
                 .andThen(driveCommandAfter.until(driveCommandAfter::isDone))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Intake")))
                 .andThen(m_machinery.m_subsystem.velocity(1).withTimeout(3))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Turning Back")))
-                .andThen(turnBackCommand.until(turnBackCommand::isDone))
+                .andThen(turnBackCommand.until(turnBackCommand::isDone).withTimeout(3))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving Back")))
                 .andThen(driveBack.until(driveBack::isDone))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Finished")));
@@ -89,6 +89,11 @@ public class IntakeOutake implements AnnotatedCommand {
 
     public String name() {
         return "Drive Intake Back";
+    }
+
+    @Override
+    public Pose2d start() {
+        return new Pose2d(3.5, 0.7, Rotation2d.kZero);
     }
 
     TrajectorySE2 drivingForward(Pose2d startingPose) {

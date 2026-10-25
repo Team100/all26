@@ -45,6 +45,11 @@ class Distortion:
                 self._dist = np.array(
                     [-0.006602056847, -0.009068537579, 0.000719102838, -0.0005465737481]
                 )
+            case Identity.BALL_DETECT:
+                # Calibrated never.
+                self._dist = np.array(
+                    [-0.2961790762, 0.09865662084, -0.0001707410996, 0.0002482554604]
+                )
             case Identity.COLOR_DETECT_1:
                 # Calibrated 10/12/26.
                 self._dist = np.array(
