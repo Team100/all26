@@ -10,20 +10,7 @@ import org.team100.lib.uncertainty.NoisyPose2d;
 import org.wpilib.math.geometry.Rotation2d;
 
 /**
- * Updates the whole history based on new and old inputs.
- * 
- * The old way we did this was to add a vision estimate, and then replay
- * odometry after that, and do that over and over for every vision input.
- * This was an evolution of the older WPI estimator.
- * 
- * The new way is to add all the inputs, and then sweep the history one time,
- * to do all the nudging and integrating in one pass.
- * 
- * The repetition in the first way is required because none of the replaying
- * was aware of any subsequent vision input: it just takes the vision-nudged
- * estimate and integrates the odometry. So without this repeated-integration
- * approach, if vision updates were received out-of-order (which was/is common)
- * then the "earlier" ones would end up overwriting the "later" ones.
+ * Centralized batched pose-estimation updates.
  */
 public class HistoryGardener {
     record Odo(Rotation2d gyro, SwerveModulePositions odo) {
@@ -33,18 +20,21 @@ public class HistoryGardener {
     private final NavigableMap<Double, Odo> m_pendingOdo;
 
     private final SwerveHistory m_history;
-    private final OdometryUpdater m_odometryUpdater;
-    private final NudgingVisionUpdater m_visionUpdater;
+    private final OdometryEstimator m_OdometryEstimator;
+    private final OdometryReplayer m_replayer;
+    private final NudgingVisionEstimator m_visionUpdater;
 
     public HistoryGardener(
             SwerveHistory history,
-            OdometryUpdater odometryUpdater,
-            NudgingVisionUpdater visionUpdater) {
+            OdometryEstimator OdometryEstimator,
+            OdometryReplayer replayer,
+            NudgingVisionEstimator visionEstimate) {
         m_pendingVision = new ConcurrentSkipListMap<>();
         m_pendingOdo = new ConcurrentSkipListMap<>();
         m_history = history;
-        m_odometryUpdater = odometryUpdater;
-        m_visionUpdater = visionUpdater;
+        m_OdometryEstimator = OdometryEstimator;
+        m_replayer = replayer;
+        m_visionUpdater = visionEstimate;
     }
 
     /** Add pending odometry measurement. */
@@ -72,22 +62,38 @@ public class HistoryGardener {
 
         while (odo != null && vision != null) {
             if (odo.getKey() < vision.getKey()) {
-                m_odometryUpdater.put(odo.getKey(), odo.getValue().gyro, odo.getValue().odo);
+                SwerveState s = m_OdometryEstimator.estimate(
+                        odo.getKey(), odo.getValue().gyro, odo.getValue().odo);
+                if (s != null)
+                    m_history.put(odo.getKey(), s);
                 odo = odoIter.hasNext() ? odoIter.next() : null;
             } else {
-                m_visionUpdater.put(vision.getKey(), vision.getValue());
+                SwerveState s = m_visionUpdater.estimate(vision.getKey(), vision.getValue());
+                if (s != null && !m_history.tooOld(vision.getKey())) {
+                    m_history.put(vision.getKey(), s);
+                    m_replayer.replay(vision.getKey());
+                }
                 vision = visionIter.hasNext() ? visionIter.next() : null;
             }
         }
         // catch the remaining; one of these will work.
         while (odo != null) {
-            m_odometryUpdater.put(odo.getKey(), odo.getValue().gyro, odo.getValue().odo);
+            SwerveState s = m_OdometryEstimator.estimate(
+                    odo.getKey(), odo.getValue().gyro, odo.getValue().odo);
+            if (s != null)
+                m_history.put(odo.getKey(), s);
             odo = odoIter.hasNext() ? odoIter.next() : null;
         }
         while (vision != null) {
-            m_visionUpdater.put(vision.getKey(), vision.getValue());
+            SwerveState s = m_visionUpdater.estimate(vision.getKey(), vision.getValue());
+            if (s != null && !m_history.tooOld(vision.getKey())) {
+                m_history.put(vision.getKey(), s);
+                m_replayer.replay(vision.getKey());
+            }
             vision = visionIter.hasNext() ? visionIter.next() : null;
         }
 
+        m_pendingOdo.clear();
+        m_pendingVision.clear();
     }
 }

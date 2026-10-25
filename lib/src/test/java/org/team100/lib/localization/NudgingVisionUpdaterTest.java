@@ -30,7 +30,7 @@ public class NudgingVisionUpdaterTest {
         IsotropicNoiseSE2 visionNoise = IsotropicNoiseSE2.fromStdDev(0.02, 0.02);
         NoisyPose2d sample = new NoisyPose2d(new Pose2d(), stateNoise);
         NoisyPose2d measurement = new NoisyPose2d(new Pose2d(), visionNoise);
-        NudgingVisionUpdater vu = new NudgingVisionUpdater(log, null, null);
+        NudgingVisionEstimator vu = new NudgingVisionEstimator(log, null);
         NoisyPose2d nudged = vu.nudge(sample, measurement);
         assertEquals(0, nudged.pose().getX(), 1e-6);
         assertEquals(0, nudged.pose().getY(), 1e-6);
@@ -47,7 +47,7 @@ public class NudgingVisionUpdaterTest {
                 new Pose2d(), stateNoise);
         NoisyPose2d measurement = new NoisyPose2d(
                 new Pose2d(0.1, 0, new Rotation2d(1)), visionNoise);
-        NudgingVisionUpdater vu = new NudgingVisionUpdater(log, null, null);
+        NudgingVisionEstimator vu = new NudgingVisionEstimator(log, null);
         NoisyPose2d nudged = vu.nudge(sample, measurement);
         assertEquals(0.000010, nudged.pose().getX(), 1e-6);
         assertEquals(0, nudged.pose().getY(), 1e-6);
@@ -74,7 +74,7 @@ public class NudgingVisionUpdaterTest {
         NoisyPose2d measurement = new NoisyPose2d(
                 new Pose2d(0.1, 0, new Rotation2d()), visionNoise);
         NoisyPose2d nudged = sample;
-        NudgingVisionUpdater vu = new NudgingVisionUpdater(log, null, null);
+        NudgingVisionEstimator vu = new NudgingVisionEstimator(log, null);
         for (int i = 0; i < frameRate; ++i) {
             nudged = vu.nudge(nudged, measurement);
         }
@@ -102,7 +102,7 @@ public class NudgingVisionUpdaterTest {
                 new Pose2d(), stateNoise);
         NoisyPose2d measurement = new NoisyPose2d(
                 new Pose2d(0.1, 0, new Rotation2d()), visionNoise);
-        NudgingVisionUpdater vu = new NudgingVisionUpdater(log, null, null);
+        NudgingVisionEstimator vu = new NudgingVisionEstimator(log, null);
         NoisyPose2d nudged = vu.nudge(sample, measurement);
         assertEquals(0.003846, nudged.pose().getX(), 1e-6);
         assertEquals(0, nudged.pose().getY(), 1e-6);
@@ -120,7 +120,7 @@ public class NudgingVisionUpdaterTest {
                 new Pose2d(), stateNoise);
         NoisyPose2d measurement = new NoisyPose2d(
                 new Pose2d(1, 2, new Rotation2d(3)), visionNoise);
-        NudgingVisionUpdater vu = new NudgingVisionUpdater(log, null, null);
+        NudgingVisionEstimator vu = new NudgingVisionEstimator(log, null);
         NoisyPose2d nudged = vu.nudge(sample, measurement);
         assertEquals(0.038461, nudged.pose().getX(), 1e-6);
         assertEquals(0.076923, nudged.pose().getY(), 1e-6);
@@ -142,7 +142,7 @@ public class NudgingVisionUpdaterTest {
         NoisyPose2d measurement = new NoisyPose2d(
                 new Pose2d(0.1, 0, new Rotation2d()), visionNoise);
         NoisyPose2d nudged = sample;
-        NudgingVisionUpdater vu = new NudgingVisionUpdater(log, null, null);
+        NudgingVisionEstimator vu = new NudgingVisionEstimator(log, null);
         for (int i = 0; i < frameRate; ++i) {
             nudged = vu.nudge(nudged, measurement);
         }
@@ -171,7 +171,7 @@ public class NudgingVisionUpdaterTest {
                 new Pose2d(0, 0, new Rotation2d(3)), stateNoise);
         NoisyPose2d measurement = new NoisyPose2d(
                 new Pose2d(0, 0, new Rotation2d(-3)), visionNoise);
-        NudgingVisionUpdater vu = new NudgingVisionUpdater(log, null, null);
+        NudgingVisionEstimator vu = new NudgingVisionEstimator(log, null);
         NoisyPose2d nudged = vu.nudge(sample, measurement);
         assertEquals(0, nudged.pose().getX(), 1e-6);
         assertEquals(0, nudged.pose().getY(), 1e-6);
@@ -199,7 +199,7 @@ public class NudgingVisionUpdaterTest {
         NoisyPose2d measurement = new NoisyPose2d(visionPose, visionNoise);
 
         // result is close to the vision estimate, with its variance.
-        NudgingVisionUpdater vu = new NudgingVisionUpdater(log, null, null);
+        NudgingVisionEstimator vu = new NudgingVisionEstimator(log, null);
         SwerveState newState = vu.newState(sample, measurement);
         assertEquals(1, newState.state().pose().getX(), DELTA);
         assertEquals(0, newState.state().pose().getY(), DELTA);
@@ -226,7 +226,7 @@ public class NudgingVisionUpdaterTest {
 
         // cartesian result is in the middle, with more variance.
         // rotation result is more confident, since history and camera agree.
-        NudgingVisionUpdater vu = new NudgingVisionUpdater(log, null, null);
+        NudgingVisionEstimator vu = new NudgingVisionEstimator(log, null);
         SwerveState newState = vu.newState(sample, measurement);
         assertEquals(0.5, newState.state().pose().getX(), DELTA);
         assertEquals(0, newState.state().pose().getY(), DELTA);

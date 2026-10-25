@@ -3,7 +3,6 @@ package org.team100.lib.localization;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Optional;
-import java.util.function.UnaryOperator;
 
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
@@ -73,21 +72,25 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
                 IsotropicNoiseSE2.high(),
                 0);
         positions = p(0);
-        OdometryUpdater ou = new OdometryUpdater(
-                logger, kinodynamics, gyro, history,
-                () -> positions, UnaryOperator.identity(), true);
+        OdometryEstimator ou = new OdometryEstimator(
+                logger, kinodynamics, gyro.white_noise(),
+                gyro.bias_noise(), history::lowerEntry,
+                false, true);
         history.reset(
                 positions, Pose2d.kZero, IsotropicNoiseSE2.high(),
                 0, gyro.getYawNWU(),
                 VariableR1.fromVariance(0, 1));
-        NudgingVisionUpdater vu = new NudgingVisionUpdater(logger, history, ou);
+        OdometryReplayer or = new OdometryReplayer(history, ou);
+        NudgingVisionEstimator vu = new NudgingVisionEstimator(logger, history::getRecord);
 
         // fill the buffer with odometry
         double t = 0.0;
         double duration = 0.2; // SwerveDrivePoseEstimator100.BUFFER_DURATION;
         while (t < duration) {
             positions = p(t);
-            ou.update(t);
+            SwerveState s = ou.estimate(t, gyro.getYawNWU(), positions);
+            if (s != null)
+                history.put(t, s);
             t += 0.02;
         }
         assertEquals(11, history.size());
@@ -97,7 +100,11 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
         int iterations = 100000;
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < iterations; ++i) {
-            vu.put(0.00, new NoisyPose2d(visionRobotPoseMeters, visionMeasurementStdDevs));
+            SwerveState s = vu.estimate(
+                    0.00,
+                    new NoisyPose2d(visionRobotPoseMeters, visionMeasurementStdDevs));
+            history.put(0, s);
+            or.replay(0);
         }
         long finishTime = System.currentTimeMillis();
         if (DEBUG) {
@@ -111,7 +118,10 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
         iterations = 1000000;
         startTime = System.currentTimeMillis();
         for (int i = 0; i < iterations; ++i) {
-            vu.put(duration - 0.1, new NoisyPose2d(visionRobotPoseMeters, visionMeasurementStdDevs));
+            SwerveState s = vu.estimate(duration - 0.1,
+                    new NoisyPose2d(visionRobotPoseMeters, visionMeasurementStdDevs));
+            history.put(duration - 0.1, s);
+            or.replay(duration - 0.1);
         }
         finishTime = System.currentTimeMillis();
         if (DEBUG) {

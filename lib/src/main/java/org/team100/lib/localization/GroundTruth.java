@@ -1,7 +1,5 @@
 package org.team100.lib.localization;
 
-import java.util.function.UnaryOperator;
-
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
@@ -27,7 +25,7 @@ public class GroundTruth {
     private final SwerveModuleCollection m_modules;
     private final SimulatedGyro m_gyro;
     private final SwerveHistory m_history;
-    private final OdometryUpdater m_odometry;
+    private final OdometryEstimator m_odometry;
     private final SimulatedTagCornerDetector m_tagSim;
     private final SimulatedTargetWriter m_targetSim;
 
@@ -56,13 +54,14 @@ public class GroundTruth {
 
         // Read positions and ground truth gyro (which are perfectly consistent) and
         // maintain the ground truth history.
-        m_odometry = new OdometryUpdater(
-                simLog, kinodynamics, m_gyro,
-                m_history, m_modules::positions,
-                UnaryOperator.identity(), true);
+        m_odometry = new OdometryEstimator(
+                simLog, kinodynamics,
+                m_gyro.white_noise(), m_gyro.bias_noise(),
+                m_history::lowerEntry,
+                false, true);
 
         GroundTruthCache groundTruthCache = new GroundTruthCache(
-                m_odometry, m_history);
+                m_odometry, m_gyro, m_modules::positions, m_history);
 
         // Visualization of the simulated "ground truth" of the robot pose.
         new RobotPoseVisualization(
@@ -70,10 +69,7 @@ public class GroundTruth {
 
         // Simulated camera uses the ground truth because the real cameras are not aware
         // of the pose estimate.
-        // m_simulatedTagDetector = SimulatedTagDetector.get(
-        // layout, groundTruthHistory);
-        m_tagSim = SimulatedTagCornerDetector.get(
-                layout, m_history);
+        m_tagSim = SimulatedTagCornerDetector.get(layout, m_history);
         m_targetSim = SimulatedTargetWriter.get(simLog, m_history);
     }
 

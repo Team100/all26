@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -27,7 +29,7 @@ import org.wpilib.networktables.StructArrayPublisher;
 import org.wpilib.networktables.StructArrayTopic;
 import org.wpilib.simulation.DriverStationSim;
 
-class AprilTagRobotLocalizerTest implements Timeless {
+class AprilTagReaderTest implements Timeless {
     private static final double DELTA = 0.01;
     private static final LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());
 
@@ -36,10 +38,10 @@ class AprilTagRobotLocalizerTest implements Timeless {
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
                 "2025-reefscape.json");
 
-        MockVisionUpdater visionUpdater = new MockVisionUpdater();
-
-        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, layout, visionUpdater, MatchState::getAlliance);
+        AprilTagTranslator translator = new AprilTagTranslator(
+                logger, layout, MatchState::getAlliance);
+        AprilTagReader reader = new AprilTagReader(
+                logger, translator);
 
         // client instance
         NetworkTableInstance inst = NetworkTableInstance.create();
@@ -61,13 +63,11 @@ class AprilTagRobotLocalizerTest implements Timeless {
         Thread.sleep(200);
         inst.flush();
 
-        assertTrue(visionUpdater.poseEstimate.isEmpty());
         // localizer needs alliance
         DriverStationSim.setAllianceStationId(AllianceStationID.BLUE_1);
         DriverStationSim.notifyNewData();
-        localizer.update();
-        // skip first update
-        assertTrue(visionUpdater.poseEstimate.isEmpty());
+        List<VisionMeasurement> measurements = reader.read();
+        assertTrue(measurements.isEmpty());
 
         // blip id=1
         // which is at (16.697, 0.655, 1.486), (0, 0, -0.94) in our coordinates
@@ -79,9 +79,10 @@ class AprilTagRobotLocalizerTest implements Timeless {
         Thread.sleep(200);
         inst.flush();
 
-        localizer.update();
-        assertEquals(1, visionUpdater.poseEstimate.size());
-        Pose2d pose = visionUpdater.poseEstimate.get(0);
+        measurements = reader.read();
+        assertEquals(1, measurements.size());
+
+        Pose2d pose = measurements.get(0).noisyMeasurement().pose();
 
         // 1m away at -0.94 rad means 0.59 in x
         assertEquals(16.107, pose.getX(), DELTA);
@@ -96,10 +97,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
                 "2025-reefscape.json");
 
-        MockVisionUpdater visionUpdater = new MockVisionUpdater();
-
-        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, layout, visionUpdater, () -> Optional.of(Alliance.RED));
+        AprilTagTranslator m_translator = new AprilTagTranslator(logger, layout, () -> Optional.of(Alliance.RED));
 
         // in red layout blip 7 is on the other side of the field
 
@@ -122,13 +120,13 @@ class AprilTagRobotLocalizerTest implements Timeless {
         };
 
         Camera camera = Camera.UNKNOWN;
-        localizer.perValue(camera, blips);
-        // do it twice to convince vdp it's a good estimate
-        localizer.perValue(camera, blips);
-        assertEquals(1, visionUpdater.poseEstimate.size());
-        assertEquals(1, visionUpdater.timeEstimate.size());
+        List<VisionMeasurement> measurement = new ArrayList<>();
 
-        Pose2d result = visionUpdater.poseEstimate.get(0);
+        measurement.addAll(m_translator.convert(camera, blips));
+        assertEquals(1, measurement.size());
+        VisionMeasurement m = measurement.get(0);
+
+        Pose2d result = m.noisyMeasurement().pose();
         assertEquals(2.657, result.getX(), DELTA); // target is one meter in front
         assertEquals(4.026, result.getY(), DELTA); // same y as target
         assertEquals(0, result.getRotation().getRadians(), DELTA); // facing along x
@@ -140,10 +138,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
                 "2025-reefscape.json");
 
-        MockVisionUpdater visionUpdater = new MockVisionUpdater();
-
-        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, layout, visionUpdater, () -> Optional.of(Alliance.RED));
+        AprilTagTranslator m_translator = new AprilTagTranslator(logger, layout, () -> Optional.of(Alliance.RED));
 
         // camera sees the tag straight ahead in the center of the frame,
         // but rotated pi/4 to the left. this is ignored anyway.
@@ -164,14 +159,14 @@ class AprilTagRobotLocalizerTest implements Timeless {
         final Blip[] blips = new Blip[] { blip };
 
         Camera camera = Camera.UNKNOWN;
-        localizer.perValue(camera, blips);
-        // two good estimates are required, so do another one.
-        localizer.perValue(camera, blips);
+        List<VisionMeasurement> measurement = new ArrayList<>();
 
-        assertEquals(1, visionUpdater.poseEstimate.size());
-        assertEquals(1, visionUpdater.timeEstimate.size());
+        measurement.addAll(m_translator.convert(camera, blips));
 
-        Pose2d result = visionUpdater.poseEstimate.get(0);
+        assertEquals(1, measurement.size());
+        VisionMeasurement m = measurement.get(0);
+
+        Pose2d result = m.noisyMeasurement().pose();
         // robot is is one meter away from the target in x
         assertEquals(2.658, result.getX(), DELTA);
         // robot is one meter to the left (i.e. in y)
@@ -179,8 +174,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         // facing diagonal, this is just what we provided.
         assertEquals(-Math.PI / 4, result.getRotation().getRadians(), DELTA);
 
-        Double t = visionUpdater.timeEstimate.get(0);
-        assertEquals(0.001, t, DELTA);
+        assertEquals(0.001, m.timestamp(), DELTA);
     }
 
     @Test
@@ -194,13 +188,10 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
     @Test
     void testCase1() throws IOException {
-        // some tags that are too far from the history pose
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
                 "2025-reefscape.json");
 
-        MockVisionUpdater visionUpdater = new MockVisionUpdater();
-        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, layout, visionUpdater, () -> Optional.of(Alliance.RED));
+        AprilTagTranslator m_translator = new AprilTagTranslator(logger, layout, () -> Optional.of(Alliance.RED));
 
         Blip tag4 = new Blip(0, 4, new Transform3d(
                 new Translation3d(0, 0, 2.4),
@@ -212,10 +203,11 @@ class AprilTagRobotLocalizerTest implements Timeless {
         final Blip[] tags = new Blip[] { tag3, tag4 };
 
         Camera camera = Camera.GAME_PIECE;
-        localizer.perValue(camera, tags);
-        localizer.perValue(camera, tags);
+        List<VisionMeasurement> measurement = new ArrayList<>();
+        measurement.addAll(m_translator.convert(camera, tags));
+        measurement.addAll(m_translator.convert(camera, tags));
         // every input is ignored
-        assertEquals(0, visionUpdater.size());
+        assertEquals(4, measurement.size());
     }
 
     @Test
@@ -228,9 +220,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         assertEquals(1.868, tag4pose.getZ(), DELTA);
         System.out.println(StrUtil.poseStr(tag4pose));
 
-        MockVisionUpdater visionUpdater = new MockVisionUpdater();
-        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, layout, visionUpdater, () -> Optional.of(Alliance.RED));
+        AprilTagTranslator m_translator = new AprilTagTranslator(logger, layout, () -> Optional.of(Alliance.RED));
 
         // tag is 1m away on bore
         final Blip tag4 = new Blip(0, 4, new Transform3d(
@@ -242,11 +232,12 @@ class AprilTagRobotLocalizerTest implements Timeless {
         // if the tag is on bore then the camera is pretty high and also tilted up
         // the tag is tilted 30 degrees so the height is 0.5 meters lower than the tag
         Camera camera = Camera.TEST7A;
-        localizer.perValue(camera, tags);
-        assertEquals(0, visionUpdater.size());
-        localizer.perValue(camera, tags);
-        assertEquals(8.272 - Math.sqrt(3) / 2, visionUpdater.poseEstimate.get(0).getX(), DELTA);
-        assertEquals(1.914, visionUpdater.poseEstimate.get(0).getY(), DELTA);
+        List<VisionMeasurement> measurement = new ArrayList<>();
+        measurement.addAll(m_translator.convert(camera, tags));
+        assertEquals(1, measurement.size());
+        VisionMeasurement m = measurement.get(0);
+        assertEquals(8.272 - Math.sqrt(3) / 2, m.noisyMeasurement().pose().getX(), DELTA);
+        assertEquals(1.914, m.noisyMeasurement().pose().getY(), DELTA);
     }
 
     @Test
@@ -258,10 +249,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         assertEquals(1.914, tag4pose.getY(), DELTA);
         assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-        MockVisionUpdater visionUpdater = new MockVisionUpdater();
-
-        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, layout, visionUpdater, () -> Optional.of(Alliance.RED));
+        AprilTagTranslator m_translator = new AprilTagTranslator(logger, layout, () -> Optional.of(Alliance.RED));
 
         Blip tag4 = new Blip(0, 4, new Transform3d(
                 new Translation3d(0, 0, 1),
@@ -271,11 +259,13 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         // nonzero camera offset
         Camera camera = Camera.TEST7;
-        localizer.perValue(camera, tags);
-        assertEquals(0, visionUpdater.size());
-        localizer.perValue(camera, tags);
-        assertEquals(7.272 - Math.sqrt(3) / 2, visionUpdater.poseEstimate.get(0).getX(), DELTA);
-        assertEquals(1.914, visionUpdater.poseEstimate.get(0).getY(), DELTA);
+        List<VisionMeasurement> measurement = new ArrayList<>();
+
+        measurement.addAll(m_translator.convert(camera, tags));
+        assertEquals(1, measurement.size());
+        VisionMeasurement m = measurement.get(0);
+        assertEquals(7.272 - Math.sqrt(3) / 2, m.noisyMeasurement().pose().getX(), DELTA);
+        assertEquals(1.914, m.noisyMeasurement().pose().getY(), DELTA);
     }
 
     @Test
@@ -287,10 +277,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         assertEquals(1.914, tag4pose.getY(), DELTA);
         assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-        MockVisionUpdater visionUpdater = new MockVisionUpdater();
-
-        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, layout, visionUpdater, () -> Optional.of(Alliance.RED));
+        AprilTagTranslator m_translator = new AprilTagTranslator(logger, layout, () -> Optional.of(Alliance.RED));
 
         Blip tag4 = new Blip(0, 4, new Transform3d(
                 new Translation3d(0, 0, 1.4142),
@@ -299,11 +286,13 @@ class AprilTagRobotLocalizerTest implements Timeless {
         final Blip[] tags = new Blip[] { tag4 };
 
         Camera camera = Camera.TEST8;
-        localizer.perValue(camera, tags);
-        assertEquals(0, visionUpdater.size());
-        localizer.perValue(camera, tags);
-        assertEquals(7.047, visionUpdater.poseEstimate.get(0).getX(), DELTA);
-        assertEquals(1.914, visionUpdater.poseEstimate.get(0).getY(), DELTA);
+        List<VisionMeasurement> measurement = new ArrayList<>();
+
+        measurement.addAll(m_translator.convert(camera, tags));
+        assertEquals(1, measurement.size());
+        VisionMeasurement m = measurement.get(0);
+        assertEquals(7.047, m.noisyMeasurement().pose().getX(), DELTA);
+        assertEquals(1.914, m.noisyMeasurement().pose().getY(), DELTA);
     }
 
     @Test
@@ -315,10 +304,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         assertEquals(1.914, tag4pose.getY(), DELTA);
         assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-        MockVisionUpdater visionUpdater = new MockVisionUpdater();
-
-        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, layout, visionUpdater, () -> Optional.of(Alliance.RED));
+        AprilTagTranslator m_translator = new AprilTagTranslator(logger, layout, () -> Optional.of(Alliance.RED));
 
         Blip tag4 = new Blip(0, 4, new Transform3d(
                 new Translation3d(-1, 0, 1),
@@ -327,11 +313,12 @@ class AprilTagRobotLocalizerTest implements Timeless {
         final Blip[] tags = new Blip[] { tag4 };
 
         Camera camera = Camera.UNKNOWN;
-        localizer.perValue(camera, tags);
-        assertEquals(0, visionUpdater.size());
-        localizer.perValue(camera, tags);
-        assertEquals(7.407, visionUpdater.poseEstimate.get(0).getX(), DELTA);
-        assertEquals(0.914, visionUpdater.poseEstimate.get(0).getY(), DELTA);
+        List<VisionMeasurement> measurement = new ArrayList<>();
+        measurement.addAll(m_translator.convert(camera, tags));
+        assertEquals(1, measurement.size());
+        VisionMeasurement m = measurement.get(0);
+        assertEquals(7.407, m.noisyMeasurement().pose().getX(), DELTA);
+        assertEquals(0.914, m.noisyMeasurement().pose().getY(), DELTA);
     }
 
     @Test
@@ -343,10 +330,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         assertEquals(1.914, tag4pose.getY(), DELTA);
         assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-        MockVisionUpdater visionUpdater = new MockVisionUpdater();
-
-        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, layout, visionUpdater, () -> Optional.of(Alliance.RED));
+        AprilTagTranslator m_translator = new AprilTagTranslator(logger, layout, () -> Optional.of(Alliance.RED));
 
         Blip tag4 = new Blip(0, 4, new Transform3d(
                 new Translation3d(0, 0, 1.4142),
@@ -355,11 +339,12 @@ class AprilTagRobotLocalizerTest implements Timeless {
         final Blip[] tags = new Blip[] { tag4 };
 
         Camera camera = Camera.UNKNOWN;
-        localizer.perValue(camera, tags);
-        assertEquals(0, visionUpdater.size());
-        localizer.perValue(camera, tags);
-        assertEquals(7.047, visionUpdater.poseEstimate.get(0).getX(), DELTA);
-        assertEquals(1.914, visionUpdater.poseEstimate.get(0).getY(), DELTA);
+        List<VisionMeasurement> measurement = new ArrayList<>();
+        measurement.addAll(m_translator.convert(camera, tags));
+        assertEquals(1, measurement.size());
+        VisionMeasurement m = measurement.get(0);
+        assertEquals(7.047, m.noisyMeasurement().pose().getX(), DELTA);
+        assertEquals(1.914, m.noisyMeasurement().pose().getY(), DELTA);
     }
 
     @Test
@@ -371,9 +356,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         assertEquals(1.914, tag4pose.getY(), DELTA);
         assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-        MockVisionUpdater visionUpdater = new MockVisionUpdater();
-        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, layout, visionUpdater, () -> Optional.of(Alliance.RED));
+        AprilTagTranslator m_translator = new AprilTagTranslator(logger, layout, () -> Optional.of(Alliance.RED));
 
         Blip tag4 = new Blip(0, 4, new Transform3d(
                 new Translation3d(0, 0, 1.4142),
@@ -381,11 +364,12 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         final Blip[] tags = new Blip[] { tag4 };
         Camera camera = Camera.UNKNOWN;
-        localizer.perValue(camera, tags);
-        assertEquals(0, visionUpdater.size());
-        localizer.perValue(camera, tags);
-        assertEquals(7.047, visionUpdater.poseEstimate.get(0).getX(), DELTA);
-        assertEquals(1.914, visionUpdater.poseEstimate.get(0).getY(), DELTA);
+        List<VisionMeasurement> measurement = new ArrayList<>();
+        measurement.addAll(m_translator.convert(camera, tags));
+        assertEquals(1, measurement.size());
+        VisionMeasurement m = measurement.get(0);
+        assertEquals(7.047, m.noisyMeasurement().pose().getX(), DELTA);
+        assertEquals(1.914, m.noisyMeasurement().pose().getY(), DELTA);
     }
 
     @Test
@@ -397,10 +381,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         assertEquals(1.914, tag4pose.getY(), DELTA);
         assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-        MockVisionUpdater visionUpdater = new MockVisionUpdater();
-
-        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, layout, visionUpdater, () -> Optional.of(Alliance.RED));
+        AprilTagTranslator m_translator = new AprilTagTranslator(logger, layout, () -> Optional.of(Alliance.RED));
 
         Blip tag4 = new Blip(0, 4, new Transform3d(
                 new Translation3d(0, 0, 2),
@@ -409,11 +390,12 @@ class AprilTagRobotLocalizerTest implements Timeless {
         final Blip[] tags = new Blip[] { tag4 };
 
         Camera camera = Camera.TEST8;
-        localizer.perValue(camera, tags);
-        assertEquals(0, visionUpdater.size());
-        localizer.perValue(camera, tags);
-        assertEquals(6.54, visionUpdater.poseEstimate.get(0).getX(), DELTA);
-        assertEquals(1.914, visionUpdater.poseEstimate.get(0).getY(), DELTA);
+        List<VisionMeasurement> measurement = new ArrayList<>();
+        measurement.addAll(m_translator.convert(camera, tags));
+        assertEquals(1, measurement.size());
+        VisionMeasurement m = measurement.get(0);
+        assertEquals(6.54, m.noisyMeasurement().pose().getX(), DELTA);
+        assertEquals(1.914, m.noisyMeasurement().pose().getY(), DELTA);
     }
 
     @Test
@@ -425,10 +407,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         assertEquals(1.914, tag4pose.getY(), DELTA);
         assertEquals(1.868, tag4pose.getZ(), DELTA);
 
-        MockVisionUpdater visionUpdater = new MockVisionUpdater();
-
-        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, layout, visionUpdater, () -> Optional.of(Alliance.RED));
+        AprilTagTranslator m_translator = new AprilTagTranslator(logger, layout, () -> Optional.of(Alliance.RED));
 
         // 30 degrees, long side is sqrt2, so hypotenuse is sqrt2/sqrt3/2
         Blip tag4 = new Blip(0, 4, new Transform3d(
@@ -438,10 +417,12 @@ class AprilTagRobotLocalizerTest implements Timeless {
         final Blip[] tags = new Blip[] { tag4 };
 
         Camera camera = Camera.TEST9;
-        localizer.perValue(camera, tags);
-        assertEquals(0, visionUpdater.size());
-        localizer.perValue(camera, tags);
-        assertEquals(6.858, visionUpdater.poseEstimate.get(0).getX(), DELTA);
-        assertEquals(1.914, visionUpdater.poseEstimate.get(0).getY(), DELTA);
+        List<VisionMeasurement> measurement = new ArrayList<>();
+
+        measurement.addAll(m_translator.convert(camera, tags));
+        assertEquals(1, measurement.size());
+        VisionMeasurement m = measurement.get(0);
+        assertEquals(6.858, m.noisyMeasurement().pose().getX(), DELTA);
+        assertEquals(1.914, m.noisyMeasurement().pose().getY(), DELTA);
     }
 }

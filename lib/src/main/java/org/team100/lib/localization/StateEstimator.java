@@ -12,11 +12,10 @@ public interface StateEstimator {
      * Estimate at the given timestamp, after applying any pending updates from
      * vision or odometry.
      */
-    StateSE2 get(double timestampS);
+    StateSE2 getState(double timestampS);
 
     /**
-     * Empty the pose history, reset the servos, add the given pose, and flush the
-     * cache.
+     * Empty the pose history, add the given pose, and flush the cache.
      */
     void reset(Pose2d pose, IsotropicNoiseSE2 noise);
 
@@ -27,4 +26,6 @@ public interface StateEstimator {
 
     /** Timestamped estimates. */
     Map<Double, SwerveState> all();
+
+    void close();
 }

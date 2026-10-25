@@ -1,7 +1,9 @@
 package org.team100.lib.util;
 
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -49,8 +51,24 @@ public class TimeInterpolatableBuffer100<T> {
         m_pastSnapshots.put(timeS, initialValue);
     }
 
+    /** For the read-only copy. */
+    public TimeInterpolatableBuffer100(
+            Set<Map.Entry<Double, T>> entries,
+            Interpolator<T> interpolator,
+            double historyS) {
+        m_pastSnapshots = new ConcurrentSkipListMap<>();
+        for (Map.Entry<Double, T> e : entries) {
+            m_pastSnapshots.put(e.getKey(), e.getValue());
+        }
+        m_lock = new ReentrantReadWriteLock();
+        m_interpolator = interpolator;
+        m_historyS = historyS;
+    }
+
     /**
      * Remove stale entries and add the new one.
+     * 
+     * TODO: I think this locking stuff can be deleted since we don't have threads
      */
     public void put(double timeS, T value) {
         if (DEBUG) {
@@ -182,9 +200,17 @@ public class TimeInterpolatableBuffer100<T> {
         return m_pastSnapshots.lastKey();
     }
 
+    public Set<Map.Entry<Double, T>> entrySet() {
+        return m_pastSnapshots.entrySet();
+    }
+
+    public Map<Double, T> all() {
+        return m_pastSnapshots;
+    }
+
     /** Print the entire buffer */
     public void dump() {
-        for (var x : m_pastSnapshots.entrySet()) {
+        for (var x : entrySet()) {
             System.out.printf("%s: %s\n", x.getKey(), x.getValue());
         }
     }

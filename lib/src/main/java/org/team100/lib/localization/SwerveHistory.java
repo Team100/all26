@@ -31,7 +31,7 @@ import org.wpilib.math.geometry.Rotation2d;
  */
 public class SwerveHistory implements StateSampler {
     private static final boolean DEBUG = false;
-
+    private final double m_bufferDuration;
     private final DoubleLogger m_log_timestamp;
     private final TimeInterpolatableBuffer100<SwerveState> m_poseBuffer;
 
@@ -44,6 +44,7 @@ public class SwerveHistory implements StateSampler {
             Pose2d initialPoseMeters,
             IsotropicNoiseSE2 noise,
             double timestampSeconds) {
+        m_bufferDuration = bufferDuration;
         m_log_timestamp = parent.type(this).doubleLogger(Level.TRACE, "sample timestamp");
         SwerveStateInterpolator interpolator = new SwerveStateInterpolator();
         StateSE2 state = new StateSE2(initialPoseMeters, VelocitySE2.ZERO);
@@ -51,6 +52,10 @@ public class SwerveHistory implements StateSampler {
                 state, noise, modulePositions, gyroAngle, gyroBias, null);
         m_poseBuffer = new TimeInterpolatableBuffer100<>(
                 interpolator, bufferDuration, timestampSeconds, initialState);
+    }
+
+    public ImmutableSwerveHistory immutableCopy() {
+        return new ImmutableSwerveHistory(m_poseBuffer.entrySet(), m_bufferDuration);
     }
 
     public SwerveState getExact(double t) {

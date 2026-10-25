@@ -1,5 +1,7 @@
 package org.team100.lib.localization;
 
+import java.util.function.DoubleFunction;
+
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.fusion.CovarianceInflation;
 import org.team100.lib.fusion.Fusor;
@@ -25,16 +27,13 @@ import org.wpilib.math.geometry.Translation2d;
  * The "nudging" here is essentially just a weighted average; you provide the
  * weights you want at update time.
  */
-public class NudgingVisionUpdater implements VisionUpdater {
+public class NudgingVisionEstimator implements VisionEstimator {
     private static final boolean DEBUG = false;
 
-    private final SwerveHistory m_history;
-    /** For replay. */
-    private final OdometryUpdaterInterface m_odometryUpdater;
+    private final DoubleFunction<SwerveState> m_sampler;
     private final Fusor m_cartesianFusor;
     private final Fusor m_rotationFusor;
     private final SwerveStateLogger m_logState;
-
     private final IsotropicNoiseSE2Logger m_log_prevNoise;
     private final IsotropicNoiseSE2Logger m_log_updateNoise;
     private final IsotropicNoiseSE2Logger m_log_newNoise;
@@ -42,13 +41,15 @@ public class NudgingVisionUpdater implements VisionUpdater {
     /** To measure time since last update, for indicator. */
     private double m_latestTimeS;
 
-    public NudgingVisionUpdater(
+    /**
+     * History sampler must interpolate the exact time,
+     * SwerveHistory.getRecord().
+     */
+    public NudgingVisionEstimator(
             LoggerFactory parent,
-            SwerveHistory history,
-            OdometryUpdaterInterface odometryUpdater) {
+            DoubleFunction<SwerveState> sampler) {
         LoggerFactory log = parent.type(this);
-        m_history = history;
-        m_odometryUpdater = odometryUpdater;
+        m_sampler = sampler;
         m_logState = log.swerveStateLogger(Level.TRACE, "state");
         m_log_prevNoise = log.isotropicNoiseSE2Logger(Level.TRACE, "previous noise");
         m_log_updateNoise = log.isotropicNoiseSE2Logger(Level.TRACE, "update noise");
@@ -61,39 +62,27 @@ public class NudgingVisionUpdater implements VisionUpdater {
     }
 
     /**
-     * Put a new state estimate based on the supplied pose. If not current,
-     * subsequent wheel updates are replayed.
+     * Put a new state estimate based on the supplied pose.
+     * 
+     * Caller should replay odometry.
      * 
      * @param timestamp        When the measurement was made.
      * @param noisyMeasurement Robot pose from vision.
      */
     @Override
-    public void put(double timestamp, NoisyPose2d noisyMeasurement) {
+    public SwerveState estimate(double timestamp, NoisyPose2d noisyMeasurement) {
         if (DEBUG)
             System.out.printf("Nudging Vision Updater %6.3f %s\n",
                     timestamp, noisyMeasurement);
         // Remember the time of this update.
         m_latestTimeS = Takt.get();
-
-        // Skip too-old measurement
-        if (m_history.tooOld(timestamp)) {
-            return;
-        }
-
         // Sample the history at the measurement time.
         // This is always interpolated.
-        SwerveState sample = m_history.getRecord(timestamp);
-
+        SwerveState sample = m_sampler.apply(timestamp);
         // Nudge the sample towards the measurement.
         SwerveState newState = newState(sample, noisyMeasurement);
-
         m_logState.log(() -> newState);
-
-        // Remember the result.
-        m_history.put(timestamp, newState);
-
-        // Replay everything after the sample.
-        m_odometryUpdater.replay(timestamp);
+        return newState;
     }
 
     /**
@@ -121,6 +110,7 @@ public class NudgingVisionUpdater implements VisionUpdater {
     /**
      * The age of the last pose estimate, in seconds.
      * The caller could use this to, say, indicate tag visibility.
+     * TODO: remove this
      */
     public double getPoseAgeSec() {
         return Takt.get() - m_latestTimeS;
@@ -140,7 +130,6 @@ public class NudgingVisionUpdater implements VisionUpdater {
     NoisyPose2d nudge(
             NoisyPose2d noisySample,
             NoisyPose2d noisyMeasurement) {
-
         Pose2d sample = noisySample.pose();
         Pose2d measurement = noisyMeasurement.pose();
         IsotropicNoiseSE2 stateSigma = noisySample.noise();
