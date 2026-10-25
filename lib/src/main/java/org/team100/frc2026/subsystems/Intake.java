@@ -34,7 +34,7 @@ public class Intake extends SubsystemBase implements Music {
     private static final double TOLERANCE_M_S = 1;
     private static final double GEAR_RATIO = 30.0 / 12.0;
     private static final double WHEEL_DIAMETER_M = 0.05;
-    private static final double NORMAL_SPEED = 10;
+    private static final double NORMAL_SPEED = 5;
 
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
@@ -82,7 +82,7 @@ public class Intake extends SubsystemBase implements Music {
     public Command intake() {
         return startRun(
                 this::reset,
-                () -> setVelocityProfiled(5))
+                () -> setVelocityProfiled(NORMAL_SPEED))
                 // .finallyDo(this::stopMotor)
                 .withName("Intake Normal Speed");
     }
@@ -93,7 +93,7 @@ public class Intake extends SubsystemBase implements Music {
     public Command back() {
         return startRun(
                 this::reset,
-                () -> setVelocityProfiled(-5))
+                () -> setVelocityProfiled(-NORMAL_SPEED))
                 .withName("Intake back");
     }
 

@@ -1,5 +1,6 @@
 package org.team100.frc2026.robot;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -9,6 +10,8 @@ import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.p.PDynamics;
+import org.team100.lib.experiments.Experiment;
+import org.team100.lib.experiments.Experiments;
 import org.team100.lib.indicator.Beeper;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.AprilTagVisualizer;
@@ -18,6 +21,10 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
+import org.team100.lib.music.Player;
+import org.team100.lib.music.Polyphony;
+import org.team100.lib.music.Unison;
+import org.team100.lib.music.commands.Play;
 import org.team100.lib.profile.r1.AccelLimitedVelocityProfileR1;
 import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
@@ -141,7 +148,7 @@ public class Machinery {
         NeutralMode100 neutral = NeutralMode100.COAST;
         MotorPhase phase1 = MotorPhase.FORWARD;
         MotorPhase phase2 = MotorPhase.REVERSE;
-        CurrentLimit limit = new CurrentLimit(30, 30);
+        CurrentLimit limit = new CurrentLimit(65, 65);
         double gearRatio = 6.0;
         double wheelDiameterM = 0.025;
         Friction friction = new Friction(0.32, 0.32, 0.0, 0.5);
@@ -176,6 +183,14 @@ public class Machinery {
         /// GROUND TRUTH
         ///
         m_groundTruth = new GroundTruth(fieldLogger, logger, m_swerveKinodynamics, m_modules, layout);
+
+        ///////////////////////////////////
+        ///
+        /// EXPERIMENT OVERRIDES
+        ///
+
+        // Without cameras, this should always be on.
+        Experiments.INSTANCE.override(Experiment.PerfectGyro, true);
     }
 
     /**
@@ -229,6 +244,32 @@ public class Machinery {
             System.out.printf("*** ZERO ROTATION: %s\n", np);
             resetPose(np);
         }, m_drive);
+    }
+
+    public Command play() {
+        // two
+        List<Player> s = m_subsystem.players();
+        // eight
+        List<Player> d = m_drive.players();
+        Unison voice1 = new Unison(
+                s.get(0),
+                s.get(1),
+                d.get(0));
+        Unison voice2 = new Unison(
+                d.get(1),
+                d.get(2),        
+                d.get(3),
+                d.get(4),
+                d.get(5),
+                d.get(6),
+                d.get(7));
+        // Unison voice3 = new Unison(
+        //         d.get(4),
+        //         d.get(5),
+        //         d.get(6),
+        //         d.get(7));
+        Polyphony allVoices = new Polyphony(voice1, voice2);
+        return new Play("Undertale.mid", 1.0 , allVoices);
     }
 
     /** Generally for simulation and visualization */

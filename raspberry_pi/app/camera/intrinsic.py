@@ -55,8 +55,7 @@ class Intrinsic:
                     ]
                 )
             case Identity.CAMERA_2A:
-                # Calibrated never.
-                # TODO: do it
+                # Calibrated 10/14.
                 self._mtx = np.array(
                     [
                         [1378.6815, 0.0, 768.4795],
@@ -64,8 +63,18 @@ class Intrinsic:
                         [0, 0, 1],
                     ]
                 )
+            case Identity.BALL_DETECT:
+                # Calibrated never.
+                # TODO: do it
+                self._mtx = np.array(
+                    [
+                        [874.8730398, 0.0, 875.8991441],
+                        [0.0, 954.7454588, 609.6603374],
+                        [0, 0, 1],
+                    ]
+                )
             case Identity.COLOR_DETECT_1:
-                # Calibrated 10/12.
+                # Calibrated 10/12/26.
                 # TODO: do it
                 self._mtx = np.array(
                     [

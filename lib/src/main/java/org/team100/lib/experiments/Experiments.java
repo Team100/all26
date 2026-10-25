@@ -31,9 +31,15 @@ public class Experiments {
 
     /** Key = experiment, value = enabled. */
     private final Map<Experiment, Boolean> m_enabled;
+    /**
+     * Key = experiment, value = enabled.
+     * Takes precedence.
+     */
+    private final Map<Experiment, Boolean> m_override;
 
     private Experiments() {
         m_enabled = new EnumMap<>(Experiment.class);
+        m_override = new EnumMap<>(Experiment.class);
         System.out.println("===============================================================");
         System.out.println("== EXPERIMENTS");
         for (Experiment e : Experiment.values()) {
@@ -61,9 +67,9 @@ public class Experiments {
         System.out.println("Showing dashboard experiment selectors.");
     }
 
-    /** Override enablement, should be used for unit tests only. */
+    /** Override enablement. The dashboard widget will have no effect. */
     public void override(Experiment experiment, boolean state) {
-        m_enabled.put(experiment, state);
+        m_override.put(experiment, state);
     }
 
     /**
@@ -71,10 +77,10 @@ public class Experiments {
      * experiment twiddlers will have no effect later!
      */
     public boolean enabled(Experiment experiment) {
-        return m_enabled.get(experiment);
+        return m_override.getOrDefault(experiment, m_enabled.get(experiment));
     }
 
-    ///////////////////////////////////////
+    /////////////////////////////////
 
     private String on(Experiment e) {
         return e.name() + " ON";

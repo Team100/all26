@@ -1,0 +1,3 @@
+# cloud-init meta-data.  build_image.sh replaces this for each Pi.
+dsmode: local
+instance-id: team100-camera

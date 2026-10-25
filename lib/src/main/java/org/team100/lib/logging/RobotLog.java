@@ -24,10 +24,10 @@ public class RobotLog {
         m_totalCurrentLog = new TotalCurrentLog(robotLogger);
 
         LoggerFactory dsLog = robotLogger.name("DriverStation");
-        m_log_ds_MatchTime = dsLog.doubleLogger(Level.TRACE, "MatchTime");
-        m_log_ds_AutonomousEnabled = dsLog.booleanLogger(Level.TRACE, "AutonomousEnabled");
-        m_log_ds_TeleopEnabled = dsLog.booleanLogger(Level.TRACE, "TeleopEnabled");
-        m_log_ds_FMSAttached = dsLog.booleanLogger(Level.TRACE, "FMSAttached");
+        m_log_ds_MatchTime = dsLog.doubleLogger(Level.COMP, "MatchTime");
+        m_log_ds_AutonomousEnabled = dsLog.booleanLogger(Level.COMP, "AutonomousEnabled");
+        m_log_ds_TeleopEnabled = dsLog.booleanLogger(Level.COMP, "TeleopEnabled");
+        m_log_ds_FMSAttached = dsLog.booleanLogger(Level.COMP, "FMSAttached");
         LogPoller.register(this::log);
     }
 

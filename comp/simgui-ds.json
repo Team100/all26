@@ -1,20 +1,18 @@
 {
       "FMS": {"window": {"visible": false}},
+      "Joysticks": {"window": {"visible": false}},
       "System Joysticks": {"window": {"enabled": false}},
       "dashboardOpModes": true,
       "keyboardJoysticks": [{
         "axisConfig": [{
+          "decKey": 562,
+          "incKey": 550
+        }, {}, {
+          "decKey": 568,
+          "incKey": 564
+        }, {
           "decKey": 549,
           "incKey": 546
-        }, {
-          "decKey": 564,
-          "incKey": 568
-        }, {
-          "decKey": 550,
-          "incKey": 562
-        }, {
-          "decKey": 554,
-          "incKey": 556
         }, {
           "decKey": 557,
           "incKey": 555
@@ -23,8 +21,8 @@
           "incKey": 566
         }],
         "axisCount": 6,
-        "buttonCount": 9,
-        "buttonKeys": [571, 569, 548, 567, 547, 559, 558, 597, 599],
+        "buttonCount": 11,
+        "buttonKeys": [537, 538, 539, 540, 541, 542, 543, 544, 545, 536, 598],
         "povConfig": [{
           "key0": 265,
           "key180": 264,
@@ -47,6 +45,6 @@
         "buttonCount": 0,
         "povCount": 0
       }],
-      "robotJoysticks": [{}, {"guid": "Keyboard0"}],
+      "robotJoysticks": [{"guid": "Keyboard0"}],
       "useEstopHotkey": true
     }

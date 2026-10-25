@@ -102,7 +102,13 @@ public enum Experiment {
      * instead of using the historical velocity directly.  This is to
      * explore the use of imputed velocity with GTSAM.
      */
-    ImputeVelocity("Impute velocity");
+    ImputeVelocity("Impute velocity"),
+    /**
+     * Quiet.
+     * 
+     * Don't play music.
+     */
+    Quiet("Quiet");
 
     /** Show this at startup */
     public final String description;

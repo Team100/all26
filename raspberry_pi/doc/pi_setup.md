@@ -6,6 +6,29 @@ use the unmaintained "WPILibPi" distribution.
 We use only the Raspberry Pi 5.  We have a bunch of 4's,
 but we don't use them, they're too slow.
 
+## Shortcut: build the image on a Linux laptop
+
+On a Debian or Ubuntu laptop, `image/build_image.sh` does everything
+in this doc up to "Install Supervisord" (inclusive), using
+[rpi-image-gen](https://github.com/raspberrypi/rpi-image-gen).
+It installs its own dependencies, asks for the camera's IP address,
+and writes the SD card:
+
+```
+cd raspberry_pi/image
+./build_image.sh
+```
+
+The first run takes a while; after that, making a card for another Pi
+is quick.  Run `./build_image.sh --help` for options.  Then skip to
+"Set up your laptop network" below.
+
+The script writes the same `bootfs` files described below
+(`network-config`, plus `user-data` with the hostname), so you can
+still edit them from any laptop.  Unlike stock Raspberry Pi OS,
+changes to `network-config` take effect on every boot, not just the
+first.
+
 ## Burn the SD Card
 
 * Make sure your laptop is connected to the internet.
@@ -65,6 +88,10 @@ What this means:
 * 8.8.8.8 is the google nameserver
 * 10.1.0.2 is your laptop (for bridging)
 * `optional` to avoid holding up the boot.
+
+### TODO
+
+Figure out how to turn off IPv6.
 
 
 ## Turn on the Pi
@@ -131,6 +158,9 @@ python -m pip install opencv-python
 python -m pip install robotpy
 python -m pip install robotpy-apriltag
 python -m pip install robotpy-cscore
+python -m pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
+python -m pip install ultralytics==8.4.187
+python -m pip install ncnn pnnx==20260526
 ```
 
 ## Install Supervisord
@@ -179,6 +209,115 @@ What if the steps above don't work?
   * The WHS network disallows bridging.  Run the procedure
     above on a more-friendly network (e.g. at home).
 
+# Things to try
+
+## Journalctl
+
+The default journalctl setting is volatile, which means that
+the logs are not available after a crash.  The reason is to
+reduce wear on the SD card, but our unit lifespan is short
+enough that we don't care about that.
+
+Journalctl is setup by default with `Storage=volatile` in
+`/usr/lib/systemd/journald.conf.d/40-rpi-volatile-storage.conf`
+so we're going to create an override in
+`/etc/systemd/journald.conf.d`
+
+```
+sudo mkdir -p /etc/systemd/journald.conf.d
+sudo vi /etc/systemd/journald.conf.d/99-persistent-journal.conf 
+``` 
+add
+```
+[Journal]
+Storage=persistent
+```
+restart
+```
+sudo systemctl daemon-reload
+sudo systemctl restart systemd-journald
+```
+reboot.
+```
+sudo /sbin/reboot now
+```
+see if the journal is retained
+```
+journalctl --list-boots
+```
+This should show more than one line.
+
+## Networking
+
+If the network gets messed up, you have to find the config,
+which isn't the same as the cloud-init config -- this is used
+only one time at first-boot.
+
+The output is stored in (careful of spaces in the filename)
+`/etc/NetworkManager/system-connections/Wired connection 1.nmconnection`
+so you can edit it:
+```
+sudo vi /etc/NetworkManager/system-connections/Wired connection 1.nmconnection
+```
+
+You'll want to verify things like
+```
+ipv4.method:        manual
+ipv4.addresses:     10.1.0.35/24
+ipv6.method:        disabled
+```
+then restart NetworkManager:
+```
+sudo systemctl restart NetworkManager
+```
+
+Another kind of misconfiguration that can happen is that there might be no
+NetworkManager connection at all, i.e. no file in
+`/etc/NetworkManager/system-connections`.
+
+So edit the connection:
+
+```
+sudo nmcli connection edit
+```
+
+brings up a somewhat-interactive editor.  For connection type
+enter `ethernet`
+
+then to see the connection properties, you can type something like
+
+```
+print ipv4
+```
+
+then change the ones you want
+
+```
+set ipv4.method manual
+set ipv4.addresses 10.1.0.34/24
+set ipv6.method disabled
+```
+then (don't forget!) to save the changes
+```
+save persistent
+```
+and you should see the changes:
+```
+ifconfig -a
+```
+
+The older ethernet config might still exist:
+```
+nmcli connection show
+```
+so delete it
+```
+nmcli connection delete "Wired connection 1"
+```
+then restart to make sure your changes "stick"
+```
+sudo /sbin/reboot now
+````
 ## References
 
 * [cloud-init format](https://docs.cloud-init.io/en/latest/reference/network-config.html) 
@@ -191,6 +330,7 @@ What if the steps above don't work?
 * [another post about network-config](https://forums.raspberrypi.com/viewtopic.php?t=396987)
 * [post about config.txt](https://help.pisignage.com/hc/en-us/articles/52406458481817-Disabling-Wi-Fi-and-Bluetooth-on-Raspberry-Pi)
 * [Raspberry Pi LED flashing codes](https://www.raspberrypi.com/documentation/computers/configuration.html#led-warning-flash-codes)
+* [journalctl change](https://industrialmonitordirect.com/blogs/knowledgebase/systemd-journald-not-retaining-logs-on-raspberry-pi-os-trixie)
 
 ## Appendix
 
