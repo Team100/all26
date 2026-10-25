@@ -34,5 +34,7 @@ class ConfigFactory:
                 return ConfigArduMjpeg(size)
             case Identity.COLOR_DETECT_1:
                 return ConfigArduMjpeg(size)
+            case Identity.BALL_DETECT:
+                return ConfigArduMjpeg(size)
             case _:
                 return ConfigGsMono(size)
