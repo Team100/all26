@@ -1,6 +1,6 @@
 package org.team100.frc2026.auton;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static org.wpilib.command2.Commands.parallel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +22,9 @@ import org.team100.lib.trajectory.se2.constraint.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
 
 public class IntakeOutakeLTrench implements AnnotatedCommand {
     private final LoggerFactory log;
@@ -82,9 +81,9 @@ public class IntakeOutakeLTrench implements AnnotatedCommand {
                 this::t1);
 
         return parallel(
-            fn,
-        machinery.m_subsystem.velocity(1).withTimeout(4.5)
-        .andThen(machinery.m_subsystem.velocity(-1).withTimeout(3))
+                fn,
+                machinery.m_subsystem.velocity(1).withTimeout(4.5)
+                        .andThen(machinery.m_subsystem.velocity(-1).withTimeout(3))
         // // extend when in neutral zone
         // toggle(
         // this::inNeutralZone,
@@ -108,20 +107,23 @@ public class IntakeOutakeLTrench implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose, new DirectionSE2(1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(5.5, 7.35, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(3,0, 0), 1),
+                new WaypointSE2(new Pose2d(5.5, 7.35, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(3, 0, 0),
+                        1),
 
-                new WaypointSE2(new Pose2d(5, 7.4, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1,0, 0), 1),
+                new WaypointSE2(new Pose2d(5, 7.4, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(7, 6.8, new Rotation2d(300 * (Math.PI / 180))), new DirectionSE2(1,-1, 0), 1),
+                new WaypointSE2(new Pose2d(7, 6.8, new Rotation2d(300 * (Math.PI / 180))), new DirectionSE2(1, -1, 0),
+                        1),
 
                 new WaypointSE2(new Pose2d(8, 5, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, -1, 0), 1),
 
                 new WaypointSE2(new Pose2d(8, 3, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, -1, 0), 1),
 
-                new WaypointSE2(new Pose2d(5.1, 0.7, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(5.1, 0.7, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0),
+                        1),
 
-                new WaypointSE2(new Pose2d(1.5, 0.7, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1)
-        );
+                new WaypointSE2(new Pose2d(1.5, 0.7, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0),
+                        1));
         return planner.restToRest(waypoints);
     }
 }

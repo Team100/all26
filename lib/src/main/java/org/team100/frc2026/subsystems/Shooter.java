@@ -14,7 +14,6 @@ import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
-import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.music.Music;
 import org.team100.lib.music.Player;
@@ -130,7 +129,7 @@ public class Shooter extends SubsystemBase implements Music {
     public Command shooterFullspeed() {
         return startRun(
                 this::reset,
-                 () -> setVelocityProfiled(FULL_SPEED))
+                () -> setVelocityProfiled(FULL_SPEED))
                 // () -> dutyCycleAll())
                 .withName("Shoot full speed");
     }
@@ -205,7 +204,7 @@ public class Shooter extends SubsystemBase implements Music {
      * Note this is quite noisy.
      */
     public double meanError() {
-        return (m_servo1.error() + m_servo2.error() + m_servo3.error()+m_servo4.error()) / 4;
+        return (m_servo1.error() + m_servo2.error() + m_servo3.error() + m_servo4.error()) / 4;
     }
 
     public Boolean atSpeed() {
