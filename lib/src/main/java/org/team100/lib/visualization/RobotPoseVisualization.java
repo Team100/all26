@@ -33,7 +33,7 @@ public class RobotPoseVisualization {
             Supplier<StateSE2> state,
             String label) {
         m_log_field_robot = fieldLogger.doubleArrayLogger(Level.COMP, label);
-        m_log_future = fieldLogger.doubleArrayLogger(Level.TRACE, "future");
+        m_log_future = fieldLogger.doubleArrayLogger(Level.TRACE, label + "_future");
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         m_pub_pose = inst.getStructTopic("pose", Pose2d.struct).publish();
         m_state = state;

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.coherence.Takt;
@@ -32,7 +31,6 @@ import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class FusedEstimatorTest implements Timeless {
@@ -55,10 +53,9 @@ public class FusedEstimatorTest implements Timeless {
         SwerveLocal swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
 
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
-        UnaryOperator<Twist2d> odometryNoise = UnaryOperator.identity();
 
         FusedEstimator estimate = new FusedEstimator(
-                logger, fieldLogger, swerveKinodynamics, odometryNoise, layout, gyro, swerveLocal);
+                logger, fieldLogger, swerveKinodynamics, false, layout, gyro, swerveLocal);
 
         SwerveDriveSubsystem drive = new SwerveDriveSubsystem(
                 logger,
@@ -73,7 +70,7 @@ public class FusedEstimatorTest implements Timeless {
                 new StateSE2(
                         new Pose2d(),
                         new VelocitySE2(0, 0, 0)),
-                estimate.get(Takt.get()));
+                estimate.getState(Takt.get()));
 
         drive.setChassisSpeeds(new ChassisSpeeds(1, 0, 0), ChassisAcceleration.ZERO);
         stepTime();
@@ -81,7 +78,7 @@ public class FusedEstimatorTest implements Timeless {
                 new StateSE2(
                         new Pose2d(0.02, 0, Rotation2d.kZero),
                         new VelocitySE2(1.0, 0, 0)),
-                estimate.get(Takt.get()));
+                estimate.getState(Takt.get()));
 
         drive.setChassisSpeeds(new ChassisSpeeds(1, 0, 0), ChassisAcceleration.ZERO);
         stepTime();
@@ -89,7 +86,7 @@ public class FusedEstimatorTest implements Timeless {
                 new StateSE2(
                         new Pose2d(0.04, 0, Rotation2d.kZero),
                         new VelocitySE2(1.0, 0, 0)),
-                estimate.get(Takt.get()));
+                estimate.getState(Takt.get()));
 
         drive.setChassisSpeeds(new ChassisSpeeds(1, 0, 0), ChassisAcceleration.ZERO);
         stepTime();
@@ -97,7 +94,7 @@ public class FusedEstimatorTest implements Timeless {
                 new StateSE2(
                         new Pose2d(0.06, 0, Rotation2d.kZero),
                         new VelocitySE2(1.0, 0, 0)),
-                estimate.get(Takt.get()));
+                estimate.getState(Takt.get()));
 
         Map<Double, SwerveState> all = estimate.all();
         assertEquals(5, all.size());
@@ -146,10 +143,9 @@ public class FusedEstimatorTest implements Timeless {
         SwerveLocal swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
 
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
-        UnaryOperator<Twist2d> odometryNoise = UnaryOperator.identity();
 
         FusedEstimator estimate = new FusedEstimator(
-                logger, fieldLogger, swerveKinodynamics, odometryNoise, layout, gyro, swerveLocal);
+                logger, fieldLogger, swerveKinodynamics, false, layout, gyro, swerveLocal);
 
         SwerveDriveSubsystem drive = new SwerveDriveSubsystem(
                 logger,
@@ -164,7 +160,7 @@ public class FusedEstimatorTest implements Timeless {
                 new StateSE2(
                         new Pose2d(),
                         new VelocitySE2(0, 0, 0)),
-                estimate.get(Takt.get()));
+                estimate.getState(Takt.get()));
 
         drive.setChassisSpeeds(new ChassisSpeeds(1, 0, 1), ChassisAcceleration.ZERO);
         stepTime();
@@ -172,7 +168,7 @@ public class FusedEstimatorTest implements Timeless {
                 new StateSE2(
                         new Pose2d(0.02, 0.001, new Rotation2d(0.02)),
                         new VelocitySE2(0.991, 0.064, 0.993)), // ???
-                estimate.get(Takt.get()));
+                estimate.getState(Takt.get()));
 
         drive.setChassisSpeeds(new ChassisSpeeds(1, 0, 1), ChassisAcceleration.ZERO);
         stepTime();
@@ -180,7 +176,7 @@ public class FusedEstimatorTest implements Timeless {
                 new StateSE2(
                         new Pose2d(0.04, 0.002, new Rotation2d(0.04)),
                         new VelocitySE2(1.0, 0.02, 1.0)),
-                estimate.get(Takt.get()));
+                estimate.getState(Takt.get()));
 
         drive.setChassisSpeeds(new ChassisSpeeds(1, 0, 1), ChassisAcceleration.ZERO);
         stepTime();
@@ -188,7 +184,7 @@ public class FusedEstimatorTest implements Timeless {
                 new StateSE2(
                         new Pose2d(0.06, 0.002, new Rotation2d(0.06)),
                         new VelocitySE2(1.0, 0.04, 1.0)),
-                estimate.get(Takt.get()));
+                estimate.getState(Takt.get()));
 
         Map<Double, SwerveState> all = estimate.all();
         assertEquals(5, all.size());
@@ -240,10 +236,9 @@ public class FusedEstimatorTest implements Timeless {
         SwerveLocal swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
 
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
-        UnaryOperator<Twist2d> odometryNoise = UnaryOperator.identity();
 
         FusedEstimator estimate = new FusedEstimator(
-                logger, fieldLogger, swerveKinodynamics, odometryNoise, layout, gyro, swerveLocal);
+                logger, fieldLogger, swerveKinodynamics, false, layout, gyro, swerveLocal);
 
         SwerveDriveSubsystem drive = new SwerveDriveSubsystem(
                 logger,
@@ -258,17 +253,17 @@ public class FusedEstimatorTest implements Timeless {
                 new StateSE2(
                         new Pose2d(),
                         new VelocitySE2(0, 0, 0)),
-                estimate.get(Takt.get()));
+                estimate.getState(Takt.get()));
 
         for (double t = 0.02; t < 1; t += 0.02) {
             drive.setChassisSpeeds(new ChassisSpeeds(1, 0, 1), ChassisAcceleration.ZERO);
             stepTime();
             double timestampS = Takt.get();
             if (DEBUG) {
-                StateSE2 state0 = estimate.get(timestampS - dt);
+                StateSE2 state0 = estimate.getState(timestampS - dt);
                 System.out.printf("TIME [%6.3f] POSE [%s] VELOCITY [%s] GYRO [%s]\n",
                         timestampS - dt, state0.pose(), state0.velocity(), gyro.getYawNWU());
-                StateSE2 state1 = estimate.get(timestampS);
+                StateSE2 state1 = estimate.getState(timestampS);
                 System.out.printf("TIME [%6.3f] POSE [%s] VELOCITY [%s] GYRO [%s]\n",
                         timestampS, state1.pose(), state1.velocity(), gyro.getYawNWU());
                 VelocitySE2 v = VelocitySE2.velocity(

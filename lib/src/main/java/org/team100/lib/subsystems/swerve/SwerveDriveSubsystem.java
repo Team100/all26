@@ -1,12 +1,14 @@
 package org.team100.lib.subsystems.swerve;
 
 import java.util.List;
+import java.util.Map;
 
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.dynamics.swerve.SwerveEffort;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.se2.ChassisAcceleration;
 import org.team100.lib.localization.StateEstimator;
+import org.team100.lib.localization.SwerveState;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
@@ -32,7 +34,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * The swerve subsystem is a thin subsystem wrapper that provides pose
  * estimation and local actuation.
  */
-public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsystemSE2, Music {
+public class SwerveDriveSubsystem extends SubsystemBase
+        implements Music, StateEstimator, VelocitySubsystemSE2 {
     private final StateEstimator m_estimate;
     private final SwerveLocal m_swerveLocal;
     private final StateSE2Logger m_log_state;
@@ -105,7 +108,8 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
     }
 
     /** Empty the pose history, add the given pose, and flush the cache. */
-    public void resetPose(Pose2d robotPose, IsotropicNoiseSE2 noise) {
+    @Override
+    public void reset(Pose2d robotPose, IsotropicNoiseSE2 noise) {
         m_estimate.reset(robotPose, noise);
     }
 
@@ -121,13 +125,19 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
     }
 
     /** Sample the past state at the specified time. */
+    @Override
     public StateSE2 getState(double timeSec) {
-        return m_estimate.get(timeSec);
+        return m_estimate.getState(timeSec);
     }
 
     /** Tags outside this radius are ignored. */
+    @Override
     public void setHeedRadiusM(double heedRadiusM) {
         m_estimate.setHeedRadiusM(heedRadiusM);
+    }
+
+    public Map<Double, SwerveState> all() {
+        return m_estimate.all();
     }
 
     ///////////////////////////////////////////////////////////////

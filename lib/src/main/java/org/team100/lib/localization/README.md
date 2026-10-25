@@ -8,7 +8,7 @@ to determine the robot's global pose:
 At each time step, the difference in wheel positions since the previous
 time step is used to compute a difference in pose, using forward kinematics.
 Obviously odometry can only estimate pose differences, not absolute pose.
-See `OdometryUpdater`.
+See `OdometryEstimator`.
 
 ## Vision
 
