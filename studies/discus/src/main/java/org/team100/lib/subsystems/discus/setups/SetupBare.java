@@ -16,8 +16,7 @@ public class SetupBare implements Runnable {
     private final ArmVisualization m_viz;
 
     public SetupBare(TotalCurrentLog currentLog) {
-        Logging logging = Logging.instance();
-        LoggerFactory logger = logging.rootLogger;
+        LoggerFactory logger = Logging.root();
         XboxController controller = new XboxController(0);
         m_discus = new DiscusBare(logger, currentLog);
         m_viz = new ArmVisualization(m_discus::getPosition, "discus", 0);

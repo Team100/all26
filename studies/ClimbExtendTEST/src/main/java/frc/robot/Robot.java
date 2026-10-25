@@ -18,8 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
     private final Machinery m_machinery;
-    private final Logging logging = Logging.instance();
-    private final LoggerFactory logger = logging.rootLogger;
+    private final LoggerFactory logger = Logging.root();
     private final DriverXboxControl driver = new DriverXboxControl(logger, 0);
 
     public Robot() {

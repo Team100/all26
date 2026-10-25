@@ -27,7 +27,7 @@ public class Robot extends TimedRobot100 {
     /** Mirrors the comp robot code. */
     public Robot() {
         Startup.start();
-        LoggerFactory rootLogger = Logging.instance().rootLogger;
+        LoggerFactory rootLogger = Logging.root();
         m_robotLog = new RobotLog(rootLogger);
 
         m_machinery = new Machinery(m_robotLog.totalCurrentLog());

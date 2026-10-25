@@ -143,6 +143,11 @@ public class OnboardLinearDutyCyclePositionServo implements LinearPositionServo 
         actuate(new SetpointsR1(c, c));
     }
 
+    @Override
+    public void play(double freq) {
+        m_mechanism.play(freq);
+    }
+
     /**
      * Compute feedback using the current setpoint, feedforward using the next
      * setpoint, and actuate using duty cycle.

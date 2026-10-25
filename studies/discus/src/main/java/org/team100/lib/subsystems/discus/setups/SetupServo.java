@@ -18,8 +18,7 @@ public class SetupServo implements Runnable {
     private final ArmVisualization m_viz;
 
     public SetupServo(TotalCurrentLog currentLog) {
-        final Logging logging = Logging.instance();
-        final LoggerFactory logger = logging.rootLogger;
+        final LoggerFactory logger = Logging.root();
         XboxController controller = new XboxController(0);
 
         m_discus = new DiscusServo(logger, currentLog);

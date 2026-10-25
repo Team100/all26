@@ -101,7 +101,7 @@ public class TimedRobot100 extends IterativeRobotBase100 {
 
     protected TimedRobot100() {
         super(LOOP_PERIOD_S);
-        m_robotLogger = Logging.instance().rootLogger.type(this);
+        m_robotLogger = Logging.root().type(this);
         m_log_slack = m_robotLogger.doubleLogger(Level.COMP, "slack time (s)");
         m_startTime = Takt.actual();
         addPeriodic(this::loopFunc, TimedRobot100.LOOP_PERIOD_S, "main loop");
@@ -147,7 +147,7 @@ public class TimedRobot100 extends IterativeRobotBase100 {
             double endWaitingS = Takt.actual();
             double slackS = endWaitingS - startWaitingS;
             // this is the main loop slack, don't let it go to zero!
-            if (Logging.instance().getLevel().admit(Level.TRACE) && slackS < 0.001) {
+            if (Logging.admit(Level.TRACE) && slackS < 0.001) {
                 System.out.printf("WARNING: Slack time %f is too low!\n", slackS);
             }
             m_log_slack.log(() -> slackS);

@@ -51,6 +51,10 @@ public class Friction {
         this.vS = vS;
     }
 
+    public static Friction zero() {
+        return new Friction(0, 0, 0, 0);
+    }
+
     /**
      * Voltage to balance friction (i.e. this has the same sign as the supplied
      * speed).

@@ -15,7 +15,6 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.trajectory.se2.TrajectorySE2;
 import org.team100.lib.trajectory.se2.TrajectorySE2Factory;
 import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
-import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -30,12 +29,10 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RightTrenchLeave implements AnnotatedCommand {
     private final LoggerFactory log;
-    private final ControllerSE2 controller;
-    private final Machinery machinery;
-    private final List<TimingConstraint> constraints;
     private final TrajectorySE2Factory trajectoryFactory;
     private final PathSE2Factory pathFactory;
     private final TrajectorySE2Planner planner;
+    private final Command command;
 
     public RightTrenchLeave(
             LoggerFactory parent,
@@ -43,12 +40,17 @@ public class RightTrenchLeave implements AnnotatedCommand {
             ControllerSE2 controller,
             Machinery machinery) {
         log = parent.name(name());
-        this.controller = controller;
-        this.machinery = machinery;
-        constraints = new TimingConstraintFactory(kinodynamics).auto();
-        trajectoryFactory = new TrajectorySE2Factory(constraints);
+
+        trajectoryFactory = new TrajectorySE2Factory(new TimingConstraintFactory(kinodynamics).auto());
         pathFactory = new PathSE2Factory();
         planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
+        DriveWithTrajectoryFunction navigator = new DriveWithTrajectoryFunction(
+                log,
+                machinery.m_drive,
+                controller,
+                machinery.m_trajectoryViz,
+                this::t1);
+        command = navigator.until(navigator::isDone);
     }
 
     @Override
@@ -71,13 +73,7 @@ public class RightTrenchLeave implements AnnotatedCommand {
 
     @Override
     public Command command() {
-        DriveWithTrajectoryFunction navigator = new DriveWithTrajectoryFunction(
-                log,
-                machinery.m_drive,
-                controller,
-                machinery.m_trajectoryViz,
-                this::t1);
-        return navigator.until(navigator::isDone);
+        return command;
     }
 
     @Override

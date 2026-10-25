@@ -29,6 +29,38 @@ class TrajectorySE2Test implements Timeless {
     private static final boolean DEBUG = false;
 
     @Test
+    void testClosestApproach() {
+        SwerveKinodynamics limits = SwerveKinodynamicsFactory.forRealisticTest();
+        Pose2d start = Pose2d.kZero;
+        Pose2d end = start.plus(new Transform2d(1, 0, Rotation2d.kZero));
+
+        Translation2d currentTranslation = start.getTranslation();
+        Translation2d goalTranslation = end.getTranslation();
+        Translation2d translationToGoal = goalTranslation.minus(currentTranslation);
+        Rotation2d angleToGoal = translationToGoal.getAngle();
+        List<WaypointSE2> waypoints = List.of(
+                new WaypointSE2(start, DirectionSE2.irrotational(angleToGoal), 1),
+                new WaypointSE2(end, DirectionSE2.irrotational(angleToGoal), 1));
+
+        List<TimingConstraint> constraints = new TimingConstraintFactory(limits).fast();
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
+        PathSE2Factory pathFactory = new PathSE2Factory();
+        TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
+
+        // this is a straight line from (0,0,0) to (1,0,0) traversed in 0.711 sec.
+        TrajectorySE2 trajectory = planner.restToRest(waypoints);
+        if (DEBUG)
+            System.out.printf("t %s\n", trajectory);
+        assertEquals(0.711, trajectory.duration(), 1e-3);
+        // closest time to start should be zero
+        assertEquals(0, trajectory.timeOfClosestApproach(new Translation2d(0, 0)), 1e-3);
+        // closest time to end should be duration
+        assertEquals(0.711, trajectory.timeOfClosestApproach(new Translation2d(1, 0)), 1e-3);
+        // a point to the side, in the middle, time is also in the middle
+        assertEquals(0.360, trajectory.timeOfClosestApproach(new Translation2d(0.5, 0.5)), 1e-3);
+    }
+
+    @Test
     void testPreviewAndAdvance() {
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forRealisticTest();
         Pose2d start = Pose2d.kZero;

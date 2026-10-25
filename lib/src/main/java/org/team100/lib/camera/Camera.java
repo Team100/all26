@@ -35,6 +35,11 @@ public enum Camera {
     CLIMB_RIGHT("364f07fb090a3bf7"),
     /** ALPHA Shooter Camera */
     SHOOTER("e47055a1bcbcead0"),
+    // Front of bot
+    CAMERA_2A("42ed4186e14abbaf"),
+    // Side of bot
+    COLOR_DETECT_1("8132c256f63bbb4e"),
+
     //
     // For unit tests.
     //

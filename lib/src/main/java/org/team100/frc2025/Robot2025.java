@@ -28,13 +28,14 @@ public class Robot2025 extends TimedRobot100 {
 
     public Robot2025() {
         Startup.start();
-        LoggerFactory log = Logging.instance().rootLogger;
+        LoggerFactory log = Logging.root();
+        LoggerFactory field = Logging.field();
 
         m_robotLog = new RobotLog(log);
 
-        m_machinery = new Machinery2025(m_robotLog.totalCurrentLog());
-        m_allAutons = new AllAutons2025(m_machinery);
-        m_binder = new Binder2025(m_machinery);
+        m_machinery = new Machinery2025(log, field, m_robotLog.totalCurrentLog());
+        m_allAutons = new AllAutons2025(log, m_machinery);
+        m_binder = new Binder2025(log, field, m_machinery);
         m_binder.bind();
 
         Prewarmer2025.init(m_machinery);

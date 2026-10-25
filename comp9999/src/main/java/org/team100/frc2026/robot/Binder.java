@@ -65,10 +65,10 @@ public class Binder {
         ///
         /// DEFENSE X POSITION
         ///
-        whileTrue(m_driver::povDown, machinery.m_drive.defend());
+        // whileTrue(m_driver::povDown, machinery.m_drive.defend());
         whileTrue(m_driver::leftBumper, machinery.m_subsystem.velocity(-1).withName("negative"));
         whileTrue(m_driver::rightBumper, machinery.m_subsystem.velocity(1).withName("positive"));
-        // whileTrue(m_driver::back, machinery.m_subsystem.voltage(0.5).withName("voltage"));
+        whileTrue(m_driver::back, machinery.m_subsystem.voltage(0.5).withName("voltage"));
 
         ////////////////////////////////////////////////////
         ///
@@ -79,21 +79,21 @@ public class Binder {
         FeedbackR1 thetaFeedback = new FullStateFeedback(
                 log, 6, 0.1, true, 0.025, 0.25);
 
-        // button 6
-        AzimuthController aim = new AzimuthController(
-                log,
-                machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
-                thetaFeedback);
-        whileTrue(() -> m_driver.leftBumper(),
-                new DriveMovingTargetLock(
-                        log,
-                        machinery.m_swerveKinodynamics,
-                        aim,
-                        m_driver::velocity,
-                        limiter,
-                        machinery.m_cachedSolution,
-                        machinery.m_drive)
-                        .withName("Target lock"));
+    //     // button 6
+    //     AzimuthController aim = new AzimuthController(
+    //             log,
+    //             machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
+    //             thetaFeedback);
+    //     whileTrue(() -> m_driver.leftBumper(),
+    //             new DriveMovingTargetLock(
+    //                     log,
+    //                     machinery.m_swerveKinodynamics,
+    //                     aim,
+    //                     m_driver::velocity,
+    //                     limiter,
+    //                     machinery.m_cachedSolution,
+    //                     machinery.m_drive)
+    //                     .withName("Target lock"));
 
     }
 

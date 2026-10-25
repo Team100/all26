@@ -5,7 +5,7 @@ import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 
 public class Machinery {
-    private static final LoggerFactory logger = Logging.instance().rootLogger;
+    private static final LoggerFactory logger = Logging.root();
     public final Climber m_Climber;
     public final ClimberExtension m_ClimberExtension;
 

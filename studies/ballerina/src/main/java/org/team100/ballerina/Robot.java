@@ -42,9 +42,8 @@ public class Robot extends TimedRobot {
     public Robot() {
         Banner.printBanner();
         Experiments.INSTANCE.show();
-        Logging log = Logging.instance();
-        LoggerFactory fieldLogger = log.fieldLogger;
-        LoggerFactory rootLogger = log.rootLogger;
+        LoggerFactory fieldLogger = Logging.field();
+        LoggerFactory rootLogger = Logging.root();
         TotalCurrentLog currentLog = new TotalCurrentLog(rootLogger);
         m_controller = new DriverXboxControl(rootLogger, 0);
         m_pose = new ManualPose(fieldLogger, m_controller::velocity, new Pose2d(6, 4, Rotation2d.kZero));

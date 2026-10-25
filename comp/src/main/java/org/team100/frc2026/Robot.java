@@ -36,9 +36,8 @@ public class Robot extends TimedRobot100 {
 
     public Robot() {
         Startup.start();
-        Logging logging = Logging.instance();
-        LoggerFactory log = logging.rootLogger;
-        LoggerFactory fieldLogger = logging.fieldLogger;
+        LoggerFactory log = Logging.root();
+        LoggerFactory fieldLogger = Logging.field();
         m_robotLog = new RobotLog(log);
         m_sync = new Sync(NetworkTableInstance.getDefault());
         m_machinery = new Machinery(log, fieldLogger, m_robotLog.totalCurrentLog());
@@ -47,6 +46,7 @@ public class Robot extends TimedRobot100 {
         m_autoViz = new AutonVisualization(fieldLogger);
         m_autons.onChange(m_autoViz::show);
         Prewarmer.init(m_machinery);
+        System.out.printf("Total Logger Keys: %d\n", Logging.keyCount());
     }
 
     /** Called in the main loop. */
