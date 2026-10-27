@@ -66,6 +66,10 @@ What this means:
 * 10.1.0.2 is your laptop (for bridging)
 * `optional` to avoid holding up the boot.
 
+### TODO
+
+Figure out how to turn off IPv6.
+
 
 ## Turn on the Pi
 
@@ -131,6 +135,7 @@ python -m pip install opencv-python
 python -m pip install robotpy
 python -m pip install robotpy-apriltag
 python -m pip install robotpy-cscore
+python -m pip install ultralytics 
 ```
 
 ## Install Supervisord
@@ -179,6 +184,70 @@ What if the steps above don't work?
   * The WHS network disallows bridging.  Run the procedure
     above on a more-friendly network (e.g. at home).
 
+# Things to try
+
+## Journalctl
+
+The default journalctl setting is volatile, which means that
+the logs are not available after a crash.  The reason is to
+reduce wear on the SD card, but our unit lifespan is short
+enough that we don't care about that.
+
+Journalctl is setup by default with `Storage=volatile` in
+`/usr/lib/systemd/journald.conf.d/40-rpi-volatile-storage.conf`
+so we're going to create an override in
+`/etc/systemd/journald.conf.d`
+
+```
+sudo mkdir -p /etc/systemd/journald.conf.d
+sudo vi /etc/systemd/journald.conf.d/99-persistent-journal.conf 
+``` 
+add
+```
+[Journal]
+Storage=persistent
+```
+restart
+```
+sudo systemctl daemon-reload
+sudo systemctl restart systemd-journald
+```
+reboot.
+```
+sudo /sbin/reboot now
+```
+see if the journal is retained
+```
+journalctl --list-boots
+```
+This should show more than one line.
+
+## Networking
+
+If the network gets messed up, you have to find the config,
+which isn't the same as the cloud-init config -- this is used
+only one time at first-boot.
+
+The output is stored in (careful of spaces in the filename)
+`/etc/NetworkManager/system-connections/Wired connection 1.nmconnection`
+so you can edit it:
+```
+sudo vi /etc/NetworkManager/system-connections/Wired connection 1.nmconnection
+```
+
+You'll want to verify things like
+```
+ipv4.method:        manual
+ipv4.addresses:     10.1.0.35/24
+ipv6.method:        disabled
+```
+then restart NetworkManager:
+```
+sudo systemctl restart NetworkManager
+```
+
+
+
 ## References
 
 * [cloud-init format](https://docs.cloud-init.io/en/latest/reference/network-config.html) 
@@ -191,6 +260,7 @@ What if the steps above don't work?
 * [another post about network-config](https://forums.raspberrypi.com/viewtopic.php?t=396987)
 * [post about config.txt](https://help.pisignage.com/hc/en-us/articles/52406458481817-Disabling-Wi-Fi-and-Bluetooth-on-Raspberry-Pi)
 * [Raspberry Pi LED flashing codes](https://www.raspberrypi.com/documentation/computers/configuration.html#led-warning-flash-codes)
+* [journalctl change](https://industrialmonitordirect.com/blogs/knowledgebase/systemd-journald-not-retaining-logs-on-raspberry-pi-os-trixie)
 
 ## Appendix
 

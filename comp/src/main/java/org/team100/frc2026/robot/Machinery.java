@@ -2,7 +2,6 @@ package org.team100.frc2026.robot;
 
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 import org.team100.frc2026.field.FieldConstants2026;
 import org.team100.frc2026.subsystems.Intake;
@@ -11,11 +10,13 @@ import org.team100.frc2026.subsystems.Shooter;
 import org.team100.frc2026.targeting.Targeter;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.indicator.Beeper;
-import org.team100.lib.localization.AddOdometryNoise;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.AprilTagVisualizer;
 import org.team100.lib.localization.FusedEstimator;
 import org.team100.lib.localization.GroundTruth;
+import org.team100.lib.localization.NoEstimate;
+import org.team100.lib.localization.StateEstimator;
+import org.team100.lib.localization.StateEstimatorProxy;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.sensor.gyro.Gyro;
@@ -37,7 +38,6 @@ import org.team100.lib.visualization.TrajectoryVisualization;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -48,9 +48,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
  * that the Binder and Auton classes may want to use.
  */
 public class Machinery implements AutoCloseable {
-    private final AprilTagVisualizer m_tagViz;
     private final SwerveModuleCollection m_modules;
     private final GroundTruth m_groundTruth;
+    private final StateEstimator m_proxyEstimator;
 
     public final TrajectoryVisualization m_trajectoryViz;
     public final SwerveKinodynamics m_swerveKinodynamics;
@@ -87,24 +87,25 @@ public class Machinery implements AutoCloseable {
                 driveLog,
                 m_swerveKinodynamics,
                 m_modules);
-        UnaryOperator<Twist2d> odometryNoise = RobotBase.isReal() ? UnaryOperator.identity() : new AddOdometryNoise();
-        FusedEstimator estimate = new FusedEstimator(
+        FusedEstimator fusedEstimate = new FusedEstimator(
                 driveLog,
                 fieldLogger,
                 m_swerveKinodynamics,
-                odometryNoise,
+                RobotBase.isSimulation(),
                 layout,
                 gyro,
                 swerveLocal);
+        m_proxyEstimator = new StateEstimatorProxy(
+                fusedEstimate, new NoEstimate());
         m_drive = new SwerveDriveSubsystem(
                 driveLog,
-                estimate,
+                m_proxyEstimator,
                 swerveLocal);
-        m_tagViz = new AprilTagVisualizer(
+        new AprilTagVisualizer(
                 driveLog, fieldLogger, m_drive::getState, layout, DriverStation::getAlliance);
         new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState(), "robot");
-        new SwerveHistoryVisualization(fieldLogger, estimate);
+        new SwerveHistoryVisualization(fieldLogger, m_drive);
 
         ////////////////////////////////////////////////////////////
         //
@@ -126,7 +127,7 @@ public class Machinery implements AutoCloseable {
 
         // Targeting from 2025: the cameras are looking for game pieces.
 
-        m_targets = new Targets(driveLog, fieldLogger, 0.2, (t) -> m_drive.getState(t));
+        m_targets = new Targets(driveLog, fieldLogger, 0.2, m_drive::getState);
 
         ////////////////////////////////////////////////////////////
         //
@@ -169,7 +170,7 @@ public class Machinery implements AutoCloseable {
      * Purge the history and assert the given pose as the current estimate.
      */
     public void resetPose(NoisyPose2d p) {
-        m_drive.resetPose(p.pose(), p.noise());
+        m_drive.reset(p.pose(), p.noise());
         // also reset the ground truth, otherwise the cameras retain the old pose
         m_groundTruth.resetPose(p.pose());
     }
@@ -212,7 +213,7 @@ public class Machinery implements AutoCloseable {
     /** Generally for simulation and visualization */
     public void periodic() {
         m_groundTruth.periodic();
-        m_tagViz.update();
+        // m_tagViz.update();
     }
 
     /**
@@ -222,6 +223,7 @@ public class Machinery implements AutoCloseable {
     public void close() {
         m_modules.close();
         m_solver.close();
+        m_proxyEstimator.close();
     }
 
 }

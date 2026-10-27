@@ -62,7 +62,7 @@
         "markdown.preview.scrollEditorWithPreview": false,
         "markdown.preview.scrollPreviewWithEditor": false,
         "terminal.integrated.scrollback": 100000,
-        "workbench.colorTheme": "Default Light Modern",
+        "workbench.colorTheme": "Visual Studio Dark",
         "workbench.editor.revealIfOpen": true,
         "workbench.tree.enableStickyScroll": false,
         "editor.cursorWidth": 2,

@@ -3,7 +3,6 @@ package org.team100.lib.subsystems.swerve.kinodynamics.limiter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.coherence.Takt;
@@ -53,10 +52,9 @@ public class SimulatedDrivingTest implements Timeless {
         swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
 
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
-        UnaryOperator<Twist2d> odometryNoise = UnaryOperator.identity();
 
         FusedEstimator estimate = new FusedEstimator(
-                logger, fieldLogger, swerveKinodynamics, odometryNoise, layout, gyro, swerveLocal);
+                logger, fieldLogger, swerveKinodynamics, false, layout, gyro, swerveLocal);
         limiter = new SwerveLimiter(logger, swerveKinodynamics, () -> 12);
 
         drive = new SwerveDriveSubsystem(
