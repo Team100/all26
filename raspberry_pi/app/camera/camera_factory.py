@@ -1,5 +1,6 @@
 # pylint: disable=C0415,R0903
 
+from sys import stderr
 from app.camera.camera_protocol import Camera
 from app.config.identity import Identity
 
@@ -15,10 +16,13 @@ class CameraFactory:
             from app.camera.real_camera import RealCamera
 
             # IndexError if no camera is attached.
+            print("***real camera started", file=stderr, flush=True)
             return RealCamera(identity)
+
 
         except ImportError:
             from app.camera.fake_camera import FakeCamera
+            print("***Fake Camera", file=stderr, flush=True)
 
             # These images can only be read from the filesystem,
             # not from the zip file (without more work), so they're
@@ -31,5 +35,5 @@ class CameraFactory:
 
         except IndexError:
             from app.camera.no_camera import NoCamera
-
+            raise Exception("we mad the cameras tak tom's advice :)")
             return NoCamera()
