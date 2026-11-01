@@ -2,7 +2,6 @@ package org.team100.frc2026.robot;
 
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import org.team100.frc2026.field.FieldConstants2026;
@@ -85,7 +84,7 @@ public class Machinery implements AutoCloseable {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        ////////////////////////////////
+        ///////////////////////////////
         //
         // DRIVETRAIN
         //
@@ -134,7 +133,7 @@ public class Machinery implements AutoCloseable {
                 fieldLogger, () -> m_drive.getState(), "robot");
         new SwerveHistoryVisualization(fieldLogger, m_drive);
 
-        ////////////////////////////////
+        ///////////////////////////////
         //
         // TARGETING
         //
@@ -156,7 +155,7 @@ public class Machinery implements AutoCloseable {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, t -> m_drive.getState(t).state());
 
-        /////////////////////////////////
+        ////////////////////////////////
         //
         // SUBSYSTEMS
         //
@@ -166,13 +165,13 @@ public class Machinery implements AutoCloseable {
         m_feeder = new Feeder(logger, currentLog, m_shooter);
         m_conveyor = new Conveyor(logger, currentLog);
 
-        /////////////////////////////////
+        ////////////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        /////////////////////////////////
+        ////////////////////////////////
         //
         // INDICATOR
         //
