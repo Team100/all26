@@ -15,7 +15,7 @@ import org.team100.lib.state.StateR1;
  * NOTE: these profiles don't know anything about angle wrapping.
  */
 public interface ProfileR1 {
-    public static final int MAX_ETA = 10;
+    public static final int MAX_ETA = 100;
     static final boolean DEBUG = false;
 
     /**

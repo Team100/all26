@@ -130,11 +130,8 @@ public class FusedEstimator implements StateEstimator {
     public void close() {
     }
 
-    /**
-     * Read pending updates from odo/gyro and vision, and apply them to the history,
-     * with replay, and return an immutable copy.
-     */
-    ImmutableSwerveHistory update(double timestamp) {
+    @Override
+    public ImmutableSwerveHistory update(double timestamp) {
         odoGyro(timestamp);
         vision();
         return immutableCopy();
@@ -180,7 +177,7 @@ public class FusedEstimator implements StateEstimator {
     }
 
     /**
-     * Apply pending vision updates.
+     * Apply pending vision updates, with replay.
      */
     private void vision() {
         for (VisionMeasurement v : m_vision.get()) {

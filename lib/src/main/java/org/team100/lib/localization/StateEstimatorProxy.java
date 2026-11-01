@@ -38,6 +38,15 @@ public class StateEstimatorProxy implements StateEstimator {
     }
 
     @Override
+    public ImmutableSwerveHistory update(double timestamp) {
+        return switch (m_choice) {
+            case A -> m_A.update(timestamp);
+            case B -> m_A.update(timestamp);
+            default -> throw new IllegalStateException();
+        };
+    }
+
+    @Override
     public NoisyStateSE2 getState(double timestampS) {
         return switch (m_choice) {
             case A -> m_A.getState(timestampS);
