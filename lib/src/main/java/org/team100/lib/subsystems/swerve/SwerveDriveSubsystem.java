@@ -7,6 +7,7 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.dynamics.swerve.SwerveEffort;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.se2.ChassisAcceleration;
+import org.team100.lib.localization.ImmutableSwerveHistory;
 import org.team100.lib.localization.StateEstimator;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
@@ -55,7 +56,11 @@ public class SwerveDriveSubsystem extends SubsystemBase
         stop();
     }
 
-    /////////////
+    @Override
+    public ImmutableSwerveHistory update(double timestamp) {
+        return m_estimate.update(timestamp);
+    }
+
     //
     // ACTUATORS
     //

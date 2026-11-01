@@ -13,16 +13,21 @@ import org.team100.lib.uncertainty.NoisyStateSE2;
  * Provides cached, up-to-date estimates.
  */
 public class UpdatedEstimate implements StateEstimator {
-    private final FusedEstimator m_estimator;
+    private final StateEstimator m_estimator;
     private final ObjectCache<ImmutableSwerveHistory> m_immutable;
 
-    public UpdatedEstimate(FusedEstimator estimator) {
+    public UpdatedEstimate(StateEstimator estimator) {
         m_estimator = estimator;
         m_immutable = Cache.of(this::run);
     }
 
     private ImmutableSwerveHistory run() {
         return m_estimator.update(Takt.get());
+    }
+
+    @Override
+    public ImmutableSwerveHistory update(double timestamp) {
+        return m_estimator.update(timestamp);
     }
 
     /** Interpolates. */
