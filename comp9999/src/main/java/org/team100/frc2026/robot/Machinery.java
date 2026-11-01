@@ -106,7 +106,7 @@ public class Machinery {
                 m_swerveKinodynamics,
                 m_modules);
         AprilTagCornerReader tagReader = new AprilTagCornerReader(
-                driveLog, layout, DriverStation::getAlliance);
+                driveLog, layout, MatchState::getAlliance);
         OdometryEstimator odometryEstimate = new OdometryEstimator(
                 driveLog,
                 m_swerveKinodynamics,
