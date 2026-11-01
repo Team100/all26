@@ -22,7 +22,6 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Factory;
 import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
-import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
 import org.wpilib.command2.Command;
 import org.wpilib.math.geometry.Pose2d;
 

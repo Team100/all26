@@ -24,7 +24,8 @@ public class SwerveHistoryVisualization {
     }
 
     private void log() {
-        List<Pose2d> poses = m_estimator.all().values().stream().map(x -> x.state().pose()).toList();
+        List<Pose2d> poses = m_estimator.all().values().stream().map(
+                x -> x.pose()).toList();
         m_log_history.log(() -> VizUtil.fromPoses(poses));
     }
 }

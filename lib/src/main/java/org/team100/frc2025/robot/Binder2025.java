@@ -66,20 +66,7 @@ public class Binder2025 {
         // * normal
         // * lock rotation to reef center
         // * barge-assist (slow when near barge)
-        // final Command driveDefault = new DriveManuallySimple(
-        // driver::velocity,
-        // m_machinery.m_localizer::setHeedRadiusM,
-        // m_machinery.m_drive,
-        // limiter,
-        // new ManualWithProfiledReefLock(
-        // log, m_machinery.m_swerveKinodynamics, driver::leftTrigger,
-        // thetaFeedback, () -> m_machinery.m_drive.getPose().getTranslation()),
-        // new ManualWithBargeAssist(
-        // log, m_machinery.m_swerveKinodynamics, driver::pov,
-        // thetaFeedback, m_machinery.m_drive::getPose),
-        // driver::leftBumper);
-        // m_machinery.m_drive.setDefaultCommand(driveDefault.withName("drive
-        // default"));
+
         // // WARNING! This default command *MOVES IMMEDIATELY WHEN ENABLED*!
         m_machinery.m_mech.setDefaultCommand(m_machinery.m_mech.profileHomeAndThenRest().withName("mech default"));
         m_machinery.m_climber.setDefaultCommand(m_machinery.m_climber.stop().withName("climber default"));
@@ -182,15 +169,7 @@ public class Binder2025 {
 
         // Drive to a scoring location at the reef and score.
         whileTrue(driver::b, m_machinery.m_manipulator.centerEject());
-        // whileTrue(driver::a,
-        // ScoreCoralSmartLuke.get(
-        // coralSequence, m_machinery.m_mech, m_machinery.m_manipulator,
-        // holonomicController, profile, m_machinery.m_drive,
-        // m_machinery.m_localizer::setHeedRadiusM, buttons::level, buttons::point));
-        // // ScoreCoralSmart.get(
-        // coralSequence, m_machinery.m_mech, m_machinery.m_manipulator,
-        // holonomicController, profile, m_machinery.m_drive,
-        // m_machinery.m_localizer::setHeedRadiusM, buttons::level, buttons::point));
+
 
         //////////////////////////////////////////////////
         //

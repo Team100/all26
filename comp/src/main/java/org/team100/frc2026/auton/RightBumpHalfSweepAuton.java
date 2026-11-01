@@ -21,7 +21,6 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Factory;
 import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
-import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
 import org.wpilib.command2.Command;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
@@ -59,11 +58,11 @@ public class RightBumpHalfSweepAuton implements AnnotatedCommand {
                                 .andThen(machinery.m_intake.intake().withTimeout(3)))
                         .until(IntakeSetUp::isDone),
                 parallel(
-                    machinery.m_intake.stop(),
-                    machinery.m_intakeExtend.AgitationPosition(),
-                    machinery.m_feeder.proportional(),
-                    machinery.m_conveyor.convey(),
-                    machinery.m_shooter.shooterFullspeed()));
+                        machinery.m_intake.stop(),
+                        machinery.m_intakeExtend.AgitationPosition(),
+                        machinery.m_feeder.proportional(),
+                        machinery.m_conveyor.convey(),
+                        machinery.m_shooter.shooterFullspeed()));
     }
 
     @Override

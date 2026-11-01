@@ -40,7 +40,8 @@ class HolonomicProfileTest implements Timeless {
      */
     @Test
     void test2d() {
-        HolonomicProfile hp = HolonomicProfileFactory.trapezoidal(1, 1, 0.01, 1, 1, 0.01);
+        HolonomicProfile hp = HolonomicProfileFactory.trapezoidal(
+                1, 1, 0.01, 1, 1, 0.01);
         StateSE2 i = new StateSE2();
         StateSE2 g = new StateSE2(new Pose2d(1, 5, Rotation2d.kZero));
         hp.solve(i, g);
@@ -114,4 +115,29 @@ class HolonomicProfileTest implements Timeless {
         if (DEBUG)
             System.out.printf("per op (ns)    %5.1f\n", 1e9 * (t1 - t0) / N);
     }
+
+    /**
+     * Make several turns in place.
+     * 
+     * This does not work with the normal holonomic profile, because
+     * it is periodic in theta.
+     */
+    @Test
+    void testInPlace() {
+        HolonomicProfile hp = HolonomicProfileFactory.unwrappedTrapezoidal(
+                3, 10, 0.01, 3, 10, 0.01);
+        StateSE2 i = new StateSE2();
+        StateSE2 g = new StateSE2(new Pose2d(1, 5, new Rotation2d(10)));
+        hp.solve(i, g);
+        ControlSE2 s = i.control();
+        for (double t = 0; t < 10; t += 0.02) {
+            if (DEBUG)
+                System.out.printf("%s %s\n", s, g);
+            s = hp.calculate(s.state(), g);
+            if (DEBUG)
+                System.out.printf("%.2f %.3f %.3f %.3f\n",
+                        t, s.x().x(), s.y().x(), s.theta().x());
+        }
+    }
+
 }

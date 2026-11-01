@@ -7,8 +7,8 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.dynamics.swerve.SwerveEffort;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.se2.ChassisAcceleration;
+import org.team100.lib.localization.ImmutableSwerveHistory;
 import org.team100.lib.localization.StateEstimator;
-import org.team100.lib.localization.SwerveState;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
@@ -22,10 +22,9 @@ import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
-import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.uncertainty.NoisyStateSE2;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
-import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.kinematics.ChassisVelocities;
 
@@ -57,7 +56,11 @@ public class SwerveDriveSubsystem extends SubsystemBase
         stop();
     }
 
-    ///////////////
+    @Override
+    public ImmutableSwerveHistory update(double timestamp) {
+        return m_estimate.update(timestamp);
+    }
+
     //
     // ACTUATORS
     //
@@ -108,11 +111,11 @@ public class SwerveDriveSubsystem extends SubsystemBase
 
     /** Empty the pose history, add the given pose, and flush the cache. */
     @Override
-    public void reset(Pose2d robotPose, IsotropicNoiseSE2 noise) {
-        m_estimate.reset(robotPose, noise);
+    public void reset(double timestampS, NoisyStateSE2 state) {
+        m_estimate.reset(timestampS, state);
     }
 
-    //////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
     //
     // Observers
     //
@@ -120,26 +123,21 @@ public class SwerveDriveSubsystem extends SubsystemBase
     /** Sample the state at the current time. */
     @Override
     public StateSE2 getState() {
-        return getState(Takt.get());
+        return getState(Takt.get()).state();
     }
 
     /** Sample the past state at the specified time. */
     @Override
-    public StateSE2 getState(double timeSec) {
+    public NoisyStateSE2 getState(double timeSec) {
         return m_estimate.getState(timeSec);
     }
 
-    /** Tags outside this radius are ignored. */
     @Override
-    public void setHeedRadiusM(double heedRadiusM) {
-        m_estimate.setHeedRadiusM(heedRadiusM);
-    }
-
-    public Map<Double, SwerveState> all() {
+    public Map<Double, NoisyStateSE2> all() {
         return m_estimate.all();
     }
 
-    //////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
     //
     // Commands
     //
