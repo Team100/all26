@@ -28,7 +28,6 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsSwerveOn
 import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
 import org.team100.lib.subsystems.swerve.module.SwerveModulesPractice;
 import org.team100.lib.subsystems.swerve.module.SwerveModulesSim;
-import org.team100.lib.subsystems.swerve.module.SwerveModulesSim;
 import org.team100.lib.targeting.CachedSolution;
 import org.team100.lib.targeting.ProxySolver;
 import org.team100.lib.targeting.Targets;
@@ -44,7 +43,6 @@ import org.wpilib.framework.RobotBase;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.math.geometry.Twist2d;
 
 /**
  * This should contain all the hardware of the robot: all the subsystems etc
@@ -66,7 +64,7 @@ public class Machinery {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        //////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
         //
         // DRIVETRAIN
         //
@@ -86,8 +84,8 @@ public class Machinery {
                 driveLog,
                 m_swerveKinodynamics,
                 m_modules);
-        AprilTagCornerReader tagReader = new AprilTagCornerReadr(
-                driveLog, layout, DriverStation::getAlliance);
+        AprilTagCornerReader tagReader = new AprilTagCornerReader(
+                driveLog, layout, MatchState::getAlliance);
         OdometryEstimator odometryEstimate = new OdometryEstimator(
                 driveLog,
                 m_swerveKinodynamics,
@@ -113,7 +111,7 @@ public class Machinery {
         new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState(), "robot");
 
-        //////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
         //
         // TARGETING
         //
@@ -133,20 +131,21 @@ public class Machinery {
 
         // Targeting from 2025: the cameras are looking for game pieces.
 
-        m_targets = new Targets(driveLog, fieldLogger, 0.2, t - m_drive.getState(t).state());
+        m_targets = new Targets(driveLog, fieldLogger, 0.2,
+                t -> m_drive.getState(t).state());
 
-        //////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
         //
         // SUBSYSTEMS
         //
 
-        //////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        //////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
         //
         // INDICATOR
         //

@@ -85,7 +85,7 @@ public class Machinery {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        ////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////
         //
         // DRIVETRAIN
         //
@@ -132,7 +132,7 @@ public class Machinery {
         new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState(), "robot");
 
-        ////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////
         //
         // TARGETING
         //
@@ -154,7 +154,7 @@ public class Machinery {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, t -> m_drive.getState(t).state());
 
-        ////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////
         //
         // SUBSYSTEMS
         //
@@ -181,13 +181,13 @@ public class Machinery {
                 driveLog, currentLog, canId1, canId2, busId, neutral, phase1, phase2, limit,
                 friction, pid, gearRatio, wheelDiameterM, dynamics, ref, 0.01, true);
 
-        ////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        ////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////
         //
         // INDICATOR
         //
