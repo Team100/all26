@@ -29,6 +29,8 @@ public class HolonomicProfile implements ProfileSE2 {
     private final ProfileR1 px;
     private final ProfileR1 py;
     private final ProfileR1 ptheta;
+    /** Wrap theta if true, otherwise treat theta like R1 */
+    private final boolean wrap;
 
     // package-private for testing
     ProfileR1 ppx;
@@ -42,10 +44,12 @@ public class HolonomicProfile implements ProfileSE2 {
     HolonomicProfile(
             ProfileR1 px,
             ProfileR1 py,
-            ProfileR1 ptheta) {
+            ProfileR1 ptheta,
+            boolean wrap) {
         this.px = px;
         this.py = py;
         this.ptheta = ptheta;
+        this.wrap = wrap;
         ppx = px;
         ppy = py;
         pptheta = ptheta;
@@ -97,11 +101,20 @@ public class HolonomicProfile implements ProfileSE2 {
         }
         ControlR1 stateX = ppx.calculate(DT, i.x().control(), g.x());
         ControlR1 stateY = ppy.calculate(DT, i.y().control(), g.y());
-        // theta is periodic; choose a setpoint angle near the goal.
-        StateR1 theta = new StateR1(
-                MathUtil.angleModulus(i.theta().x() - g.theta().x()) + g.theta().x(),
-                i.theta().v());
-        ControlR1 stateTheta = pptheta.calculate(DT, theta.control(), g.theta());
+
+        ControlR1 stateTheta = pptheta.calculate(DT, theta(i, g).control(), g.theta());
         return new ControlSE2(stateX, stateY, stateTheta);
+    }
+
+    StateR1 theta(StateSE2 i, StateSE2 g) {
+        if (wrap) {
+            // theta is periodic, so choose a setpoint angle near the goal.
+            return new StateR1(
+                    MathUtil.angleModulus(i.theta().x() - g.theta().x()) + g.theta().x(),
+                    i.theta().v());
+        } else {
+            // theta is not periodic, treated like any other R1
+            return i.theta();
+        }
     }
 }

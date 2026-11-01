@@ -44,12 +44,10 @@ public record SwerveModulePositions(
                 initial.rearRight().plus(delta.rearRight()));
     }
 
-    public static SwerveModulePositions kZero() {
-        return new SwerveModulePositions(
-                new SwerveModulePosition100(),
-                new SwerveModulePosition100(),
-                new SwerveModulePosition100(),
-                new SwerveModulePosition100());
-    }
+    public static SwerveModulePositions ZERO = new SwerveModulePositions(
+            SwerveModulePosition100.ZERO,
+            SwerveModulePosition100.ZERO,
+            SwerveModulePosition100.ZERO,
+            SwerveModulePosition100.ZERO);
 
 }

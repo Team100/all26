@@ -27,6 +27,8 @@ public class SwerveModulePosition100
     /** SwerveModulePosition struct for serialization. */
     public static final SwerveModulePosition100Struct struct = new SwerveModulePosition100Struct();
 
+    public static final SwerveModulePosition100 ZERO = new SwerveModulePosition100();
+    
     /** Distance measured by the wheel of the module. */
     private final double m_distanceMeters;
 
@@ -131,7 +133,8 @@ public class SwerveModulePosition100
         }
         // Both start and end are known.
         // This is the old method, interpolating the angle.
-        // Rotation2d angleLerp = m_unwrappedAngle.get().interpolate(endValue.m_unwrappedAngle.get(), t);
+        // Rotation2d angleLerp =
+        // m_unwrappedAngle.get().interpolate(endValue.m_unwrappedAngle.get(), t);
         // Kinematics assumes that the path from start to end consists of straight
         // lines, using the end angles, so that's what we do here too.
         Rotation2d angleLerp = endValue.m_unwrappedAngle.get();

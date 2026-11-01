@@ -1,6 +1,5 @@
 package org.team100.lib.subsystems.swerve.commands.manual;
 
-import java.util.function.DoubleConsumer;
 import java.util.function.Supplier;
 
 import org.team100.lib.config.DriverSkill;
@@ -33,17 +32,10 @@ public class DriveBargeAssist extends Command {
      */
     private static final double BARGE_X = 7.4;
     /**
-     * While driving manually, pay attention to tags even if they are somewhat far
-     * away.
-     */
-    private static final double HEED_RADIUS_M = 6.0;
-
-    /**
      * Velocity control in control units, [-1,1] on all axes. This needs to be
      * mapped to a feasible velocity control as early as possible.
      */
     private final Supplier<DriverVelocity> m_twistSupplier;
-    private final DoubleConsumer m_heedRadiusM;
     private final SwerveDriveSubsystem m_drive;
     private final SwerveLimiter m_limiter;
 
@@ -56,11 +48,9 @@ public class DriveBargeAssist extends Command {
             SwerveKinodynamics swerveKinodynamics,
             Supplier<Pose2d> pose,
             Supplier<DriverVelocity> twistSupplier,
-            DoubleConsumer heedRadiusM,
             SwerveDriveSubsystem drive,
             SwerveLimiter limiter) {
         m_twistSupplier = twistSupplier;
-        m_heedRadiusM = heedRadiusM;
         m_drive = drive;
         m_limiter = limiter;
         m_swerveKinodynamics = swerveKinodynamics;
@@ -71,10 +61,8 @@ public class DriveBargeAssist extends Command {
 
     @Override
     public void initialize() {
-        m_heedRadiusM.accept(HEED_RADIUS_M);
         // make sure the limiter knows what we're doing
         m_limiter.updateSetpoint(m_drive.getState().velocity());
-
     }
 
     /**

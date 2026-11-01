@@ -13,6 +13,8 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.state.StateSE2;
+import org.team100.lib.targeting.network.Target;
+import org.team100.lib.targeting.simulation.SimulatedTargetWriter;
 import org.team100.lib.testing.Timeless;
 
 import org.wpilib.math.geometry.Rotation3d;

@@ -1,7 +1,6 @@
 package org.team100.frc2025.robot;
 
 import static org.wpilib.command2.Commands.parallel;
-import static org.wpilib.command2.Commands.runOnce;
 import static org.wpilib.command2.Commands.sequence;
 import static org.wpilib.command2.Commands.waitUntil;
 
@@ -19,15 +18,13 @@ import org.team100.lib.subsystems.se2.commands.DriveToPoseWithProfile;
 import org.team100.lib.subsystems.se2.commands.DriveToTranslationFacingWithProfile;
 import org.team100.lib.subsystems.se2.commands.DriveWithTrajectoryFunction;
 import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
-
+import org.wpilib.command2.Command;
+import org.wpilib.command2.ParallelRaceGroup;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.ParallelRaceGroup;
 
 public class LolipopAuto {
-    private static final double HEED_RADIUS_M = 3;
     private final LoggerFactory m_log;
     private final Machinery2025 m_machinery;
     private final ProfileSE2 m_autoProfile;
@@ -89,7 +86,6 @@ public class LolipopAuto {
         return sequence(
                 toReefTrajectory.until(toReefTrajectory::isDone),
                 parallel(
-                        runOnce(() -> m_machinery.m_drive.setHeedRadiusM(HEED_RADIUS_M)),
                         toReefA,
                         m_machinery.m_mech.profileHomeAndThenRest().until(toReefA::isDone).andThen(toL4),
                         waitUntil(() -> toReefA.isDone() && toL4.isDone())

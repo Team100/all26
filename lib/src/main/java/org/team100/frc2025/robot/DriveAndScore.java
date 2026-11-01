@@ -1,7 +1,6 @@
 package org.team100.frc2025.robot;
 
 import static org.wpilib.command2.Commands.parallel;
-import static org.wpilib.command2.Commands.runOnce;
 import static org.wpilib.command2.Commands.sequence;
 import static org.wpilib.command2.Commands.waitUntil;
 
@@ -13,7 +12,6 @@ import org.team100.lib.controller.se2.FullStateControllerSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.subsystems.se2.commands.DriveToPoseWithProfile;
-
 import org.wpilib.command2.Command;
 
 /**
@@ -21,9 +19,6 @@ import org.wpilib.command2.Command;
  * specified ScoringLevel, and finally return the mechanism to home.
  */
 public class DriveAndScore {
-    /** While driving to scoring tag, pay attention only to very close tags. */
-    private static final double HEED_RADIUS_M = 3;
-
     private final LoggerFactory m_logger;
     private final Machinery2025 m_machinery;
     private final ProfileSE2 m_autoProfile;
@@ -49,7 +44,6 @@ public class DriveAndScore {
         Command eject = m_machinery.m_manipulator.centerEject().withTimeout(0.5);
         return sequence(
                 parallel(
-                        runOnce(() -> m_machinery.m_drive.setHeedRadiusM(HEED_RADIUS_M)),
                         toReef,
                         waitUntil(toReef::isDone).andThen(toL4),
                         waitUntil(() -> toReef.isDone() && toL4.isDone())

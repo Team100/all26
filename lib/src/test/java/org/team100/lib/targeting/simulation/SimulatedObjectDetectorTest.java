@@ -1,0 +1,447 @@
+package org.team100.lib.targeting.simulation;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+import org.team100.lib.targeting.TargetLocalizer;
+
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation3d;
+
+class SimulatedObjectDetectorTest {
+    private static final double DELTA = 0.001;
+
+    @Test
+    void testNotePose() {
+        // camera is 1m up, down 45
+        Transform3d cameraInRobotCoordinates = new Transform3d(
+                new Translation3d(0, 0, 1),
+                new Rotation3d(0, Math.toRadians(45), 0));
+
+        Pose2d robotPose = new Pose2d();
+
+        // goal is straight ahead, same as height, so should be on-bore
+        Translation2d[] notes = { new Translation2d(1, 0) };
+        List<Rotation3d> sights = SimulatedObjectDetector.getRotations(
+                robotPose, cameraInRobotCoordinates, notes);
+
+        assertEquals(1, sights.size());
+        // on-bore
+        assertEquals(0, sights.get(0).getX(), DELTA);
+        assertEquals(0, sights.get(0).getY(), DELTA);
+        assertEquals(0, sights.get(0).getZ(), DELTA);
+
+        List<Translation2d> targets = TargetLocalizer.cameraRotsToFieldRelativeArray(
+                robotPose,
+                cameraInRobotCoordinates,
+                sights.toArray(new Rotation3d[0]));
+        assertEquals(1, targets.size());
+        // we should get back the goal
+        assertEquals(1, targets.get(0).getX(), DELTA);
+        assertEquals(0, targets.get(0).getY(), DELTA);
+    }
+
+    @Test
+    void testNotePose2() {
+        // camera is 1m up, level
+        Transform3d cameraInRobotCoordinates = new Transform3d(
+                new Translation3d(0, 0, 1),
+                new Rotation3d());
+
+        Pose2d robotPose = new Pose2d();
+
+        // goal is straight ahead, 2x further than height, so ~26 degrees down
+        Translation2d[] notes = { new Translation2d(2, 0) };
+
+        List<Rotation3d> sights = SimulatedObjectDetector.getRotations(
+                robotPose, cameraInRobotCoordinates, notes);
+
+        assertEquals(1, sights.size());
+        // on-bore
+        assertEquals(0, sights.get(0).getX(), DELTA);
+        assertEquals(0.463, sights.get(0).getY(), DELTA);
+        assertEquals(0, sights.get(0).getZ(), DELTA);
+
+        List<Translation2d> targets = TargetLocalizer.cameraRotsToFieldRelativeArray(
+                robotPose,
+                cameraInRobotCoordinates,
+                sights.toArray(new Rotation3d[0]));
+        assertEquals(1, targets.size());
+        // we should get back the goal
+        assertEquals(2, targets.get(0).getX(), DELTA);
+        assertEquals(0, targets.get(0).getY(), DELTA);
+    }
+
+    @Test
+    void testNotePose3() {
+        // camera is 1m up, level
+        Transform3d cameraInRobotCoordinates = new Transform3d(
+                new Translation3d(0, 0, 1),
+                new Rotation3d());
+
+        Pose2d robotPose = new Pose2d();
+
+        // note is to the left, 2x further than height, so ~26 degrees
+        Translation2d[] notes = { new Translation2d(2, 1) };
+        List<Rotation3d> sights = SimulatedObjectDetector.getRotations(
+                robotPose, cameraInRobotCoordinates, notes);
+
+        assertEquals(1, sights.size());
+        // roll?
+        assertEquals(0.101, sights.get(0).getX(), DELTA);
+        // less than the expected
+        assertEquals(0.420, sights.get(0).getY(), DELTA);
+        // exactly the expected
+        assertEquals(0.463, sights.get(0).getZ(), DELTA);
+
+        List<Translation2d> targets = TargetLocalizer.cameraRotsToFieldRelativeArray(
+                robotPose,
+                cameraInRobotCoordinates,
+                sights.toArray(new Rotation3d[0]));
+        assertEquals(1, targets.size());
+        // we should get back the goal
+        assertEquals(2, targets.get(0).getX(), DELTA);
+        assertEquals(1, targets.get(0).getY(), DELTA);
+    }
+
+    @Test
+    void testNotePose4() {
+        // camera is 1m up, level
+        Transform3d cameraInRobotCoordinates = new Transform3d(
+                new Translation3d(0, 0, 1),
+                new Rotation3d());
+
+        // note is to the left, 2x further than height, so ~26 degrees
+        Translation2d[] notes = { new Translation2d(2, 1) };
+
+        // this is what the camera should see.
+        Rotation3d expectedSight = new Rotation3d(VecBuilder.fill(2, 0, 0), VecBuilder.fill(2, 1, -1));
+        // irrelevant roll
+        assertEquals(0.101, expectedSight.getX(), DELTA);
+        // a bit less than the expected pitch, since the yaw pulls it in
+        assertEquals(0.420, expectedSight.getY(), DELTA);
+        // expected yaw
+        assertEquals(0.463, expectedSight.getZ(), DELTA);
+
+        Pose2d robotPose = new Pose2d();
+
+        List<Rotation3d> sights = SimulatedObjectDetector.getRotations(
+                robotPose, cameraInRobotCoordinates, notes);
+
+        assertEquals(1, sights.size());
+        // roll doesn't matter
+        assertEquals(0.101, sights.get(0).getX(), DELTA);
+        assertEquals(0.420, sights.get(0).getY(), DELTA);
+        assertEquals(0.463, sights.get(0).getZ(), DELTA);
+
+        List<Translation2d> targets = TargetLocalizer.cameraRotsToFieldRelativeArray(
+                robotPose,
+                cameraInRobotCoordinates,
+                sights.toArray(new Rotation3d[0]));
+        assertEquals(1, targets.size());
+        // we should get back the goal
+        assertEquals(2, targets.get(0).getX(), DELTA);
+        assertEquals(1, targets.get(0).getY(), DELTA);
+    }
+
+    @Test
+    void testNotePose5() {
+        // camera is 1m up, 90 left
+        Transform3d cameraInRobotCoordinates = new Transform3d(
+                new Translation3d(0, 0, 1),
+                new Rotation3d(0, 0, Math.PI / 2));
+
+        Pose2d robotPose = new Pose2d();
+
+        Translation2d[] notes = { new Translation2d(0, 2) };
+        List<Rotation3d> sights = SimulatedObjectDetector.getRotations(
+                robotPose, cameraInRobotCoordinates, notes);
+
+        assertEquals(1, sights.size());
+        // camera should see target straight ahead
+        assertEquals(0, sights.get(0).getX(), DELTA);
+        assertEquals(0.463, sights.get(0).getY(), DELTA);
+        assertEquals(0, sights.get(0).getZ(), DELTA);
+
+        List<Translation2d> targets = TargetLocalizer.cameraRotsToFieldRelativeArray(
+                robotPose,
+                cameraInRobotCoordinates,
+                sights.toArray(new Rotation3d[0]));
+        assertEquals(1, targets.size());
+        // we should get back the goal
+        assertEquals(0, targets.get(0).getX(), DELTA);
+        assertEquals(2, targets.get(0).getY(), DELTA);
+    }
+
+    @Test
+    void testNotePose6() {
+        // from getRotation.
+        {
+            Pose2d robotPose = new Pose2d();
+            Pose2d notePose = new Pose2d(new Translation2d(2, 0), new Rotation2d());
+            Translation2d relative = notePose.relativeTo(robotPose).getTranslation();
+            assertEquals(2, relative.getX(), DELTA);
+            assertEquals(0, relative.getY(), DELTA);
+        }
+        {
+            // robot facing left
+            Pose2d robotPose = new Pose2d(new Translation2d(), new Rotation2d(Math.PI / 2));
+            Pose2d notePose = new Pose2d(new Translation2d(2, 0), new Rotation2d());
+            Translation2d relative = notePose.relativeTo(robotPose).getTranslation();
+            assertEquals(0, relative.getX(), DELTA);
+            assertEquals(-2, relative.getY(), DELTA);
+        }
+
+        {
+            // robot at origin
+            Pose2d robotPose = new Pose2d();
+            // note 2m ahead
+            Pose2d notePose = new Pose2d(new Translation2d(2, 0), new Rotation2d());
+            Translation2d relative = notePose.relativeTo(robotPose).getTranslation();
+            assertEquals(2, relative.getX(), DELTA);
+            assertEquals(0, relative.getY(), DELTA);
+            Transform3d noteInRobotCoords = new Transform3d(
+                    new Translation3d(relative.getX(), relative.getY(), 0),
+                    new Rotation3d());
+            // camera 1m up
+            Transform3d cameraInRobotCoordinates = new Transform3d(new Translation3d(0, 0, 1), new Rotation3d());
+            Transform3d robotInCameraCoordinates = cameraInRobotCoordinates.inverse();
+            Transform3d noteInCameraCoordinates = noteInRobotCoords.plus(robotInCameraCoordinates);
+            // 2m ahead
+            assertEquals(2, noteInCameraCoordinates.getX(), DELTA);
+            assertEquals(0, noteInCameraCoordinates.getY(), DELTA);
+            // 1m down from camera
+            assertEquals(-1, noteInCameraCoordinates.getZ(), DELTA);
+            // no rotation
+            assertEquals(0, noteInCameraCoordinates.getRotation().getX(), DELTA);
+            assertEquals(0, noteInCameraCoordinates.getRotation().getY(), DELTA);
+            assertEquals(0, noteInCameraCoordinates.getRotation().getZ(), DELTA);
+        }
+    }
+
+    @Test
+    void testNotePose7() {
+
+        // robot at origin
+        Pose2d robotPose = new Pose2d();
+
+        // camera 1m up, level
+        Transform3d cameraInRobotCoordinates = new Transform3d(
+                new Translation3d(0, 0, 1), new Rotation3d());
+
+        Translation2d note = new Translation2d(1, 0);
+
+        Transform3d noteInCameraCoordinates = SimulatedObjectDetector.getNoteInCameraCoordinates(
+                robotPose, cameraInRobotCoordinates, note);
+
+        // 1m ahead
+        assertEquals(1, noteInCameraCoordinates.getX(), DELTA);
+        assertEquals(0, noteInCameraCoordinates.getY(), DELTA);
+        // 1m down from camera
+        assertEquals(-1, noteInCameraCoordinates.getZ(), DELTA);
+        // no rotation
+        assertEquals(0, noteInCameraCoordinates.getRotation().getX(), DELTA);
+        assertEquals(0, noteInCameraCoordinates.getRotation().getY(), DELTA);
+        assertEquals(0, noteInCameraCoordinates.getRotation().getZ(), DELTA);
+
+        Optional<Rotation3d> rotInCamera = SimulatedObjectDetector.getRotInCamera(
+                robotPose, cameraInRobotCoordinates, note);
+
+        // roll is irrelevant anyway
+        assertEquals(0, rotInCamera.get().getX(), DELTA);
+        // this should be atan(1) = 0.785
+        assertEquals(0.785, rotInCamera.get().getY(), DELTA);
+        // dead ahead
+        assertEquals(0, rotInCamera.get().getZ(), DELTA);
+
+        // do we get back the original pose?
+
+        Optional<Translation2d> target = TargetLocalizer.cameraRotToFieldRelative(
+                robotPose,
+                cameraInRobotCoordinates,
+                rotInCamera.get());
+        // we should get back the goal
+        assertEquals(1, target.get().getX(), DELTA);
+        assertEquals(0, target.get().getY(), DELTA);
+
+    }
+
+    @Test
+    void testNotePose7a() {
+
+        // this is the same case as above, but further away
+        // robot at origin
+        Pose2d robotPose = new Pose2d();
+
+        // camera 1m up, level
+        Transform3d cameraInRobotCoordinates = new Transform3d(
+                new Translation3d(0, 0, 1), new Rotation3d());
+
+        // further away
+        Translation2d note = new Translation2d(2, 0);
+
+        Transform3d noteInCameraCoordinates = SimulatedObjectDetector.getNoteInCameraCoordinates(
+                robotPose, cameraInRobotCoordinates, note);
+
+        // 2m ahead
+        assertEquals(2, noteInCameraCoordinates.getX(), DELTA);
+        assertEquals(0, noteInCameraCoordinates.getY(), DELTA);
+        // 1m down from camera
+        assertEquals(-1, noteInCameraCoordinates.getZ(), DELTA);
+        // no rotation
+        assertEquals(0, noteInCameraCoordinates.getRotation().getX(), DELTA);
+        assertEquals(0, noteInCameraCoordinates.getRotation().getY(), DELTA);
+        assertEquals(0, noteInCameraCoordinates.getRotation().getZ(), DELTA);
+
+        Optional<Rotation3d> rotInCamera = SimulatedObjectDetector.getRotInCamera(
+                robotPose, cameraInRobotCoordinates, note);
+
+        // roll is irrelevant anyway
+        assertEquals(0, rotInCamera.get().getX(), DELTA);
+        // this should be atan(0.5) = 0.463
+        assertEquals(0.463, rotInCamera.get().getY(), DELTA);
+        // dead ahead
+        assertEquals(0, rotInCamera.get().getZ(), DELTA);
+
+        // do we get back the original pose?
+
+        Optional<Translation2d> target = TargetLocalizer.cameraRotToFieldRelative(
+                robotPose,
+                cameraInRobotCoordinates,
+                rotInCamera.get());
+        // we should get back the goal
+        assertEquals(2, target.get().getX(), DELTA);
+        assertEquals(0, target.get().getY(), DELTA);
+
+    }
+
+    @Test
+    void testNotePose8() {
+
+        // robot at origin
+        Pose2d robotPose = new Pose2d();
+
+        // camera 1m up, looking left
+        Transform3d cameraInRobotCoordinates = new Transform3d(
+                new Translation3d(0, 0, 1), new Rotation3d(0, 0, Math.PI / 2));
+
+        Translation2d note = new Translation2d(0, 2);
+
+        Transform3d noteInCameraCoordinates = SimulatedObjectDetector.getNoteInCameraCoordinates(
+                robotPose, cameraInRobotCoordinates, note);
+
+        // 2m ahead
+        assertEquals(2, noteInCameraCoordinates.getX(), DELTA);
+        assertEquals(0, noteInCameraCoordinates.getY(), DELTA);
+        // 1m down from camera
+        assertEquals(-1, noteInCameraCoordinates.getZ(), DELTA);
+        assertEquals(0, noteInCameraCoordinates.getRotation().getX(), DELTA);
+        assertEquals(0, noteInCameraCoordinates.getRotation().getY(), DELTA);
+        // -pi/2 yaw, doesn't matter
+        assertEquals(-1.571, noteInCameraCoordinates.getRotation().getZ(), DELTA);
+
+    }
+
+    @Test
+    void testNotePose9() {
+
+        // robot at origin
+        Pose2d robotPose = new Pose2d();
+
+        // camera 1m up, looking left
+        Transform3d cameraInRobotCoordinates = new Transform3d(
+                new Translation3d(0, 0, 1), new Rotation3d(0, Math.PI / 4, Math.PI / 2));
+
+        Translation2d note = new Translation2d(0, 2);
+
+        Transform3d noteInCameraCoordinates = SimulatedObjectDetector.getNoteInCameraCoordinates(
+                robotPose, cameraInRobotCoordinates, note);
+
+        // a bit more than 2m ahead
+        assertEquals(2.121, noteInCameraCoordinates.getX(), DELTA);
+        // dead ahead
+        assertEquals(0, noteInCameraCoordinates.getY(), DELTA);
+        // above the bore
+        assertEquals(0.707, noteInCameraCoordinates.getZ(), DELTA);
+        // irrelevant
+        assertEquals(0.785, noteInCameraCoordinates.getRotation().getX(), DELTA);
+        assertEquals(0, noteInCameraCoordinates.getRotation().getY(), DELTA);
+        // -pi/2 yaw, doesn't matter
+        assertEquals(-1.571, noteInCameraCoordinates.getRotation().getZ(), DELTA);
+
+    }
+
+    @Test
+    void testNotePose10() {
+
+        // robot at origin
+        Pose2d robotPose = new Pose2d();
+        // camera 1m up, looking left
+        Transform3d cameraInRobotCoordinates = new Transform3d(
+                new Translation3d(0, 0, 1), new Rotation3d(0, Math.PI / 4, Math.PI / 2));
+
+        Translation2d note = new Translation2d(0, 2);
+
+        Optional<Rotation3d> rotInCamera = SimulatedObjectDetector.getRotInCamera(
+                robotPose, cameraInRobotCoordinates, note);
+
+        // roll is irrelevant anyway
+        assertEquals(0, rotInCamera.get().getX(), DELTA);
+        // a little pitch up
+        assertEquals(-0.321, rotInCamera.get().getY(), DELTA);
+        // dead ahead
+        assertEquals(0, rotInCamera.get().getZ(), DELTA);
+
+        // do we get back the original pose?
+
+        Optional<Translation2d> target = TargetLocalizer.cameraRotToFieldRelative(
+                robotPose,
+                cameraInRobotCoordinates,
+                rotInCamera.get());
+        // we should get back the goal
+        assertEquals(0, target.get().getX(), DELTA);
+        assertEquals(2, target.get().getY(), DELTA);
+
+    }
+
+    @Test
+    void testNotePose11() {
+
+        // robot at origin
+        Pose2d robotPose = new Pose2d();
+        // camera 1m up, looking left
+        Transform3d cameraInRobotCoordinates = new Transform3d(
+                new Translation3d(0, 0, 1), new Rotation3d(0, Math.PI / 4, Math.PI / 2));
+
+        Translation2d note = new Translation2d(0, 1);
+
+        Optional<Rotation3d> rotInCamera = SimulatedObjectDetector.getRotInCamera(
+                robotPose, cameraInRobotCoordinates, note);
+
+        // roll is irrelevant anyway
+        assertEquals(0, rotInCamera.get().getX(), DELTA);
+        // on bore
+        assertEquals(0, rotInCamera.get().getY(), DELTA);
+        // dead ahead
+        assertEquals(0, rotInCamera.get().getZ(), DELTA);
+
+        // do we get back the original pose?
+
+        Optional<Translation2d> target = TargetLocalizer.cameraRotToFieldRelative(
+                robotPose,
+                cameraInRobotCoordinates,
+                rotInCamera.get());
+        // we should get back the goal
+        assertEquals(0, target.get().getX(), DELTA);
+        assertEquals(1, target.get().getY(), DELTA);
+
+    }
+}

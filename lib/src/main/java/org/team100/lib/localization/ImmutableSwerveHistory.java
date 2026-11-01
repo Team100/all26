@@ -2,8 +2,9 @@ package org.team100.lib.localization;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.team100.lib.state.StateSE2;
+import org.team100.lib.uncertainty.NoisyStateSE2;
 import org.team100.lib.util.TimeInterpolatableBuffer100;
 
 /**
@@ -14,28 +15,30 @@ import org.team100.lib.util.TimeInterpolatableBuffer100;
  * estimates states are on the far side of the (somewhat slow) Java/C++ barrier,
  * and they're not interpolatable.
  */
-public class ImmutableSwerveHistory implements StateSampler {
+public class ImmutableSwerveHistory {
 
-    private final TimeInterpolatableBuffer100<SwerveState> m_poseBuffer;
+    private final TimeInterpolatableBuffer100<NoisyStateSE2> m_buffer;
 
     public ImmutableSwerveHistory(
-            Set<Map.Entry<Double, SwerveState>> entries,
+            Set<Map.Entry<Double, LocalizerEstimate>> entries,
             double bufferDuration) {
         if (entries.isEmpty())
             throw new IllegalArgumentException();
-        SwerveStateInterpolator interpolator = new SwerveStateInterpolator();
-        m_poseBuffer = new TimeInterpolatableBuffer100<>(
-                entries, interpolator, bufferDuration);
+        m_buffer = new TimeInterpolatableBuffer100<>(
+                entries.stream().map(e -> Map.entry(e.getKey(),
+                        new NoisyStateSE2(e.getValue().state(), e.getValue().noise())))
+                        .collect(Collectors.toSet()),
+                bufferDuration);
     }
 
     /** Interpolates. */
-    public StateSE2 get(double timestampSeconds) {
-        return m_poseBuffer.get(timestampSeconds).state();
+    public NoisyStateSE2 get(double timestampSeconds) {
+        return m_buffer.get(timestampSeconds);
     }
 
     /** Return all entries. This is for visualization. */
-    public Map<Double, SwerveState> all() {
-        return m_poseBuffer.all();
+    public Map<Double, NoisyStateSE2> all() {
+        return m_buffer.all();
     }
 
 }
