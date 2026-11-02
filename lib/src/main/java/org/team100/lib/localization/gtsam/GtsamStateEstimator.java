@@ -30,6 +30,7 @@ import org.wpilib.math.geometry.Twist2d;
 import gtsam.BatchFixedLagSmoother;
 import gtsam.BetweenFactorPose2;
 import gtsam.FixedLagSmoother;
+import gtsam.FixedLagSmoother.Result;
 import gtsam.Key;
 import gtsam.LevenbergMarquardtParams;
 import gtsam.Marginals;
@@ -45,6 +46,13 @@ import gtsam.noiseModel.Diagonal;
 
 /**
  * State estimator that uses the GTSAM batched smoother.
+ * 
+ * NOTE: the actual keys use microseconds, which are not correctly
+ * represented as doubles.
+ * TODO: instead use the actual microseconds here.
+ * 
+ * TODO: oops, iterations can equal zero if there's no work to do
+ * i.e. if the initial values are correct.
  */
 public class GtsamStateEstimator implements StateEstimator {
     private static final boolean DEBUG = true;
@@ -99,12 +107,23 @@ public class GtsamStateEstimator implements StateEstimator {
         // from the map of keys
         defaultKey = Key.X(0);
 
+        // this produces indeterminate exception because the noise
+        // is so high
+        // TODO:
         m_newFactors.add(PriorFactor.PriorFactorPose2(defaultKey,
                 new Pose2(0, 0, 0),
                 Diagonal.Sigmas(new Vector3(100, 100, 100))));
         m_newValues.insert(defaultKey, new Pose2(0, 0, 0));
         m_newTimestamps.put(defaultKey, 0.0);
 
+        Result result = m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
+        if (result.getIterations() == 0) {
+            // TODO: something more clever
+            throw new IllegalStateException();
+        }
+        m_newFactors.resize(0);
+        m_newValues.clear();
+        m_newTimestamps.clear();
         // we keep a measurement history because some of the
         // factors are "between" factors.
         OdoGyroMeasurement initialMeasurement = new OdoGyroMeasurement(
@@ -115,12 +134,16 @@ public class GtsamStateEstimator implements StateEstimator {
 
     @Override
     public ImmutableSwerveHistory update(double timestamp) {
+        // TODO: add timestamp duplication detection here, using KeyBuffer
         System.out.println("#### GtsamStateEstimator.update()");
         try {
             Key x1 = Key.X((long) (timestamp * 1e6));
             // TODO: use current estimate as initial value
             m_newValues.insert(x1, new Pose2());
             m_newTimestamps.put(x1, timestamp);
+            // m_newFactors.add(PriorFactor.PriorFactorPose2(x1,
+            // new Pose2(0, 0, 0),
+            // Diagonal.Sigmas(new Vector3(1, 1, 1))));
             odoGyro(timestamp);
             vision();
 
@@ -136,7 +159,12 @@ public class GtsamStateEstimator implements StateEstimator {
             currentValues.print("current values");
 
             System.out.println("#### GtsamStateEstimator.update(): smoother.update");
-            m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
+            Result result = m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
+
+            if (result.getIterations() == 0) {
+                // TODO: something more clever
+                throw new IllegalStateException();
+            }
 
             System.out.println("#### GtsamStateEstimator.update(): smoother estimate");
             m_result = m_smoother.calculateEstimate();
@@ -288,7 +316,11 @@ public class GtsamStateEstimator implements StateEstimator {
             m_newValues.print("new values");
 
             System.out.println("#### GtsamStateEstimator.reset() smoother update");
-            m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
+            Result result = m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
+            if (result.getIterations() == 0) {
+                // TODO: something more clever
+                throw new IllegalStateException();
+            }
             System.out.println("#### GtsamStateEstimator.reset() smoother estimate");
             m_result = m_smoother.calculateEstimate();
             m_newFactors.resize(0);
