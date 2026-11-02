@@ -13,7 +13,7 @@ import gtsam.noiseModel.Diagonal;
 public class SolverTest {
 
     @Test
-    void testAddFactor() throws Throwable {
+    void testAddFactor() {
         Solver solver = new Solver(100000);
         // The key does not exist.
         Key key = new Key(1);

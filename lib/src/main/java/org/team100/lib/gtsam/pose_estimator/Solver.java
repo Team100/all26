@@ -28,7 +28,7 @@ public class Solver {
     private Values m_result;
 
     /** @param lag in microseconds, not seconds as in python */
-    public Solver(double lag) throws Throwable {
+    public Solver(double lag) {
         // Initialize the model
         // initial module positions are at their origins.
         // TODO: some other initial positions?
@@ -42,7 +42,7 @@ public class Solver {
         m_newTimestamps = new FixedLagSmoother.KeyTimestampMap();
     }
 
-    public void addVariable(Key key, double time_us, Pose2 initial_value) throws Throwable {
+    public void addVariable(Key key, double time_us, Pose2 initial_value) {
         if (DEBUG) {
             System.out.print("adding key:\n");
             key.print();
@@ -57,7 +57,7 @@ public class Solver {
             System.out.println("added!");
     }
 
-    public void addVariable(Key key, double time_us, double initial_value) throws Throwable {
+    public void addVariable(Key key, double time_us, double initial_value) {
         if (DEBUG) {
             System.out.print("adding key:\n");
             key.print();
@@ -73,7 +73,7 @@ public class Solver {
             System.out.println("added!");
     }
 
-    private boolean exists(Key k) throws Throwable {
+    private boolean exists(Key k) {
         return m_result.exists(k) || m_newValues.exists(k);
     }
 
@@ -83,7 +83,7 @@ public class Solver {
      * returns true if successful.
      */
     public <T extends NonlinearFactor> boolean add(shared_ptr<T> f)
-            throws Throwable {
+            {
         KeyVector keys = f.get().keys();
         for (int i = 0; i < keys.size(); ++i) {
             Key k = keys.at(i);
@@ -101,7 +101,7 @@ public class Solver {
     }
 
     private <T extends NonlinearFactor> void complain(
-            shared_ptr<T> f, Key k) throws Throwable {
+            shared_ptr<T> f, Key k) {
         System.out.println("FATAL ERROR!");
         System.out.println("factor:");
         System.out.flush();
@@ -119,7 +119,7 @@ public class Solver {
     /**
      * Run the solver
      */
-    public void update() throws Throwable {
+    public void update() {
         if (DEBUG) {
             System.out.println("update");
             m_newFactors.print("new factors");
@@ -134,7 +134,7 @@ public class Solver {
         m_newTimestamps.clear();
     }
 
-    public long result_size() throws Throwable {
+    public long result_size() {
         // result.print();
         return m_result.size();
     }
@@ -144,11 +144,11 @@ public class Solver {
     }
 
     /** The mean expected pose. */
-    public Pose2 mean_pose2(Key key) throws Throwable {
+    public Pose2 mean_pose2(Key key) {
         return m_result.atPose2(key);
     }
 
-    public double mean_double(Key key) throws Throwable {
+    public double mean_double(Key key) {
         if (DEBUG) {
             System.out.println("Looking for double key:");
             key.print();
@@ -158,23 +158,23 @@ public class Solver {
         return m_result.atDouble(key);
     }
 
-    public Vector sigma_pose2(Key key) throws Throwable {
+    public Vector sigma_pose2(Key key) {
         Marginals m = marginal_covariance();
         Matrix s = m.marginalCovariance(key);
         return s.diagonal_cwiseSqrt();
     }
 
-    public Marginals marginal_covariance() throws Throwable {
+    public Marginals marginal_covariance() {
         NonlinearFactorGraph factors = getFactors();
         // QR seems stable, default (Cholesky) is not.
         return Marginals.QR(factors, m_result);
     }
 
-    public NonlinearFactorGraph getFactors() throws Throwable {
+    public NonlinearFactorGraph getFactors() {
         return m_smoother.getFactors();
     }
 
-    public Pose2 sample_Pose2(Key key) throws Throwable {
+    public Pose2 sample_Pose2(Key key) {
         Marginals marginals = marginal_covariance();
         Matrix cov = marginals.marginalCovariance(key);
         Vector3 t = new Vector3(cov.draw());

@@ -23,7 +23,7 @@ public class SimulatedCamera {
     private final Pose3 camera_offset;
     private final Cal3DS2 calib;
 
-    public SimulatedCamera(List<Point3> landmarks, CameraConfig cam) throws Throwable {
+    public SimulatedCamera(List<Point3> landmarks, CameraConfig cam) {
         this.landmarks = landmarks;
         camera_offset = cam.camera_offset;
         calib = cam.calib;
@@ -35,7 +35,7 @@ public class SimulatedCamera {
      * @param gtPose2d robot pose
      * @return list of pixels corresponding to tag corners
      */
-    public List<Point2> pixels(Pose2d gtPose2d) throws Throwable {
+    public List<Point2> pixels(Pose2d gtPose2d) {
         final Pose2 robot_pose = Geometry.toPose2(gtPose2d);
         // lower left
         Point2 p0 = pixel(landmarks.get(0), robot_pose);
@@ -64,7 +64,7 @@ public class SimulatedCamera {
      * 
      * Includes one-pixel uniform noise.
      */
-    private Point2 pixel(Point3 landmark, Pose2 robot_pose) throws Throwable {
+    private Point2 pixel(Point3 landmark, Pose2 robot_pose) {
         Pose3 camera_pose = new Pose3(robot_pose).compose(camera_offset);
         PinholeCamera<Cal3DS2> camera = PinholeCamera.PinholeCameraCal3DS2(
                 camera_pose, calib);
@@ -72,16 +72,16 @@ public class SimulatedCamera {
         return camera.project(landmark).plus(pxNoise);
     }
 
-    private Point2 noise() throws Throwable {
+    private Point2 noise() {
         return zeroNoise();
         // return uniformNoise();
     }
 
-    private Point2 zeroNoise() throws Throwable {
+    private Point2 zeroNoise() {
         return new Point2(0, 0);
     }
 
-    private Point2 uniformNoise() throws Throwable {
+    private Point2 uniformNoise() {
         return new Point2(uniform(1), uniform(1));
     }
 

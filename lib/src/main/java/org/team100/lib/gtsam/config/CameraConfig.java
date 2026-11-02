@@ -12,7 +12,7 @@ public class CameraConfig {
     public final Pose3 camera_offset;
     public final Cal3DS2 calib;
 
-    public CameraConfig() throws Throwable {
+    public CameraConfig() {
 
         camera_offset = new Pose3(
                 new Rot3(//

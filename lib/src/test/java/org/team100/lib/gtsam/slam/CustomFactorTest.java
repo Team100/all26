@@ -33,11 +33,11 @@ public class CustomFactorTest {
 
     /** Test the creation of a new CustomFactor */
     @Test
-    void testNew() throws Throwable {
+    void testNew() {
         CustomErrorFunction error_func = new CustomErrorFunction() {
             /** Minimal error function stub */
             @Override
-            public Vector apply(CustomFactor factor, Values v, JacobianVector H) throws Throwable {
+            public Vector apply(CustomFactor factor, Values v, JacobianVector H) {
                 return new Vector(new double[] { 1, 0, 0 });
             }
         };
@@ -48,12 +48,12 @@ public class CustomFactorTest {
 
     /** Test if calling the factor works (only error) */
     @Test
-    void testCall() throws Throwable {
+    void testCall() {
         Pose2 expected_pose = new Pose2(1, 1, 0);
         CustomErrorFunction error_func = new CustomErrorFunction() {
             /** Minimal error function with no Jacobian */
             @Override
-            public Vector apply(CustomFactor factor, Values v, JacobianVector H) throws Throwable {
+            public Vector apply(CustomFactor factor, Values v, JacobianVector H) {
                 Key key0 = factor.keys().at(0);
                 Vector3 error = v.atPose2(key0).local(expected_pose).times(-1);
                 return new Vector(error);
@@ -70,7 +70,7 @@ public class CustomFactorTest {
 
     /** Tests if the factor result matches the GTSAM Pose2 unit test */
     @Test
-    void testJacobian() throws Throwable {
+    void testJacobian() {
         Pose2 gT1 = new Pose2(1, 2, Math.PI / 2);
         Pose2 gT2 = new Pose2(-1, 4, Math.PI);
         Pose2 expected = new Pose2(2, 2, Math.PI / 2);
@@ -81,7 +81,7 @@ public class CustomFactorTest {
              * Jacobian is passed by modifying the H array of numpy matrices.
              */
             @Override
-            public Vector apply(CustomFactor factor, Values v, JacobianVector H) throws Throwable {
+            public Vector apply(CustomFactor factor, Values v, JacobianVector H) {
                 Key key0 = factor.keys().at(0);
                 Key key1 = factor.keys().at(1);
                 Pose2 gT1 = v.atPose2(key0);
@@ -120,7 +120,7 @@ public class CustomFactorTest {
 
     /** Tests that we will not calculate the Jacobian if not requested */
     @Test
-    void testNoJacobian() throws Throwable {
+    void testNoJacobian() {
         Pose2 gT1 = new Pose2(1, 2, Math.PI / 2);
         Pose2 gT2 = new Pose2(-1, 4, Math.PI);
         Pose2 expected = new Pose2(2, 2, Math.PI / 2);
@@ -134,7 +134,7 @@ public class CustomFactorTest {
              * @return the non-linear error
              */
             @Override
-            public Vector apply(CustomFactor factor, Values v, JacobianVector H) throws Throwable {
+            public Vector apply(CustomFactor factor, Values v, JacobianVector H) {
                 Key key0 = factor.keys().at(0);
                 Key key1 = factor.keys().at(1);
                 Pose2 gT1 = v.atPose2(key0);
@@ -160,7 +160,7 @@ public class CustomFactorTest {
 
     /** Tests if a factor graph with a CustomFactor can be properly optimized */
     @Test
-    void testOptimization() throws Throwable {
+    void testOptimization() {
         Pose2 gT1 = new Pose2(1, 2, Math.PI / 2);
         Pose2 gT2 = new Pose2(-1, 4, Math.PI);
         Pose2 expected = new Pose2(2, 2, Math.PI / 2);
@@ -175,7 +175,7 @@ public class CustomFactorTest {
              * @return the non-linear error
              */
             @Override
-            public Vector apply(CustomFactor factor, Values v, JacobianVector H) throws Throwable {
+            public Vector apply(CustomFactor factor, Values v, JacobianVector H) {
                 Key key0 = factor.keys().at(0);
                 Key key1 = factor.keys().at(1);
                 Pose2 gT1 = v.atPose2(key0);
@@ -219,7 +219,7 @@ public class CustomFactorTest {
      * TODO: find a way to remove that copy.
      */
     @Test
-    void testMultiOptimization() throws Throwable {
+    void testMultiOptimization() {
         shared_ptr<Unit> noise_model = Unit.Create(3);
 
         // Expectation is always the same: each pose steps 1m +x.
@@ -242,7 +242,7 @@ public class CustomFactorTest {
                 // same function every time, but that's not a realistic situation.
                 CustomErrorFunction error_func = new CustomErrorFunction() {
                     @Override
-                    public Vector apply(CustomFactor factor, Values v, JacobianVector H) throws Throwable {
+                    public Vector apply(CustomFactor factor, Values v, JacobianVector H) {
                         Pose2 gT1 = v.atPose2(factor.keys().at(0));
                         Pose2 gT2 = v.atPose2(factor.keys().at(1));
                         Pose2 between = gT1.between(gT2);
@@ -286,7 +286,7 @@ public class CustomFactorTest {
      * On my machine with 10000 values this takes 1.3 sec.
      */
     @Test
-    void testMultiOptimizationNative() throws Throwable {
+    void testMultiOptimizationNative() {
         // repeat in order to run the profiler
         for (int j = 0; j < 5; ++j) {
             // for (int j = 0; j < 2; ++j) {

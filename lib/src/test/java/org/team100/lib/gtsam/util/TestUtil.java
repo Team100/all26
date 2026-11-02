@@ -8,7 +8,7 @@ import gtsam.Rot2;
 import gtsam.Vector;
 
 public class TestUtil {
-    public static void assertAllClose(Vector a, Vector b, double tol) throws Throwable {
+    public static void assertAllClose(Vector a, Vector b, double tol) {
         int aRows = a.rows();
         int bRows = b.rows();
         assertEquals(aRows, bRows);
@@ -17,7 +17,7 @@ public class TestUtil {
         }
     }
 
-    public static void assertAllClose(Matrix a, Matrix b, double tol) throws Throwable {
+    public static void assertAllClose(Matrix a, Matrix b, double tol) {
         int aRows = a.rows();
         int bRows = b.rows();
         assertEquals(aRows, bRows);
@@ -31,7 +31,7 @@ public class TestUtil {
         }
     }
 
-    public static void assertPose2Equals(Pose2 a, Pose2 b, double tol) throws Throwable {
+    public static void assertPose2Equals(Pose2 a, Pose2 b, double tol) {
         assertEquals(a.x(), b.x(), tol);
         assertEquals(a.y(), b.y(), tol);
         Rot2 ar = a.r();

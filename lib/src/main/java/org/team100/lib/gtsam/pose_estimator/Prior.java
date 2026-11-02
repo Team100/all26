@@ -23,7 +23,7 @@ public class Prior {
     public void add(
             Key key,
             Pose2 value,
-            shared_ptr<? extends Base> noise) throws Throwable {
+            shared_ptr<? extends Base> noise) {
         solver.add(PriorFactor.PriorFactorPose2(
                 key, value, noise));
     }
@@ -31,7 +31,7 @@ public class Prior {
     public void add(
             Key key,
             double value,
-            shared_ptr<? extends Base> noise) throws Throwable {
+            shared_ptr<? extends Base> noise) {
         solver.add(PriorFactor.PriorFactorDouble(
                 key, value, noise));
     }

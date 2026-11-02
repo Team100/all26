@@ -27,7 +27,7 @@ public class SeparateSwerveHistory {
         m_bufferDuration = bufferDuration;
         m_measurements = new TimeInterpolatableBuffer100<>(
                 bufferDuration, initialTimestamp, initialMeasurement);
-        m_timestamps = new KeyBuffer();
+        m_timestamps = new KeyBuffer(bufferDuration);
         m_estimates = new HashMap<>();
     }
 }

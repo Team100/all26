@@ -38,7 +38,7 @@ public class SimTest {
     }
 
     @Test
-    void testIndeterminate() throws Throwable {
+    void testIndeterminate() {
         long t1_us = 20000;
 
         Key x0 = Key.X(0);

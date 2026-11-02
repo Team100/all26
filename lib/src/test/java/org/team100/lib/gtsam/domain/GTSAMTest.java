@@ -9,7 +9,7 @@ import gtsam.Point2;
 public class GTSAMTest {
 
     @Test
-    void testGtsam() throws Throwable {
+    void testGtsam() {
         Point2 p = new Point2(4, 5);
         assertEquals(4, p.x());
         assertEquals(5, p.y());

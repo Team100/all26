@@ -10,7 +10,7 @@ import gtsam.noiseModel.Diagonal;
 
 public class BetweenGyroTest {
     @Test
-    void testSimple() throws Throwable {
+    void testSimple() {
         Solver solver = new Solver(100000);
         BetweenGyro b = new BetweenGyro(solver);
         Prior p = new Prior(solver);

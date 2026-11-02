@@ -22,7 +22,7 @@ public class BetweenGyro {
     private double m_yaw;
     private Long t0_us = null;
 
-    public BetweenGyro(Solver solver) throws Throwable {
+    public BetweenGyro(Solver solver) {
         m_solver = solver;
         m_params = PlanarGyroParams.makeSharedPlanarGyroParams(//
                 ARW_SIGMA, BIAS_INSTABILITY_SIGMA);
@@ -34,7 +34,7 @@ public class BetweenGyro {
      * 
      * Remember to add the bias (Key.B) variable.
      */
-    public void add(long t1_us, double yaw) throws Throwable {
+    public void add(long t1_us, double yaw) {
         if (t0_us == null) {
             m_yaw = yaw;
             t0_us = t1_us;

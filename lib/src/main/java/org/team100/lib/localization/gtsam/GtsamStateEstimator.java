@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
+import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.gtsam.util.Geometry;
 import org.team100.lib.localization.ImmutableSwerveHistory;
 import org.team100.lib.localization.LocalizerEstimate;
@@ -22,6 +23,7 @@ import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.uncertainty.NoisyStateSE2;
 import org.team100.lib.uncertainty.VariableR1;
+import org.team100.lib.util.KeyBuffer;
 import org.team100.lib.util.TimeInterpolatableBuffer100;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
@@ -71,6 +73,7 @@ public class GtsamStateEstimator implements StateEstimator {
     private final Supplier<List<VisionMeasurement>> m_vision;
     private final SwerveDriveKinematics100 m_kinematics;
     private final TimeInterpolatableBuffer100<OdoGyroMeasurement> m_measurements;
+    private final KeyBuffer m_keys;
 
     // these are not final because reset() makes new ones.
     private BatchFixedLagSmoother m_smoother;
@@ -81,14 +84,14 @@ public class GtsamStateEstimator implements StateEstimator {
     private Values m_result;
 
     // delete this
-    private final Key defaultKey;
+    // private final Key defaultKey;
 
     public GtsamStateEstimator(
             double initialTimestamp,
             Supplier<Rotation2d> gyro,
             Supplier<SwerveModulePositions> positions,
             Supplier<List<VisionMeasurement>> vision,
-            SwerveDriveKinematics100 kinematics) throws Throwable {
+            SwerveDriveKinematics100 kinematics) {
         m_gyro = gyro;
         m_positions = positions;
         m_vision = vision;
@@ -99,87 +102,74 @@ public class GtsamStateEstimator implements StateEstimator {
         m_result = new Values();
         // between updates we accumulate inputs here
 
+        m_keys = new KeyBuffer(LAG_SECONDS);
+
         m_newFactors = new NonlinearFactorGraph();
         m_newValues = new Values();
         m_newTimestamps = new FixedLagSmoother.KeyTimestampMap();
 
-        // this is just to make it work at all, it should be
-        // from the map of keys
-        defaultKey = Key.X(0);
-
-        // this produces indeterminate exception because the noise
-        // is so high
-        // TODO:
-        m_newFactors.add(PriorFactor.PriorFactorPose2(defaultKey,
-                new Pose2(0, 0, 0),
-                Diagonal.Sigmas(new Vector3(100, 100, 100))));
-        m_newValues.insert(defaultKey, new Pose2(0, 0, 0));
-        m_newTimestamps.put(defaultKey, 0.0);
-
-        Result result = m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
-        if (result.getIterations() == 0) {
-            // TODO: something more clever
-            throw new IllegalStateException();
-        }
-        m_newFactors.resize(0);
-        m_newValues.clear();
-        m_newTimestamps.clear();
         // we keep a measurement history because some of the
         // factors are "between" factors.
         OdoGyroMeasurement initialMeasurement = new OdoGyroMeasurement(
                 m_gyro.get(), positions.get());
         m_measurements = new TimeInterpolatableBuffer100<>(
                 LAG_SECONDS, initialTimestamp, initialMeasurement);
+
+        reset(0, new NoisyStateSE2(
+                new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                IsotropicNoiseSE2.high()));
     }
 
     @Override
     public ImmutableSwerveHistory update(double timestamp) {
         // TODO: add timestamp duplication detection here, using KeyBuffer
         System.out.println("#### GtsamStateEstimator.update()");
-        try {
-            Key x1 = Key.X((long) (timestamp * 1e6));
-            // TODO: use current estimate as initial value
-            m_newValues.insert(x1, new Pose2());
-            m_newTimestamps.put(x1, timestamp);
-            // m_newFactors.add(PriorFactor.PriorFactorPose2(x1,
-            // new Pose2(0, 0, 0),
-            // Diagonal.Sigmas(new Vector3(1, 1, 1))));
-            odoGyro(timestamp);
-            vision();
-
-            System.out.println("#### GtsamStateEstimator.update(): pending updates");
-            m_newFactors.print("new factors");
-            m_newValues.print("new values");
-
-            System.out.println("#### GtsamStateEstimator.update(): current factors");
-            NonlinearFactorGraph currentFactors = m_smoother.getFactors();
-            currentFactors.print("current factors");
-
-            Values currentValues = m_smoother.calculateEstimate();
-            currentValues.print("current values");
-
-            System.out.println("#### GtsamStateEstimator.update(): smoother.update");
-            Result result = m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
-
-            if (result.getIterations() == 0) {
-                // TODO: something more clever
-                throw new IllegalStateException();
-            }
-
-            System.out.println("#### GtsamStateEstimator.update(): smoother estimate");
-            m_result = m_smoother.calculateEstimate();
-
-            System.out.println("reset the accumulators");
-            m_newFactors.resize(0);
-            m_newValues.clear();
-            m_newTimestamps.clear();
-
+        if (m_keys.contains(timestamp)) {
+            System.out.printf("**** ERROR: skipping duplicate timestamp %f ****\n", timestamp);
             return immutableCopy();
-
-        } catch (Throwable e) {
-            barf(e);
-            return defaultHistory;
         }
+        Key x1 = poseKey(timestamp);
+        // TODO: use current estimate as initial value
+        m_newValues.insert(x1, new Pose2());
+        m_newTimestamps.put(x1, timestamp);
+        // m_newFactors.add(PriorFactor.PriorFactorPose2(x1,
+        // new Pose2(0, 0, 0),
+        // Diagonal.Sigmas(new Vector3(1, 1, 1))));
+        odoGyro(timestamp);
+        vision();
+
+        System.out.println("#### GtsamStateEstimator.update(): pending updates");
+        m_newFactors.print("new factors");
+        m_newValues.print("new values");
+
+        System.out.println("#### GtsamStateEstimator.update(): current factors");
+        NonlinearFactorGraph currentFactors = m_smoother.getFactors();
+        currentFactors.print("current factors");
+
+        Values currentValues = m_smoother.calculateEstimate();
+        currentValues.print("current values");
+
+        System.out.println("#### GtsamStateEstimator.update(): smoother.update");
+        m_keys.add(timestamp);
+        Result result = m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
+        if (DEBUG) {
+            System.out.printf("iterations %d\n", result.getIterations());
+        }
+
+        System.out.println("#### GtsamStateEstimator.update(): smoother estimate");
+        m_result = m_smoother.calculateEstimate();
+
+        System.out.println("reset the accumulators");
+        m_newFactors.resize(0);
+        m_newValues.clear();
+        m_newTimestamps.clear();
+
+        return immutableCopy();
+
+    }
+
+    private Key poseKey(double timestamp) {
+        return Key.X((long) (timestamp * 1e6));
     }
 
     private static void barf(Throwable e) {
@@ -187,14 +177,21 @@ public class GtsamStateEstimator implements StateEstimator {
         e.printStackTrace();
     }
 
-    public ImmutableSwerveHistory immutableCopy() throws Throwable {
+    /**
+     * This currently doesn't do the right thing at all.
+     * TODO: make it actually copy all the keys
+     */
+    public ImmutableSwerveHistory immutableCopy() {
         System.out.println("#### GtsamStateEstimator.immutableCopy()");
+
+        double timestamp = m_keys.last();
+        Key key = poseKey(timestamp);
 
         System.out.println("#### GtsamStateEstimator.immutableCopy() get factors");
         NonlinearFactorGraph factors = m_smoother.getFactors();
-        Pose2 mean = m_result.atPose2(defaultKey);
+        Pose2 mean = m_result.atPose2(key);
         Marginals m = Marginals.QR(factors, m_result);
-        Matrix s = m.marginalCovariance(defaultKey);
+        Matrix s = m.marginalCovariance(key);
         // this is the standard deviation of each component
         Vector cov = s.diagonal_cwiseSqrt();
 
@@ -223,7 +220,7 @@ public class GtsamStateEstimator implements StateEstimator {
     }
 
     /** Add factor for odo/gyro measurement */
-    void odoGyro(double timestamp) throws Throwable {
+    void odoGyro(double timestamp) {
         System.out.println("#### GtsamStateEstimator.odoGyro()");
         Entry<Double, OdoGyroMeasurement> measurementEntry = m_measurements.lowerEntry(timestamp);
         if (measurementEntry == null) {
@@ -251,7 +248,7 @@ public class GtsamStateEstimator implements StateEstimator {
 
         shared_ptr<BetweenFactorPose2> newBetweenFactorPose2 = BetweenFactorPose2.newBetweenFactorPose2(
                 Key.X((long) (previousTimestamp * 1e6)),
-                Key.X((long) (timestamp * 1e6)), measurement, noise(twistVector));
+                poseKey(timestamp), measurement, noise(twistVector));
         m_newFactors.add(newBetweenFactorPose2);
 
         System.out.println("#### GtsamStateEstimator.odoGyro(): factor");
@@ -268,20 +265,6 @@ public class GtsamStateEstimator implements StateEstimator {
         }
     }
 
-    /** Catches Throwable and returns NoEstimate */
-    public static StateEstimator get(
-            Supplier<Rotation2d> gyro,
-            Supplier<SwerveModulePositions> positions,
-            Supplier<List<VisionMeasurement>> vision,
-            SwerveDriveKinematics100 kinematics) {
-        try {
-            return new GtsamStateEstimator(0, gyro, positions, vision, kinematics);
-        } catch (Throwable e) {
-            barf(e);
-            return new NoEstimate();
-        }
-    }
-
     @Override
     public NoisyStateSE2 getState(double timestampS) {
         return new NoisyStateSE2(new StateSE2(), IsotropicNoiseSE2.high());
@@ -295,40 +278,44 @@ public class GtsamStateEstimator implements StateEstimator {
                 new OdoGyroMeasurement(
                         m_gyro.get(),
                         m_positions.get()));
-        try {
-            // forget everything
-            m_smoother = new BatchFixedLagSmoother(
-                    LAG_SECONDS, new LevenbergMarquardtParams());
-            m_result = new Values();
-            m_newFactors = new NonlinearFactorGraph();
-            m_newValues = new Values();
-            m_newTimestamps = new FixedLagSmoother.KeyTimestampMap();
 
-            // TODO: use timestamp key
-            m_newFactors.add(PriorFactor.PriorFactorPose2(defaultKey,
-                    new Pose2(0, 0, 0),
-                    Diagonal.Sigmas(new Vector3(100, 100, 100))));
-            m_newValues.insert(defaultKey, new Pose2(0, 0, 0));
-            m_newTimestamps.put(defaultKey, 0.0);
+        // forget everything
+        m_smoother = new BatchFixedLagSmoother(
+                LAG_SECONDS, new LevenbergMarquardtParams());
+        m_result = new Values();
+        m_newFactors = new NonlinearFactorGraph();
+        m_newValues = new Values();
+        m_newTimestamps = new FixedLagSmoother.KeyTimestampMap();
+        m_keys.clear();
 
-            System.out.println("#### GtsamStateEstimator.reset() pending");
-            m_newFactors.print("new factors");
-            m_newValues.print("new values");
+        Key x0 = poseKey(timestamp);
+        Pose2d priorPose2d = state.pose();
+        Pose2 prior = Geometry.toPose2(priorPose2d);
+        IsotropicNoiseSE2 noise = state.noise();
 
-            System.out.println("#### GtsamStateEstimator.reset() smoother update");
-            Result result = m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
-            if (result.getIterations() == 0) {
-                // TODO: something more clever
-                throw new IllegalStateException();
-            }
-            System.out.println("#### GtsamStateEstimator.reset() smoother estimate");
-            m_result = m_smoother.calculateEstimate();
-            m_newFactors.resize(0);
-            m_newValues.clear();
-            m_newTimestamps.clear();
-        } catch (Throwable e) {
-            barf(e);
+        Vector3 sigmas = new Vector3(noise.cartesian(), noise.cartesian(), noise.rotation());
+        shared_ptr<Diagonal> sigma = Diagonal.Sigmas(sigmas);
+        m_newFactors.add(PriorFactor.PriorFactorPose2(
+                x0, prior, sigma));
+        m_newValues.insert(x0, prior);
+        m_newTimestamps.put(x0, timestamp);
+
+        System.out.println("#### GtsamStateEstimator.reset() pending");
+        m_newFactors.print("new factors");
+        m_newValues.print("new values");
+
+        System.out.println("#### GtsamStateEstimator.reset() smoother update");
+        m_keys.add(timestamp);
+        Result result = m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
+        if (DEBUG) {
+            System.out.printf("iterations %d\n", result.getIterations());
         }
+        System.out.println("#### GtsamStateEstimator.reset() smoother estimate");
+        m_result = m_smoother.calculateEstimate();
+        m_newFactors.resize(0);
+        m_newValues.clear();
+        m_newTimestamps.clear();
+
     }
 
     @Override
@@ -340,13 +327,13 @@ public class GtsamStateEstimator implements StateEstimator {
     public void close() {
     }
 
-    void dump() throws Throwable {
+    void dump() {
         m_result.print("dump");
         m_measurements.dump();
     }
 
     /** Speed-dependent noise. */
-    private shared_ptr<Diagonal> noise(Vector3 twist) throws Throwable {
+    private shared_ptr<Diagonal> noise(Vector3 twist) {
         double distance = twist.norm();
         return Diagonal.Sigmas(
                 new Vector3(

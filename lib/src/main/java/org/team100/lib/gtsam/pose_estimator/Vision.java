@@ -20,7 +20,7 @@ public class Vision {
     private final Cal3DS2 calib;
     private final shared_ptr<Diagonal> noise;
 
-    public Vision(Solver e, CameraConfig conf) throws Throwable {
+    public Vision(Solver e, CameraConfig conf) {
         solver = e;
         camera_offset = conf.camera_offset;
         calib = conf.calib;
@@ -33,7 +33,7 @@ public class Vision {
      * Add a factor for the measurement of the landmark.
      */
     public void add(long t1_us, Point3 landmark, Point2 measurement)
-            throws Throwable {
+            {
         solver.add(PlanarProjectionFactor1.newPlanarProjectionFactor1(
                 Key.X(t1_us),
                 landmark,

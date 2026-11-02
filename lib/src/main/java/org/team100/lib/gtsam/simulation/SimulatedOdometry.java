@@ -30,7 +30,7 @@ public class SimulatedOdometry {
     /** Previous pose */
     private Pose2 pose;
 
-    public SimulatedOdometry(FieldMap fieldMap, Pose2d initial) throws Throwable {
+    public SimulatedOdometry(FieldMap fieldMap, Pose2d initial) {
         kinematics = new SwerveDriveKinematics100(
                 new Translation2d(0.5, 0.5),
                 new Translation2d(0.5, -0.5),
@@ -56,7 +56,7 @@ public class SimulatedOdometry {
      * @param gtPose2 current ground-truth pose.
      */
     public SwerveModulePositions positions(
-            Pose2d gtPose2d) throws Throwable {
+            Pose2d gtPose2d) {
         final Pose2 newPose = Geometry.toPose2(gtPose2d);
 
         // twist from previous "pose" to new "newPose"

@@ -18,7 +18,7 @@ public class FieldMap {
     // TODO: make this a flat array with 8 numbers instead.
     Map<Integer, List<Point3>> tags;
 
-    public FieldMap() throws Throwable {
+    public FieldMap() {
         tags = new TreeMap<>();
         // tag zero is like something we could set up for practice, 1m high
         tags.put(0, FieldMap.make_tag(8, 4, 1, 0));
@@ -46,7 +46,7 @@ public class FieldMap {
      * 
      * @throws Throwable
      */
-    static List<Point3> make_tag(double x, double y, double z, double yaw) throws Throwable {
+    static List<Point3> make_tag(double x, double y, double z, double yaw) {
         double s = HALF * Math.sin(yaw);
         double c = HALF * Math.cos(yaw);
         Point3 ll = new Point3(x - s, y + c, z - HALF);

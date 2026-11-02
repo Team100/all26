@@ -29,7 +29,7 @@ public class Odometry {
     private SwerveModulePositions positions;
     private Long t0_us = null;
 
-    public Odometry(Solver e) throws Throwable {
+    public Odometry(Solver e) {
         solver = e;
         kinematics = new SwerveDriveKinematics100(
                 new Translation2d(0.5, 0.5),
@@ -58,7 +58,7 @@ public class Odometry {
      */
     public void add(
             long t1_us,
-            SwerveModulePositions newPositions) throws Throwable {
+            SwerveModulePositions newPositions) {
         if (DEBUG)
             System.out.printf("add odometry factor %d\n", t1_us);
 
@@ -93,7 +93,7 @@ public class Odometry {
     }
 
     /**  */
-    private shared_ptr<Diagonal> noise(Vector3 twist) throws Throwable {
+    private shared_ptr<Diagonal> noise(Vector3 twist) {
         double distance = twist.norm();
         return Diagonal.Sigmas(
                 new Vector3(

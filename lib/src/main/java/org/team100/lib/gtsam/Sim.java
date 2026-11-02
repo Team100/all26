@@ -66,7 +66,7 @@ public class Sim {
     public int m_loopCount;
 
     // the verbosity here is to trap the exception.
-    public Sim() throws Throwable {
+    public Sim() {
 
         int lagMicroseconds = 100000;
         m_solver = new Solver(lagMicroseconds);
@@ -130,23 +130,14 @@ public class Sim {
 
     /** Constructor without exception */
     public static Sim make() {
-        try {
-            return new Sim();
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        return new Sim();
     }
 
     public void run() {
-        try {
-            run0();
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        run0();
     }
 
-    public void run0() throws Throwable {
-
+    public void run0() {
         if (DEBUG)
             System.out.printf("==> Loop count %d\n", m_loopCount);
         SmartDashboard.putNumber("i", m_loopCount);
@@ -265,14 +256,14 @@ public class Sim {
     }
 
     /** Plot the estimated pose and the error from ground truth. */
-    private void plotEstimatedPose(Pose2d groundTruthPose) throws Throwable {
+    private void plotEstimatedPose(Pose2d groundTruthPose) {
         Pose2d estPose2d = new Pose2d(m_estimatedPose.x(), m_estimatedPose.y(),
                 new Rotation2d(m_estimatedPose.theta()));
         m_field.setRobotPose(estPose2d);
         logErr(groundTruthPose, estPose2d);
     }
 
-    private void logET(long t0_ns) throws Throwable {
+    private void logET(long t0_ns) {
         long t1_ns = System.nanoTime();
         long et_ns = t1_ns - t0_ns;
         SmartDashboard.putNumber("et (ms)", (double) et_ns * 1e-6);
@@ -292,7 +283,7 @@ public class Sim {
     /**
      * Plot some samples around the mean.
      */
-    private void plotSamples(long t1_us) throws Throwable {
+    private void plotSamples(long t1_us) {
         int N = 10;
         List<Pose2d> samples = new ArrayList<>();
         for (int i = 0; i < N; ++i) {
@@ -304,12 +295,12 @@ public class Sim {
         o.setPoses(samples);
     }
 
-    // private void applyGyro(long t1_us, Pose2d gtPose2d) throws Throwable {
+    // private void applyGyro(long t1_us, Pose2d gtPose2d) {
     // double measurement = m_simulatedGyro.yaw(t1_us, gtPose2d);
     // m_gyro.add(t1_us, measurement);
     // }
 
-    void applyBetweenGyro(long t1_us, Pose2d gtPose2d) throws Throwable {
+    void applyBetweenGyro(long t1_us, Pose2d gtPose2d) {
         double measurement = m_simulatedGyro.yaw(t1_us, gtPose2d);
         Key b = Key.B(t1_us);
         m_solver.addVariable(b, t1_us, 0);
@@ -318,13 +309,13 @@ public class Sim {
         m_betweenGyro.add(t1_us, measurement);
     }
 
-    void applyOdometry(long t1_us, Pose2d gtPose2d) throws Throwable {
+    void applyOdometry(long t1_us, Pose2d gtPose2d) {
         SwerveModulePositions positions = m_simulatedOdometry.positions(gtPose2d);
         m_odometry.add(t1_us, positions);
     }
 
     /** Retrieve simulated camera measurements and apply them to the graph. */
-    void applyCamera(long t1_us, Pose2d gtPose2d) throws Throwable {
+    void applyCamera(long t1_us, Pose2d gtPose2d) {
         List<Point2> measurements = m_simulatedCamera.pixels(gtPose2d);
         if (m_landmarks.size() != measurements.size())
             return;

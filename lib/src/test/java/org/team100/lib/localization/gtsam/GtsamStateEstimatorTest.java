@@ -1,5 +1,7 @@
 package org.team100.lib.localization.gtsam;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +20,8 @@ import org.team100.lib.uncertainty.NoisyStateSE2;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 
+import gtsam.IndeterminateSystemException;
+
 public class GtsamStateEstimatorTest {
 
     private static final SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forRealisticTest();
@@ -27,7 +31,7 @@ public class GtsamStateEstimatorTest {
     private List<VisionMeasurement> vision;
 
     @Test
-    void test0() throws Throwable {
+    void test0() {
         yaw = Rotation2d.kZero;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
@@ -45,7 +49,7 @@ public class GtsamStateEstimatorTest {
     }
 
     @Test
-    void test1() throws Throwable {
+    void test1() {
         yaw = Rotation2d.kZero;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
@@ -67,8 +71,8 @@ public class GtsamStateEstimatorTest {
     }
 
     @Test
-    void test2() throws Throwable {
-        // this produces 
+    void test2() {
+        // this produces
         yaw = Rotation2d.kZero;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
@@ -86,7 +90,7 @@ public class GtsamStateEstimatorTest {
         ImmutableSwerveHistory h = estimator.immutableCopy();
         NoisyStateSE2 state = h.get(0.00);
         TestUtil.verify(new StateSE2(), state.state());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(100, 100), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 6), state.noise());
 
         System.out.println("#### update at 0.02");
         positions = new SwerveModulePositions(
@@ -94,11 +98,7 @@ public class GtsamStateEstimatorTest {
                 new SwerveModulePosition100(0.02, Optional.of(Rotation2d.kZero)),
                 new SwerveModulePosition100(0.02, Optional.of(Rotation2d.kZero)),
                 new SwerveModulePosition100(0.02, Optional.of(Rotation2d.kZero)));
-        h = estimator.update(0.02);
-        state = h.get(0.02);
-        TestUtil.verify(new StateSE2(), state.state());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(100, 100), state.noise());
-        estimator.dump();
+        assertThrows(IndeterminateSystemException.class, () -> estimator.update(0.02));
     }
 
 }
