@@ -84,7 +84,7 @@ public class Machinery implements AutoCloseable {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        //////////////////////////
+        ////////////////////////
         //
         // DRIVETRAIN
         //
@@ -121,11 +121,14 @@ public class Machinery implements AutoCloseable {
                 odometryEstimate,
                 visionEstimate);
         GtsamStateEstimator gtsamEstimate = new GtsamStateEstimator(
+                driveLog,
                 Takt.get(),
                 gyro::getYawNWU,
                 swerveLocal::positions,
                 tagReader::read,
-                m_swerveKinodynamics.getKinematics());
+                m_swerveKinodynamics.getKinematics(),
+                gyro.white_noise(),
+                gyro.bias_noise());
         m_proxyEstimator = new UpdatedEstimate(new StateEstimatorProxy(
                 fusedEstimate, gtsamEstimate));
         m_drive = new SwerveDriveSubsystem(
@@ -139,7 +142,7 @@ public class Machinery implements AutoCloseable {
                 fieldLogger, () -> m_drive.getState(), "robot");
         new SwerveHistoryVisualization(fieldLogger, m_drive);
 
-        //////////////////////////
+        ////////////////////////
         //
         // TARGETING
         //
@@ -161,7 +164,7 @@ public class Machinery implements AutoCloseable {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, t -> m_drive.getState(t).state());
 
-        ///////////////////////////
+        /////////////////////////
         //
         // SUBSYSTEMS
         //
@@ -171,13 +174,13 @@ public class Machinery implements AutoCloseable {
         m_feeder = new Feeder(logger, currentLog, m_shooter);
         m_conveyor = new Conveyor(logger, currentLog);
 
-        ///////////////////////////
+        /////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        ///////////////////////////
+        /////////////////////////
         //
         // INDICATOR
         //

@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.localization.ImmutableSwerveHistory;
 import org.team100.lib.localization.fused.VisionMeasurement;
+import org.team100.lib.logging.LoggerFactory;
+import org.team100.lib.logging.TestLoggerFactory;
+import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
@@ -19,6 +22,7 @@ import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 
 public class GtsamStateEstimatorTest {
+    private static final LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
 
     private static final SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forRealisticTest();
 
@@ -32,11 +36,14 @@ public class GtsamStateEstimatorTest {
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
         GtsamStateEstimator estimator = new GtsamStateEstimator(
+                log,
                 0,
                 () -> yaw,
                 () -> positions,
                 () -> vision,
-                kinodynamics.getKinematics());
+                kinodynamics.getKinematics(),
+                1e-4,
+                3e-5);
         ImmutableSwerveHistory h = estimator.update(0.00);
         NoisyStateSE2 state = h.get(0.00);
         TestUtil.verify(new StateSE2(), state.state());
@@ -50,11 +57,14 @@ public class GtsamStateEstimatorTest {
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
         GtsamStateEstimator estimator = new GtsamStateEstimator(
+                log,
                 0,
                 () -> yaw,
                 () -> positions,
                 () -> vision,
-                kinodynamics.getKinematics());
+                kinodynamics.getKinematics(),
+                1e-4,
+                3e-5);
         estimator.reset(0,
                 new NoisyStateSE2(
                         new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
@@ -73,11 +83,14 @@ public class GtsamStateEstimatorTest {
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
         GtsamStateEstimator estimator = new GtsamStateEstimator(
+                log,
                 0,
                 () -> yaw,
                 () -> positions,
                 () -> vision,
-                kinodynamics.getKinematics());
+                kinodynamics.getKinematics(),
+                1e-4,
+                3e-5);
         System.out.println("#### reset at zero");
         estimator.reset(0,
                 new NoisyStateSE2(

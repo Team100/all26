@@ -42,6 +42,7 @@ public class KeyBuffer {
         m_timestamps.clear();
     }
 
+    /** Largest value */
     public double last() {
         return m_timestamps.last();
     }
