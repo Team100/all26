@@ -77,7 +77,7 @@ public class FusedEstimator implements StateEstimator {
      * A copy of the whole history. Does not update.
      */
     public ImmutableSwerveHistory immutableCopy() {
-        return new ImmutableSwerveHistory(m_estimates.entrySet(), m_bufferDuration);
+        return ImmutableSwerveHistory.fromEstimates(m_estimates.entrySet(), m_bufferDuration);
     }
 
     @Override

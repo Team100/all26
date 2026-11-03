@@ -1,5 +1,6 @@
 package org.team100.lib.util;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
@@ -38,7 +39,7 @@ public class TimeInterpolatableBuffer100<T extends Interpolatable<T>> {
 
     /** For the read-only copy. */
     public TimeInterpolatableBuffer100(
-            Set<Map.Entry<Double, T>> entries,
+            Collection<Map.Entry<Double, T>> entries,
             double historyS) {
         m_pastSnapshots = new TreeMap<>();
         for (Map.Entry<Double, T> e : entries) {

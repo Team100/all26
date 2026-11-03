@@ -26,7 +26,7 @@ public class NoEstimate implements StateEstimator {
 
     @Override
     public ImmutableSwerveHistory update(double timestamp) {
-        return new ImmutableSwerveHistory(m_estimates.entrySet(), 0.2);
+        return ImmutableSwerveHistory.fromEstimates(m_estimates.entrySet(), 0.2);
     }
 
     @Override

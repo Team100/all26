@@ -1,16 +1,15 @@
 package org.team100.lib.localization.gtsam;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.gtsam.util.Geometry;
 import org.team100.lib.localization.ImmutableSwerveHistory;
-import org.team100.lib.localization.LocalizerEstimate;
 import org.team100.lib.localization.OdoGyroMeasurement;
 import org.team100.lib.localization.StateEstimator;
 import org.team100.lib.localization.fused.VisionMeasurement;
@@ -21,7 +20,6 @@ import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.uncertainty.NoisyStateSE2;
-import org.team100.lib.uncertainty.VariableR1;
 import org.team100.lib.util.KeyBuffer;
 import org.team100.lib.util.TimeInterpolatableBuffer100;
 import org.wpilib.math.geometry.Pose2d;
@@ -34,12 +32,13 @@ import gtsam.FixedLagSmoother;
 import gtsam.FixedLagSmoother.Result;
 import gtsam.IndeterminateSystemException;
 import gtsam.Key;
+import gtsam.KeyVector;
 import gtsam.LevenbergMarquardtParams;
 import gtsam.Marginals;
-import gtsam.Matrix;
 import gtsam.NonlinearFactorGraph;
 import gtsam.Pose2;
 import gtsam.PriorFactor;
+import gtsam.Symbol;
 import gtsam.Values;
 import gtsam.Vector;
 import gtsam.Vector3;
@@ -177,51 +176,58 @@ public class GtsamStateEstimator implements StateEstimator {
         return Key.X((long) (timestamp * 1e6));
     }
 
+    private double timestamp(Symbol symbol) {
+        return (double) symbol.index() / 1e6;
+    }
+
     /**
-     * This currently doesn't do the right thing at all.
-     * TODO: make it actually copy all the keys
+     * Copy all the poses out of GTSAM, with stddev.
      */
     public ImmutableSwerveHistory immutableCopy() {
         if (DEBUG)
             System.out.println("#### GtsamStateEstimator.immutableCopy()");
 
-        double timestamp = m_keys.last();
-        Key key = poseKey(timestamp);
+        Marginals marginals = Marginals.QR(m_smoother.getFactors(), m_result);
 
-        if (DEBUG)
-            System.out.println("#### GtsamStateEstimator.immutableCopy() get factors");
-        NonlinearFactorGraph factors = m_smoother.getFactors();
-        Pose2 mean = m_result.atPose2(key);
-        Marginals m = Marginals.QR(factors, m_result);
-        Matrix s = m.marginalCovariance(key);
-        // this is the standard deviation of each component
-        Vector cov = s.diagonal_cwiseSqrt();
-
-        // convert it
-
-        Pose2d meanPose2d = Geometry.toPose2d(mean);
-        if (DEBUG) {
-            System.out.println("#### GtsamStateEstimator.immutableCopy() mean pose");
-            System.out.println(meanPose2d);
+        TreeMap<Double, NoisyStateSE2> list = new TreeMap<>();
+        // all keys of all types known by the model
+        KeyVector keys = m_result.keys();
+        // extract the poses from the model
+        for (int i = 0; i < keys.size(); ++i) {
+            Key key = keys.at(i);
+            Symbol symbol = new Symbol(key);
+            if (symbol.chr() != 'x')
+                continue;
+            Pose2d meanPose2d = Geometry.toPose2d(m_result.atPose2(key));
+            // zero velocity here
+            StateSE2 state = new StateSE2(meanPose2d);
+            Vector stdev = marginals.marginalCovariance(key).diagonal_cwiseSqrt();
+            IsotropicNoiseSE2 noise = IsotropicNoiseSE2.fromStdDev(
+                    (stdev.at(0) + stdev.at(1)) / 2.0, stdev.at(2));
+            NoisyStateSE2 estimate = new NoisyStateSE2(state, noise);
+            list.put(timestamp(symbol), estimate);
         }
-        // TODO: velocity
-        StateSE2 state = new StateSE2(meanPose2d);
-        // TODO: different sigma for x and y
-        IsotropicNoiseSE2 poseNoise = IsotropicNoiseSE2.fromStdDev(
-                (cov.at(0) + cov.at(1)) / 2.0, cov.at(2));
-        if (DEBUG) {
-            System.out.println("#### GtsamStateEstimator.immutableCopy() noise");
-            System.out.println(poseNoise);
+        // Infer the velocities by walking through the timestamps
+        // TODO: maybe the consumer can do this if they care?
+        List<Map.Entry<Double, NoisyStateSE2>> resultList = new ArrayList<>();
+        Map.Entry<Double, NoisyStateSE2> prev = null;
+        for (Map.Entry<Double, NoisyStateSE2> e : list.entrySet()) {
+            if (prev == null) {
+                prev = e;
+                resultList.add(e);
+                continue;
+            }
+            double t1 = e.getKey();
+            NoisyStateSE2 s1 = e.getValue();
+            double dt = t1 - prev.getKey();
+            Pose2d p0 = prev.getValue().pose();
+            Pose2d p1 = s1.pose();
+            VelocitySE2 v1 = VelocitySE2.velocity(p0, p1, dt);
+            NoisyStateSE2 s1v = new NoisyStateSE2(
+                    new StateSE2(p1, v1), s1.noise());
+            resultList.add(Map.entry(t1, s1v));
         }
-        // TODO: extract bias from GTSAM
-        VariableR1 gyroBias = VariableR1.fromStdDev(0, 1);
-        LocalizerEstimate estimate = new LocalizerEstimate(
-                state, poseNoise, gyroBias);
-        Set<Entry<Double, LocalizerEstimate>> set = Set.of(
-                Map.entry(0.0, estimate));
-        return new ImmutableSwerveHistory(
-                set,
-                LAG_SECONDS);
+        return ImmutableSwerveHistory.fromStates(resultList, LAG_SECONDS);
     }
 
     /** Add factor for odo/gyro measurement */
@@ -253,8 +259,10 @@ public class GtsamStateEstimator implements StateEstimator {
         Pose2 measurement = new Pose2().expmap(twistVector);
 
         shared_ptr<BetweenFactorPose2> newBetweenFactorPose2 = BetweenFactorPose2.newBetweenFactorPose2(
-                Key.X((long) (previousTimestamp * 1e6)),
-                poseKey(timestamp), measurement, noise(twistVector));
+                poseKey(previousTimestamp),
+                poseKey(timestamp),
+                measurement,
+                noise(twistVector));
         m_newFactors.add(newBetweenFactorPose2);
 
         if (DEBUG) {
@@ -275,7 +283,7 @@ public class GtsamStateEstimator implements StateEstimator {
 
     @Override
     public NoisyStateSE2 getState(double timestampS) {
-        return new NoisyStateSE2(new StateSE2(), IsotropicNoiseSE2.high());
+        return immutableCopy().get(timestampS);
     }
 
     @Override

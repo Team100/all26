@@ -1,7 +1,5 @@
 package org.team100.lib.localization.gtsam;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -19,8 +17,6 @@ import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.NoisyStateSE2;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
-
-import gtsam.IndeterminateSystemException;
 
 public class GtsamStateEstimatorTest {
 
@@ -44,7 +40,7 @@ public class GtsamStateEstimatorTest {
         ImmutableSwerveHistory h = estimator.update(0.00);
         NoisyStateSE2 state = h.get(0.00);
         TestUtil.verify(new StateSE2(), state.state());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(100, 100), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 6), state.noise());
         estimator.dump();
     }
 
@@ -66,7 +62,7 @@ public class GtsamStateEstimatorTest {
         ImmutableSwerveHistory h = estimator.immutableCopy();
         NoisyStateSE2 state = h.get(0.00);
         TestUtil.verify(new StateSE2(), state.state());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(100, 100), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 6), state.noise());
         estimator.dump();
     }
 
@@ -87,6 +83,7 @@ public class GtsamStateEstimatorTest {
                 new NoisyStateSE2(
                         new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.high()));
+        // verify the state we just set
         ImmutableSwerveHistory h = estimator.immutableCopy();
         NoisyStateSE2 state = h.get(0.00);
         TestUtil.verify(new StateSE2(), state.state());
@@ -98,7 +95,22 @@ public class GtsamStateEstimatorTest {
                 new SwerveModulePosition100(0.02, Optional.of(Rotation2d.kZero)),
                 new SwerveModulePosition100(0.02, Optional.of(Rotation2d.kZero)),
                 new SwerveModulePosition100(0.02, Optional.of(Rotation2d.kZero)));
-        assertThrows(IndeterminateSystemException.class, () -> estimator.update(0.02));
+        h = estimator.update(0.02);
+
+        // verify the first state hasn't changed
+        state = h.get(0.00);
+        TestUtil.verify(new StateSE2(), state.state());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 6), state.noise());
+
+        // verify the new state, note 0.02 movement in 0.02 sec => 1 m/s
+        state = h.get(0.02);
+        TestUtil.verify(
+                new StateSE2(
+                        new Pose2d(0.02, 0, Rotation2d.kZero),
+                        new VelocitySE2(1, 0, 0)),
+                state.state());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 6), state.noise());
+        estimator.dump();
     }
 
 }

@@ -1,9 +1,11 @@
 package org.team100.lib.localization;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.team100.lib.coherence.Takt;
 import org.team100.lib.uncertainty.NoisyStateSE2;
 import org.team100.lib.util.TimeInterpolatableBuffer100;
 
@@ -19,16 +21,28 @@ public class ImmutableSwerveHistory {
 
     private final TimeInterpolatableBuffer100<NoisyStateSE2> m_buffer;
 
-    public ImmutableSwerveHistory(
-            Set<Map.Entry<Double, LocalizerEstimate>> entries,
+    public static ImmutableSwerveHistory fromEstimates(
+            Collection<Map.Entry<Double, LocalizerEstimate>> entries,
             double bufferDuration) {
         if (entries.isEmpty())
             throw new IllegalArgumentException();
-        m_buffer = new TimeInterpolatableBuffer100<>(
+        return new ImmutableSwerveHistory(new TimeInterpolatableBuffer100<>(
                 entries.stream().map(e -> Map.entry(e.getKey(),
                         new NoisyStateSE2(e.getValue().state(), e.getValue().noise())))
                         .collect(Collectors.toSet()),
-                bufferDuration);
+                bufferDuration));
+    }
+
+    public static ImmutableSwerveHistory fromStates(
+            Collection<Map.Entry<Double, NoisyStateSE2>> entries,
+            double bufferDuration) {
+        if (entries.isEmpty())
+            throw new IllegalArgumentException();
+        return new ImmutableSwerveHistory(new TimeInterpolatableBuffer100<>(entries, bufferDuration));
+    }
+
+    public ImmutableSwerveHistory(TimeInterpolatableBuffer100<NoisyStateSE2> buffer) {
+        m_buffer = buffer;
     }
 
     /** Interpolates. */
