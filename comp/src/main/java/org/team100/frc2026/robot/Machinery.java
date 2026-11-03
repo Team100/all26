@@ -15,7 +15,6 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.indicator.Beeper;
-import org.team100.lib.localization.NoEstimate;
 import org.team100.lib.localization.StateEstimator;
 import org.team100.lib.localization.StateEstimatorProxy;
 import org.team100.lib.localization.fused.AprilTagCornerReader;
@@ -23,6 +22,7 @@ import org.team100.lib.localization.fused.FusedEstimator;
 import org.team100.lib.localization.fused.NudgingVisionEstimator;
 import org.team100.lib.localization.fused.OdometryEstimator;
 import org.team100.lib.localization.fused.UpdatedEstimate;
+import org.team100.lib.localization.gtsam.GtsamStateEstimator;
 import org.team100.lib.localization.map.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.simulation.GroundTruth;
 import org.team100.lib.localization.visualization.AprilTagVisualizer;
@@ -84,7 +84,7 @@ public class Machinery implements AutoCloseable {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        ///////////////////////////////
+        //////////////////////////
         //
         // DRIVETRAIN
         //
@@ -120,8 +120,14 @@ public class Machinery implements AutoCloseable {
                 tagReader::read,
                 odometryEstimate,
                 visionEstimate);
-        m_proxyEstimator = new StateEstimatorProxy(
-                new UpdatedEstimate(fusedEstimate), new NoEstimate());
+        GtsamStateEstimator gtsamEstimate = new GtsamStateEstimator(
+                Takt.get(),
+                gyro::getYawNWU,
+                swerveLocal::positions,
+                tagReader::read,
+                m_swerveKinodynamics.getKinematics());
+        m_proxyEstimator = new UpdatedEstimate(new StateEstimatorProxy(
+                fusedEstimate, gtsamEstimate));
         m_drive = new SwerveDriveSubsystem(
                 driveLog,
                 m_proxyEstimator,
@@ -133,7 +139,7 @@ public class Machinery implements AutoCloseable {
                 fieldLogger, () -> m_drive.getState(), "robot");
         new SwerveHistoryVisualization(fieldLogger, m_drive);
 
-        ///////////////////////////////
+        //////////////////////////
         //
         // TARGETING
         //
@@ -155,7 +161,7 @@ public class Machinery implements AutoCloseable {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, t -> m_drive.getState(t).state());
 
-        ////////////////////////////////
+        ///////////////////////////
         //
         // SUBSYSTEMS
         //
@@ -165,13 +171,13 @@ public class Machinery implements AutoCloseable {
         m_feeder = new Feeder(logger, currentLog, m_shooter);
         m_conveyor = new Conveyor(logger, currentLog);
 
-        ////////////////////////////////
+        ///////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        ////////////////////////////////
+        ///////////////////////////
         //
         // INDICATOR
         //

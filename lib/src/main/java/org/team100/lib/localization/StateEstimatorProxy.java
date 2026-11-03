@@ -41,7 +41,7 @@ public class StateEstimatorProxy implements StateEstimator {
     public ImmutableSwerveHistory update(double timestamp) {
         return switch (m_choice) {
             case A -> m_A.update(timestamp);
-            case B -> m_A.update(timestamp);
+            case B -> m_B.update(timestamp);
             default -> throw new IllegalStateException();
         };
     }
