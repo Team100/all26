@@ -23,7 +23,6 @@ import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.uncertainty.NoisyStateSE2;
-import org.team100.lib.util.KeyBuffer;
 import org.team100.lib.util.TimeInterpolatableBuffer100;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
@@ -48,6 +47,7 @@ import gtsam.Rot2;
 import gtsam.Symbol;
 import gtsam.Values;
 import gtsam.Vector;
+import gtsam.Vector1;
 import gtsam.Vector3;
 import gtsam.shared_ptr;
 import gtsam.noiseModel.Diagonal;
@@ -72,8 +72,6 @@ public class GtsamStateEstimator implements StateEstimator {
     private final Supplier<List<VisionMeasurement>> m_vision;
     private final SwerveDriveKinematics100 m_kinematics;
     private final TimeInterpolatableBuffer100<OdoGyroMeasurement> m_measurements;
-    private final KeyBuffer m_poseKeys;
-    private final KeyBuffer m_biasKeys;
     private final shared_ptr<PlanarGyroParams> m_params;
     private final DoubleLogger m_log_gyro_bias;
 
@@ -84,9 +82,6 @@ public class GtsamStateEstimator implements StateEstimator {
     /** key is Key, "X(timestamp in us)", value is timestamp in seconds */
     private FixedLagSmoother.KeyTimestampMap m_newTimestamps;
     private Values m_result;
-
-    // delete this
-    // private final Key defaultKey;
 
     public GtsamStateEstimator(
             LoggerFactory parent,
@@ -111,9 +106,6 @@ public class GtsamStateEstimator implements StateEstimator {
         m_result = new Values();
         // between updates we accumulate inputs here
 
-        m_poseKeys = new KeyBuffer(LAG_SECONDS);
-        m_biasKeys = new KeyBuffer(LAG_SECONDS);
-
         m_newFactors = new NonlinearFactorGraph();
         m_newValues = new Values();
         m_newTimestamps = new FixedLagSmoother.KeyTimestampMap();
@@ -130,22 +122,46 @@ public class GtsamStateEstimator implements StateEstimator {
                 IsotropicNoiseSE2.high()));
     }
 
+    private Key lastKey(char c) {
+        // TODO: is it slow to do this every time, cache or keep a lookaside.
+        KeyVector allkeys = m_result.keys();
+        double maxTime = -Double.MAX_VALUE;
+        Key maxKey = null;
+        for (int i = 0; i < allkeys.size(); ++i) {
+            Key key = allkeys.at(i);
+            Symbol symbol = new Symbol(key);
+            double timestamp = timestamp(symbol);
+            if (symbol.chr() == c) {
+                if (timestamp > maxTime) {
+                    maxTime = timestamp;
+                    maxKey = key;
+                }
+            }
+        }
+        return maxKey;
+    }
+
     @Override
     public ImmutableSwerveHistory update(double timestamp) {
         if (DEBUG)
             System.out.println("#### GtsamStateEstimator.update()");
-        if (m_poseKeys.contains(timestamp)) {
+        Key x1 = poseKey(timestamp);
+        Key b0 = biasKey(timestamp);
+        if (m_result.exists(x1)) {
             System.out.printf("**** ERROR: skipping duplicate timestamp %f ****\n", timestamp);
             return immutableCopy();
         }
-        Key x1 = poseKey(timestamp);
 
-        // use current estimate as initial value
-        double lastPoseKey = m_poseKeys.last();
-        Pose2 lastPose = m_result.atPose2(poseKey(lastPoseKey));
+        // For each update, we make a new pose value and a new bias value,
+        // using the latest estimate as the initial value.
+        Key lastPoseKey = lastKey('x');
+        Pose2 lastPose = m_result.atPose2(lastPoseKey);
         m_newValues.insert(x1, lastPose);
         m_newTimestamps.put(x1, timestamp);
-        m_poseKeys.add(timestamp);
+        Key lastBiasKey = lastKey('b');
+        double lastBias = m_result.atDouble(lastBiasKey);
+        m_newValues.insert(b0, lastBias);
+        m_newTimestamps.put(b0, timestamp);
 
         odoGyro(timestamp);
         vision();
@@ -235,11 +251,7 @@ public class GtsamStateEstimator implements StateEstimator {
                     }
                 }
                 case 'b' -> {
-                    System.out.printf("B KEY 1 %s\n", key);
-                    System.out.flush();
                     if (m_result.exists(key)) {
-                        System.out.printf("B KEY 2 %s\n", key);
-                        System.out.flush();
                         double b = m_result.atDouble(key);
                         biases.put(timestamp, b);
                     }
@@ -302,42 +314,33 @@ public class GtsamStateEstimator implements StateEstimator {
 
         SwerveModuleDeltas deltas = SwerveModuleDeltas.modulePositionDelta(
                 previousMeasurement.odo(), newMeasurement.odo());
-
-        Rot2 dr = new Rot2(newMeasurement.gyro().minus(previousMeasurement.gyro()).getRadians());
-
-        // Tangent-space (twist) measurement.
         Twist2d twist = m_kinematics.forward(deltas);
-        // Twist as a GTSAM vector.
         Vector3 twistVector = new Vector3(
                 twist.dx,
                 twist.dy,
                 twist.dtheta);
-        // Factor measurement.
         Pose2 measurement = new Pose2().expmap(twistVector);
 
-        // Add odometry factor
-
-        shared_ptr<BetweenFactorPose2> newBetweenFactorPose2 = BetweenFactorPose2.newBetweenFactorPose2(
+        shared_ptr<BetweenFactorPose2> odometryFactor = BetweenFactorPose2.newBetweenFactorPose2(
                 x0,
                 x1,
                 measurement,
                 noise(twistVector));
-        m_newFactors.add(newBetweenFactorPose2);
+        m_newFactors.add(odometryFactor);
 
-        shared_ptr<PlanarGyroFactor> x = PlanarGyroFactor.FromRotation(//
+        Rot2 dr = new Rot2(newMeasurement.gyro().minus(
+                previousMeasurement.gyro()).getRadians());
+        shared_ptr<PlanarGyroFactor> gyroFactor = PlanarGyroFactor.FromRotation(
                 x0, x1, b0, m_params, dr, dt);
+        m_newFactors.add(gyroFactor);
 
-        // this is the step that fails
-        m_newFactors.add(x);
-
-        shared_ptr<PlanarGyroBiasFactor> b = PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(//
+        shared_ptr<PlanarGyroBiasFactor> biasFactor = PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
                 b0, b1, m_params);
-
-        m_newFactors.add(b);
+        m_newFactors.add(biasFactor);
 
         if (DEBUG) {
             System.out.println("#### GtsamStateEstimator.odoGyro(): factor");
-            newBetweenFactorPose2.get().print();
+            odometryFactor.get().print();
         }
         m_measurements.put(timestamp, newMeasurement);
     }
@@ -373,21 +376,26 @@ public class GtsamStateEstimator implements StateEstimator {
         m_newFactors = new NonlinearFactorGraph();
         m_newValues = new Values();
         m_newTimestamps = new FixedLagSmoother.KeyTimestampMap();
-        m_poseKeys.clear();
-        m_biasKeys.clear();
 
         Key x0 = poseKey(timestamp);
-        Pose2d priorPose2d = state.pose();
-        Pose2 prior = Geometry.toPose2(priorPose2d);
-        IsotropicNoiseSE2 noise = state.noise();
+        Pose2d pose2dPrior = state.pose();
+        Pose2 posePrior = Geometry.toPose2(pose2dPrior);
+        IsotropicNoiseSE2 poseNoise = state.noise();
 
-        Vector3 sigmas = new Vector3(noise.cartesian(), noise.cartesian(), noise.rotation());
-        shared_ptr<Diagonal> sigma = Diagonal.Sigmas(sigmas);
-        m_newFactors.add(PriorFactor.PriorFactorPose2(
-                x0, prior, sigma));
-        m_newValues.insert(x0, prior);
+        Vector3 poseSigmas = new Vector3(poseNoise.cartesian(), poseNoise.cartesian(), poseNoise.rotation());
+        shared_ptr<Diagonal> posePriorSigma = Diagonal.Sigmas(poseSigmas);
+        shared_ptr<PriorFactor<Pose2>> posePriorFactor = PriorFactor.PriorFactorPose2(x0, posePrior, posePriorSigma);
+        m_newFactors.add(posePriorFactor);
+        m_newValues.insert(x0, posePrior);
         m_newTimestamps.put(x0, timestamp);
-        m_poseKeys.add(timestamp);
+
+        Key b0 = biasKey(timestamp);
+        shared_ptr<Diagonal> biasPriorSigma = Diagonal.Sigmas(new Vector1(1));
+        shared_ptr<PriorFactor<Double>> biasPriorFactor = PriorFactor.PriorFactorDouble(
+                b0, 0, biasPriorSigma);
+        m_newFactors.add(biasPriorFactor);
+        m_newValues.insert(b0, 0);
+        m_newTimestamps.put(b0, timestamp);
 
         if (DEBUG) {
             System.out.println("#### GtsamStateEstimator.reset() pending");
@@ -435,7 +443,7 @@ public class GtsamStateEstimator implements StateEstimator {
     /** Speed-dependent noise. */
     private double noise(double distance) {
         // this used to be 0.0001 but gtsam didn't like it
-        return 0.01 + 0.02 * distance;
+        return 0.001 + 0.02 * distance;
     }
 
 }

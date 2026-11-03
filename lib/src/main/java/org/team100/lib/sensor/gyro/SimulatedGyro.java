@@ -23,7 +23,12 @@ public class SimulatedGyro implements Gyro {
     private static final double SAMPLE_RATE = 100;
     /** White noise in rad/s */
     private static final double DEFAULT_NOISE = 4e-4 * Math.sqrt(SAMPLE_RATE);
-    private static final double BIAS_NOISE = 1e-5;
+    // with a high bias, the bias noise also needs to be kinda high
+    // in order to adjust quickly: the initial value is zero.
+    // TODO: this value is plainly much too high, figure out why the
+    // solver is not 
+    private static final double BIAS_NOISE = 1;
+    // private static final double BIAS_NOISE = 1e-5;
     private final Random m_rand;
     private final Rotation2dLogger m_log_yaw;
     private final DoubleLogger m_log_yaw_rate;
