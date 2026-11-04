@@ -22,6 +22,7 @@ import org.team100.lib.localization.fused.FusedEstimator;
 import org.team100.lib.localization.fused.NudgingVisionEstimator;
 import org.team100.lib.localization.fused.OdometryEstimator;
 import org.team100.lib.localization.fused.UpdatedEstimate;
+import org.team100.lib.localization.gtsam.CornerReader;
 import org.team100.lib.localization.gtsam.GtsamStateEstimator;
 import org.team100.lib.localization.map.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.simulation.GroundTruth;
@@ -84,7 +85,7 @@ public class Machinery implements AutoCloseable {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        ////////////////////////
+        ///////////////////////
         //
         // DRIVETRAIN
         //
@@ -105,6 +106,7 @@ public class Machinery implements AutoCloseable {
                 m_modules);
         AprilTagCornerReader tagReader = new AprilTagCornerReader(
                 driveLog, layout, MatchState::getAlliance);
+        CornerReader cornerReader = new CornerReader(layout, MatchState::getAlliance);
         OdometryEstimator odometryEstimate = new OdometryEstimator(
                 driveLog,
                 m_swerveKinodynamics,
@@ -125,7 +127,7 @@ public class Machinery implements AutoCloseable {
                 Takt.get(),
                 gyro::getYawNWU,
                 swerveLocal::positions,
-                tagReader::read,
+                cornerReader::read,
                 m_swerveKinodynamics.getKinematics(),
                 gyro.white_noise(),
                 gyro.bias_noise());
@@ -142,7 +144,7 @@ public class Machinery implements AutoCloseable {
                 fieldLogger, () -> m_drive.getState(), "robot");
         new SwerveHistoryVisualization(fieldLogger, m_drive);
 
-        ////////////////////////
+        ///////////////////////
         //
         // TARGETING
         //
@@ -164,7 +166,7 @@ public class Machinery implements AutoCloseable {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, t -> m_drive.getState(t).state());
 
-        /////////////////////////
+        ////////////////////////
         //
         // SUBSYSTEMS
         //
@@ -174,13 +176,13 @@ public class Machinery implements AutoCloseable {
         m_feeder = new Feeder(logger, currentLog, m_shooter);
         m_conveyor = new Conveyor(logger, currentLog);
 
-        /////////////////////////
+        ////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        /////////////////////////
+        ////////////////////////
         //
         // INDICATOR
         //

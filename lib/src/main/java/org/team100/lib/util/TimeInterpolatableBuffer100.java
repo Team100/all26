@@ -144,8 +144,8 @@ public class TimeInterpolatableBuffer100<T extends Interpolatable<T>> {
     }
 
     /** Return entry for key strictly greater than t */
-    public Entry<Double, T> ceilingEntry(double t) {
-        return m_pastSnapshots.ceilingEntry(t);
+    public Entry<Double, T> higherEntry(double t) {
+        return m_pastSnapshots.higherEntry(t);
     }
 
     public int size() {

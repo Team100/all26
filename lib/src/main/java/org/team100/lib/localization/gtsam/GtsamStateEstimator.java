@@ -7,12 +7,13 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
+import org.team100.lib.camera.Distortion;
+import org.team100.lib.camera.Intrinsic;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.gtsam.util.Geometry;
 import org.team100.lib.localization.ImmutableSwerveHistory;
 import org.team100.lib.localization.OdoGyroMeasurement;
 import org.team100.lib.localization.StateEstimator;
-import org.team100.lib.localization.fused.VisionMeasurement;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
@@ -21,8 +22,8 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveDriveKinematics100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDeltas;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
-import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.uncertainty.NoisyStateSE2;
+import org.team100.lib.util.Math100;
 import org.team100.lib.util.TimeInterpolatableBuffer100;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
@@ -30,6 +31,7 @@ import org.wpilib.math.geometry.Twist2d;
 
 import gtsam.BatchFixedLagSmoother;
 import gtsam.BetweenFactorPose2;
+import gtsam.Cal3DS2;
 import gtsam.FixedLagSmoother;
 import gtsam.FixedLagSmoother.Result;
 import gtsam.IndeterminateSystemException;
@@ -41,13 +43,18 @@ import gtsam.NonlinearFactorGraph;
 import gtsam.PlanarGyroFactor;
 import gtsam.PlanarGyroFactor.PlanarGyroBiasFactor;
 import gtsam.PlanarGyroFactor.PlanarGyroParams;
+import gtsam.PlanarProjectionFactor1;
+import gtsam.Point2;
+import gtsam.Point3;
 import gtsam.Pose2;
+import gtsam.Pose3;
 import gtsam.PriorFactor;
 import gtsam.Rot2;
 import gtsam.Symbol;
 import gtsam.Values;
 import gtsam.Vector;
 import gtsam.Vector1;
+import gtsam.Vector2;
 import gtsam.Vector3;
 import gtsam.shared_ptr;
 import gtsam.noiseModel.Diagonal;
@@ -69,11 +76,19 @@ public class GtsamStateEstimator implements StateEstimator {
 
     private final Supplier<Rotation2d> m_gyro;
     private final Supplier<SwerveModulePositions> m_positions;
-    private final Supplier<List<VisionMeasurement>> m_vision;
+    private final Supplier<List<Corners>> m_vision;
     private final SwerveDriveKinematics100 m_kinematics;
     private final TimeInterpolatableBuffer100<OdoGyroMeasurement> m_measurements;
+    // TODO: make the gyro params much softer initially, and then tighten
+    // in order to correctly calibrate a nonzero drift rate.
     private final shared_ptr<PlanarGyroParams> m_params;
     private final DoubleLogger m_log_gyro_bias;
+
+    // the camera itself is good to a pixel; the apriltag detector
+    // might be good to a few pixels, depending on the lens, and the
+    // lens calibration might be good to a pixel.
+    // TODO: look carefully at camera accuracy
+    private final shared_ptr<Diagonal> m_visionNoise;
 
     // these are not final because reset() makes new ones.
     private BatchFixedLagSmoother m_smoother;
@@ -88,7 +103,7 @@ public class GtsamStateEstimator implements StateEstimator {
             double initialTimestamp,
             Supplier<Rotation2d> gyro,
             Supplier<SwerveModulePositions> positions,
-            Supplier<List<VisionMeasurement>> vision,
+            Supplier<List<Corners>> vision,
             SwerveDriveKinematics100 kinematics,
             double whiteNoise,
             double biasNoise) {
@@ -98,6 +113,7 @@ public class GtsamStateEstimator implements StateEstimator {
         m_positions = positions;
         m_vision = vision;
         m_kinematics = kinematics;
+        m_visionNoise = Diagonal.Sigmas(new Vector2(2, 2));
         m_params = PlanarGyroParams.makeSharedPlanarGyroParams(
                 whiteNoise, biasNoise);
         // the lag in seconds is compared to the max of the timestamp key map.
@@ -312,45 +328,106 @@ public class GtsamStateEstimator implements StateEstimator {
 
         OdoGyroMeasurement newMeasurement = new OdoGyroMeasurement(m_gyro.get(), m_positions.get());
 
-        SwerveModuleDeltas deltas = SwerveModuleDeltas.modulePositionDelta(
-                previousMeasurement.odo(), newMeasurement.odo());
-        Twist2d twist = m_kinematics.forward(deltas);
-        Vector3 twistVector = new Vector3(
-                twist.dx,
-                twist.dy,
-                twist.dtheta);
-        Pose2 measurement = new Pose2().expmap(twistVector);
-
-        shared_ptr<BetweenFactorPose2> odometryFactor = BetweenFactorPose2.newBetweenFactorPose2(
-                x0,
-                x1,
-                measurement,
-                noise(twistVector));
-        m_newFactors.add(odometryFactor);
+        m_newFactors.add(getOdometryFactor(
+                x0, x1, previousMeasurement.odo(), newMeasurement.odo()));
 
         Rot2 dr = new Rot2(newMeasurement.gyro().minus(
                 previousMeasurement.gyro()).getRadians());
-        shared_ptr<PlanarGyroFactor> gyroFactor = PlanarGyroFactor.FromRotation(
-                x0, x1, b0, m_params, dr, dt);
-        m_newFactors.add(gyroFactor);
+        m_newFactors.add(PlanarGyroFactor.FromRotation(
+                x0, x1, b0, m_params, dr, dt));
 
-        shared_ptr<PlanarGyroBiasFactor> biasFactor = PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
-                b0, b1, m_params);
-        m_newFactors.add(biasFactor);
+        m_newFactors.add(PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
+                b0, b1, m_params));
 
-        if (DEBUG) {
-            System.out.println("#### GtsamStateEstimator.odoGyro(): factor");
-            odometryFactor.get().print();
-        }
         m_measurements.put(timestamp, newMeasurement);
+    }
+
+    private shared_ptr<BetweenFactorPose2> getOdometryFactor(
+            Key x0,
+            Key x1,
+            SwerveModulePositions m0,
+            SwerveModulePositions m1) {
+        SwerveModuleDeltas deltas = SwerveModuleDeltas.modulePositionDelta(m0, m1);
+        Twist2d twist = m_kinematics.forward(deltas);
+        Vector3 twistVector = new Vector3(twist.dx, twist.dy, twist.dtheta);
+        Pose2 measurement = new Pose2().expmap(twistVector);
+        return BetweenFactorPose2.newBetweenFactorPose2(
+                x0, x1, measurement, noise(twistVector));
     }
 
     void vision() {
         if (DEBUG)
             System.out.println("#### GtsamStateEstimator.vision()");
-        for (VisionMeasurement v : m_vision.get()) {
-            double visionTimestamp = v.timestamp();
-            NoisyPose2d visionMeasurement = v.noisyMeasurement();
+
+        // look through the pending vision input
+        for (Corners v : m_vision.get()) {
+            double timestamp = v.timestamp();
+            Intrinsic intrinsic = v.intrinsic();
+            Distortion distortion = v.distortion();
+
+            Point3 landmark = Geometry.toPoint3(v.landmark());
+            Point2 measurement = Geometry.toPoint2(v.measurement());
+            Pose3 offset = Geometry.toPose3(v.offset());
+            Cal3DS2 calib = Geometry.toCal3DS2(intrinsic, distortion);
+
+            Key x = poseKey(timestamp);
+            Key b = biasKey(timestamp);
+
+            m_newFactors.add(PlanarProjectionFactor1.newPlanarProjectionFactor1(
+                    x,
+                    landmark,
+                    measurement,
+                    offset,
+                    calib,
+                    m_visionNoise));
+            // Interpolated measurement for this timetsamp
+            OdoGyroMeasurement m = m_measurements.get(timestamp);
+            Entry<Double, OdoGyroMeasurement> before = m_measurements.lowerEntry(timestamp);
+            Entry<Double, OdoGyroMeasurement> after = m_measurements.higherEntry(timestamp);
+
+            Key x0 = poseKey(before.getKey());
+            Key x1 = poseKey(after.getKey());
+            Key b0 = biasKey(before.getKey());
+            Key b1 = biasKey(after.getKey());
+            double dt0 = timestamp - before.getKey();
+            double dt1 = after.getKey() - timestamp;
+            OdoGyroMeasurement m0 = before.getValue();
+            OdoGyroMeasurement m1 = after.getValue();
+            Rot2 dr0 = new Rot2(m.gyro().minus(m0.gyro()).getRadians());
+            Rot2 dr1 = new Rot2(m1.gyro().minus(m.gyro()).getRadians());
+            m_newFactors.add(getOdometryFactor(
+                    x0, x, m0.odo(), m.odo()));
+            m_newFactors.add(getOdometryFactor(
+                    x, x1, m.odo(), m1.odo()));
+            m_newFactors.add(PlanarGyroFactor.FromRotation(
+                    x0, x, b0, m_params, dr0, dt0));
+            m_newFactors.add(PlanarGyroFactor.FromRotation(
+                    x, x1, b, m_params, dr1, dt1));
+
+            m_newFactors.add(PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
+                    b0, b, m_params));
+            m_newFactors.add(PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
+                    b, b1, m_params));
+
+            // for interpolation
+            double s = dt0 / (after.getKey() - before.getKey());
+
+            // interpolate the estimated pose to come up with an initial value.
+            Pose2 beforePoseEstimate = m_result.atPose2(x0);
+            Pose2 afterPoseEstimate = m_result.atPose2(x1);
+            Pose2 poseEstimate = Geometry.interpolate(
+                    beforePoseEstimate, afterPoseEstimate, s);
+            m_newValues.insert(x, poseEstimate);
+
+            // interpolate the estimated bias to come up with an initial value
+            double beforeBiasEstimate = m_result.atDouble(b0);
+            double afterBiasEstimate = m_result.atDouble(b1);
+            double biasEstimate = Math100.interpolate(
+                    beforeBiasEstimate, afterBiasEstimate, s);
+            m_newValues.insert(b, biasEstimate);
+
+            m_newTimestamps.put(x, timestamp);
+            m_newTimestamps.put(b, timestamp);
         }
     }
 
@@ -384,16 +461,14 @@ public class GtsamStateEstimator implements StateEstimator {
 
         Vector3 poseSigmas = new Vector3(poseNoise.cartesian(), poseNoise.cartesian(), poseNoise.rotation());
         shared_ptr<Diagonal> posePriorSigma = Diagonal.Sigmas(poseSigmas);
-        shared_ptr<PriorFactor<Pose2>> posePriorFactor = PriorFactor.PriorFactorPose2(x0, posePrior, posePriorSigma);
-        m_newFactors.add(posePriorFactor);
+        m_newFactors.add(PriorFactor.PriorFactorPose2(x0, posePrior, posePriorSigma));
         m_newValues.insert(x0, posePrior);
         m_newTimestamps.put(x0, timestamp);
 
         Key b0 = biasKey(timestamp);
         shared_ptr<Diagonal> biasPriorSigma = Diagonal.Sigmas(new Vector1(1));
-        shared_ptr<PriorFactor<Double>> biasPriorFactor = PriorFactor.PriorFactorDouble(
-                b0, 0, biasPriorSigma);
-        m_newFactors.add(biasPriorFactor);
+        m_newFactors.add(PriorFactor.PriorFactorDouble(
+                b0, 0, biasPriorSigma));
         m_newValues.insert(b0, 0);
         m_newTimestamps.put(b0, timestamp);
 

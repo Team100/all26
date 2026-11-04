@@ -45,7 +45,7 @@ public class TagToCorners {
             return List.of();
         }
         Alliance alliance = optAlliance.get();
-        List<Corners> measurements = new ArrayList<>();
+        List<Corners> corners = new ArrayList<>();
         for (int i = 0; i < blips.length; ++i) {
             BlipWithCorners blip = blips[i];
 
@@ -61,39 +61,39 @@ public class TagToCorners {
             double blipTimeSec = (double) blip.getTimestamp() / 1e6;
 
             // lower-left
-            measurements.add(new Corners(
+            corners.add(new Corners(
                     blipTimeSec,
-                    tagInField.transformBy(LL),
+                    tagInField.transformBy(LL).getTranslation(),
                     new Translation2d(blip.getX0(), blip.getY0()),
                     offset,
                     intrinsic,
                     distortion));
             // lower-right
-            measurements.add(new Corners(
+            corners.add(new Corners(
                     blipTimeSec,
-                    tagInField.transformBy(LR),
+                    tagInField.transformBy(LR).getTranslation(),
                     new Translation2d(blip.getX1(), blip.getY1()),
                     offset,
                     intrinsic,
                     distortion));
             // upper-right
-            measurements.add(new Corners(
+            corners.add(new Corners(
                     blipTimeSec,
-                    tagInField.transformBy(UR),
+                    tagInField.transformBy(UR).getTranslation(),
                     new Translation2d(blip.getX2(), blip.getY2()),
                     offset,
                     intrinsic,
                     distortion));
             // upper-left
-            measurements.add(new Corners(
+            corners.add(new Corners(
                     blipTimeSec,
-                    tagInField.transformBy(UL),
+                    tagInField.transformBy(UL).getTranslation(),
                     new Translation2d(blip.getX3(), blip.getY3()),
                     offset,
                     intrinsic,
                     distortion));
         }
-        return measurements;
+        return corners;
     }
 
 }

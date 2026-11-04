@@ -6,7 +6,6 @@ import java.util.List;
 import org.team100.lib.gtsam.config.CameraConfig;
 import org.team100.lib.gtsam.field.FieldMap;
 import org.team100.lib.gtsam.pose_estimator.BetweenGyro;
-import org.team100.lib.gtsam.pose_estimator.Gyro;
 import org.team100.lib.gtsam.pose_estimator.Odometry;
 import org.team100.lib.gtsam.pose_estimator.Prior;
 import org.team100.lib.gtsam.pose_estimator.Solver;

@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.localization.ImmutableSwerveHistory;
-import org.team100.lib.localization.fused.VisionMeasurement;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
@@ -28,7 +27,7 @@ public class GtsamStateEstimatorTest {
 
     private Rotation2d yaw;
     private SwerveModulePositions positions;
-    private List<VisionMeasurement> vision;
+    private List<Corners> vision;
 
     @Test
     void test0() {
