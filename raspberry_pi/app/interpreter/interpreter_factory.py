@@ -101,7 +101,7 @@ class InterpreterFactory:
                     network,
                     timestamps,
                     AprilTags(identity, cam, network),
-                    Balls(cam, network),
+                    None,
                 )
             case Identity.CAMERA_2A:
                 return DualInterpreter(

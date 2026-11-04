@@ -5,7 +5,7 @@ from app.camera.camera_protocol import Camera, Size
 from app.analysis.analysis_protocol import ColorAnalysis
 from app.network.network_protocol import Network
 from app.dashboard.display_util import DisplayUtil
-from ultralytics import YOLO
+# from ultralytics import YOLO
 
 
 from app.analysis.analysis_protocol import ColorAnalysis # type: ignore
