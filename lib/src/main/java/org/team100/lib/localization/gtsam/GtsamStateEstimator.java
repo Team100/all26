@@ -380,54 +380,63 @@ public class GtsamStateEstimator implements StateEstimator {
                     offset,
                     calib,
                     m_visionNoise));
-            // Interpolated measurement for this timetsamp
+
+            // Interpolated measurement for this timestamp
             OdoGyroMeasurement m = m_measurements.get(timestamp);
             Entry<Double, OdoGyroMeasurement> before = m_measurements.lowerEntry(timestamp);
             Entry<Double, OdoGyroMeasurement> after = m_measurements.higherEntry(timestamp);
 
-            Key x0 = poseKey(before.getKey());
-            Key x1 = poseKey(after.getKey());
-            Key b0 = biasKey(before.getKey());
-            Key b1 = biasKey(after.getKey());
-            double dt0 = timestamp - before.getKey();
-            double dt1 = after.getKey() - timestamp;
-            OdoGyroMeasurement m0 = before.getValue();
-            OdoGyroMeasurement m1 = after.getValue();
-            Rot2 dr0 = new Rot2(m.gyro().minus(m0.gyro()).getRadians());
-            Rot2 dr1 = new Rot2(m1.gyro().minus(m.gyro()).getRadians());
-            m_newFactors.add(getOdometryFactor(
-                    x0, x, m0.odo(), m.odo()));
-            m_newFactors.add(getOdometryFactor(
-                    x, x1, m.odo(), m1.odo()));
-            m_newFactors.add(PlanarGyroFactor.FromRotation(
-                    x0, x, b0, m_params, dr0, dt0));
-            m_newFactors.add(PlanarGyroFactor.FromRotation(
-                    x, x1, b, m_params, dr1, dt1));
+            double beforeTime = before.getKey();
+            double afterTime = after.getKey();
+            Key x0 = poseKey(beforeTime);
+            Key x1 = poseKey(afterTime);
 
-            m_newFactors.add(PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
-                    b0, b, m_params));
-            m_newFactors.add(PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
-                    b, b1, m_params));
+            if (x.j != x0.j && x.j != x1.j) {
+                // make a new value in between
+                // and wire up interpolated odometry factors
 
-            // for interpolation
-            double s = dt0 / (after.getKey() - before.getKey());
+                Key b0 = biasKey(beforeTime);
+                Key b1 = biasKey(afterTime);
+                double dt0 = timestamp - beforeTime;
+                double dt1 = afterTime - timestamp;
+                OdoGyroMeasurement m0 = before.getValue();
+                OdoGyroMeasurement m1 = after.getValue();
+                Rot2 dr0 = new Rot2(m.gyro().minus(m0.gyro()).getRadians());
+                Rot2 dr1 = new Rot2(m1.gyro().minus(m.gyro()).getRadians());
+                m_newFactors.add(getOdometryFactor(
+                        x0, x, m0.odo(), m.odo()));
+                m_newFactors.add(getOdometryFactor(
+                        x, x1, m.odo(), m1.odo()));
+                m_newFactors.add(PlanarGyroFactor.FromRotation(
+                        x0, x, b0, m_params, dr0, dt0));
+                m_newFactors.add(PlanarGyroFactor.FromRotation(
+                        x, x1, b, m_params, dr1, dt1));
 
-            // interpolate the estimated pose to come up with an initial value.
-            Pose2 beforePoseEstimate = m_result.atPose2(x0);
-            Pose2 afterPoseEstimate = m_result.atPose2(x1);
-            Pose2 poseEstimate = Geometry.interpolate(
-                    beforePoseEstimate, afterPoseEstimate, s);
-            m_newValues.insert(x, poseEstimate);
+                m_newFactors.add(PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
+                        b0, b, m_params));
+                m_newFactors.add(PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
+                        b, b1, m_params));
 
-            // interpolate the estimated bias to come up with an initial value
-            double beforeBiasEstimate = m_result.atDouble(b0);
-            double afterBiasEstimate = m_result.atDouble(b1);
-            double biasEstimate = Math100.interpolate(
-                    beforeBiasEstimate, afterBiasEstimate, s);
-            m_newValues.insert(b, biasEstimate);
+                // for interpolation
+                double s = dt0 / (afterTime - beforeTime);
 
-            m_newTimestamps.put(x, timestamp);
-            m_newTimestamps.put(b, timestamp);
+                // interpolate the estimated pose to come up with an initial value.
+                Pose2 beforePoseEstimate = m_result.atPose2(x0);
+                Pose2 afterPoseEstimate = m_result.atPose2(x1);
+                Pose2 poseEstimate = Geometry.interpolate(
+                        beforePoseEstimate, afterPoseEstimate, s);
+                m_newValues.insert(x, poseEstimate);
+
+                // interpolate the estimated bias to come up with an initial value
+                double beforeBiasEstimate = m_result.atDouble(b0);
+                double afterBiasEstimate = m_result.atDouble(b1);
+                double biasEstimate = Math100.interpolate(
+                        beforeBiasEstimate, afterBiasEstimate, s);
+                m_newValues.insert(b, biasEstimate);
+
+                m_newTimestamps.put(x, timestamp);
+                m_newTimestamps.put(b, timestamp);
+            }
         }
     }
 
