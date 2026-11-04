@@ -7,12 +7,16 @@ package frc.robot;
 //import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import org.team100.lib.coherence.Cache;
+import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.hid.DriverXboxControl;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.RobotLog;
@@ -77,6 +81,11 @@ public Robot() {
    */
   @Override
   public void robotPeriodic() {
+            Takt.update();
+        Cache.refresh();
+        CommandScheduler.getInstance().run();
+
+        LogPoller.log();
   }
 
   /**
