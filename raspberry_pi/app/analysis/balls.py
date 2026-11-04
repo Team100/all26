@@ -10,12 +10,11 @@ from ultralytics import YOLO
 
 from app.analysis.analysis_protocol import ColorAnalysis # type: ignore
 
-        
+
 
 
 class Balls(ColorAnalysis):
     """A wrapper for OpenCV target finding."""
-
     def __init__(
         self,
         cam: Camera,
@@ -56,26 +55,42 @@ class Balls(ColorAnalysis):
         :img_display: distorted, for display, annotated.
         :servertime: drift-corrected server-time microsecond timestamp"""
         # DisplayUtil.rectangle(img_display, (200, 200), (50, 50), (0, 255, 0))
+        targets: list[Target] = []
+        # list of [x, y]
+        points_to_undistort: list[list[int]] = []
+        points_to_undistort.append([cX, cY])
         if self._model is not None:
-            result = self._model.predict(source=img, imgsz=512, conf=0.5, verbose=False)[0] # type: ignore
+            result = self._model.predict(source=img, imgsz=512, conf=0.85, verbose=False)[0] # type: ignore
             for(cx, cy, w, h) in result.boxes.xywh.tolist(): # type: ignore
                 if img_display is not None:
-                    DisplayUtil.rectangle(img_display, (int(cx), int(cy)), (int(w), int(h)), (0, 255, 0)) # type: ignore
-#         result = self._model.predict(source=img, conf=0.25, verbose=False)[0]
+                    DisplayUtil.rectangle(img_display, (int(cx), int(cy)), (int(w), int(h)), (0, 255, 0))
+        if points_to_undistort:
+            # Undistort all points at once
+            undistorted_points = self.undistort_points(points_to_undistort)
 
-#         names.getattr(self._model,"names",{}) or {}
-#         for (cx, cy, w, h), score, cls in zip(
-#         result.boxes.xywhn.tolist(), 
-#         result.boxes.conf.tolist(), 
-#         result.boxes.cls.tolist()
-# ):
-#     box_info = {
-#         "cls": int(cls),
-#         "name": str(names.get(int(cls), int(cls))),
-#         "conf": round(float(score), 4),
-#         "cx": cx,
-#         "cy": cy,
-#         "w": w,
-#         "h": h,
-#     }
-#     boxes.append(box_info)
+            c: MatLike
+            orig_cX: int
+            orig_cY: int
+            undist_cX: float
+            undist_cY: float
+            for (c, orig_cX, orig_cY, cA, range1), (undist_cX, undist_cY) in zip(
+                contour_info, undistorted_points
+            ):
+
+                yNormalized: float = (self._height / 2 - undist_cY) / self._mtx[1, 1]
+                xNormalized: float = (self._width / 2 - undist_cX) / self._mtx[0, 0]
+
+                initial = np.array([1, 0, 0], dtype=np.float64)
+                final = np.array([1, xNormalized, yNormalized], dtype=np.float64)
+                rotation = Rotation3d(initial=initial, final=final)
+                
+                targets.append(Target(int(servertime), rotation, range1))
+
+
+                if img_display is not None:
+                    DisplayUtil.note(img_display, c, orig_cX, orig_cY)
+
+            
+
+            # only send if there's anything to say
+            self._targets.send(targets)
