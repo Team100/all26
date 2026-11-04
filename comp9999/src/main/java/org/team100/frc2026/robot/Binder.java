@@ -3,13 +3,11 @@ package org.team100.frc2026.robot;
 import static org.team100.lib.util.TriggerUtil.onTrue;
 import static org.team100.lib.util.TriggerUtil.whileTrue;
 
-import org.team100.lib.controller.r1.AzimuthController;
 import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.FullStateFeedback;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
-import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
 
 import edu.wpi.first.wpilibj.RobotController;
@@ -79,21 +77,21 @@ public class Binder {
         FeedbackR1 thetaFeedback = new FullStateFeedback(
                 log, 6, 0.1, true, 0.025, 0.25);
 
-    //     // button 6
-    //     AzimuthController aim = new AzimuthController(
-    //             log,
-    //             machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
-    //             thetaFeedback);
-    //     whileTrue(() -> m_driver.leftBumper(),
-    //             new DriveMovingTargetLock(
-    //                     log,
-    //                     machinery.m_swerveKinodynamics,
-    //                     aim,
-    //                     m_driver::velocity,
-    //                     limiter,
-    //                     machinery.m_cachedSolution,
-    //                     machinery.m_drive)
-    //                     .withName("Target lock"));
+        // // button 6
+        // AzimuthController aim = new AzimuthController(
+        // log,
+        // machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
+        // thetaFeedback);
+        // whileTrue(() -> m_driver.leftBumper(),
+        // new DriveMovingTargetLock(
+        // log,
+        // machinery.m_swerveKinodynamics,
+        // aim,
+        // m_driver::velocity,
+        // limiter,
+        // machinery.m_cachedSolution,
+        // machinery.m_drive)
+        // .withName("Target lock"));
 
     }
 

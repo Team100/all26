@@ -9,13 +9,17 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.controller.se2.ControllerFactorySE2;
 import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.framework.TimedRobot100;
-import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
-import org.team100.lib.localization.FusedEstimator;
-import org.team100.lib.localization.StateEstimator;
+import org.team100.lib.localization.fused.AprilTagCornerReader;
+import org.team100.lib.localization.fused.FusedEstimator;
+import org.team100.lib.localization.fused.NudgingVisionEstimator;
+import org.team100.lib.localization.fused.OdometryEstimator;
+import org.team100.lib.localization.fused.UpdatedEstimate;
+import org.team100.lib.localization.map.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -37,6 +41,7 @@ import org.team100.lib.trajectory.se2.examples.TrajectoryExamples;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 
 class DriveWithTrajectoryListFunctionTest implements Timeless {
 
@@ -54,7 +59,6 @@ class DriveWithTrajectoryListFunctionTest implements Timeless {
 
         LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());
         TotalCurrentLog currentLog = new TotalCurrentLog(logger);
-        LoggerFactory fieldLogger = new TestLoggerFactory(new TestPrimitiveLogger());
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forTest();
         // uses simulated modules
         SwerveModuleCollection collection = SwerveModuleCollection.get(
@@ -63,13 +67,28 @@ class DriveWithTrajectoryListFunctionTest implements Timeless {
         SwerveLocal swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
 
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
-
-        StateEstimator estimate = new FusedEstimator(
-                logger, fieldLogger, swerveKinodynamics, false, layout, gyro, swerveLocal);
+        AprilTagCornerReader tagReader = new AprilTagCornerReader(
+                logger, layout, DriverStation::getAlliance);
+        OdometryEstimator odometryEstimate = new OdometryEstimator(
+                logger,
+                swerveKinodynamics,
+                gyro.white_noise(),
+                gyro.bias_noise(),
+                false,
+                false);
+        NudgingVisionEstimator visionEstimate = new NudgingVisionEstimator(logger);
+        FusedEstimator estimate = new FusedEstimator(
+                Takt.get(),
+                gyro::getYawNWU,
+                swerveLocal::positions,
+                tagReader::read,
+                odometryEstimate,
+                visionEstimate);
+        UpdatedEstimate e = new UpdatedEstimate(estimate);
 
         SwerveDriveSubsystem drive = new SwerveDriveSubsystem(
                 logger,
-                estimate,
+                e,
                 swerveLocal);
 
         List<TimingConstraint> constraints = new TimingConstraintFactory(swerveKinodynamics).allGood();
@@ -94,6 +113,7 @@ class DriveWithTrajectoryListFunctionTest implements Timeless {
         for (double t = 0; t < 4; t += TimedRobot100.LOOP_PERIOD_S) {
             stepTime();
             c.execute();
+            System.out.println(drive.getState());
         }
         assertTrue(c.isDone());
         assertEquals(1.0, drive.getState().pose().getX(), 0.01);

@@ -34,11 +34,6 @@ import edu.wpi.first.wpilibj2.command.Command;
  * think the profile might be a source of noise.
  */
 public class DriveMovingTargetLock extends Command {
-    /**
-     * Pay attention to tags even if they are far away.
-     */
-    private static final double HEED_RADIUS_M = 6.0;
-
     private final SwerveKinodynamics m_swerveKinodynamics;
     /**
      * Velocity control in control units, [-1,1] on all axes.
@@ -76,7 +71,6 @@ public class DriveMovingTargetLock extends Command {
 
     @Override
     public void initialize() {
-        m_drive.setHeedRadiusM(HEED_RADIUS_M);
         m_limiter.updateSetpoint(m_drive.getState().velocity());
         m_aim.reset();
     }

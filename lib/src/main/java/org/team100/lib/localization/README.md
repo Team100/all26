@@ -47,6 +47,6 @@ low-pass filter.
 
 Some other teams (6328) use different methods for "local" localization (relative
 to a specific tag for a specific task), and "global" localization (combining
-inputs from multiple tags).  We don't do that, but we do allow the parameters
-in the pose estimator to be changed by commands, so when you want the estimator
-to ignore far-away tags, use `AprilTagRobotLocalizer.setHeedRadiusM()`. 
+inputs from multiple tags).  We don't do that, we assign higher uncertainty to
+far-away tags.  If you find a far-away tag having too much influence when
+you're close to another tag, you can adjust the uncertainty function.

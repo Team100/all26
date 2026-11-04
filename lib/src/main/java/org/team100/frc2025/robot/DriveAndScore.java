@@ -1,7 +1,6 @@
 package org.team100.frc2025.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
@@ -21,9 +20,6 @@ import edu.wpi.first.wpilibj2.command.Command;
  * specified ScoringLevel, and finally return the mechanism to home.
  */
 public class DriveAndScore {
-    /** While driving to scoring tag, pay attention only to very close tags. */
-    private static final double HEED_RADIUS_M = 3;
-
     private final LoggerFactory m_logger;
     private final Machinery2025 m_machinery;
     private final ProfileSE2 m_autoProfile;
@@ -49,7 +45,6 @@ public class DriveAndScore {
         Command eject = m_machinery.m_manipulator.centerEject().withTimeout(0.5);
         return sequence(
                 parallel(
-                        runOnce(() -> m_machinery.m_drive.setHeedRadiusM(HEED_RADIUS_M)),
                         toReef,
                         waitUntil(toReef::isDone).andThen(toL4),
                         waitUntil(() -> toReef.isDone() && toL4.isDone())

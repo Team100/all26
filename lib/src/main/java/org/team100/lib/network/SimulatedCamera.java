@@ -3,7 +3,7 @@ package org.team100.lib.network;
 import java.util.function.DoubleFunction;
 
 import org.team100.lib.coherence.Takt;
-import org.team100.lib.localization.Blip;
+import org.team100.lib.localization.network.Blip;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;

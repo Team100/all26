@@ -2,7 +2,6 @@ package org.team100.frc2025.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.print;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static org.team100.frc2025.field.FieldConstants2025.ReefPoint.C;
@@ -46,9 +45,6 @@ public class Auton2025 {
         m_autoProfile = autoProfile;
         m_autoController = autoController;
     }
-
-    /** While driving to scoring tag, pay attention only to very close tags. */
-    private static final double HEED_RADIUS_M = 3;
 
     public Command leftPreloadOnly() {
         return sequence(
@@ -105,7 +101,6 @@ public class Auton2025 {
                 () -> FieldConstants2025.makeGoal(position, point));
         MoveAndHold toL4 = m_machinery.m_mech.homeToL4();
         return parallel(
-                runOnce(() -> m_machinery.m_drive.setHeedRadiusM(HEED_RADIUS_M)),
                 toReef,
                 waitUntil(() -> toReef.toGo() < 1)
                         .andThen(toL4) //
