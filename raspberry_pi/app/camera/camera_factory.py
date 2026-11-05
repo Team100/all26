@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=C0415,R0903
 
 from sys import stderr
@@ -10,19 +11,19 @@ class CameraFactory:
 
     @staticmethod
     def get(identity: Identity) -> Camera:
-        print("*** CameraFactory for identity:", identity)
+        print(f"[{datetime.now()}] " + "*** CameraFactory for identity:", identity)
         try:
             # ImportError if we're not running on a Raspberry Pi.
             from app.camera.real_camera import RealCamera
 
             # IndexError if no camera is attached.
-            print("***real camera started", file=stderr, flush=True)
+            print(f"[{datetime.now()}] " + "***real camera started", file=stderr, flush=True)
             return RealCamera(identity)
 
 
         except ImportError:
             from app.camera.fake_camera import FakeCamera
-            print("***Fake Camera", file=stderr, flush=True)
+            print(f"[{datetime.now()}] " + "***Fake Camera", file=stderr, flush=True)
 
             # These images can only be read from the filesystem,
             # not from the zip file (without more work), so they're

@@ -1,3 +1,4 @@
+from datetime import datetime
 """
 Runs the code in the zip file (or the filesystem).
 
@@ -23,15 +24,15 @@ import sys
 import traceback
 
 if os.path.isfile("/home/pi/app.zip"):
-    print("using the zip file")
+    print(f"[{datetime.now()}] " + "using the zip file")
     sys.path.insert(0, "/home/pi/app.zip")
 else:
-    print("using the local filesystem")
+    print(f"[{datetime.now()}] " + "using the local filesystem")
 
 try:
     from app import main
 except ImportError as e:
-    print("".join(traceback.format_exception(e)))
+    print(f"[{datetime.now()}] " + "".join(traceback.format_exception(e)))
     sys.exit("app import failed!")
 
 main.main()

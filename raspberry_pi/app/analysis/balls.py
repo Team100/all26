@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=C0103,E1101,R0903,R0914
 from typing import override
 from cv2.typing import MatLike
@@ -28,7 +29,7 @@ class Balls(ColorAnalysis):
         :network: to send results
         
         """
-        print("\n*** ColorAnalysis: Blobs")
+        print(f"[{datetime.now()}] " + "\n*** ColorAnalysis: Blobs")
         self._mtx = cam.get_intrinsic()
         self._dist = cam.get_dist()
         size: Size = cam.get_size()
@@ -40,7 +41,7 @@ class Balls(ColorAnalysis):
             self._model = YOLO("/home/pi/models/ball-detection_ncnn_model", task="detect")
         except:
             self._model = None
-            print("Model loading failed")
+            print(f"[{datetime.now()}] " + "Model loading failed")
 
     @override
     def analyze_color(

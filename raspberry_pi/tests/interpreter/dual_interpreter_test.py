@@ -1,3 +1,4 @@
+from datetime import datetime
 import unittest
 from app.analysis.fake_analysis import FakeColorAnalysis, FakeMonoAnalysis
 from app.camera.fake_camera import FakeCamera

@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=C0415,E0611,E1101,R0902
 
 from typing import override
@@ -12,7 +13,7 @@ class LinuxDisplay(Display):
     See localhost: 1181, 1182, etc"""
 
     def __init__(self, name: str, width: int, height: int) -> None:
-        print("*** Display: LinuxDisplay")
+        print(f"[{datetime.now()}] " + "*** Display: LinuxDisplay")
         self._width: int = width
         self._height: int = height
         self._cvsource = CameraServer.putVideo(name, width, height)
