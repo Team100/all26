@@ -45,6 +45,9 @@ public class TargetLocalizer {
         return Tnotes;
     }
 
+    /**
+     * Returns empty for impossible geometry (camera underground, target midair)
+     */
     public static Optional<Translation2d> cameraRotToFieldRelative(
             Pose2d robotPose,
             Transform3d cameraInRobotCoordinates,
@@ -72,6 +75,8 @@ public class TargetLocalizer {
     /**
      * Return the robot-relative intersection of the camera-relative target sight
      * with the floor.
+     * 
+     * Returns empty for impossible geometry (camera underground, target midair)
      */
     public static Optional<Translation2d> sightToRobotRelative(
             Transform3d cameraInRobotCoordinates,
@@ -94,6 +99,8 @@ public class TargetLocalizer {
     /**
      * Return the robot-relative intersection of the robot-relative target sight
      * with the floor.
+     * 
+     * Returns empty for impossible geometry (camera underground, target midair)
      */
     public static Optional<Translation2d> sightInRobotCoordsToTranslation2d(
             Transform3d robotRelativeSight) {

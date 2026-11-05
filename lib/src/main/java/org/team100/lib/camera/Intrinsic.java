@@ -16,15 +16,18 @@ public class Intrinsic {
             { 1.0, 0.0, 0.0 }, //
             { 0.0, 1.0, 0.0 }, //
             { 0.0, 0.0, 1.0 } });
+    private static final Intrinsic SIM_DEFAULT = new Intrinsic(new double[][] { //
+            { 935.0, 0.0, 550.0 }, //
+            { 0.0, 935.0, 550.0 }, //
+            { 0.0, 0.0, 1.0 } });
     private static final Map<Camera, Intrinsic> intrinsics;
 
     static {
         intrinsics = new EnumMap<>(Camera.class);
-        intrinsics.put(Camera.SIM0,
-                new Intrinsic(new double[][] { //
-                        { 935.0, 0.0, 550.0 }, //
-                        { 0.0, 935.0, 550.0 }, //
-                        { 0.0, 0.0, 1.0 } }));
+        intrinsics.put(Camera.SIM0, SIM_DEFAULT);
+        intrinsics.put(Camera.SIM1, SIM_DEFAULT);
+        intrinsics.put(Camera.SIM2, SIM_DEFAULT);
+        intrinsics.put(Camera.SIM3, SIM_DEFAULT);
         // TODO: more cameras
     }
 

@@ -1,7 +1,6 @@
 package org.team100.lib.subsystems.swerve.commands.manual;
 
 import java.util.Optional;
-import java.util.function.DoubleConsumer;
 import java.util.function.Supplier;
 
 import org.team100.lib.config.DriverSkill;
@@ -35,17 +34,11 @@ import edu.wpi.first.wpilibj2.command.Command;
  * think the profile might be a source of noise.
  */
 public class DriveMovingTargetLock extends Command {
-    /**
-     * Pay attention to tags even if they are far away.
-     */
-    private static final double HEED_RADIUS_M = 6.0;
-
     private final SwerveKinodynamics m_swerveKinodynamics;
     /**
      * Velocity control in control units, [-1,1] on all axes.
      */
     private final Supplier<DriverVelocity> m_twistSupplier;
-    private final DoubleConsumer m_heedRadiusM;
     private final SwerveLimiter m_limiter;
     private final CachedSolution m_solver;
     private final SwerveDriveSubsystem m_drive;
@@ -60,7 +53,6 @@ public class DriveMovingTargetLock extends Command {
             SwerveKinodynamics swerveKinodynamics,
             AzimuthController aim,
             Supplier<DriverVelocity> twistSupplier,
-            DoubleConsumer heedRadiusM,
             SwerveLimiter limiter,
             CachedSolution solver,
             SwerveDriveSubsystem drive) {
@@ -69,7 +61,6 @@ public class DriveMovingTargetLock extends Command {
         log.doubleLogger(Level.TRACE, "max omega").log(swerveKinodynamics::getMaxAngleSpeedRad_S);
         m_swerveKinodynamics = swerveKinodynamics;
         m_twistSupplier = twistSupplier;
-        m_heedRadiusM = heedRadiusM;
         m_limiter = limiter;
         m_solver = solver;
         m_drive = drive;
@@ -80,8 +71,7 @@ public class DriveMovingTargetLock extends Command {
 
     @Override
     public void initialize() {
-        m_heedRadiusM.accept(HEED_RADIUS_M);
-        m_limiter.updateSetpoint(m_drive.getVelocity());
+        m_limiter.updateSetpoint(m_drive.getState().velocity());
         m_aim.reset();
     }
 
@@ -107,8 +97,6 @@ public class DriveMovingTargetLock extends Command {
     /**
      * Null to skip override.
      * 
-     * TODO: control omega noise
-     * 
      * @param omega override. avoid noise in this input.
      */
     private void actuate(Double omega) {
@@ -122,7 +110,7 @@ public class DriveMovingTargetLock extends Command {
         scaled = GeometryUtil.scale(scaled, DriverSkill.level().scale());
 
         // Apply field-relative limits.
-        if (Experiments.instance.enabled(Experiment.UseSwerveLimiter)) {
+        if (Experiments.INSTANCE.enabled(Experiment.UseSwerveLimiter)) {
             scaled = m_limiter.apply(scaled);
         }
 

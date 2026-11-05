@@ -177,6 +177,8 @@ public class Robot extends TimedRobot100 {
 
         m_motor.periodic();
         m_sensor.periodic();
+        // Poll for logs after all the actuation is done
+        LogPoller.log();
         NetworkTableInstance.getDefault().flush();
     }
 

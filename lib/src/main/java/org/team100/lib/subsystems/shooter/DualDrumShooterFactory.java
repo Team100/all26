@@ -2,7 +2,6 @@ package org.team100.lib.subsystems.shooter;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.p.PDynamics;
 import org.team100.lib.logging.LoggerFactory;
@@ -19,6 +18,8 @@ import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
 import org.team100.lib.util.CanId;
+
+import edu.wpi.first.wpilibj.RobotBase;
 
 /** Configuration of motors on the demobot shooter. */
 public class DualDrumShooterFactory {
@@ -155,16 +156,14 @@ public class DualDrumShooterFactory {
         // parameters for velocity control.
         int averageDepth = 2;
         int measurementPeriod = 4;
-        return switch (Identity.instance) {
-            case BLANK ->
-                new SimulatedMotor(log, freeSpeedRad_S);
-            case DEMO_BOT -> new MinionSparkMotor(
+        if (RobotBase.isReal()) {
+            return new MinionSparkMotor(
                     log, currentLog, canId, NeutralMode100.BRAKE, phase,
                     limit, friction, pid, averageDepth, measurementPeriod);
-            default -> new MinionSparkMotor(
-                    log, currentLog, canId, NeutralMode100.BRAKE, phase,
-                    limit, friction, pid, averageDepth, measurementPeriod);
-        };
+        } else {
+            return new SimulatedMotor(log, freeSpeedRad_S);
+        }
+
     }
 
 }

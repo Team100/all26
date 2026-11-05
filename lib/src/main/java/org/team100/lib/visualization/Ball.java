@@ -12,8 +12,6 @@ public interface Ball {
 
     void reset();
 
-    void periodic();
-
     /** Shoot the ball and continue its path as long as the command runs. */
     default Command shoot() {
         return Commands.startRun(this::launch, this::fly)

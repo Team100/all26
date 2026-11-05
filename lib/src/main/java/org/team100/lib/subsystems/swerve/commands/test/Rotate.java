@@ -62,12 +62,12 @@ public class Rotate extends MoveAndHold {
     public void initialize() {
         if (DEBUG)
             System.out.println("Rotate initialize");
-        Pose2d measurement = m_drive.getPose();
+        Pose2d measurement = m_drive.getState().pose();
         // if we use the initial measurement x and y as the target, and we're moving,
         // then we make a u-turn to get back to the arbitrary place when we pushed the
         // button.
         // instead, pick a goal at the stopping distance in the current direction.
-        Translation2d dx = m_drive.getVelocity().stopping(m_swerveKinodynamics.getMaxDriveAccelerationM_S2());
+        Translation2d dx = m_drive.getState().velocity().stopping(m_swerveKinodynamics.getMaxDriveAccelerationM_S2());
         Pose2d goal = new Pose2d(measurement.getX() + dx.getX(), measurement.getY() + dx.getY(), m_target);
         m_reference = new ProfileReferenceSE2(m_log, m_profile, "rotate");
         m_reference.setGoal(new StateSE2(goal));

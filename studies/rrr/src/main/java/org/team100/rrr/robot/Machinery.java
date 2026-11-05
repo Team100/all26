@@ -12,7 +12,7 @@ public class Machinery {
     public final RRRVisualizer m_viz;
 
     public Machinery(TotalCurrentLog currentLog) {
-        LoggerFactory logger = Logging.instance().rootLogger;
+        LoggerFactory logger = Logging.root();
         // m_arm = new RRRArmIndependent(logger, currentLog);
         m_arm = new RRRArmCouple12(logger, currentLog);
         m_viz = new RRRVisualizer(m_arm);

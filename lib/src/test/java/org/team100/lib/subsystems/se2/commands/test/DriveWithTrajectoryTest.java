@@ -5,20 +5,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.Test;
+import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.controller.se2.ControllerFactorySE2;
 import org.team100.lib.controller.se2.ControllerSE2;
-import org.team100.lib.experiments.Experiment;
-import org.team100.lib.experiments.Experiments;
-import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
-import org.team100.lib.localization.AprilTagRobotLocalizer;
-import org.team100.lib.localization.FreshSwerveEstimate;
-import org.team100.lib.localization.NudgingVisionUpdater;
-import org.team100.lib.localization.OdometryUpdater;
-import org.team100.lib.localization.SwerveHistory;
+import org.team100.lib.localization.fused.AprilTagCornerReader;
+import org.team100.lib.localization.fused.FusedEstimator;
+import org.team100.lib.localization.fused.NudgingVisionEstimator;
+import org.team100.lib.localization.fused.OdometryEstimator;
+import org.team100.lib.localization.fused.UpdatedEstimate;
+import org.team100.lib.localization.map.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -33,7 +31,6 @@ import org.team100.lib.subsystems.swerve.SwerveLocal;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
-import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.se2.TrajectorySE2;
 import org.team100.lib.trajectory.se2.TrajectorySE2Factory;
@@ -41,8 +38,6 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.se2.examples.TrajectoryExamples;
-import org.team100.lib.uncertainty.IsotropicNoiseSE2;
-import org.team100.lib.uncertainty.VariableR1;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -54,7 +49,6 @@ public class DriveWithTrajectoryTest implements Timeless {
     private static final double DELTA = 0.001;
     private static final LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());
     private static final TotalCurrentLog currentLog = new TotalCurrentLog(logger);
-    private static final LoggerFactory fieldLogger = new TestLoggerFactory(new TestPrimitiveLogger());
     private static final TrajectoryVisualization viz = new TrajectoryVisualization(logger);
 
     @Test
@@ -152,14 +146,10 @@ public class DriveWithTrajectoryTest implements Timeless {
      */
     @Test
     void testRealDrive() throws IOException {
-
-        // this test depends on the behavior of the setpoint generator, so make sure
-        // it's on (otherwise it's in whatever state the previous test left it)
-        Experiments.instance.testOverride(Experiment.UseSwerveLimiter, true);
         // 1m along +x, no rotation.
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest();
         SwerveModuleCollection collection = SwerveModuleCollection.get(
-                logger, currentLog, new CurrentLimit(10, 20), new CurrentLimit(10, 20), swerveKinodynamics);
+                logger, currentLog, new CurrentLimit(10, 20), new CurrentLimit(10, 20));
         List<TimingConstraint> constraints = new TimingConstraintFactory(swerveKinodynamics).allGood();
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathSE2Factory pathFactory = new PathSE2Factory();
@@ -173,35 +163,31 @@ public class DriveWithTrajectoryTest implements Timeless {
         ControllerSE2 controller = ControllerFactorySE2.test(logger);
 
         Gyro gyro = new SimulatedGyro(logger, swerveKinodynamics, collection, 0);
-        SwerveHistory history = new SwerveHistory(
-                logger,
-                swerveKinodynamics,
-                0.2,
-                Rotation2d.kZero,
-                VariableR1.fromVariance(0, 1),
-                SwerveModulePositions.kZero(),
-                Pose2d.kZero,
-                IsotropicNoiseSE2.high(),
-                0); // initial time is zero here for testing
-        OdometryUpdater odometryUpdater = new OdometryUpdater(
-                logger, swerveKinodynamics, gyro, history, collection::positions, UnaryOperator.identity());
-        odometryUpdater.reset(Pose2d.kZero, IsotropicNoiseSE2.high(), 0);
-
-        NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(
-                logger, history, odometryUpdater);
 
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
 
-        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater,DriverStation::getAlliance);
-        FreshSwerveEstimate estimate = new FreshSwerveEstimate(
-            localizer::update, odometryUpdater::update, history);
         SwerveLocal swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
+        AprilTagCornerReader tagReader = new AprilTagCornerReader(
+                logger, layout, DriverStation::getAlliance);
+        OdometryEstimator odometryEstimate = new OdometryEstimator(
+                logger,
+                swerveKinodynamics,
+                gyro.white_noise(),
+                gyro.bias_noise(),
+                false,
+                false);
+        NudgingVisionEstimator visionEstimate = new NudgingVisionEstimator(logger);
+        FusedEstimator estimate = new FusedEstimator(
+                Takt.get(),
+                gyro::getYawNWU,
+                swerveLocal::positions,
+                tagReader::read,
+                odometryEstimate,
+                visionEstimate);
 
         SwerveDriveSubsystem drive = new SwerveDriveSubsystem(
                 logger,
-                odometryUpdater,
-                estimate,
+                new UpdatedEstimate(estimate),
                 swerveLocal);
 
         // initially at rest

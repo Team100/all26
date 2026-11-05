@@ -253,7 +253,7 @@ class AprilTagTest(unittest.TestCase):
         self.assertEqual(0, len(network.blips_with_corners))
 
     def verify_pose(self, pose: Transform3d, delta: float) -> None:
-        print("\n*** pose: ", pose)
+        print("*** pose: ", pose)
         t: Translation3d = pose.translation()
         self.assertAlmostEqual(-0.186, t.x, delta=delta)
         self.assertAlmostEqual(0.027, t.y, delta=delta)

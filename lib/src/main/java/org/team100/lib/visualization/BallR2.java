@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.state.StateSE2;
@@ -46,6 +47,7 @@ public class BallR2 implements Ball {
         m_robot = robot;
         m_azimuth = azimuth;
         m_speed = speed;
+        LogPoller.register(this::log);
     }
 
     @Override
@@ -71,8 +73,7 @@ public class BallR2 implements Ball {
         m_location = null;
     }
 
-    @Override
-    public void periodic() {
+    private void log() {
         m_log_field_ball.log(this::poseArray);
     }
 

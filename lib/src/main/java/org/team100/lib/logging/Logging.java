@@ -23,9 +23,9 @@ public class Logging {
     private final SendableChooser<Level> m_LevelChooser;
     private final PrimitiveLogger ntLogger;
     /** Root is "field", with .type = Field2d as required by glass. */
-    public final LoggerFactory fieldLogger;
+    private final LoggerFactory fieldLogger;
     /** Root is "log". */
-    public final LoggerFactory rootLogger;
+    private final LoggerFactory rootLogger;
     /** Saves getSelected() calls */
     private Level m_selectedLevel;
 
@@ -51,22 +51,29 @@ public class Logging {
         m_LevelChooser.onChange(this::update);
     }
 
-    public void update(Level level) {
-        m_selectedLevel = level;
+    public static LoggerFactory root() {
+        return instance.rootLogger;
     }
 
-    public int keyCount() {
-        if (ntLogger != null)
-            return ntLogger.keyCount();
+    public static LoggerFactory field() {
+        return instance.fieldLogger;
+    }
+
+    public static boolean admit(Level level) {
+        return instance.getLevel().admit(level);
+    }
+
+    public static int keyCount() {
+        if (instance.ntLogger != null)
+            return instance.ntLogger.keyCount();
         return 0;
     }
 
-    public Level getLevel() {
-        return m_selectedLevel;
+    private void update(Level level) {
+        m_selectedLevel = level;
     }
 
-    /** The logging singleton. */
-    public static Logging instance() {
-        return instance;
+    private Level getLevel() {
+        return m_selectedLevel;
     }
 }

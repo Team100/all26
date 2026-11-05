@@ -6,6 +6,7 @@ from app.analysis.analysis_protocol import ColorAnalysis, MonoAnalysis
 
 class FakeMonoAnalysis(MonoAnalysis):
     def __init__(self) -> None:
+        print("*** MonoAnalysis: FakeMonoAnalysis")
         self.count = 0
         self.size = None
 
@@ -22,6 +23,7 @@ class FakeMonoAnalysis(MonoAnalysis):
 
 class FakeColorAnalysis(ColorAnalysis):
     def __init__(self) -> None:
+        print("*** ColorAnalysis: FakeColorAnalysis")
         self.count = 0
         self.size = None
 

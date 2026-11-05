@@ -1,7 +1,6 @@
 package org.team100.frc2025.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
@@ -27,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 
 public class LolipopAuto {
-    private static final double HEED_RADIUS_M = 3;
     private final LoggerFactory m_log;
     private final Machinery2025 m_machinery;
     private final ProfileSE2 m_autoProfile;
@@ -52,7 +50,7 @@ public class LolipopAuto {
         DriveWithTrajectoryFunction toReefTrajectory = new DriveWithTrajectoryFunction(
                 m_log, m_machinery.m_drive, m_autoController, m_machinery.m_trajectoryViz,
                 (p) -> m_planner.restToRest(List.of(
-                        WaypointSE2.irrotational(m_machinery.m_drive.getPose(), Math.PI, 1.2),
+                        WaypointSE2.irrotational(m_machinery.m_drive.getState().pose(), Math.PI, 1.2),
                         WaypointSE2.irrotational(
                                 new Pose2d(3, 5, new Rotation2d(0)), -2, 1.2))));
 
@@ -89,7 +87,6 @@ public class LolipopAuto {
         return sequence(
                 toReefTrajectory.until(toReefTrajectory::isDone),
                 parallel(
-                        runOnce(() -> m_machinery.m_localizer.setHeedRadiusM(HEED_RADIUS_M)),
                         toReefA,
                         m_machinery.m_mech.profileHomeAndThenRest().until(toReefA::isDone).andThen(toL4),
                         waitUntil(() -> toReefA.isDone() && toL4.isDone())

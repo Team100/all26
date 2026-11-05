@@ -5,7 +5,6 @@ import java.util.function.DoubleSupplier;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.kinematics.five_bar.FiveBarKinematics;
 import org.team100.lib.kinematics.five_bar.JointPositions;
@@ -17,10 +16,11 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
-import org.team100.lib.sensor.position.absolute.HomingRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
+import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -50,8 +50,8 @@ public class FiveBarMech extends SubsystemBase {
     /**
      * There's no absolute encoder in the apparatus, so we use a homing sensor.
      */
-    private final HomingRotaryPositionSensor m_sensorP1;
-    private final HomingRotaryPositionSensor m_sensorP5;
+    private final RotaryPositionSensor m_sensorP1;
+    private final RotaryPositionSensor m_sensorP5;
 
     public FiveBarMech(LoggerFactory parent, TotalCurrentLog currentLog, Scenario scenario) {
         LoggerFactory logger = parent.type(this);
@@ -61,57 +61,48 @@ public class FiveBarMech extends SubsystemBase {
 
         m_kinematics = new FiveBarKinematics(logger);
 
-        switch (Identity.instance) {
-            case SWERVE_TWO -> {
-                Falcon500Motor motorP1 = makeMotor(loggerP1, currentLog, new CanId(1));
-                Falcon500Motor motorP5 = makeMotor(loggerP5, currentLog, new CanId(5));
+        if (RobotBase.isReal()) {
+            Falcon500Motor motorP1 = makeMotor(loggerP1, currentLog, new CanId(1));
+            Falcon500Motor motorP5 = makeMotor(loggerP5, currentLog, new CanId(5));
 
-                m_sensorP1 = new HomingRotaryPositionSensor(
-                        new ProxyRotaryPositionSensor(motorP1.encoder(), 1.0));
-                m_sensorP5 = new HomingRotaryPositionSensor(
-                        new ProxyRotaryPositionSensor(motorP5.encoder(), 1.0));
+            m_sensorP1 = new ProxyRotaryPositionSensor(motorP1.encoder(), 1.0);
+            m_sensorP5 = new ProxyRotaryPositionSensor(motorP5.encoder(), 1.0);
 
-                m_mechP1 = new RotaryMechanism(
-                        loggerP1,
-                        motorP1,
-                        m_sensorP1,
-                        1.0,
-                        -100.0,
-                        100.0);
-                m_mechP5 = new RotaryMechanism(
-                        loggerP5,
-                        motorP5,
-                        m_sensorP5,
-                        1.0,
-                        -100.0,
-                        100.0);
-            }
-            default -> {
-                SimulatedMotor motorP1 = new SimulatedMotor(loggerP1, 600);
-                SimulatedMotor motorP5 = new SimulatedMotor(loggerP5, 600);
+            m_mechP1 = new RotaryMechanism(
+                    loggerP1,
+                    motorP1,
+                    m_sensorP1,
+                    1.0,
+                    -100.0,
+                    100.0);
+            m_mechP5 = new RotaryMechanism(
+                    loggerP5,
+                    motorP5,
+                    m_sensorP5,
+                    1.0,
+                    -100.0,
+                    100.0);
+        } else {
+            SimulatedMotor motorP1 = new SimulatedMotor(loggerP1, 600);
+            SimulatedMotor motorP5 = new SimulatedMotor(loggerP5, 600);
 
-                m_sensorP1 = new HomingRotaryPositionSensor(
-                        new ProxyRotaryPositionSensor(
-                                motorP1.encoder(), 1.0));
-                m_sensorP5 = new HomingRotaryPositionSensor(
-                        new ProxyRotaryPositionSensor(
-                                motorP5.encoder(), 1.0));
+            m_sensorP1 = new ProxyRotaryPositionSensor(motorP1.encoder(), 1.0);
+            m_sensorP5 = new ProxyRotaryPositionSensor(motorP5.encoder(), 1.0);
 
-                m_mechP1 = new RotaryMechanism(
-                        loggerP1,
-                        motorP1,
-                        m_sensorP1,
-                        1.0,
-                        -100.0,
-                        100.0);
-                m_mechP5 = new RotaryMechanism(
-                        loggerP5,
-                        motorP5,
-                        m_sensorP5,
-                        1.0,
-                        -100.0,
-                        100.0);
-            }
+            m_mechP1 = new RotaryMechanism(
+                    loggerP1,
+                    motorP1,
+                    m_sensorP1,
+                    1.0,
+                    -100.0,
+                    100.0);
+            m_mechP5 = new RotaryMechanism(
+                    loggerP5,
+                    motorP5,
+                    m_sensorP5,
+                    1.0,
+                    -100.0,
+                    100.0);
         }
     }
 
@@ -143,12 +134,6 @@ public class FiveBarMech extends SubsystemBase {
         if (DEBUG)
             System.out.printf("joint positions %f %f\n", q1, q5);
         return m_kinematics.forward(m_scenario, q1, q5);
-    }
-
-    @Override
-    public void periodic() {
-        m_mechP1.periodic();
-        m_mechP5.periodic();
     }
 
     /**

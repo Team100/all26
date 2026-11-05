@@ -9,7 +9,6 @@ import org.team100.lib.config.ElevatorUtil.ScoringLevel;
 import org.team100.lib.controller.se2.ControllerFactorySE2;
 import org.team100.lib.controller.se2.FullStateControllerSE2;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.Logging;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.profile.se2.HolonomicProfileFactory;
 import org.team100.lib.profile.se2.ProfileSE2;
@@ -29,9 +28,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class AllAutons2025 {
     private final AutonChooser m_autonChooser;
 
-    public AllAutons2025(Machinery2025 machinery) {
+    public AllAutons2025(LoggerFactory log, Machinery2025 machinery) {
         m_autonChooser = new AutonChooser();
-        LoggerFactory autoLog = Logging.instance().rootLogger.name("Auton");
+        LoggerFactory autoLog = log.type(this);
 
         final ProfileSE2 profile = HolonomicProfileFactory.currentLimitedExponential(1, 2, 4,
                 machinery.m_swerveKinodynamics.getMaxAngleSpeedRad_S(),

@@ -8,6 +8,7 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.SetpointsR1Logger;
+import org.team100.lib.logging.LoggerFactory.StateR1Logger;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.StateR1;
@@ -18,11 +19,14 @@ import org.team100.lib.state.StateR1;
  * Uses a profile supplier so it can be updated on the fly.
  */
 public class ProfileReferenceR1 implements ReferenceR1 {
+    private final StateR1Logger m_log_goal;
     private final SetpointsR1Logger m_log_setpoints;
     private final BooleanLogger m_log_done;
     private final Supplier<ProfileR1> m_profile;
     private final double m_positionTolerance;
     private final double m_velocityTolerance;
+
+    // these are all nullable
     private StateR1 m_goal;
     private double m_currentInstant;
     private SetpointsR1 m_currentSetpoint;
@@ -39,6 +43,7 @@ public class ProfileReferenceR1 implements ReferenceR1 {
             double positionTolerance,
             double velocityTolerance) {
         LoggerFactory log = parent.type(this);
+        m_log_goal = log.StateR1Logger(Level.TRACE, "goal");
         m_log_setpoints = log.setpointsR1Logger(Level.TRACE, "setpoints");
         m_log_done = log.booleanLogger(Level.TRACE, "done");
         m_profile = profile;
@@ -49,6 +54,7 @@ public class ProfileReferenceR1 implements ReferenceR1 {
     @Override
     public void setGoal(StateR1 goal) {
         m_goal = goal;
+        m_log_goal.log(() -> goal);
     }
 
     @Override
@@ -64,6 +70,7 @@ public class ProfileReferenceR1 implements ReferenceR1 {
         double t = Takt.get();
         if (t == m_currentInstant) {
             // Time hasn't passed since last time, so don't change anything.
+            m_log_setpoints.log(() -> m_currentSetpoint);
             return m_currentSetpoint;
         }
 
@@ -77,6 +84,10 @@ public class ProfileReferenceR1 implements ReferenceR1 {
     /** Setpoint is near the goal. */
     @Override
     public boolean profileDone() {
+        if (m_goal == null)
+            return false;
+        if (m_currentSetpoint == null)
+            return false;
         // the only way to tell if an incremental profile is done
         // is to compare the goal to the setpoint.
         boolean done = m_currentSetpoint.current().state().near(
@@ -85,17 +96,18 @@ public class ProfileReferenceR1 implements ReferenceR1 {
         return done;
     }
 
+    @Override
+    public boolean valid() {
+        return m_currentSetpoint != null;
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     private SetpointsR1 advance(ControlR1 newCurrent) {
         if (m_goal == null)
             throw new IllegalStateException("goal must be set");
-        ControlR1 next = m_profile.get().calculate(TimedRobot100.LOOP_PERIOD_S, newCurrent, m_goal);
+        ControlR1 next = m_profile.get().calculate(
+                TimedRobot100.LOOP_PERIOD_S, newCurrent, m_goal);
         return new SetpointsR1(newCurrent, next);
-    }
-
-    @Override
-    public boolean valid() {
-        return m_currentSetpoint != null;
     }
 }

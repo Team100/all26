@@ -19,13 +19,15 @@ public class RobotLog {
     public RobotLog(LoggerFactory logger) {
         LoggerFactory robotLogger = logger.name("Robot");
         m_jvmLogger = new JvmLogger(robotLogger);
+        m_log_voltage = robotLogger.doubleLogger(Level.COMP, "voltage");
+        m_totalCurrentLog = new TotalCurrentLog(robotLogger);
+
         LoggerFactory dsLog = robotLogger.name("DriverStation");
         m_log_ds_MatchTime = dsLog.doubleLogger(Level.TRACE, "MatchTime");
         m_log_ds_AutonomousEnabled = dsLog.booleanLogger(Level.TRACE, "AutonomousEnabled");
         m_log_ds_TeleopEnabled = dsLog.booleanLogger(Level.TRACE, "TeleopEnabled");
         m_log_ds_FMSAttached = dsLog.booleanLogger(Level.TRACE, "FMSAttached");
-        m_log_voltage = robotLogger.doubleLogger(Level.COMP, "voltage");
-        m_totalCurrentLog = new TotalCurrentLog(Logging.instance().rootLogger);
+        LogPoller.register(this::log);
     }
 
     public TotalCurrentLog totalCurrentLog() {
@@ -33,7 +35,7 @@ public class RobotLog {
     }
 
     /** Logs robot-scope stuff, e.g. memory, voltage, current. */
-    public void periodic() {
+    private void log() {
         m_jvmLogger.logGarbageCollectors();
         m_jvmLogger.logMemoryPools();
         m_jvmLogger.logMemoryUsage();

@@ -3,7 +3,9 @@ Main builds:
 
 | 2026 | 2027 |
 | -- | -- |
-| [![CI](https://github.com/Team100/all26/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/Team100/all26/actions/workflows/main.yml) | [![CI](https://github.com/Team100/all26/actions/workflows/main.yml/badge.svg?branch=2027)](https://github.com/Team100/all26/actions/workflows/main.yml) |
+| [![CI](https://github.com/Team100/all26/actions/workflows/comp.yml/badge.svg?branch=main)](https://github.com/Team100/all26/actions/workflows/comp.yml) | [![CI](https://github.com/Team100/all26/actions/workflows/comp.yml/badge.svg?branch=2027)](https://github.com/Team100/all26/actions/workflows/comp.yml) |
+| [![CI](https://github.com/Team100/all26/actions/workflows/comp9999.yml/badge.svg?branch=main)](https://github.com/Team100/all26/actions/workflows/comp9999.yml) | [![CI](https://github.com/Team100/all26/actions/workflows/comp9999.yml/badge.svg?branch=2027)](https://github.com/Team100/all26/actions/workflows/comp9999.yml) |
+| [![CI](https://github.com/Team100/all26/actions/workflows/practice.yml/badge.svg?branch=main)](https://github.com/Team100/all26/actions/workflows/practice.yml) | [![CI](https://github.com/Team100/all26/actions/workflows/practice.yml/badge.svg?branch=2027)](https://github.com/Team100/all26/actions/workflows/practice.yml) |
 | [![CI](https://github.com/Team100/all26/actions/workflows/lib.yml/badge.svg?branch=main)](https://github.com/Team100/all26/actions/workflows/lib.yml) | [![CI](https://github.com/Team100/all26/actions/workflows/lib.yml/badge.svg?branch=2027)](https://github.com/Team100/all26/actions/workflows/lib.yml) 
 
 
@@ -29,6 +31,14 @@ Study builds:
 | [![CI](https://github.com/Team100/all26/actions/workflows/six_dof.yml/badge.svg?branch=main)](https://github.com/Team100/all26/actions/workflows/six_dof.yml) | [![CI](https://github.com/Team100/all26/actions/workflows/six_dof.yml/badge.svg?branch=2027)](https://github.com/Team100/all26/actions/workflows/six_dof.yml)
 
 
+Test project builds:
+
+| 2026 | 2027 |
+| -- | -- |
+| [![CI](https://github.com/Team100/all26/actions/workflows/single_angular.yml/badge.svg?branch=main)](https://github.com/Team100/all26/actions/workflows/single_angular.yml) | [![CI](https://github.com/Team100/all26/actions/workflows/single_angular.yml/badge.svg?branch=2027)](https://github.com/Team100/all26/actions/workflows/single_angular.yml)
+| [![CI](https://github.com/Team100/all26/actions/workflows/single_linear.yml/badge.svg?branch=main)](https://github.com/Team100/all26/actions/workflows/single_linear.yml) | [![CI](https://github.com/Team100/all26/actions/workflows/single_linear.yml/badge.svg?branch=2027)](https://github.com/Team100/all26/actions/workflows/single_linear.yml)
+| [![CI](https://github.com/Team100/all26/actions/workflows/single_roller.yml/badge.svg?branch=main)](https://github.com/Team100/all26/actions/workflows/single_roller.yml) | [![CI](https://github.com/Team100/all26/actions/workflows/single_roller.yml/badge.svg?branch=2027)](https://github.com/Team100/all26/actions/workflows/single_roller.yml)
+
 
 What's here:
 
@@ -40,6 +50,7 @@ What's here:
   * Your project
   * Another project
   * etc ...
+* **test**: Standalone projects for single-DOF subsystem "turn up" activities
 
 all26 contains *all* the Team 100 code for *2026.*  There's just one repository,
 so that sharing library code across projects is easier.

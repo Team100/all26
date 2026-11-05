@@ -11,10 +11,12 @@ from app.decoder.yuv420_decoder import Yuv420Decoder
 class ConfigGsMono(Config):
     """The Raspberry Pi Global Shutter camera, monochrome.
     It uses the YUV420 12-bit encoding option from the camera.
+    Because the YUV420 encoding includes a contiguous monochrome
+    frame, it is quick to decode in mono.
     """
 
     def __init__(self, size: Size) -> None:
-        print("\n*** Config: ConfigGsMono")
+        print("*** Config: ConfigGsMono")
         self._size = size
 
     @override

@@ -1,6 +1,7 @@
 package org.team100.lib.subsystems.shooter;
 
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.servo.LinearVelocityServo;
@@ -29,6 +30,7 @@ public class SingleDrumShooter extends SubsystemBase {
             LinearVelocityServo drum) {
         m_drum = drum;
         m_log_atGoal = log.booleanLogger(Level.TRACE, "At goal");
+        LogPoller.register(this::log);
     }
 
     public void set(double velocityM_S) {
@@ -55,9 +57,7 @@ public class SingleDrumShooter extends SubsystemBase {
         return run(this::spinUp);
     }
 
-    @Override
-    public void periodic() {
-        m_drum.periodic();
+    private void log() {
         m_log_atGoal.log(this::atGoal);
     }
 }

@@ -24,7 +24,7 @@ public class HolonomicProfileFactory {
             double aScale,
             double omegaScale,
             double alphaScale) {
- 
+
         switch (PROFILE) {
             case EXP -> {
                 return currentLimitedExponential(
@@ -68,7 +68,8 @@ public class HolonomicProfileFactory {
         return new HolonomicProfile(
                 new WPITrapezoidProfileR1(maxXYVel, maxXYAccel),
                 new WPITrapezoidProfileR1(maxXYVel, maxXYAccel),
-                new WPITrapezoidProfileR1(maxOmega, maxAlpha));
+                new WPITrapezoidProfileR1(maxOmega, maxAlpha),
+                true);
     }
 
     public static HolonomicProfile trapezoidal(
@@ -81,7 +82,8 @@ public class HolonomicProfileFactory {
         return new HolonomicProfile(
                 new TrapezoidProfileR1(maxXYVel, maxXYAccel, xyTolerance),
                 new TrapezoidProfileR1(maxXYVel, maxXYAccel, xyTolerance),
-                new TrapezoidProfileR1(maxOmega, maxAlpha, angularTolerance));
+                new TrapezoidProfileR1(maxOmega, maxAlpha, angularTolerance),
+                true);
     }
 
     public static HolonomicProfile currentLimitedExponential(
@@ -94,7 +96,8 @@ public class HolonomicProfileFactory {
         return new HolonomicProfile(
                 new DualProfileR1(maxXYVel, limitedXYAccel, stallXYAccel),
                 new DualProfileR1(maxXYVel, limitedXYAccel, stallXYAccel),
-                new DualProfileR1(maxOmega, limitedAlpha, stallAlpha));
+                new DualProfileR1(maxOmega, limitedAlpha, stallAlpha),
+                true);
     }
 
     public static FreeRotationProfile freeRotationCurrentLimitedExponential(
@@ -130,5 +133,19 @@ public class HolonomicProfileFactory {
                 k.getMaxAngleSpeedRad_S() * rotScale,
                 k.getMaxAngleAccelRad_S2() * rotScale,
                 k.getMaxAngleStallAccelRad_S2() * rotScale);
+    }
+
+    public static HolonomicProfile unwrappedTrapezoidal(
+            double maxXYVel,
+            double maxXYAccel,
+            double xyTolerance,
+            double maxOmega,
+            double maxAlpha,
+            double angularTolerance) {
+        return new HolonomicProfile(
+                new TrapezoidProfileR1(maxXYVel, maxXYAccel, xyTolerance),
+                new TrapezoidProfileR1(maxXYVel, maxXYAccel, xyTolerance),
+                new TrapezoidProfileR1(maxOmega, maxAlpha, angularTolerance),
+                false);
     }
 }

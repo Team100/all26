@@ -69,8 +69,6 @@ public class SwerveKinodynamics {
      *                                and fall behind as speed increases.
      * @param maxDriveDeceleration    module drive decel m/s^2. Should be higher
      *                                than accel limit, this is a positive number.
-     * @param maxSteeringVelocity     module steering axis rate rad/s
-     * @param maxSteeringAcceleration module steering axis accel rad/s^2
      * @param fronttrack              meters
      * @param backtrack               meters
      * @param wheelbase               meters

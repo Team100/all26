@@ -1,10 +1,11 @@
 package org.team100.lib.subsystems.five_bar.setups;
 
 import static edu.wpi.first.wpilibj2.command.Commands.print;
+import static org.team100.lib.util.TriggerUtil.onTrue;
+import static org.team100.lib.util.TriggerUtil.whileTrue;
 
 import org.team100.lib.kinematics.five_bar.Scenario;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.subsystems.five_bar.FiveBarCartesian;
 import org.team100.lib.visualization.FiveBarVisualization;
@@ -12,7 +13,6 @@ import org.team100.lib.visualization.FiveBarVisualization;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class SetupCartesian implements Runnable {
     private static final double XMAX = 0.15;
@@ -20,13 +20,11 @@ public class SetupCartesian implements Runnable {
     private final FiveBarCartesian m_fiveBar;
     private final FiveBarVisualization m_viz;
 
-    public SetupCartesian(Scenario scenario) {
-        final Logging logging = Logging.instance();
-        final LoggerFactory logger = logging.rootLogger;
-        TotalCurrentLog currentLog = new TotalCurrentLog(logger);
+    public SetupCartesian(LoggerFactory log, Scenario scenario) {
+        TotalCurrentLog currentLog = new TotalCurrentLog(log);
         XboxController controller = new XboxController(0);
 
-        m_fiveBar = new FiveBarCartesian(logger, currentLog, scenario);
+        m_fiveBar = new FiveBarCartesian(log, currentLog, scenario);
         m_viz = new FiveBarVisualization(scenario, m_fiveBar::getJointPositions);
         m_fiveBar.setDefaultCommand(m_fiveBar.position(
                 () -> new Translation2d(
@@ -37,8 +35,10 @@ public class SetupCartesian implements Runnable {
 
         // These bindings are remembered by the trigger event loop, so we don't need to
         // retain them.
-        new Trigger(controller::getAButton).whileTrue(m_fiveBar.home());
-        new Trigger(controller::getBButton).onTrue(m_fiveBar.zero());
+        whileTrue(controller::getAButton,
+                m_fiveBar.home());
+        onTrue(controller::getBButton,
+                m_fiveBar.zero());
 
         // Make a little square. Also illustrates "print" commands for
         // debugging.
@@ -46,7 +46,7 @@ public class SetupCartesian implements Runnable {
         // a little square.
         double XX = 0.05;
         double YY = 0.05;
-        new Trigger(controller::getXButton).whileTrue(
+        whileTrue(controller::getXButton,
                 Commands.sequence(
                         print("move to origin"),
                         m_fiveBar.move(new Translation2d(0, 0)),

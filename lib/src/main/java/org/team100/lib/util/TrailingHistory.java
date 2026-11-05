@@ -31,8 +31,15 @@ public class TrailingHistory<T> {
     }
 
     public List<T> getAll() {
+        if (DEBUG)
+            System.out.println("get all");
         return m_entries.stream()
-                .map((x) -> x.value)
+                .map((x) -> {
+                    if (DEBUG) {
+                        System.out.printf("%s: %s\n", x.time, x.value);
+                    }
+                    return x.value;
+                })
                 .collect(Collectors.toUnmodifiableList());
     }
 
@@ -54,7 +61,14 @@ public class TrailingHistory<T> {
      * @param deadline seconds
      */
     public void evict(double deadline) {
-        m_entries.removeIf(x -> x.time < deadline);
+        if (DEBUG)
+            System.out.printf("eviction %f\n", deadline);
+        m_entries.removeIf(x -> {
+            boolean b = x.time < deadline;
+            if (DEBUG)
+                System.out.printf("evict %s %b\n", x, b);
+            return b;
+        });
     }
 
 }

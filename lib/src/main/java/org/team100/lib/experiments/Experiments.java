@@ -1,11 +1,8 @@
 package org.team100.lib.experiments;
 
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.team100.lib.config.Identity;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,57 +10,56 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /**
  * Controls Experiment enablement.
  * 
- * There are four methods of enablement:
+ * There are three methods of enablement:
  * 
- * -- global: enabled for all robots
- * -- per-identity: enabled for specific RoboRIO serial numbers
+ * -- defaults: enabled for all robots
  * -- override: using a Sendable Chooser in a dashboard, e.g. glass.
  * -- test override: to force a config for unit tests.
  * 
- * If you want the experiment selectors to appear in glass, you'll need to
- * reference the Experiments constructor (which invokes the chooser) at some
- * point in robot construction, perhaps by referencing Experiments.instance.
+ * To get the experiment selectors to appear in glass, the usual procedure is:
+ * 
+ * Experiments.INSTANCE.show();
  */
 public class Experiments {
-    public static final Experiments instance = new Experiments(Identity.instance);
+    public static final Experiments INSTANCE = new Experiments();
 
-    /** These experiments are enabled on every robot type. */
-    private final Set<Experiment> globalExperiments = Set.of(
-            Experiment.HeedVision);
-    // Experiment.UseSwerveLimiter);
+    /** These experiments are enabled by default. */
+    private final Set<Experiment> m_defaults = Set.of(
+            Experiment.IncludeFrictionFeedForward,
+            Experiment.IncludeVelocityFeedForward,
+            Experiment.IncludeTorqueFeedForward);
 
-    /** These experiments are enabled on specific robot types. */
-    private final Map<Identity, Set<Experiment>> experimentsByIdentity = Map.of(
-            Identity.LAUNDRY_BOT, Set.of(),
-            Identity.BLANK, Set.of());
+    /** Key = experiment, value = enabled. */
+    private final Map<Experiment, Boolean> m_enabled;
+    /**
+     * Key = experiment, value = enabled.
+     * Takes precedence.
+     */
+    private final Map<Experiment, Boolean> m_override;
 
-    /** Computed for the actual identity used. */
-    private final Set<Experiment> m_experiments;
-
-    /** Starts with the config above, but can be overridden. */
-    private final Map<Experiment, Boolean> m_overrides;
-
-    private final Map<Experiment, Boolean> m_testOverrides;
-
-    private Experiments(Identity identity) {
-        m_experiments = EnumSet.copyOf(globalExperiments);
-        m_experiments.addAll(experimentsByIdentity.getOrDefault(identity, EnumSet.noneOf(Experiment.class)));
-        m_overrides = new EnumMap<>(Experiment.class);
-        m_testOverrides = new EnumMap<>(Experiment.class);
+    private Experiments() {
+        m_enabled = new EnumMap<>(Experiment.class);
+        m_override = new EnumMap<>(Experiment.class);
+        System.out.println("===============================================================");
+        System.out.println("== EXPERIMENTS");
         for (Experiment e : Experiment.values()) {
-            SendableChooser<Boolean> override = ExperimentChooser.get(e.name());
-            if (m_experiments.contains(e)) {
-                override.setDefaultOption(on(e), true);
-                m_overrides.put(e, true);
-                override.addOption(off(e), false);
+            SendableChooser<Boolean> widget = ExperimentChooser.get(e.name());
+            System.out.printf("== %s (%s): ", e.name(), e.description);
+            if (m_defaults.contains(e)) {
+                widget.setDefaultOption(on(e), true);
+                widget.addOption(off(e), false);
+                m_enabled.put(e, true);
+                System.out.println("ON");
             } else {
-                override.addOption(on(e), true);
-                override.setDefaultOption(off(e), false);
-                m_overrides.put(e, false);
+                widget.addOption(on(e), true);
+                widget.setDefaultOption(off(e), false);
+                m_enabled.put(e, false);
+                System.out.println("OFF");
             }
-            override.onChange(selected -> m_overrides.put(e, selected));
-            SmartDashboard.putData(override);
+            widget.onChange(selected -> m_enabled.put(e, selected));
+            SmartDashboard.putData(widget);
         }
+        System.out.println("===============================================================");
     }
 
     /** Load the experiments class and thus the chooser. */
@@ -71,20 +67,17 @@ public class Experiments {
         System.out.println("Showing dashboard experiment selectors.");
     }
 
-    /** overrides everything. for testing only. */
-    public void testOverride(Experiment experiment, boolean state) {
-        m_testOverrides.put(experiment, state);
+    /** Override enablement. The dashboard widget will have no effect. */
+    public void override(Experiment experiment, boolean state) {
+        m_override.put(experiment, state);
     }
 
     /**
-     * Remember not to use this in factories, since the experiment twiddlers will
-     * have no effect after instantiation!
+     * Remember not to use this in the initial instantiation flow, since the
+     * experiment twiddlers will have no effect later!
      */
     public boolean enabled(Experiment experiment) {
-        if (m_testOverrides.containsKey(experiment)) {
-            return m_testOverrides.get(experiment);
-        }
-        return m_overrides.get(experiment);
+        return m_override.getOrDefault(experiment, m_enabled.get(experiment));
     }
 
     ////////////////////////////////////////

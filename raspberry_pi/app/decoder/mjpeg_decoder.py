@@ -17,6 +17,7 @@ class MjpegDecoder(Decoder):
     """Adapts buffers encoded as JPEG."""
 
     def __init__(self, size: Size):
+        print("*** Decoder: MjpegDecoder")
         self._size = size
 
     @override

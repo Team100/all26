@@ -30,10 +30,4 @@ public class MockIncrementalEncoder implements IncrementalEncoder {
     public void setUnwrappedEncoderPositionRad(double motorPositionRad) {
         position = motorPositionRad;
     }
-
-    @Override
-    public void periodic() {
-        //
-    }
-
 }

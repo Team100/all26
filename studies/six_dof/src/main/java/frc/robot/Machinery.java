@@ -6,7 +6,7 @@ import org.team100.lib.subsystems.six_dof.SixDofArm;
 import org.team100.lib.subsystems.six_dof.SixDofVisualizer;
 
 public class Machinery {
-    private static final LoggerFactory logger = Logging.instance().rootLogger;
+    private static final LoggerFactory logger = Logging.root();
 
     public final SixDofArm m_arm;
     public final SixDofVisualizer m_viz;

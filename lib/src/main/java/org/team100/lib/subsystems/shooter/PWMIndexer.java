@@ -37,12 +37,7 @@ public class PWMIndexer extends SubsystemBase implements ShooterIndexer {
     public Command stop() {
         return run(this::zero);
     }
-
-    @Override
-    public void periodic() {
-        //
-    }
-
+    
     //////////////////////////////////////////////////////////
 
     private void full() {

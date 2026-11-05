@@ -51,7 +51,7 @@ class AngularPositionProfileTest implements Timeless {
         final ProfileR1 profile = new WPITrapezoidProfileR1(1, 1);
         ref = new ProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
         servo = new OnboardAngularPositionServo(
-                logger, mech, dyn, ref, feedback2);
+                logger, mech, dyn, ref, feedback2, 0.02, 0.02);
         servo.reset();
 
         verifyTrapezoid();
@@ -63,7 +63,7 @@ class AngularPositionProfileTest implements Timeless {
         final ProfileR1 profile = new TrapezoidProfileR1(1, 1, 0.05);
         ref = new ProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
         servo = new OnboardAngularPositionServo(
-                logger, mech, dyn, ref, feedback2);
+                logger, mech, dyn, ref, feedback2, 0.02, 0.02);
         servo.reset();
         verifyTrapezoid();
     }

@@ -20,7 +20,7 @@ class Viewfinder(Interpreter):
         display2: Display,
         network: Network,
     ) -> None:
-        print("\n*** Interpreter: Viewfinder")
+        print("*** Interpreter: Viewfinder")
         self._display1 = display1
         self._display2 = display2
         # network output for camera FPS

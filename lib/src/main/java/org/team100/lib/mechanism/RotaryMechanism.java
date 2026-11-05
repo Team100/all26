@@ -1,6 +1,7 @@
 package org.team100.lib.mechanism;
 
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.motor.Motor;
@@ -60,6 +61,7 @@ public class RotaryMechanism implements Player {
         m_log_wrapped_position = log.doubleLogger(Level.DEBUG, "wrapped position (rad)");
         m_log_unwrapped_position = log.doubleLogger(Level.DEBUG, "unwrapped position (rad)");
         m_log_desired_unwrapped_position = log.doubleLogger(Level.DEBUG, "desired unwrapped position (rad)");
+        LogPoller.register(this::log);
     }
 
     /** There is no absolute position sensor in this case. */
@@ -270,9 +272,7 @@ public class RotaryMechanism implements Player {
         m_sensor.close();
     }
 
-    public void periodic() {
-        m_motor.periodic();
-        m_sensor.periodic();
+    private void log() {
         m_log_wrapped_position.log(this::getWrappedPositionRad);
         m_log_unwrapped_position.log(this::getUnwrappedPositionRad);
         m_log_velocity.log(this::getVelocityRad_S);

@@ -13,54 +13,62 @@ import org.team100.frc2026.auton.RightBumpHalfSweepAuton;
 import org.team100.lib.controller.r1.AzimuthController;
 import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.FullStateFeedback;
+import org.team100.lib.controller.se2.ControllerSE2;
+import org.team100.lib.controller.se2.FullStateControllerSE2;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.Logging;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
+import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
 
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 
 /**
  * This is a version from pre-SVR testing
  */
 public class TestBinder {
-    private static final LoggerFactory rootLogger = Logging.instance().rootLogger;
-    @SuppressWarnings("unused")
-    private static final LoggerFactory fieldLogger = Logging.instance().fieldLogger;
 
-    private final Machinery m_machinery;
-    private final LoggerFactory m_log;
+    public TestBinder(LoggerFactory rootLogger, Machinery machinery) {
+        LoggerFactory log = rootLogger.name("Commands");
 
-    public TestBinder(Machinery machinery) {
-        m_machinery = machinery;
-        m_log = rootLogger.name("Commands");
+        ControllerSE2 holonomicController = new FullStateControllerSE2(log,
+                2.9, // P for x/y
+                3.5, // P for theta
+                0.025, // P for v
+                0.01, // P for omega
+                0.02, // x tolerance
+                0.3, // theta tolerance
+                1, // v tolerance
+                1);// omega tolerance
 
         ////////////////////////////////////////////////////
         ///
         /// CONTROLLER
         ///
-        DriverXboxControl driver = new DriverXboxControl(m_log, 0);
+        DriverXboxControl driver = new DriverXboxControl(log, 0);
 
+        SwerveLimiter limiter = new SwerveLimiter(
+                log,
+                machinery.m_swerveKinodynamics,
+                RobotController::getBatteryVoltage);
         ////////////////////////////////////////////////////
         ///
         /// DEFAULT COMMANDS
         ///
-        m_machinery.m_drive.setDefaultCommand(
+        machinery.m_drive.setDefaultCommand(
                 new DriveFieldRelative(
-                        m_log,
-                        m_machinery.m_swerveKinodynamics,
+                        log,
+                        machinery.m_swerveKinodynamics,
                         driver::velocity,
-                        m_machinery.m_localizer::setHeedRadiusM,
-                        m_machinery.m_drive,
-                        m_machinery.m_limiter));
-        m_machinery.m_intake.setDefaultCommand(
-                m_machinery.m_intake.stop());
-        m_machinery.m_intakeExtend.setDefaultCommand(
-                m_machinery.m_intakeExtend.stop());
-        m_machinery.m_shooter.setDefaultCommand(
-                m_machinery.m_shooter.stop());
-        
+                        machinery.m_drive,
+                        limiter));
+        machinery.m_intake.setDefaultCommand(
+                machinery.m_intake.stop());
+        machinery.m_intakeExtend.setDefaultCommand(
+                machinery.m_intakeExtend.stop());
+        machinery.m_shooter.setDefaultCommand(
+                machinery.m_shooter.stop());
 
         ////////////////////////////////////////////////////
         ///
@@ -68,9 +76,9 @@ public class TestBinder {
         ///
 
         // Forget the current pose, listen to camera input.
-        onTrue(driver::back, m_machinery.disorient());
+        onTrue(driver::back, machinery.disorient());
         // Nudge the rotation towards zero.
-        onTrue(driver::start, m_machinery.zeroRotation());
+        onTrue(driver::start, machinery.zeroRotation());
 
         ////////////////////////////////////////////////////
         ///
@@ -116,10 +124,10 @@ public class TestBinder {
         ///
 
         whileTrue(driver::rightBumper,
-                m_machinery.m_intakeExtend.goToRetractedPosition());
+                machinery.m_intakeExtend.goToRetractedPosition());
         whileTrue(driver::rightTrigger,
-                m_machinery.m_intakeExtend.goToExtendedPosition()
-                        .andThen(m_machinery.m_intake.intake()));
+                machinery.m_intakeExtend.goToExtendedPosition()
+                        .andThen(machinery.m_intake.intake()));
 
         // For testing
         // whileTrue(driver::leftBumper,
@@ -133,23 +141,22 @@ public class TestBinder {
         ///
 
         FeedbackR1 aggressiveFeedback = new FullStateFeedback(
-                m_log, 3, 0.1, true, 0.025, 0.25);
+                log, 3, 0.1, true, 0.025, 0.25);
 
         // button 6
         AzimuthController aim = new AzimuthController(
-                m_log,
-                m_machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
+                log,
+                machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
                 aggressiveFeedback);
         whileTrue(() -> driver.leftBumper(),
                 new DriveMovingTargetLock(
-                        m_log,
-                        m_machinery.m_swerveKinodynamics,
+                        log,
+                        machinery.m_swerveKinodynamics,
                         aim,
                         driver::velocity,
-                        m_machinery.m_localizer::setHeedRadiusM,
-                        m_machinery.m_limiter,
-                        m_machinery.m_cachedSolution,
-                        m_machinery.m_drive)
+                        limiter,
+                        machinery.m_cachedSolution,
+                        machinery.m_drive)
                         .withName("Target lock"));
 
         ////////////////////////////////////////////////////
@@ -159,11 +166,11 @@ public class TestBinder {
 
         whileTrue(driver::leftTrigger,
                 parallel(
-                        m_machinery.m_shooter.auto(),
+                        machinery.m_shooter.auto(),
                         repeatingSequence(
                                 waitUntil(
-                                        m_machinery.m_shooter::atSpeed)
-                                        .onlyWhile(m_machinery.m_shooter::atSpeed))));
+                                        machinery.m_shooter::atSpeed)
+                                        .onlyWhile(machinery.m_shooter::atSpeed))));
 
         //////////////////
         ///
@@ -202,7 +209,7 @@ public class TestBinder {
         // m_machinery.m_conveyor.testConveyorBack(),
         // m_machinery.m_feeder.testFeedBack()));
         whileTrue(driver::x,
-                m_machinery.m_shooter.testRun());
+                machinery.m_shooter.testRun());
 
         // whileTrue(driver::rightTrigger, parallel(runSerial, runSerialUpper,
         // runShooter));
@@ -215,29 +222,29 @@ public class TestBinder {
 
         whileTrue(() -> driver.povDown() && driver.a(),
                 new CenterFullSweepAuton(
-                        m_log,
-                        m_machinery.m_swerveKinodynamics,
-                        m_machinery.m_holonomicController,
-                        m_machinery).command());
+                        log,
+                        machinery.m_swerveKinodynamics,
+                        holonomicController,
+                        machinery).command());
 
         whileTrue(() -> driver.povDown() && driver.b(),
                 new CenterHalfSweepAuton(
-                        m_log,
-                        m_machinery.m_swerveKinodynamics,
-                        m_machinery.m_holonomicController,
-                        m_machinery).command());
+                        log,
+                        machinery.m_swerveKinodynamics,
+                        holonomicController,
+                        machinery).command());
         whileTrue(() -> driver.povDown() && driver.x(),
                 new RightBumpFullSweepAuton(
-                        m_log,
-                        m_machinery.m_swerveKinodynamics,
-                        m_machinery.m_holonomicController,
-                        m_machinery).command());
+                        log,
+                        machinery.m_swerveKinodynamics,
+                        holonomicController,
+                        machinery).command());
         whileTrue(() -> driver.povDown() && driver.y(),
                 new RightBumpHalfSweepAuton(
-                        m_log,
-                        m_machinery.m_swerveKinodynamics,
-                        m_machinery.m_holonomicController,
-                        m_machinery).command());
+                        log,
+                        machinery.m_swerveKinodynamics,
+                        holonomicController,
+                        machinery).command());
 
         ////////////////////////////////////////////////////
         ///
@@ -251,14 +258,13 @@ public class TestBinder {
         // };
 
         // whileTrue(driver::y,
-        //         repeatingSequence(
-        //                 m_machinery.m_intakeExtend.goToWobbleSlightlyInExtendedPosition().withTimeout(0.5),
-        //                 m_machinery.m_intakeExtend.goToWobbleSlightlyOutRetractedPosition().withTimeout(0.5)));
+        // repeatingSequence(
+        // m_machinery.m_intakeExtend.goToWobbleSlightlyInExtendedPosition().withTimeout(0.5),
+        // m_machinery.m_intakeExtend.goToWobbleSlightlyOutRetractedPosition().withTimeout(0.5)));
 
-        whileTrue(driver::povUp,(
-                m_machinery.m_shooter.tune()));
+        whileTrue(driver::povUp, (machinery.m_shooter.tune()));
 
-        Tester tester = new Tester(m_machinery);
+        Tester tester = new Tester(machinery);
         onTrue(() -> RobotState.isTest(), tester.prompt());
         whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
                 tester.prematch());

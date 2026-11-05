@@ -10,7 +10,8 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.indicator.SolidIndicator;
-import org.team100.lib.localization.ManualPose;
+import org.team100.lib.localization.simulation.ManualPose;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -40,10 +41,9 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         Banner.printBanner();
-        Experiments.instance.show();
-        Logging log = Logging.instance();
-        LoggerFactory fieldLogger = log.fieldLogger;
-        LoggerFactory rootLogger = log.rootLogger;
+        Experiments.INSTANCE.show();
+        LoggerFactory fieldLogger = Logging.field();
+        LoggerFactory rootLogger = Logging.root();
         TotalCurrentLog currentLog = new TotalCurrentLog(rootLogger);
         m_controller = new DriverXboxControl(rootLogger, 0);
         m_pose = new ManualPose(fieldLogger, m_controller::velocity, new Pose2d(6, 4, Rotation2d.kZero));
@@ -119,9 +119,9 @@ public class Robot extends TimedRobot {
         Takt.update();
         Cache.refresh();
         CommandScheduler.getInstance().run();
-        m_pose.periodic();
         m_indicator.periodic();
-        m_ball.periodic();
+        // Poll for logs after all the actuation is done
+        LogPoller.log();
     }
 
     @Override

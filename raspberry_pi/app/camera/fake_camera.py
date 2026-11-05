@@ -26,7 +26,7 @@ class FakeCamera(Camera):
         size: if no size is supplied, the native size is used.
         k1: quadratic distortion term for undistortion
         """
-        print("\n*** Camera: RealCamera", flush=True)
+        print("*** Camera: FakeCamera")
         p = Path(__file__).parent / filename
         pathstr: str = str(p)
         # force the file to be read as three-channel BGR

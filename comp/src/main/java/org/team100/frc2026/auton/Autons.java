@@ -6,8 +6,8 @@ import org.team100.frc2026.robot.Machinery;
 import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.config.AutonChooser;
 import org.team100.lib.controller.se2.ControllerSE2;
+import org.team100.lib.controller.se2.FullStateControllerSE2;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.Logging;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -20,13 +20,21 @@ import edu.wpi.first.wpilibj2.command.Command;
  * In 2026, the field is rotationally symmetric, so there's no need to fill out
  * the "Alliance" part of the annotated command.
  */
-public class Autons {
+public class Autons implements AutoCloseable {
     private final AutonChooser m_autonChooser;
 
-    public Autons(Machinery machinery) {
-        ControllerSE2 controller = machinery.m_holonomicController;
+    public Autons(LoggerFactory rootLogger, Machinery machinery) {
+        LoggerFactory log = rootLogger.name("Auton");
+        ControllerSE2 controller = new FullStateControllerSE2(log,
+                2.9, // P for x/y
+                3.5, // P for theta
+                0.025, // P for v
+                0.01, // P for omega
+                0.02, // x tolerance
+                0.3, // theta tolerance
+                1, // v tolerance
+                1);// omega tolerance
         m_autonChooser = new AutonChooser();
-        LoggerFactory log = Logging.instance().rootLogger.name("Auton");
         m_autonChooser.add(new JustShoot(machinery));
         m_autonChooser.add(new DoNothing());
 
@@ -37,16 +45,44 @@ public class Autons {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
+        m_autonChooser.add(new BackTwoMeters(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
         m_autonChooser.add(new AheadTwoMetersWithRotation(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-        m_autonChooser.add(new UTurnWithRotation(
+        m_autonChooser.add(new GoInSquare(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
+        m_autonChooser.add(new GoInCircle(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+        m_autonChooser.add(new TurnInPlace(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery,
+                4 * Math.PI));
+        m_autonChooser.add(new TurnInPlace(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery,
+                -4 * Math.PI));
+        m_autonChooser.add(new TurnInPlace(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery,
+                6 * Math.PI));
 
         // The following were from CVE in 2026
         m_autonChooser.add(new ScallopLobAuton(
@@ -124,11 +160,12 @@ public class Autons {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-        m_autonChooser.add(new MajorDefenseRTrench(
+        m_autonChooser.add(new HStartIntakeOutake(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
+        
     }
 
     public Command get() {
@@ -146,6 +183,7 @@ public class Autons {
         m_autonChooser.onChange(listener);
     }
 
+    @Override
     public void close() {
         m_autonChooser.close();
     }

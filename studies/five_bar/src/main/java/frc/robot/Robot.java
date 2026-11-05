@@ -50,6 +50,8 @@ public class Robot extends TimedRobot {
         Cache.refresh();
         CommandScheduler.getInstance().run();
         m_setup.run();
+        // Poll for logs after all the actuation is done
+        LogPoller.log();
     }
 
     @Override

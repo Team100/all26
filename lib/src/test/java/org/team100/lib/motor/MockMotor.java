@@ -126,10 +126,6 @@ public class MockMotor implements Motor, IncrementalEncoder {
     }
 
     @Override
-    public void periodic() {
-    }
-
-    @Override
     public void play(double freq) {
     }
 

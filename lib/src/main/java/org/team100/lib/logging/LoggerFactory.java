@@ -16,11 +16,12 @@ import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.DeltaSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.geometry.se2.WaypointSE2;
-import org.team100.lib.localization.Blip;
-import org.team100.lib.localization.SwerveState;
+import org.team100.lib.localization.LocalizerEstimate;
+import org.team100.lib.localization.network.Blip;
 import org.team100.lib.logging.primitive.PrimitiveLogger;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.reference.r1.SetpointsR1;
+import org.team100.lib.reference.r1.VelocitySetpointsR1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.state.StateR1;
@@ -788,6 +789,30 @@ public class LoggerFactory {
         return new SetpointsR1Logger(level, leaf);
     }
 
+    public class VelocitySetpointsR1Logger {
+        private final Level m_level;
+        private final VelocityControlR1Logger m_current;
+        private final VelocityControlR1Logger m_next;
+
+        VelocitySetpointsR1Logger(Level level, String leaf) {
+            m_level = level;
+            m_current = VelocityControlR1Logger(level, join(leaf, "current"));
+            m_next = VelocityControlR1Logger(level, join(leaf, "next"));
+        }
+
+        public void log(Supplier<VelocitySetpointsR1> vals) {
+            if (!allow(m_level))
+                return;
+            VelocitySetpointsR1 val = vals.get();
+            m_current.log(val::current);
+            m_next.log(val::next);
+        }
+    }
+
+    public VelocitySetpointsR1Logger velocitySetpointsR1Logger(Level level, String leaf) {
+        return new VelocitySetpointsR1Logger(level, leaf);
+    }
+
     public class ControlSE2Logger {
         private final Level m_level;
         private final ControlR1Logger m_xLogger;
@@ -1142,38 +1167,31 @@ public class LoggerFactory {
         return new IsotropicNoiseSE2Logger(level, leaf);
     }
 
-    public class SwerveStateLogger {
+    public class LocalizerEstimateLogger {
         private final Level m_level;
         private final StateSE2Logger m_state;
         private final IsotropicNoiseSE2Logger m_noise;
-        private final SwerveModulePositionsLogger m_positions;
-        private final Rotation2dLogger m_gyroYaw;
         private final VariableR1Logger m_gyroBias;
 
-        SwerveStateLogger(Level level, String leaf) {
+        LocalizerEstimateLogger(Level level, String leaf) {
             m_level = level;
             m_state = StateSE2Logger(level, join(leaf, "state"));
             m_noise = isotropicNoiseSE2Logger(level, join(leaf, "noise"));
-            m_positions = swerveModulePositionsLogger(level, join(leaf, "positions"));
-            m_gyroYaw = rotation2dLogger(level, join(leaf, "gyro yaw (rad)"));
             m_gyroBias = variableR1Logger(level, join(leaf, "gyro bias (rad_s)"));
         }
 
-        public void log(Supplier<SwerveState> vals) {
+        public void log(Supplier<LocalizerEstimate> vals) {
             if (!allow(m_level))
                 return;
-            SwerveState val = vals.get();
-            m_state.log(val::state);
-            m_noise.log(val::noise);
-            m_positions.log(val::positions);
-            m_gyroYaw.log(val::gyroYaw);
-            m_gyroBias.log(val::gyroBias);
+            LocalizerEstimate e = vals.get();
+            m_state.log(e::state);
+            m_noise.log(e::noise);
+            m_gyroBias.log(e::gyroBias);
         }
-
     }
 
-    public SwerveStateLogger swerveStateLogger(Level level, String leaf) {
-        return new SwerveStateLogger(level, leaf);
+    public LocalizerEstimateLogger localizerEstimateLogger(Level level, String leaf) {
+        return new LocalizerEstimateLogger(level, leaf);
     }
 
 }

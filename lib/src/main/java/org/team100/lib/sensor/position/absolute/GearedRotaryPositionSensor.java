@@ -49,13 +49,7 @@ public class GearedRotaryPositionSensor implements RotaryPositionSensor {
 
     @Override
     public void setUnwrappedEncoderPositionRad(double x) {
-        // TODO: verify
         m_delegate.setUnwrappedEncoderPositionRad(x * m_ratio);
-    }
-
-    @Override
-    public void periodic() {
-        m_delegate.periodic();
     }
 
     @Override

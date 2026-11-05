@@ -3,6 +3,7 @@ package org.team100.lib.hid;
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.DoubleCache;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 
@@ -27,14 +28,17 @@ public class DriverXboxControl {
     /**
      * Controls are sampled at half the main clock rate,
      * which makes the "acceleration" computation return zero
-     * half the time. So this smooths it out.
+     * half the time. These filters smooth the input slightly.
      */
     private final LinearFilter m_filterRightY;
     private final LinearFilter m_filterRightX;
     private final LinearFilter m_filterLeftX;
 
+    /** Cache of smoothed input */
     private final DoubleCache m_rightY;
+    /** Cache of smoothed input */
     private final DoubleCache m_rightX;
+    /** Cache of smoothed input */
     private final DoubleCache m_leftX;
 
     private final DoubleLogger m_log_rightY;
@@ -54,6 +58,7 @@ public class DriverXboxControl {
         m_log_rightY = log.doubleLogger(Level.DEBUG, "right Y");
         m_log_rightX = log.doubleLogger(Level.DEBUG, "right X");
         m_log_leftX = log.doubleLogger(Level.DEBUG, "left X");
+        LogPoller.register(this::log);
     }
 
     /**
@@ -71,23 +76,24 @@ public class DriverXboxControl {
                 0.65);
     }
 
-    public void periodic() {
+    /** Logs smoothed inputs. */
+    private void log() {
         m_log_rightY.log(m_rightY);
         m_log_rightX.log(m_rightX);
         m_log_leftX.log(m_leftX);
     }
 
-    /** Axis 5 */
+    /** Axis 5, filtered */
     public double rightY() {
         return m_filterRightY.calculate(m_controller.getRightY());
     }
 
-    /** Axis 4 */
+    /** Axis 4, filtered */
     public double rightX() {
         return m_filterRightX.calculate(m_controller.getRightX());
     }
 
-    /** Axis 0 */
+    /** Axis 0, filtered */
     public double leftX() {
         return m_filterLeftX.calculate(m_controller.getLeftX());
     }

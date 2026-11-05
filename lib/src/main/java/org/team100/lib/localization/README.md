@@ -8,11 +8,11 @@ to determine the robot's global pose:
 At each time step, the difference in wheel positions since the previous
 time step is used to compute a difference in pose, using forward kinematics.
 Obviously odometry can only estimate pose differences, not absolute pose.
-See `OdometryUpdater`.
+See `OdometryEstimator`.
 
 ## Vision
 
-Each camera publishes relative poses of AprilTags it can see (`Blips), and
+Each camera publishes relative poses of AprilTags it can see (`Blips`), and
 these are received by `AprilTagRobotLocalizer`, which transforms each one into
 a global pose estimate, using its knowledge of each camera pose relative to the
 robot (see `Camera`), and each tag relative to the field
@@ -47,6 +47,6 @@ low-pass filter.
 
 Some other teams (6328) use different methods for "local" localization (relative
 to a specific tag for a specific task), and "global" localization (combining
-inputs from multiple tags).  We don't do that, but we do allow the parameters
-in the pose estimator to be changed by commands, so when you want the estimator
-to ignore far-away tags, use `AprilTagRobotLocalizer.setHeedRadiusM()`. 
+inputs from multiple tags).  We don't do that, we assign higher uncertainty to
+far-away tags.  If you find a far-away tag having too much influence when
+you're close to another tag, you can adjust the uncertainty function.

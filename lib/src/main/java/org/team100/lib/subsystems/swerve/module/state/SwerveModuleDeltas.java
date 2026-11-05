@@ -11,6 +11,12 @@ public record SwerveModuleDeltas(
         SwerveModuleDelta frontRight,
         SwerveModuleDelta rearLeft,
         SwerveModuleDelta rearRight) {
+    public static final SwerveModuleDeltas ZERO = new SwerveModuleDeltas(
+            new SwerveModuleDelta(),
+            new SwerveModuleDelta(),
+            new SwerveModuleDelta(),
+            new SwerveModuleDelta());
+
     /** For when you don't care about which is which. */
     public SwerveModuleDelta[] all() {
         return new SwerveModuleDelta[] {

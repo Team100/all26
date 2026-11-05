@@ -46,7 +46,8 @@ class AnglePositionServoProfileTest implements Timeless {
         feedback2 = new PIDFeedback(logger, 1, 0, 0, false, 0.05, 1);
         ProfileR1 profile = new TrapezoidProfileR1(1, 1, 0.05);
         ref = new ProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
-        servo = new OnboardAngularPositionServo(logger, mech, dyn, ref, feedback2);
+        servo = new OnboardAngularPositionServo(
+                logger, mech, dyn, ref, feedback2, 0.02, 0.02);
         servo.reset();
     }
 

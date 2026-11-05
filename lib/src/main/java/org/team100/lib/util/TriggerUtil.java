@@ -13,4 +13,8 @@ public class TriggerUtil {
     public static Trigger onTrue(BooleanSupplier condition, Command command) {
         return new Trigger(condition).onTrue(command);
     }
+
+    public static Trigger onChange(BooleanSupplier condition, Command command) {
+        return new Trigger(condition).onChange(command);
+    }
 }

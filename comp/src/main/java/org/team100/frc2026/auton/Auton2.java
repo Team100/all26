@@ -4,9 +4,9 @@ import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.team100.frc2026.robot.Machinery;
 import org.team100.lib.config.AnnotatedCommand;
@@ -22,7 +22,6 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Factory;
 import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
-import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,12 +29,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 /** An example of a simple sequence */
 public class Auton2 implements AnnotatedCommand {
     private final LoggerFactory log;
-    private final ControllerSE2 controller;
-    private final Machinery machinery;
-    private final List<TimingConstraint> constraints;
     private final TrajectorySE2Factory trajectoryFactory;
     private final PathSE2Factory pathFactory;
     private final TrajectorySE2Planner planner;
+    private final Command command;
 
     public Auton2(
             LoggerFactory parent,
@@ -43,29 +40,49 @@ public class Auton2 implements AnnotatedCommand {
             ControllerSE2 controller,
             Machinery machinery) {
         log = parent.name(name());
-        this.controller = controller;
-        this.machinery = machinery;
-        constraints = new TimingConstraintFactory(kinodynamics).auto();
+
         // In meters/second
         double maxBumpVelocity = 1;
-        List<TimingConstraint> new_constraints = new ArrayList<>(constraints);
+        List<TimingConstraint> new_constraints = Stream.concat(
+                new TimingConstraintFactory(kinodynamics).auto().stream(),
+                BumpZones.constraint(maxBumpVelocity).stream()).toList();
 
-        VelocityLimitRegionConstraint slow_bump_zone = new VelocityLimitRegionConstraint(
-                BumpZones.BLUE_BUMP_LEFT, maxBumpVelocity);
-        VelocityLimitRegionConstraint slow_bump_zone2 = new VelocityLimitRegionConstraint(
-                BumpZones.BLUE_BUMP_RIGHT, maxBumpVelocity);
-        VelocityLimitRegionConstraint slow_bump_zone3 = new VelocityLimitRegionConstraint(
-                BumpZones.RED_BUMP_LEFT, maxBumpVelocity);
-        VelocityLimitRegionConstraint slow_bump_zone4 = new VelocityLimitRegionConstraint(
-                BumpZones.RED_BUMP_RIGHT, maxBumpVelocity);
-        new_constraints.add(slow_bump_zone);
-        new_constraints.add(slow_bump_zone2);
-        new_constraints.add(slow_bump_zone3);
-        new_constraints.add(slow_bump_zone4);
-        // constraints.add(slow_bump_zone);
         trajectoryFactory = new TrajectorySE2Factory(new_constraints);
         pathFactory = new PathSE2Factory();
         planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
+        DriveWithTrajectoryFunction IntakeSetUp = new DriveWithTrajectoryFunction(
+                log, machinery.m_drive, controller,
+                machinery.m_trajectoryViz, this::t1);
+        DriveWithTrajectoryFunction IntakeBalls = new DriveWithTrajectoryFunction(
+                log, machinery.m_drive, controller,
+                machinery.m_trajectoryViz, this::t2);
+        DriveWithTrajectoryFunction ScoreSetUp = new DriveWithTrajectoryFunction(
+                log, machinery.m_drive, controller,
+                machinery.m_trajectoryViz, this::t3);
+
+        // Intake, score, climb.
+        command = sequence(
+                parallel(
+                        IntakeSetUp.until(IntakeSetUp::isDone),
+                        // Assumed that the intake shouldn't deploy while going over the bump
+                        waitSeconds(1).andThen(machinery.m_intakeExtend.goToExtendedPosition())),
+                waitSeconds(1),
+
+                parallel(
+                        IntakeBalls
+                // machinery.m_intake.intake()
+                ).until(IntakeBalls::isDone),
+                // Without telling it to, the intake would only stop spinning
+                // at the end of the auton. Without the timeout, the robot
+                // would not continue the rest of the auton
+                machinery.m_intake.stop().withTimeout(1),
+                waitSeconds(1),
+
+                ScoreSetUp.until(ScoreSetUp::isDone),
+                // machinery.m_shooter.shoot().withTimeout(1),
+                waitSeconds(2)
+        // machinery.m_shooter.stop().withTimeout(1));
+        );
     }
 
     @Override
@@ -106,39 +123,7 @@ public class Auton2 implements AnnotatedCommand {
 
     @Override
     public Command command() {
-        DriveWithTrajectoryFunction IntakeSetUp = new DriveWithTrajectoryFunction(
-                log, machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t1);
-        DriveWithTrajectoryFunction IntakeBalls = new DriveWithTrajectoryFunction(
-                log, machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t2);
-        DriveWithTrajectoryFunction ScoreSetUp = new DriveWithTrajectoryFunction(
-                log, machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t3);
-
-        // Intake, score, climb.
-        return sequence(
-                parallel(
-                        IntakeSetUp.until(IntakeSetUp::isDone),
-                        // Assumed that the intake shouldn't deploy while going over the bump
-                        waitSeconds(1).andThen(machinery.m_intakeExtend.goToExtendedPosition())),
-                waitSeconds(1),
-
-                parallel(
-                        IntakeBalls
-                // machinery.m_intake.intake()
-                ).until(IntakeBalls::isDone),
-                // Without telling it to, the intake would only stop spinning
-                // at the end of the auton. Without the timeout, the robot
-                // would not continue the rest of the auton
-                machinery.m_intake.stop().withTimeout(1),
-                waitSeconds(1),
-
-                ScoreSetUp.until(ScoreSetUp::isDone),
-                // machinery.m_shooter.shoot().withTimeout(1),
-                waitSeconds(2)
-        // machinery.m_shooter.stop().withTimeout(1));
-        );
+        return command;
     }
 
     @Override

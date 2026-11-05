@@ -10,8 +10,8 @@ import org.team100.lib.state.ControlR1;
  * More clever feedback might extrapolate the current measurements and compare
  * to the next setpoint.
  * 
- * @param current
- * @param next
+ * @param current can be compared to current measurement
+ * @param next    for future actuation
  */
 public record SetpointsR1(ControlR1 current, ControlR1 next) {
 

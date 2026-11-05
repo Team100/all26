@@ -10,6 +10,8 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 
 public class PPRRRRKinematicsTest {
+    private static final boolean DEBUG = false;
+
     @Test
     void testForward() {
         PPRRRKinematics k = new PPRRRKinematics(1, 1);
@@ -65,7 +67,8 @@ public class PPRRRRKinematicsTest {
         // the solver tolerance is low to speed it up.
         // with tighter tolerance, 40 ms. now 27 ms.
         PPRRRConfig q = k.inverse(x);
-        System.out.printf("q %s\n", q);
+        if (DEBUG)
+            System.out.printf("q %s\n", q);
         assertEquals(8.866, q.q1(), 5e-2);
         assertEquals(4, q.q2(), 5e-2);
         assertEquals(0, q.q3(), 5e-2);
@@ -77,7 +80,8 @@ public class PPRRRRKinematicsTest {
                 new Rotation3d(0, 0.05, 0)));
         // new solve is 5 ms, still slow but maybe ok
         q = k.inverse(x, q.toVector());
-        System.out.printf("q %s\n", q);
+        if (DEBUG)
+            System.out.printf("q %s\n", q);
     }
 
     @Test

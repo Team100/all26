@@ -15,7 +15,7 @@ class NoCamera(Camera):
     """A camera with no image."""
 
     def __init__(self) -> None:
-        print("\n*** Camera: NoCamera", flush=True)
+        print("*** Camera: NoCamera")
         self.w = 2000
         self.h = 1000
         self._img: MatLike = np.zeros((self.h, self.w, 3), dtype=np.uint8)

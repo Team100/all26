@@ -2,19 +2,19 @@ package org.team100.frc2025.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-
-import java.util.function.BooleanSupplier;
+import static org.team100.lib.util.TriggerUtil.onTrue;
+import static org.team100.lib.util.TriggerUtil.whileTrue;
 
 import org.team100.frc2025.Climber.ClimberCommands;
 import org.team100.frc2025.CommandGroups.MoveToAlgaePosition;
 import org.team100.frc2025.Swerve.Auto.BigLoop;
 import org.team100.lib.controller.se2.ControllerFactorySE2;
 import org.team100.lib.controller.se2.ControllerSE2;
+import org.team100.lib.controller.se2.FullStateControllerSE2;
 import org.team100.lib.hid.Buttons2025;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.hid.OperatorXboxControl;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.Logging;
 import org.team100.lib.profile.se2.HolonomicProfileFactory;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.subsystems.prr.commands.FollowJointProfiles;
@@ -25,18 +25,18 @@ import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
 
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * Binds buttons to commands. Also creates default commands.
  */
 public class Binder2025 {
-    private static final LoggerFactory rootLogger = Logging.instance().rootLogger;
-    private static final LoggerFactory fieldLogger = Logging.instance().fieldLogger;
+    private final LoggerFactory rootLogger;
+    private final LoggerFactory fieldLogger;
     private final Machinery2025 m_machinery;
 
-    public Binder2025(Machinery2025 machinery) {
+    public Binder2025(LoggerFactory root, LoggerFactory field, Machinery2025 machinery) {
+        rootLogger = root;
+        fieldLogger = field;
         m_machinery = machinery;
     }
 
@@ -62,26 +62,13 @@ public class Binder2025 {
                 log,
                 m_machinery.m_swerveKinodynamics,
                 RobotController::getBatteryVoltage);
-        limiter.updateSetpoint(m_machinery.m_drive.getVelocity());
+        limiter.updateSetpoint(m_machinery.m_drive.getState().velocity());
 
         // There are 3 modes:
         // * normal
         // * lock rotation to reef center
         // * barge-assist (slow when near barge)
-        // final Command driveDefault = new DriveManuallySimple(
-        // driver::velocity,
-        // m_machinery.m_localizer::setHeedRadiusM,
-        // m_machinery.m_drive,
-        // limiter,
-        // new ManualWithProfiledReefLock(
-        // log, m_machinery.m_swerveKinodynamics, driver::leftTrigger,
-        // thetaFeedback, () -> m_machinery.m_drive.getPose().getTranslation()),
-        // new ManualWithBargeAssist(
-        // log, m_machinery.m_swerveKinodynamics, driver::pov,
-        // thetaFeedback, m_machinery.m_drive::getPose),
-        // driver::leftBumper);
-        // m_machinery.m_drive.setDefaultCommand(driveDefault.withName("drive
-        // default"));
+
         // // WARNING! This default command *MOVES IMMEDIATELY WHEN ENABLED*!
         m_machinery.m_mech.setDefaultCommand(m_machinery.m_mech.profileHomeAndThenRest().withName("mech default"));
         m_machinery.m_climber.setDefaultCommand(m_machinery.m_climber.stop().withName("climber default"));
@@ -179,19 +166,12 @@ public class Binder2025 {
         final LoggerFactory coralSequence = rootLogger.name("Coral Sequence");
         // final ProfileSE2 profile = HolonomicProfileFactory.get(
         // coralSequence, m_machinery.m_swerveKinodynamics, 1, 0.5, 1, 0.2);
-        final ControllerSE2 holonomicController = ControllerFactorySE2.byIdentity(coralSequence);
+        final ControllerSE2 holonomicController = new FullStateControllerSE2(coralSequence, 3.0, 3.5, 0, 0, 0.01, 0.01,
+                0.01, 0.01);
 
         // Drive to a scoring location at the reef and score.
         whileTrue(driver::b, m_machinery.m_manipulator.centerEject());
-        // whileTrue(driver::a,
-        // ScoreCoralSmartLuke.get(
-        // coralSequence, m_machinery.m_mech, m_machinery.m_manipulator,
-        // holonomicController, profile, m_machinery.m_drive,
-        // m_machinery.m_localizer::setHeedRadiusM, buttons::level, buttons::point));
-        // // ScoreCoralSmart.get(
-        // coralSequence, m_machinery.m_mech, m_machinery.m_manipulator,
-        // holonomicController, profile, m_machinery.m_drive,
-        // m_machinery.m_localizer::setHeedRadiusM, buttons::level, buttons::point));
+
 
         ///////////////////////////////////////////////////
         //
@@ -267,14 +247,6 @@ public class Binder2025 {
         Tester2025 tester = new Tester2025(m_machinery);
         whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
                 tester.prematch());
-    }
-
-    private static Trigger whileTrue(BooleanSupplier condition, Command command) {
-        return new Trigger(condition).whileTrue(command);
-    }
-
-    private static Trigger onTrue(BooleanSupplier condition, Command command) {
-        return new Trigger(condition).onTrue(command);
     }
 
 }

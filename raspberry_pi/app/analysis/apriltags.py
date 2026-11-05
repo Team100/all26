@@ -37,7 +37,7 @@ class AprilTags(MonoAnalysis):
         :cam: camera implementation
         :network: to send results
         """
-        print("\n*** MonoAnalysis: AprilTags")
+        print("*** MonoAnalysis: AprilTags")
         self._mtx: NDArray[np.float32] = cam.get_intrinsic()
         self._dist: NDArray[np.float32] = cam.get_dist()
         self._blips = network.get_blip_sender()
@@ -52,7 +52,7 @@ class AprilTags(MonoAnalysis):
         else:
             # normal tag size is 6.5 inches
             tag_size = 0.1651
-        print("\n*** tag size:", tag_size)
+        print("*** Tag size:", tag_size)
         self._estimator = AprilTags._get_estimator(tag_size, self._mtx)
 
     @override

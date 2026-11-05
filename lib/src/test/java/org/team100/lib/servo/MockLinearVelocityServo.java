@@ -8,17 +8,26 @@ public class MockLinearVelocityServo implements LinearVelocityServo {
     }
 
     @Override
+    public void setVoltage(double v) {
+    }
+
+    @Override
     public void setDutyCycle(double dutyCycle) {
     }
 
     @Override
-    public void setVelocityDirect(double setpoint, double setpoint_2) {
+    public void setVelocityDirect(double setpoint) {
         m_setpoint = setpoint;
     }
 
     @Override
     public double getVelocity() {
         return m_setpoint;
+    }
+
+    @Override
+    public double getAcceleration() {
+        return 0;
     }
 
     @Override
@@ -33,10 +42,6 @@ public class MockLinearVelocityServo implements LinearVelocityServo {
     @Override
     public double getDistance() {
         throw new UnsupportedOperationException("Unimplemented method 'getDistance'");
-    }
-
-    @Override
-    public void periodic() {
     }
 
     @Override

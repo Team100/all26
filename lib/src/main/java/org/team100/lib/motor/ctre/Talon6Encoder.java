@@ -1,6 +1,7 @@
 package org.team100.lib.motor.ctre;
 
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
@@ -15,6 +16,7 @@ public class Talon6Encoder implements IncrementalEncoder {
         m_motor = motor;
         m_log_position = log.doubleLogger(Level.TRACE, "position (rad)");
         m_log_velocity = log.doubleLogger(Level.TRACE, "velocity (rad_s)");
+        LogPoller.register(this::log);
     }
 
     /**
@@ -22,7 +24,6 @@ public class Talon6Encoder implements IncrementalEncoder {
      */
     @Override
     public double getUnwrappedPositionRad() {
-        // TODO: Move motor and encoder to the same package
         return m_motor.m_position.getAsDouble();
     }
 
@@ -49,13 +50,11 @@ public class Talon6Encoder implements IncrementalEncoder {
      */
     @Override
     public void setUnwrappedEncoderPositionRad(double positionRad) {
-        // TODO: move motor and encoder to the same package.
         System.out.println("WARNING: Setting CTRE encoder position is very slow!");
         Talon6Motor.warn(() -> m_motor.m_motor.setPosition(positionRad / (2.0 * Math.PI), 1));
     }
 
-    @Override
-    public void periodic() {
+    private void log() {
         m_log_position.log(this::getUnwrappedPositionRad);
         m_log_velocity.log(this::getVelocityRad_S);
     }

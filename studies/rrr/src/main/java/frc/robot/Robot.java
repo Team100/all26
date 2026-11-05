@@ -5,6 +5,7 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.framework.TimedRobot100;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.RobotLog;
@@ -26,7 +27,7 @@ public class Robot extends TimedRobot100 {
     /** Mirrors the comp robot code. */
     public Robot() {
         Startup.start();
-        LoggerFactory rootLogger = Logging.instance().rootLogger;
+        LoggerFactory rootLogger = Logging.root();
         m_robotLog = new RobotLog(rootLogger);
 
         m_machinery = new Machinery(m_robotLog.totalCurrentLog());
@@ -40,8 +41,9 @@ public class Robot extends TimedRobot100 {
         Cache.refresh();
         CommandScheduler.getInstance().run();
         m_machinery.periodic();
-        m_robotLog.periodic();
-        if (Experiments.instance.enabled(Experiment.FlushOften)) {
+        // Poll for logs after all the actuation is done
+        LogPoller.log();
+        if (Experiments.INSTANCE.enabled(Experiment.FlushOften)) {
             NetworkTableInstance.getDefault().flush();
         }
 

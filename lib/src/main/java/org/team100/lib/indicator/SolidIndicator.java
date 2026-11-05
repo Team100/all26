@@ -1,6 +1,7 @@
 package org.team100.lib.indicator;
 
 import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
+import static org.team100.lib.util.TriggerUtil.onTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +15,6 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * An LED indicator that is all the same color.
@@ -74,7 +74,7 @@ public class SolidIndicator extends SubsystemBase {
      * Trigger on true, blink the color a few times.
      */
     public void event(BooleanSupplier condition, Color color) {
-        new Trigger(condition).onTrue(
+        onTrue(condition,
                 blink(color)
                         .ignoringDisable(true)
                         .withTimeout(EVENT_DURATION)

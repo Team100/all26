@@ -9,16 +9,29 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.team100.lib.coherence.Takt;
+import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.controller.se2.ControllerFactorySE2;
 import org.team100.lib.controller.se2.ControllerSE2;
-import org.team100.lib.experiments.Experiment;
-import org.team100.lib.experiments.Experiments;
 import org.team100.lib.framework.TimedRobot100;
+import org.team100.lib.localization.fused.AprilTagCornerReader;
+import org.team100.lib.localization.fused.FusedEstimator;
+import org.team100.lib.localization.fused.NudgingVisionEstimator;
+import org.team100.lib.localization.fused.OdometryEstimator;
+import org.team100.lib.localization.fused.UpdatedEstimate;
+import org.team100.lib.localization.map.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
+import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.path.se2.PathSE2Factory;
-import org.team100.lib.subsystems.swerve.Fixture;
+import org.team100.lib.sensor.gyro.Gyro;
+import org.team100.lib.sensor.gyro.SimulatedGyro;
+import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
+import org.team100.lib.subsystems.swerve.SwerveLocal;
+import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
+import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
+import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.se2.TrajectorySE2Factory;
 import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
@@ -28,6 +41,7 @@ import org.team100.lib.trajectory.se2.examples.TrajectoryExamples;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 
 class DriveWithTrajectoryListFunctionTest implements Timeless {
 
@@ -42,33 +56,66 @@ class DriveWithTrajectoryListFunctionTest implements Timeless {
 
     @Test
     void testSimple() throws IOException {
-        Fixture fixture = new Fixture();
-        List<TimingConstraint> constraints = new TimingConstraintFactory(fixture.swerveKinodynamics).allGood();
+
+        LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());
+        TotalCurrentLog currentLog = new TotalCurrentLog(logger);
+        SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forTest();
+        // uses simulated modules
+        SwerveModuleCollection collection = SwerveModuleCollection.get(
+                logger, currentLog, new CurrentLimit(10, 20), new CurrentLimit(10, 20));
+        Gyro gyro = new SimulatedGyro(logger, swerveKinodynamics, collection, 0);
+        SwerveLocal swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
+
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagCornerReader tagReader = new AprilTagCornerReader(
+                logger, layout, DriverStation::getAlliance);
+        OdometryEstimator odometryEstimate = new OdometryEstimator(
+                logger,
+                swerveKinodynamics,
+                gyro.white_noise(),
+                gyro.bias_noise(),
+                false,
+                false);
+        NudgingVisionEstimator visionEstimate = new NudgingVisionEstimator(logger);
+        FusedEstimator estimate = new FusedEstimator(
+                Takt.get(),
+                gyro::getYawNWU,
+                swerveLocal::positions,
+                tagReader::read,
+                odometryEstimate,
+                visionEstimate);
+        UpdatedEstimate e = new UpdatedEstimate(estimate);
+
+        SwerveDriveSubsystem drive = new SwerveDriveSubsystem(
+                logger,
+                e,
+                swerveLocal);
+
+        List<TimingConstraint> constraints = new TimingConstraintFactory(swerveKinodynamics).allGood();
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         // this initial step is required since the timebase is different?
         stepTime();
-        Experiments.instance.testOverride(Experiment.UseSwerveLimiter, true);
         ControllerSE2 control = ControllerFactorySE2.test(logger);
         DriveWithTrajectoryListFunction c = new DriveWithTrajectoryListFunction(
                 logger,
-                fixture.drive,
+                drive,
                 control,
                 x -> List.of(ex.line(x)),
                 viz);
         c.initialize();
-        assertEquals(0, fixture.drive.getPose().getX(), DELTA);
+        assertEquals(0, drive.getState().pose().getX(), DELTA);
         c.execute();
         assertFalse(c.isDone());
         // the trajectory takes a little over 3s
         for (double t = 0; t < 4; t += TimedRobot100.LOOP_PERIOD_S) {
             stepTime();
             c.execute();
-            fixture.drive.periodic(); // for updateOdometry
+            System.out.println(drive.getState());
         }
         assertTrue(c.isDone());
-        assertEquals(1.0, fixture.drive.getPose().getX(), 0.01);
+        assertEquals(1.0, drive.getState().pose().getX(), 0.01);
     }
 }

@@ -26,11 +26,12 @@ public class Startup {
         System.out.printf("Identity: %s\n", Identity.instance.name());
 
         // Only works on RoboRIO 2.0.
-        RobotController.setBrownoutVoltage(5.5);
+        // TODO: turn this back on after it works on Systemcore
+        // RobotController.setBrownoutVoltage(5.5);
         // Stop complaining in the log.
         DriverStation.silenceJoystickConnectionWarning(true);
         // Show the experiment picker on glass.
-        Experiments.instance.show();
+        Experiments.INSTANCE.show();
         // Show what the scheduler is doing.
         SmartDashboard.putData(CommandScheduler.getInstance());
         // Set the period to forever, to make the watchdog shut up.

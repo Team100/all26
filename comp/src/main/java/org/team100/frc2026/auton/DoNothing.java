@@ -13,6 +13,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 /** An auton that does nothing at all. */
 public class DoNothing implements AnnotatedCommand {
 
+    private final Command command;
+
+    public DoNothing() {
+        command = Commands.idle().withName("Nothing from right bump");
+    }
+
     @Override
     public String name() {
         return "Do Nothing";
@@ -20,7 +26,7 @@ public class DoNothing implements AnnotatedCommand {
 
     @Override
     public Command command() {
-        return Commands.idle().withName("Nothing from right bump");
+        return command;
     }
 
     @Override

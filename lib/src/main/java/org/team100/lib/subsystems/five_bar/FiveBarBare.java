@@ -5,7 +5,6 @@ import java.util.function.DoubleSupplier;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.kinematics.five_bar.FiveBarKinematics;
 import org.team100.lib.kinematics.five_bar.JointPositions;
@@ -21,6 +20,7 @@ import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -53,15 +53,12 @@ public class FiveBarBare extends SubsystemBase {
         m_scenario = scenario;
         m_kinematics = new FiveBarKinematics(logger);
 
-        switch (Identity.instance) {
-            case SWERVE_TWO -> {
-                m_motorP1 = makeMotor(loggerP1, currentLog, new CanId(1));
-                m_motorP5 = makeMotor(loggerP5, currentLog, new CanId(5));
-            }
-            default -> {
-                m_motorP1 = new SimulatedMotor(loggerP1, 600);
-                m_motorP5 = new SimulatedMotor(loggerP5, 600);
-            }
+        if (RobotBase.isReal()) {
+            m_motorP1 = makeMotor(loggerP1, currentLog, new CanId(1));
+            m_motorP5 = makeMotor(loggerP5, currentLog, new CanId(5));
+        } else {
+            m_motorP1 = new SimulatedMotor(loggerP1, 600);
+            m_motorP5 = new SimulatedMotor(loggerP5, 600);
         }
         m_sensorP1 = new ProxyRotaryPositionSensor(m_motorP1.encoder(), 1.0, 0.0);
         m_sensorP5 = new ProxyRotaryPositionSensor(m_motorP5.encoder(), 1.0, 0.0);

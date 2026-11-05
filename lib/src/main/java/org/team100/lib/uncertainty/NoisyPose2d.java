@@ -3,9 +3,10 @@ package org.team100.lib.uncertainty;
 import org.team100.lib.util.StrUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.interpolation.Interpolatable;
 
 /** Container for a pose and its uncertainty. */
-public class NoisyPose2d {
+public class NoisyPose2d implements Interpolatable<NoisyPose2d> {
     private final Pose2d m_pose;
     private final IsotropicNoiseSE2 m_noise;
 
@@ -24,7 +25,15 @@ public class NoisyPose2d {
 
     @Override
     public String toString() {
-        return "NoisyPose2d [m_pose=" + StrUtil.poseStr(m_pose) + ", m_noise=" + m_noise + "]";
+        return "NoisyPose2d [m_pose=" + StrUtil.poseStr(m_pose)
+                + ", m_noise=" + m_noise + "]";
+    }
+
+    @Override
+    public NoisyPose2d interpolate(NoisyPose2d end, double t) {
+        return new NoisyPose2d(
+                pose().interpolate(end.pose(), t),
+                noise().interpolate(end.noise(), t));
     }
 
 }

@@ -9,10 +9,14 @@ from app.decoder.mjpeg_decoder import MjpegDecoder
 
 
 class ConfigArduMjpeg(Config):
-    """The Arducam camera, using the MJPEG encoding."""
+    """The Arducam camera, using the MJPEG encoding.
+
+    The MJPEG encoding seems better for all uses than the
+    YUYV encoding, because YUYV moves much more data.
+    """
 
     def __init__(self, size: Size) -> None:
-        print("\n*** Config: ConfigArduMjpeg")
+        print("*** Config: ConfigArduMjpeg")
         self._size = size
 
     @override
@@ -40,7 +44,7 @@ class ConfigArduMjpeg(Config):
             # Must be true for outside or in bright sun.
             # "AeEnable": True,
             "AeEnable": False,
-            #
+        
             # EXPOSURE TIME (microseconds)
-            "ExposureTime": 1000,
+            "ExposureTime": 10000,
         }

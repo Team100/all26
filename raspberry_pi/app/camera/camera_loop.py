@@ -19,6 +19,7 @@ class CameraLoop(Looper):
         done: Event,
     ) -> None:
         super().__init__(done)
+        print("*** Looper: CameraLoop")
         self._interpreter: Interpreter = interpreter
         self._camera: Camera = camera
 

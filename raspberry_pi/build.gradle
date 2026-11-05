@@ -20,7 +20,7 @@ remotes {
     camera30 { host = '10.1.0.30'; user = 'pi'; password = 'raspberry' }
     camera31 { host = '10.1.0.31'; user = 'pi'; password = 'raspberry' }
     camera32 { host = '10.1.0.32'; user = 'pi'; password = 'raspberry' }
-    camera33 { host = '10.1.0.33'; user = 'pi'; password = 'raspberry' }
+    camera34 { host = '10.1.0.34'; user = 'pi'; password = 'raspberry' }
     camera35 { host = '10.1.0.35'; user = 'pi'; password = 'raspberry' }
     camera36 { host = '10.1.0.36'; user = 'pi'; password = 'raspberry' }
 }
@@ -47,7 +47,7 @@ task 'Deploy Camera Code' { // pretty name for vscode
                 logger.warn("\u001B[1;32mDEPLOYED\u001B[0m to ${camera.name} at ${camera.host}." +
                     " Look at the viewfinder at ${camera.host}:1181")
             } catch (Exception e) {
-                logger.warn("skipping ${camera.name}")
+                logger.warn("skipping ${camera.name}: " + e)
             }
         }
     }

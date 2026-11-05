@@ -1,0 +1,6 @@
+path: labeling
+train: autosplit_train.txt
+val: autosplit_val.txt
+
+names:
+  0: ball

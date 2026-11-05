@@ -36,11 +36,6 @@ public class DutyCycleIndexer extends SubsystemBase implements ShooterIndexer {
         return run(this::zero);
     }
 
-    @Override
-    public void periodic() {
-        m_motor.periodic();
-    }
-
     ////////////////////////////////////////////////////
 
     private void full() {

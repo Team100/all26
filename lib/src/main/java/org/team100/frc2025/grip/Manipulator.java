@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.Level;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -23,6 +23,7 @@ import org.team100.lib.sensor.distance.LaserCan100;
 import org.team100.lib.util.CanId;
 
 import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -53,62 +54,60 @@ public class Manipulator extends SubsystemBase implements Music {
         LoggerFactory leftMotorLog = log.name("left");
         LoggerFactory rightMotorLog = log.name("right");
         coralLogger = log.booleanLogger(Level.TRACE, "Coral Detection");
-        switch (Identity.instance) {
-            case LAUNDRY_BOT -> {
-                // Set specific parameters for the competition robot
-                KrakenX60Motor leftMotor = new KrakenX60Motor(
-                        leftMotorLog, currentLog, new CanId(19),
-                        NeutralMode100.COAST,
-                        MotorPhase.FORWARD,
-                        new CurrentLimit(40, 40),
-                        new Friction(0.900, 0.900, 0.0, 0.5),
-                        PIDConstants.zero());
-                KrakenX60Motor rightMotor = new KrakenX60Motor(
-                        rightMotorLog, currentLog, new CanId(20), NeutralMode100.COAST,
-                        MotorPhase.REVERSE,
-                        new CurrentLimit(40, 40),
-                        new Friction(0.900, 0.900, 0.0, 0.5),
-                        PIDConstants.zero());
-                KrakenX60Motor algaeMotor = new KrakenX60Motor(
-                        algaeMotorLog, currentLog, new CanId(21), NeutralMode100.COAST,
-                        MotorPhase.FORWARD,
-                        new CurrentLimit(120, 120),
-                        new Friction(0.900, 0.900, 0.0, 0.5),
-                        PIDConstants.zero());
-                algaeMotor.setTorqueLimit(4);
-                m_algaeMotor = algaeMotor;
-                m_rightLaser = new LaserCan100(new CanId(17));
-                m_frontLaser = new LaserCan100(new CanId(16));
-                m_backLaser = new LaserCan100(new CanId(18));
-                m_leftLaser = new LaserCan100(new CanId(15));
-                m_leftMech = new LinearMechanism(leftMotorLog, leftMotor, leftMotor.encoder(),
-                        16, 0.1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_rightMech = new LinearMechanism(rightMotorLog, rightMotor, rightMotor.encoder(),
-                        16, 0.1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_algaeMech = new LinearMechanism(algaeMotorLog, algaeMotor, algaeMotor.encoder(),
-                        16, 0.1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-            }
-            default -> {
-                SimulatedMotor leftMotor = new SimulatedMotor(log, 600);
-                SimulatedMotor rightMotor = new SimulatedMotor(log, 600);
-                // simulated algae motor gets overloaded 2 sec after starting
-                LazySimulatedMotor algaeMotor = new LazySimulatedMotor(
-                        log, new SimulatedMotor(log, 600), 2);
-                m_algaeMotor = algaeMotor;
-                m_leftMech = new LinearMechanism(log, leftMotor, leftMotor.encoder(),
-                        1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_rightMech = new LinearMechanism(log, rightMotor, rightMotor.encoder(),
-                        1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_algaeMech = new LinearMechanism(log, algaeMotor, algaeMotor.encoder(),
-                        1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_rightLaser = new LaserCan100();
-                m_frontLaser = new LaserCan100();
-                m_backLaser = new LaserCan100();
-                m_leftLaser = new LaserCan100();
-            }
+        if (RobotBase.isReal()) {
+            // Set specific parameters for the competition robot
+            KrakenX60Motor leftMotor = new KrakenX60Motor(
+                    leftMotorLog, currentLog, new CanId(19),
+                    NeutralMode100.COAST,
+                    MotorPhase.FORWARD,
+                    new CurrentLimit(40, 40),
+                    new Friction(0.900, 0.900, 0.0, 0.5),
+                    PIDConstants.zero());
+            KrakenX60Motor rightMotor = new KrakenX60Motor(
+                    rightMotorLog, currentLog, new CanId(20), NeutralMode100.COAST,
+                    MotorPhase.REVERSE,
+                    new CurrentLimit(40, 40),
+                    new Friction(0.900, 0.900, 0.0, 0.5),
+                    PIDConstants.zero());
+            KrakenX60Motor algaeMotor = new KrakenX60Motor(
+                    algaeMotorLog, currentLog, new CanId(21), NeutralMode100.COAST,
+                    MotorPhase.FORWARD,
+                    new CurrentLimit(120, 120),
+                    new Friction(0.900, 0.900, 0.0, 0.5),
+                    PIDConstants.zero());
+            algaeMotor.setTorqueLimit(4);
+            m_algaeMotor = algaeMotor;
+            m_rightLaser = new LaserCan100(new CanId(17));
+            m_frontLaser = new LaserCan100(new CanId(16));
+            m_backLaser = new LaserCan100(new CanId(18));
+            m_leftLaser = new LaserCan100(new CanId(15));
+            m_leftMech = new LinearMechanism(leftMotorLog, leftMotor, leftMotor.encoder(),
+                    16, 0.1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_rightMech = new LinearMechanism(rightMotorLog, rightMotor, rightMotor.encoder(),
+                    16, 0.1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_algaeMech = new LinearMechanism(algaeMotorLog, algaeMotor, algaeMotor.encoder(),
+                    16, 0.1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        } else {
+            SimulatedMotor leftMotor = new SimulatedMotor(log, 600);
+            SimulatedMotor rightMotor = new SimulatedMotor(log, 600);
+            // simulated algae motor gets overloaded 2 sec after starting
+            LazySimulatedMotor algaeMotor = new LazySimulatedMotor(
+                    log, new SimulatedMotor(log, 600), 2);
+            m_algaeMotor = algaeMotor;
+            m_leftMech = new LinearMechanism(log, leftMotor, leftMotor.encoder(),
+                    1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_rightMech = new LinearMechanism(log, rightMotor, rightMotor.encoder(),
+                    1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_algaeMech = new LinearMechanism(log, algaeMotor, algaeMotor.encoder(),
+                    1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            m_rightLaser = new LaserCan100();
+            m_frontLaser = new LaserCan100();
+            m_backLaser = new LaserCan100();
+            m_leftLaser = new LaserCan100();
+
         }
         m_players = List.of(m_leftMech, m_rightMech, m_algaeMech);
-
+        LogPoller.register(this::log);
     }
 
     @Override
@@ -141,9 +140,10 @@ public class Manipulator extends SubsystemBase implements Music {
     }
 
     public boolean hasCoral() {
-        if (Identity.instance.equals(Identity.BLANK))
-            return false;
-        return coralIsClose(m_backLaser);
+        if (RobotBase.isReal()) {
+            return coralIsClose(m_backLaser);
+        }
+        return false;
     }
 
     public void ejectCenter() {
@@ -274,12 +274,7 @@ public class Manipulator extends SubsystemBase implements Music {
         m_algaeMech.setDutyCycle(-1);
     }
 
-    @Override
-    public void periodic() {
-        m_rightMech.periodic();
-        m_leftMech.periodic();
-        m_algaeMech.periodic();
-        m_algaeMotor.periodic();
+    private void log() {
         coralLogger.log(this::hasCoral);
     }
     ///////////////////////////////////////////////

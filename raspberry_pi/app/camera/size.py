@@ -51,6 +51,13 @@ class Size:
                     width=1280,
                     height=800
                 )
+            case Model.ARDU_BO61O:
+                return Size(
+                    sensor_width=1920,
+                    sensor_height=1200,
+                    width=1920,
+                    height=1200
+                )
             case _:
                 return Size(
                     sensor_width=100,

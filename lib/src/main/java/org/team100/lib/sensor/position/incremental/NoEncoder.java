@@ -29,9 +29,4 @@ public class NoEncoder implements IncrementalEncoder {
     @Override
     public void setUnwrappedEncoderPositionRad(double motorPositionRad) {
     }
-
-    @Override
-    public void periodic() {
-    }
-
 }

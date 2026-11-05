@@ -16,7 +16,6 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Point;
 
 /** Produces references based on a trajectory. */
 public class TrajectoryReferenceSE2 implements ReferenceSE2 {
-    private final LoggerFactory m_log;
     private final TrajectorySE2 m_trajectory;
     private final StateSE2Logger m_log_current;
     private final ControlSE2Logger m_log_next;
@@ -28,13 +27,13 @@ public class TrajectoryReferenceSE2 implements ReferenceSE2 {
     public TrajectoryReferenceSE2(
             LoggerFactory parent,
             TrajectorySE2 trajectory) {
-        m_log = parent.type(this);
+        LoggerFactory log = parent.type(this);
         m_trajectory = trajectory;
-        m_log_progress = m_log.doubleLogger(Level.TRACE, "progress");
-        m_log_current = m_log.StateSE2Logger(Level.TRACE, "current");
-        m_log_next = m_log.controlSE2Logger(Level.TRACE, "next");
-        m_log_done = m_log.booleanLogger(Level.TRACE, "done");
-        m_log_goal = m_log.StateSE2Logger(Level.TRACE, "goal");
+        m_log_progress = log.doubleLogger(Level.TRACE, "progress");
+        m_log_current = log.StateSE2Logger(Level.TRACE, "current");
+        m_log_next = log.controlSE2Logger(Level.TRACE, "next");
+        m_log_done = log.booleanLogger(Level.TRACE, "done");
+        m_log_goal = log.StateSE2Logger(Level.TRACE, "goal");
     }
 
     /** Ignores the measurement, resets the trajectory timer. */

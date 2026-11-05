@@ -72,10 +72,6 @@ public class AbstractMotor implements Motor {
     }
 
     @Override
-    public void periodic() {
-    }
-
-    @Override
     public double getSupplyCurrent() {
         // no current measurement
         return 0;

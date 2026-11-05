@@ -22,7 +22,7 @@ class DisplayFactory:
         :cam: for size
         :name: must be unique
         :scale: 0.25 is good for comp, 1.0 is good for debugging (but slow)"""
-        print("\n*** DisplayFactory selecting a display for identity: ", identity, flush=True)
+        print("*** DisplayFactory for identity:", identity)
         size: Size = cam.get_size()
         display_width: int = int(scale * size.width)
         display_height = int(scale * size.height)

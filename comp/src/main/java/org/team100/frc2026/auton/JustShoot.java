@@ -15,10 +15,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 /** An auton that does nothing at all. */
 public class JustShoot implements AnnotatedCommand {
     private final Machinery m_machinery;
+    private final Command command;
 
     public JustShoot(
             Machinery machinery) {
         m_machinery = machinery;
+        command = parallel(
+                m_machinery.m_shooter.auto()).withName("Shoot").withTimeout(5);
     }
 
     @Override
@@ -28,8 +31,7 @@ public class JustShoot implements AnnotatedCommand {
 
     @Override
     public Command command() {
-        return parallel(
-                m_machinery.m_shooter.auto()).withName("Shoot").withTimeout(5);
+        return command;
     }
 
     @Override

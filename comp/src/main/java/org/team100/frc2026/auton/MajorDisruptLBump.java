@@ -2,9 +2,9 @@ package org.team100.frc2026.auton;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.team100.frc2026.robot.Machinery;
 import org.team100.lib.config.AnnotatedCommand;
@@ -21,7 +21,6 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 import org.team100.lib.trajectory.se2.constraint.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
-import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -29,9 +28,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class MajorDisruptLBump implements AnnotatedCommand {
     private final LoggerFactory log;
-    private final ControllerSE2 controller;
-    private final Machinery machinery;
     private final TrajectorySE2Planner planner;
+    private final Command command;
 
     public MajorDisruptLBump(
             LoggerFactory parent,
@@ -39,27 +37,45 @@ public class MajorDisruptLBump implements AnnotatedCommand {
             ControllerSE2 controller,
             Machinery machinery) {
         log = parent.name(name());
-        this.controller = controller;
-        this.machinery = machinery;
 
         double bumpV = 2; // cartesian velocity over the bump
-        List<TimingConstraint> new_constraints = new ArrayList<>(List.of(
-                // high velocity, moderate accel
-                new ConstantConstraint(8, 20),
-                // absolute maxima
-                // new SwerveDriveDynamicsConstraint(log, kinodynamics, 1, 1),
-                // high yaw limits
-                // new YawRateConstraint(log, 8, 20),
-                // moderate capsize limits. Note we're not actually concerned about capsize
-                // here, we just want to limit tire tread shear
-                new CapsizeAccelerationConstraint(8, 20),
-                new VelocityLimitRegionConstraint(BumpZones.BLUE_BUMP_LEFT, bumpV),
-                new VelocityLimitRegionConstraint(BumpZones.BLUE_BUMP_RIGHT, bumpV),
-                new VelocityLimitRegionConstraint(BumpZones.RED_BUMP_LEFT, bumpV),
-                new VelocityLimitRegionConstraint(BumpZones.RED_BUMP_RIGHT, bumpV)));
+        List<TimingConstraint> new_constraints = Stream.concat(
+                BumpZones.constraint(bumpV).stream(),
+                List.of(
+                        // high velocity, moderate accel
+                        new ConstantConstraint(8, 20),
+                        // absolute maxima
+                        // new SwerveDriveDynamicsConstraint(log, kinodynamics, 1, 1),
+                        // high yaw limits
+                        // new YawRateConstraint(log, 8, 20),
+                        // moderate capsize limits. Note we're not actually concerned about capsize
+                        // here, we just want to limit tire tread shear
+                        new CapsizeAccelerationConstraint(8, 20)).stream())
+                .toList();
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(new_constraints);
         PathSE2Factory pathFactory = new PathSE2Factory();
         planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
+        DriveWithTrajectoryFunction fn = new DriveWithTrajectoryFunction(
+                log,
+                machinery.m_drive,
+                controller,
+                machinery.m_trajectoryViz,
+                this::t1);
+
+        command = parallel(
+                fn
+        // // extend when in neutral zone
+        // toggle(
+        // this::inNeutralZone,
+        // machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
+        // machinery.m_intakeExtend.goToRetractedPosition()),
+        // // roll when extended
+        // toggle(
+        // this::intakeExtended,
+        // parallel( machinery.m_intake.intake(),
+        // machinery.m_shooter.shooterFullspeed()),
+        // machinery.m_intake.stop())
+        );
     }
 
     @Override
@@ -74,27 +90,7 @@ public class MajorDisruptLBump implements AnnotatedCommand {
 
     @Override
     public Command command() {
-        DriveWithTrajectoryFunction fn = new DriveWithTrajectoryFunction(
-                log,
-                machinery.m_drive,
-                controller,
-                machinery.m_trajectoryViz,
-                this::t1);
-
-        return parallel(
-                fn
-        // // extend when in neutral zone
-        // toggle(
-        // this::inNeutralZone,
-        // machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
-        // machinery.m_intakeExtend.goToRetractedPosition()),
-        // // roll when extended
-        // toggle(
-        // this::intakeExtended,
-        // parallel( machinery.m_intake.intake(),
-        // machinery.m_shooter.shooterFullspeed()),
-        // machinery.m_intake.stop())
-        );
+        return command;
     }
 
     @Override

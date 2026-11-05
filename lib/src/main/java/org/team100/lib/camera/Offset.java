@@ -62,6 +62,14 @@ public class Offset {
                 fromCalibration(
                         new Transform3d(0.34, -1, 0.405, new Rotation3d(0, 0, -(Math.PI / 2))),
                         new Transform3d(0.812, 0.192, -0.354, new Rotation3d(-0.016, 0.630, -0.040)))));
+        offsets.put(Camera.CAMERA_2A, new Offset(
+                fromCalibration(
+                        new Transform3d(0.34, -1, 0.405, new Rotation3d(0, 0, -(Math.PI / 2))),
+                        new Transform3d(0.812, 0.192, -0.354, new Rotation3d(-0.016, 0.630, -0.040)))));
+        offsets.put(Camera.COLOR_DETECT_1, new Offset(
+                fromCalibration(
+                        new Transform3d(0.31, -1, 0.26, new Rotation3d(0, 0, -(Math.PI / 2))),
+                        new Transform3d(0.812, 0.192, -0.354, new Rotation3d(-0.016, 0.630, -0.040)))));
 
         //////////////////////////////////////
         //
@@ -97,6 +105,12 @@ public class Offset {
                 new Transform3d(
                         new Translation3d(),
                         new Rotation3d(0, Math.PI / 6, 0))));
+
+        //////////////////////////////////////
+        //
+        // For simulated tag detector cameras.
+        // These point in the cardinal directions.
+        //
         offsets.put(Camera.SIM0, new Offset(
                 new Transform3d(
                         new Translation3d(0, 0, 0.75),

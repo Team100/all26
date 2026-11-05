@@ -46,11 +46,6 @@ public interface RotaryPositionSensor {
     void setUnwrappedEncoderPositionRad(double x);
 
     /**
-     * For logging.
-     */
-    void periodic();
-
-    /**
      * Releases the encoder resource, if necessary (e.g. HAL ports).
      */
     void close();

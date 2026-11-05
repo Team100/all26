@@ -9,6 +9,7 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.framework.TimedRobot100;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.RobotLog;
@@ -27,13 +28,14 @@ public class Robot2025 extends TimedRobot100 {
 
     public Robot2025() {
         Startup.start();
-        LoggerFactory log = Logging.instance().rootLogger;
+        LoggerFactory log = Logging.root();
+        LoggerFactory field = Logging.field();
 
         m_robotLog = new RobotLog(log);
 
-        m_machinery = new Machinery2025(m_robotLog.totalCurrentLog());
-        m_allAutons = new AllAutons2025(m_machinery);
-        m_binder = new Binder2025(m_machinery);
+        m_machinery = new Machinery2025(log, field, m_robotLog.totalCurrentLog());
+        m_allAutons = new AllAutons2025(log, m_machinery);
+        m_binder = new Binder2025(log, field, m_machinery);
         m_binder.bind();
 
         Prewarmer2025.init(m_machinery);
@@ -47,9 +49,9 @@ public class Robot2025 extends TimedRobot100 {
         Cache.refresh();
         // Run one iteration of the command scheduler.
         CommandScheduler.getInstance().run();
-        m_machinery.periodic();
-        m_robotLog.periodic();
-        if (Experiments.instance.enabled(Experiment.FlushOften)) {
+        // Poll for logs after all the actuation is done
+        LogPoller.log();
+        if (Experiments.INSTANCE.enabled(Experiment.FlushOften)) {
             // StrUtil.warn("FLUSHING EVERY LOOP, DO NOT USE IN COMP");
             NetworkTableInstance.getDefault().flush();
         }

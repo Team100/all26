@@ -4,10 +4,13 @@ import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
+import org.team100.lib.logging.Logging;
+import org.team100.lib.logging.RobotLog;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.util.CanId;
+import org.team100.lib.util.Startup;
 
 /**
  * Falcon 500 using Phoenix 6.
@@ -43,5 +46,5 @@ public class Falcon500Motor extends Talon6Motor {
         // 60 * 12 / (6079 * 2 * pi) volt-sec/rad
         return 0.0188504;
     }
-
+    
 }
