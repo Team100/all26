@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=C0301,E0611,E1101,R0903,R0913,R0917
 import numpy as np
 from numpy.typing import NDArray
@@ -26,7 +27,7 @@ class InterpreterFactory:
         network: Network,
         timestamps: Timestamps,
     ) -> Interpreter:
-        print("*** InterpreterFactory for identity:", identity)
+        print(f"[{datetime.now()}] " + "*** InterpreterFactory for identity:", identity)
         if USE_NULL:
             # For testing.
             return Viewfinder(display1, display2, network)
@@ -101,7 +102,7 @@ class InterpreterFactory:
                     network,
                     timestamps,
                     AprilTags(identity, cam, network),
-                    Balls(cam, network),
+                    None,
                 )
             case Identity.CAMERA_2A:
                 return DualInterpreter(

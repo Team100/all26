@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=R0903
 from typing import override
 from app.network.structs import Blip, BlipWithCorners, Target
@@ -50,7 +51,7 @@ class FakeNetwork(Network):
     """For testing."""
 
     def __init__(self) -> None:
-        print("*** Network: FakeNetwork")
+        print(f"[{datetime.now()}] " + "*** Network: FakeNetwork")
         self.doubles: list[float] = []
         self.blips: list[Blip] = []
         self.blips_with_corners: list[BlipWithCorners] = []

@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=C0415,E0611,E1101,R0902
 
 from typing import override
@@ -13,7 +14,7 @@ class WindowsDisplay(Display):
     so use MjpegServer instead."""
 
     def __init__(self, name: str, width: int, height: int) -> None:
-        print("*** Display: WindowsDisplay")
+        print(f"[{datetime.now()}] " + "*** Display: WindowsDisplay")
         self._width: int = width
         self._height: int = height
         self._stream = Stream(name, (width, height), quality=50, fps=30)

@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=E1101
 
 from typing import cast, override
@@ -14,7 +15,7 @@ class Yuv420Decoder(Decoder):
     """Adapts buffers encoded as YUV420."""
 
     def __init__(self, size: Size):
-        print("*** Decoder: Yuv420Decoder")
+        print(f"[{datetime.now()}] " + "*** Decoder: Yuv420Decoder")
         self._size = size
         self._y_len = size.width * size.height
 

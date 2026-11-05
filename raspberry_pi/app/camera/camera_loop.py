@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=R0903
 
 from threading import Event
@@ -19,7 +20,7 @@ class CameraLoop(Looper):
         done: Event,
     ) -> None:
         super().__init__(done)
-        print("*** Looper: CameraLoop")
+        print(f"[{datetime.now()}] " + "*** Looper: CameraLoop")
         self._interpreter: Interpreter = interpreter
         self._camera: Camera = camera
 

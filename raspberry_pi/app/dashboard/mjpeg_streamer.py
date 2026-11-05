@@ -1,3 +1,4 @@
+from datetime import datetime
 # type: ignore
 
 """This is a video streaming server to be used for testing in Windows.
@@ -161,19 +162,19 @@ class MjpegServer:
             thread.start()
             self._app.is_running = True
         else:
-            print("\nServer is already running\n")
+            print(f"[{datetime.now()}] " + "\nServer is already running\n")
 
         for addr in self._host:
-            print(f"\nStreams index: http://{addr}:{self._port!s}")
-            print("Available streams:\n")
+            print(f"[{datetime.now()}] " + f"\nStreams index: http://{addr}:{self._port!s}")
+            print(f"[{datetime.now()}] " + "Available streams:\n")
             for route in self._cap_routes:  # route has a leading slash
-                print(f"http://{addr}:{self._port!s}{route}")
-            print("--------------------------------\n")
-        print("\nPress Ctrl+C to stop the server\n")
+                print(f"[{datetime.now()}] " + f"http://{addr}:{self._port!s}{route}")
+            print(f"[{datetime.now()}] " + "--------------------------------\n")
+        print(f"[{datetime.now()}] " + "\nPress Ctrl+C to stop the server\n")
 
     def stop(self) -> None:
         if self.is_running():
             self._app.is_running = False
-            print("\nStopping...\n")
+            print(f"[{datetime.now()}] " + "\nStopping...\n")
             raise GracefulExit
-        print("\nServer is not running\n")
+        print(f"[{datetime.now()}] " + "\nServer is not running\n")

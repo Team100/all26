@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=R0903,W0611
 
 from app.camera.config.config_ardu_mjpeg import ConfigArduMjpeg
@@ -14,7 +15,7 @@ class ConfigFactory:
 
     @staticmethod
     def get(identity: Identity, size: Size) -> Config:
-        print("*** CameraFactory for identity:", identity)
+        print(f"[{datetime.now()}] " + "*** CameraFactory for identity:", identity)
         match identity:
             case Identity.FUNNEL:
                 # test the RPi GS camera

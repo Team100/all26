@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=R0903
 from typing import override
 from cv2.typing import MatLike
@@ -6,7 +7,7 @@ from app.analysis.analysis_protocol import ColorAnalysis, MonoAnalysis
 
 class FakeMonoAnalysis(MonoAnalysis):
     def __init__(self) -> None:
-        print("*** MonoAnalysis: FakeMonoAnalysis")
+        print(f"[{datetime.now()}] " + "*** MonoAnalysis: FakeMonoAnalysis")
         self.count = 0
         self.size = None
 
@@ -23,7 +24,7 @@ class FakeMonoAnalysis(MonoAnalysis):
 
 class FakeColorAnalysis(ColorAnalysis):
     def __init__(self) -> None:
-        print("*** ColorAnalysis: FakeColorAnalysis")
+        print(f"[{datetime.now()}] " + "*** ColorAnalysis: FakeColorAnalysis")
         self.count = 0
         self.size = None
 
