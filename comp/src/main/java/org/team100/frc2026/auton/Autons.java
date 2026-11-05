@@ -166,11 +166,6 @@ public class Autons implements AutoCloseable {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-        m_autonChooser.add(new HStartIntakeOutake(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
          m_autonChooser.add(new CenterHalfSweepAuton(
                 log,
                 machinery.m_swerveKinodynamics,
@@ -186,7 +181,12 @@ public class Autons implements AutoCloseable {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-            m_autonChooser.add(new CenterPreloadedAuton(
+        m_autonChooser.add(new CenterPreloadedAuton(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+         m_autonChooser.add(new HStartIntakeOutake(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,

@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=E0401
 
 from typing import Any
@@ -17,7 +18,7 @@ class ConfigArduYuyv(Config):
     """
 
     def __init__(self, size: Size) -> None:
-        print("*** Config: ConfigThriftyYuyv")
+        print(f"[{datetime.now()}] " + "*** Config: ConfigThriftyYuyv")
         self._size = size
 
     @override

@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=R0902,R0903,W0212
 
 import time
@@ -50,7 +51,7 @@ class SyncLoop(Looper):
             try:
                 self._queue.put_nowait(self._offset)
             except Full:
-                print("*** queue is full, which should never happen ***")
+                print(f"[{datetime.now()}] " + "*** queue is full, which should never happen ***")
 
         self._inst.flush()
         # avoid spinning too fast

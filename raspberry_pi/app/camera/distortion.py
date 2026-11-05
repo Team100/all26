@@ -1,3 +1,4 @@
+from datetime import datetime
 import numpy as np
 from numpy.typing import NDArray
 
@@ -23,7 +24,7 @@ class Distortion:
     """
 
     def __init__(self, identity: Identity) -> None:
-        print("*** Distortion for identity:", identity)
+        print(f"[{datetime.now()}] " + "*** Distortion for identity:", identity)
         self._dist: NDArray[np.float32]
         self._valid: bool = True
         match identity:
@@ -84,15 +85,15 @@ class Distortion:
                 )
 
                 self._valid = False
-                print("###########################################")
-                print("#                                         #")
-                print("#  CAMERA DISTORTION IS NOT CALIBRATED!   #")
-                print("#                                         #")
-                print("#  YOU MUST CALIBRATE IT!!!!              #")
-                print("#                                         #")
-                print("###########################################")
+                print(f"[{datetime.now()}] " + "###########################################")
+                print(f"[{datetime.now()}] " + "#                                         #")
+                print(f"[{datetime.now()}] " + "#  CAMERA DISTORTION IS NOT CALIBRATED!   #")
+                print(f"[{datetime.now()}] " + "#                                         #")
+                print(f"[{datetime.now()}] " + "#  YOU MUST CALIBRATE IT!!!!              #")
+                print(f"[{datetime.now()}] " + "#                                         #")
+                print(f"[{datetime.now()}] " + "###########################################")
 
-        print("*** DISTORTION")
+        print(f"[{datetime.now()}] " + "*** DISTORTION")
         print(self._dist)
 
     def get(self) -> NDArray[np.float32]:

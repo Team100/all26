@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=W0212
 import time
 import unittest
@@ -19,7 +20,7 @@ class TimerTest(unittest.TestCase):
         t0: int = Timer.time_ns() // 1000
         # On my desktop, this yields Unix Epoch time (since 1970).
         t1: int = ntcore._now()
-        print("\nt0 ", t0)
-        print("\nt1 ", t1)
+        print(f"[{datetime.now()}] " + "\nt0 ", t0)
+        print(f"[{datetime.now()}] " + "\nt1 ", t1)
         # These two clocks are nothing like each other.
         self.assertNotEqual(t0, t1)

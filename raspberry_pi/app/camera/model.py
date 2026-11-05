@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=E0401
 
 from enum import Enum, unique
@@ -22,7 +23,7 @@ class Model(Enum):
     def get(camera_properties: dict[str, str]) -> "Model":  # type:ignore
         """Use the properties to avoid import errors in tests."""
         model_str: str = camera_properties["Model"]  # type:ignore
-        print("*** Camera model string:", model_str)
+        print(f"[{datetime.now()}] " + "*** Camera model string:", model_str)
         model: Model = Model(model_str)
-        print("*** Camera model:", model)
+        print(f"[{datetime.now()}] " + "*** Camera model:", model)
         return model

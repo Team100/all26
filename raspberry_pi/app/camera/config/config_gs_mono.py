@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=E0401
 
 from typing import Any
@@ -16,7 +17,7 @@ class ConfigGsMono(Config):
     """
 
     def __init__(self, size: Size) -> None:
-        print("*** Config: ConfigGsMono")
+        print(f"[{datetime.now()}] " + "*** Config: ConfigGsMono")
         self._size = size
 
     @override

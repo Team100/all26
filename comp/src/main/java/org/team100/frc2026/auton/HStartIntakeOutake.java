@@ -2,6 +2,7 @@ package org.team100.frc2026.auton;
 
 import static org.wpilib.command2.Commands.parallel;
 import static org.wpilib.command2.Commands.repeatingSequence;
+import static org.wpilib.command2.Commands.sequence;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -25,6 +26,7 @@ import org.team100.lib.trajectory.se2.constraint.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.wpilib.command2.Command;
+import org.wpilib.command2.Commands;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 
@@ -59,25 +61,28 @@ public class HStartIntakeOutake implements AnnotatedCommand {
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(new_constraints);
         PathSE2Factory pathFactory = new PathSE2Factory();
         planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
-        DriveWithTrajectoryFunction fn = new DriveWithTrajectoryFunction(
-                log,
-                machinery.m_drive,
-                controller,
-                machinery.m_trajectoryViz,
-                this::t1);
+        DriveWithTrajectoryFunction IntakeSetUp = new DriveWithTrajectoryFunction(
+                log.name("IntakeSetUp"), machinery.m_drive, controller,
+                machinery.m_trajectoryViz, this::t1);
 
-        command = parallel(
-                fn,
-                // extend when in neutral zone
-                toggle(
-                        this::inNeutralZone,
-                        machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
-                        machinery.m_intakeExtend.goToRetractedPosition()),
-                // roll when extended
-                toggle(
-                        this::intakeExtended,
-                        parallel(machinery.m_intake.intake(), machinery.m_shooter.shooterFullspeed()),
-                        machinery.m_intake.stop()));
+      command = sequence(
+                parallel(
+                        IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(6),
+                        // Assumed that the intake shouldn't deploy over the bump
+                        sequence(
+                                Commands.waitUntil(() -> FieldConstants2026
+                                        .isInNeutralZone(machinery.m_drive.getState().translation())),
+                                parallel(machinery.m_intakeExtend.goToExtendedPosition()
+                                        .andThen(machinery.m_intake.intake())).withTimeout(3),
+
+                                Commands.waitUntil(() -> FieldConstants2026
+                                        .isInAllianceZone(machinery.m_drive.getState().translation())),
+                                parallel(
+                                        machinery.m_intake.stop(),
+                                        machinery.m_intakeExtend.AgitationPosition(),
+                                        machinery.m_feeder.proportional(),
+                                        machinery.m_conveyor.convey(),
+                                        machinery.m_shooter.shooterFullspeed()))));
     }
 
     @Override

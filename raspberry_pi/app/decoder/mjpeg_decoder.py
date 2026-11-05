@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=E1101
 
 from typing import override
@@ -17,7 +18,7 @@ class MjpegDecoder(Decoder):
     """Adapts buffers encoded as JPEG."""
 
     def __init__(self, size: Size):
-        print("*** Decoder: MjpegDecoder")
+        print(f"[{datetime.now()}] " + "*** Decoder: MjpegDecoder")
         self._size = size
 
     @override

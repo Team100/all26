@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=E0401
 
 from typing import Any
@@ -14,7 +15,7 @@ class ConfigGsColor(Config):
     """
 
     def __init__(self, size: Size) -> None:
-        print("*** Config: ConfigGsColor")
+        print(f"[{datetime.now()}] " + "*** Config: ConfigGsColor")
         self._size = size
 
     @override
