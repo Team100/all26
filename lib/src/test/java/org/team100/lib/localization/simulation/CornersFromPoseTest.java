@@ -1,6 +1,7 @@
 package org.team100.lib.localization.simulation;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.camera.Camera;
@@ -21,6 +22,17 @@ public class CornersFromPoseTest {
                 594, 632,
                 594, 467,
                 511, 477 }, pts, 1.0);
+    }
+
+    @Test
+    void test0a() {
+        // sim0 k is (935,935,0,550,550)
+        Camera camera = Camera.SIM0;
+        CornersFromPose c = new CornersFromPose();
+        Transform3d tagInCamera = new Transform3d(0.6, 0, 1, new Rotation3d(0, 0, 0));
+        double[] pts = c.corners(camera, tagInCamera);
+        // tag is not fully in view
+        assertNull(pts);
     }
 
     @Test

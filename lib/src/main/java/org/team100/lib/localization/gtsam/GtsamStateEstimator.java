@@ -153,6 +153,7 @@ public class GtsamStateEstimator implements StateEstimator {
                 IsotropicNoiseSE2.high()));
     }
 
+    /** Returns most-recent key of type c, or null if none exists */
     private Key lastKey(char c) {
         // TODO: is it slow to do this every time, cache or keep a lookaside.
         KeyVector allkeys = m_result.keys();
@@ -174,12 +175,13 @@ public class GtsamStateEstimator implements StateEstimator {
 
     @Override
     public ImmutableSwerveHistory update(double timestamp) {
-        if (DEBUG)
-            System.out.printf("#### GtsamStateEstimator.update(%f)\n", timestamp);
+        // if (DEBUG)
+        // System.out.printf("#### GtsamStateEstimator.update(%f)\n", timestamp);
         Key x1 = poseKey(timestamp);
         Key b0 = biasKey(timestamp);
         if (m_result.exists(x1)) {
-            System.out.printf("**** ERROR: skipping duplicate timestamp %f ****\n", timestamp);
+            // System.out.printf("**** ERROR: skipping duplicate timestamp %f ****\n",
+            // timestamp);
             return immutableCopy();
         }
 
@@ -209,39 +211,41 @@ public class GtsamStateEstimator implements StateEstimator {
         // m_newFactors.add(PriorFactor.PriorFactorPose2(x1, new Pose2(),
         // posePriorSigma));
 
-        if (DEBUG) {
-            System.out.println("#### GtsamStateEstimator.update(): pending updates");
-            m_newFactors.print("new factors");
-            m_newValues.print("new values");
-            m_newTimestamps.print();
+        // if (DEBUG) {
+        // System.out.println("#### GtsamStateEstimator.update(): pending updates");
+        // m_newFactors.print("new factors");
+        // m_newValues.print("new values");
+        // m_newTimestamps.print();
 
-            System.out.println("#### GtsamStateEstimator.update(): current factors");
+        // System.out.println("#### GtsamStateEstimator.update(): current factors");
 
-            // NonlinearFactorGraph currentFactors = m_smoother.getFactors();
-            // currentFactors.print("current factors");
+        // NonlinearFactorGraph currentFactors = m_smoother.getFactors();
+        // currentFactors.print("current factors");
 
-            // Values currentValues = m_smoother.calculateEstimate();
-            // currentValues.print("current values");
+        // Values currentValues = m_smoother.calculateEstimate();
+        // currentValues.print("current values");
 
-            System.out.println("#### GtsamStateEstimator.update(): smoother.update");
-        }
+        // System.out.println("#### GtsamStateEstimator.update(): smoother.update");
+        // }
         try {
             Result result = m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
-            if (DEBUG) {
-                System.out.printf("iterations %d\n", result.getIterations());
-            }
+            // if (DEBUG) {
+            // System.out.printf("iterations %d\n", result.getIterations());
+            // }
         } catch (IndeterminateSystemException e) {
             System.out.printf("#### IndeterminateSystemException %s", e);
+            // it can get stuck here so try just resetting
+            reset(timestamp, NoisyStateSE2.ZERO);
             // m_newFactors.print("new factors");
             // m_newValues.print("new values");
         }
 
-        if (DEBUG)
-            System.out.println("#### GtsamStateEstimator.update(): smoother estimate");
+        // if (DEBUG)
+        // System.out.println("#### GtsamStateEstimator.update(): smoother estimate");
         m_result = m_smoother.calculateEstimate();
 
-        if (DEBUG)
-            System.out.println("reset the accumulators");
+        // if (DEBUG)
+        // System.out.println("reset the accumulators");
         m_newFactors.resize(0);
         m_newValues.clear();
         m_newTimestamps.clear();
@@ -266,13 +270,13 @@ public class GtsamStateEstimator implements StateEstimator {
      * Copy all the poses out of GTSAM, with stddev.
      */
     public ImmutableSwerveHistory immutableCopy() {
-        if (DEBUG)
-            System.out.println("#### GtsamStateEstimator.immutableCopy() factors");
+        // if (DEBUG)
+        // System.out.println("#### GtsamStateEstimator.immutableCopy() factors");
         NonlinearFactorGraph factors = m_smoother.getFactors();
-        factors.print("factors");
-        m_result.print("result");
-        if (DEBUG)
-            System.out.println("#### GtsamStateEstimator.immutableCopy() marginals");
+        // factors.print("factors");
+        // m_result.print("result");
+        // if (DEBUG)
+        // System.out.println("#### GtsamStateEstimator.immutableCopy() marginals");
         Marginals marginals = Marginals.QR(factors, m_result);
 
         TreeMap<Double, NoisyStateSE2> states = new TreeMap<>();
@@ -347,12 +351,13 @@ public class GtsamStateEstimator implements StateEstimator {
 
     /** Add factor for odo/gyro measurement */
     void odoGyro(double timestamp) {
-        if (DEBUG)
-            System.out.printf("#### GtsamStateEstimator.odoGyro(%f)\n", timestamp);
+        // if (DEBUG)
+        // System.out.printf("#### GtsamStateEstimator.odoGyro(%f)\n", timestamp);
         Entry<Double, OdoGyroMeasurement> measurementEntry = m_measurements.lowerEntry(timestamp);
         if (measurementEntry == null) {
-            if (DEBUG)
-                System.out.printf("GtsamStateEstimator.odoGyro() null measurement for timestamp %f\n", timestamp);
+            // if (DEBUG)
+            // System.out.printf("GtsamStateEstimator.odoGyro() null measurement for
+            // timestamp %f\n", timestamp);
             return;
         }
         double previousTimestamp = measurementEntry.getKey();
@@ -396,8 +401,8 @@ public class GtsamStateEstimator implements StateEstimator {
     }
 
     void visionOnly() {
-        if (DEBUG)
-            System.out.println("#### GtsamStateEstimator.visionOnly()");
+        // if (DEBUG)
+        // System.out.println("#### GtsamStateEstimator.visionOnly()");
         // like vision but doesn't try to interpolate anything
         for (Corners v : m_vision.get()) {
             double timestamp = v.timestamp();
@@ -414,14 +419,14 @@ public class GtsamStateEstimator implements StateEstimator {
                     calib,
                     m_visionNoise));
 
-            if (m_newValues.exists(x)) {
+            if (m_newValues.exists(x) || m_result.exists(x)) {
                 // We've already made a new value for this timestamp.
                 // This happens anytime there's more than one tag in the same frame.
-                if (DEBUG)
-                    // System.out.printf("#### GtsamStateEstimator.visionOnly() skipping duplicate
-                    // timestamp %f\n",
-                    // timestamp);
-                    continue;
+                // if (DEBUG)
+                // System.out.printf("#### GtsamStateEstimator.visionOnly() skipping duplicate
+                // timestamp %f\n",
+                // timestamp);
+                continue;
             }
             // adding a weak prior helps the model converge
             Vector3 poseSigmas = new Vector3(10, 10, 10);
@@ -429,29 +434,40 @@ public class GtsamStateEstimator implements StateEstimator {
             m_newFactors.add(PriorFactor.PriorFactorPose2(x, new Pose2(), posePriorSigma));
             m_newTimestamps.put(x, timestamp);
             m_newValues.insert(x, new Pose2());
+
+            // add a "between" factor to smooth the pose time-series
+            Key lastPoseKey = lastKey('x');
+            if (lastPoseKey != null) {
+                Vector3 smoother = new Vector3(0.1, 0.1, 0.1);
+                shared_ptr<Diagonal> smootherSigma = Diagonal.Sigmas(smoother);
+                // Pose2 lastPose = m_result.atPose2(lastPoseKey);
+                m_newFactors.add(BetweenFactorPose2.newBetweenFactorPose2(
+                        lastPoseKey, x, new Pose2(), smootherSigma));
+            }
         }
     }
 
     void vision() {
-        if (DEBUG)
-            System.out.println("#### GtsamStateEstimator.vision()");
+        // if (DEBUG)
+        // System.out.println("#### GtsamStateEstimator.vision()");
 
         // look through the pending vision input
         // note there can be multiple records here with the same timestamp.
         for (Corners v : m_vision.get()) {
             double timestamp = v.timestamp();
-            if (DEBUG)
-                System.out.printf("#### GtsamStateEstimator.vision() timestamp %f\n", timestamp);
+            // if (DEBUG)
+            // System.out.printf("#### GtsamStateEstimator.vision() timestamp %f\n",
+            // timestamp);
             Entry<Double, OdoGyroMeasurement> before = m_measurements.lowerEntry(timestamp);
             if (before == null) {
-                if (DEBUG)
-                    System.out.printf("no earlier measurement for timestamp %f\n", timestamp);
+                // if (DEBUG)
+                // System.out.printf("no earlier measurement for timestamp %f\n", timestamp);
                 continue;
             }
             Entry<Double, OdoGyroMeasurement> after = m_measurements.higherEntry(timestamp);
             if (after == null) {
-                if (DEBUG)
-                    System.out.printf("no later measurement for timestamp %f\n", timestamp);
+                // if (DEBUG)
+                // System.out.printf("no later measurement for timestamp %f\n", timestamp);
                 continue;
             }
 
@@ -474,23 +490,26 @@ public class GtsamStateEstimator implements StateEstimator {
             if (m_newValues.exists(x)) {
                 // We've already made a new value for this timestamp.
                 // This happens anytime there's more than one tag in the same frame.
-                if (DEBUG)
-                    System.out.printf("#### GtsamStateEstimator.vision() skipping duplicate timestamp %f\n", timestamp);
+                // if (DEBUG)
+                // System.out.printf("#### GtsamStateEstimator.vision() skipping duplicate
+                // timestamp %f\n", timestamp);
                 continue;
             }
             double beforeTime = before.getKey();
             Key x0 = poseKey(beforeTime);
             if (x.j == x0.j) {
-                if (DEBUG)
-                    System.out.printf("#### GtsamStateEstimator.vision() timestamp is floor %f\n", timestamp);
+                // if (DEBUG)
+                // System.out.printf("#### GtsamStateEstimator.vision() timestamp is floor
+                // %f\n", timestamp);
                 // the vision timestamp happens to be the same as the floor
                 continue;
             }
             double afterTime = after.getKey();
             Key x1 = poseKey(afterTime);
             if (x.j == x1.j) {
-                if (DEBUG)
-                    System.out.printf("#### GtsamStateEstimator.vision() timestamp is ceiling %f\n", timestamp);
+                // if (DEBUG)
+                // System.out.printf("#### GtsamStateEstimator.vision() timestamp is ceiling
+                // %f\n", timestamp);
                 // the vision timestamp happens to be the same as the ceiling
                 continue;
             }
@@ -552,7 +571,7 @@ public class GtsamStateEstimator implements StateEstimator {
     @Override
     public void reset(double timestamp, NoisyStateSE2 state) {
         if (DEBUG)
-            System.out.println("#### GtsamStateEstimator.reset()");
+            System.out.printf("#### GtsamStateEstimator.reset() %f\n", timestamp);
         m_measurements.reset(
                 timestamp,
                 new OdoGyroMeasurement(
@@ -591,18 +610,19 @@ public class GtsamStateEstimator implements StateEstimator {
         // m_newValues.insert(b0, 0);
         // m_newTimestamps.put(b0, timestamp);
 
-        if (DEBUG) {
-            System.out.println("#### GtsamStateEstimator.reset() pending");
-            // m_newFactors.print("new factors");
-            // m_newValues.print("new values");
+        // if (DEBUG) {
+        // System.out.println("#### GtsamStateEstimator.reset() pending");
+        // m_newFactors.print("new factors");
+        // m_newValues.print("new values");
 
-            System.out.println("#### GtsamStateEstimator.reset() smoother update");
-        }
-        Result result = m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
-        if (DEBUG) {
-            System.out.printf("iterations %d\n", result.getIterations());
-            System.out.println("#### GtsamStateEstimator.reset() smoother estimate");
-        }
+        // System.out.println("#### GtsamStateEstimator.reset() smoother update");
+        // }
+        // Result result = m_smoother.update(m_newFactors, m_newValues,
+        // m_newTimestamps);
+        // if (DEBUG) {
+        // System.out.printf("iterations %d\n", result.getIterations());
+        // System.out.println("#### GtsamStateEstimator.reset() smoother estimate");
+        // }
         m_result = m_smoother.calculateEstimate();
         m_newFactors.resize(0);
         m_newValues.clear();

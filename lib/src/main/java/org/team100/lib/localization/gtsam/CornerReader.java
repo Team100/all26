@@ -15,7 +15,7 @@ import org.wpilib.util.struct.StructBuffer;
  * Reads camera observations, produces corners for GTSAM
  */
 public class CornerReader {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private final CameraReader<BlipWithCorners> m_reader;
     private final TagToCorners m_translator;
     private final CornerFilter m_filter;

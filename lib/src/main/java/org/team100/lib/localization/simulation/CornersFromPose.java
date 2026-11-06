@@ -1,6 +1,7 @@
 package org.team100.lib.localization.simulation;
 
 import java.io.IOException;
+import java.util.Random;
 
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.CvType;
@@ -31,17 +32,19 @@ public class CornersFromPose {
             throw new RuntimeException(e);
         }
     }
-    private final Transform3d corner0 = new Transform3d(-h, h, 0, Rotation3d.kZero);
-    private final Transform3d corner1 = new Transform3d(h, h, 0, Rotation3d.kZero);
-    private final Transform3d corner2 = new Transform3d(h, -h, 0, Rotation3d.kZero);
-    private final Transform3d corner3 = new Transform3d(-h, -h, 0, Rotation3d.kZero);
+    private static final Transform3d corner0 = new Transform3d(-h, h, 0, Rotation3d.kZero);
+    private static final Transform3d corner1 = new Transform3d(h, h, 0, Rotation3d.kZero);
+    private static final Transform3d corner2 = new Transform3d(h, -h, 0, Rotation3d.kZero);
+    private static final Transform3d corner3 = new Transform3d(-h, -h, 0, Rotation3d.kZero);
+
+    private final Random m_rand = new Random();
 
     /**
      * Project the corners of the tag into the camera.
      * 
      * @param tagInCamera z-forward, camera coordinates.
      * @return four (u,v) camera pixel pairs, starting in lower left, then
-     *         counter-clockwise.
+     *         counter-clockwise. Returns null if any corner is out of frame.
      */
     public double[] corners(Camera camera, Transform3d tagInCamera) {
         Transform3d c0 = tagInCamera.plus(corner0);
@@ -55,17 +58,39 @@ public class CornersFromPose {
                 OpenCVUtil.point(c3.getTranslation()));
         Mat rvec = Mat.zeros(3, 1, CvType.CV_64F);
         Mat tvec = Mat.zeros(3, 1, CvType.CV_64F);
-        Mat kMat = Intrinsic.get(camera).mat();
+        Intrinsic intrinsic = Intrinsic.get(camera);
+        Mat kMat = intrinsic.mat();
         MatOfDouble dMat = Distortion.get(camera).matOfDouble();
         MatOfPoint2f out = new MatOfPoint2f();
         Calib3d.projectPoints(objectPts, rvec, tvec, kMat, dMat, out);
         Point[] pts = out.toArray();
+        // return null if any corner is out of view.
+        for (int i = 0; i < 4; ++i) {
+            if (pts[i].x < 0)
+                return null;
+            if (pts[i].y < 0)
+                return null;
+            if (pts[i].x > intrinsic.cx() * 2)
+                return null;
+            if (pts[i].y > intrinsic.cy() * 2)
+                return null;
+        }
+        // add a little bit of noise.
         return new double[] {
-                pts[0].x, pts[0].y,
-                pts[1].x, pts[1].y,
-                pts[2].x, pts[2].y,
-                pts[3].x, pts[3].y
+                pts[0].x + v(), pts[0].y + v(),
+                pts[1].x + v(), pts[1].y + v(),
+                pts[2].x + v(), pts[2].y + v(),
+                pts[3].x + v(), pts[3].y + v()
         };
+    }
+
+    /**
+     * Pixel noise, representing the way the Apriltag detector fits corner points to
+     * the image, which has some discretization noise at least.
+     */
+    private double v() {
+        // std dev is one pixel.
+        return m_rand.nextGaussian();
     }
 
 }

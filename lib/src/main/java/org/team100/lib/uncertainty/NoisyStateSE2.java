@@ -9,6 +9,7 @@ import org.wpilib.math.interpolation.Interpolatable;
 
 /** StateSE2 with isotropic noise in position. */
 public class NoisyStateSE2 implements Interpolatable<NoisyStateSE2> {
+    public static final NoisyStateSE2 ZERO = new NoisyStateSE2(StateSE2.ZERO, IsotropicNoiseSE2.high());
     /** Estimate for position and velocity. */
     private final StateSE2 m_state;
     /** Uncertainty in the position estimate. */
