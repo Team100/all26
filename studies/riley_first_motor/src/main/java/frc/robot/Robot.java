@@ -24,6 +24,7 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
+import org.team100.lib.motor.rev.MinionSparkMotor;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.Startup;
 
@@ -42,7 +43,7 @@ public class Robot extends TimedRobot100 {
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
-private final Falcon500Motor m_motor;
+private final MinionSparkMotor m_motor;
 private double m_dutyCycle = 0;
 private DriverXboxControl m_controller;
 
@@ -57,15 +58,17 @@ public Robot() {
 
 
     System.out.println("Initializing motor");
-    m_motor = new Falcon500Motor(
-            log.name("motor"),
+    m_motor = new MinionSparkMotor(
+            log.name("drum A"),
             currentLog,
-            new CanId(2), // YOUR CAN ID, not 7!
+            new CanId(39), 
             NeutralMode100.COAST,
             MotorPhase.FORWARD,
             new CurrentLimit(10, 10),
             new Friction(0, 0, 0, 0),
-            PIDConstants.zero());
+            PIDConstants.zero(),
+            0,
+            0);
     System.out.println("Motor initialized");
 
 }
@@ -136,8 +139,13 @@ public Robot() {
     // m_motor.setDutyCycle(m_dutyCycle);
     System.out.println("duty cycle: " + m_dutyCycle);
     // controlled by controller
-    // m_dutyCycle = 8.leftY() / 10.0;
-    m_dutyCycle = 0.1;
+    // m_dutyCycle = m_controller.leftY() / 10.0;
+    
+    if(m_controller.a() == true){
+      m_dutyCycle = 0.1;
+    }else{
+      m_dutyCycle = 0;
+    }
     m_motor.setDutyCycle(m_dutyCycle);
 
   }
