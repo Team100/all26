@@ -1,10 +1,12 @@
 package org.team100.lib.camera;
 
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.wpilib.vision.camera.OpenCvLoader;
 
 /**
  * Camera intrinsic matrices.
@@ -12,22 +14,29 @@ import org.opencv.core.Mat;
  * Should mirror intrinsic.py.
  */
 public class Intrinsic {
+    static {
+        try {
+            OpenCvLoader.forceLoad();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private static final Intrinsic DEFAULT = new Intrinsic(new double[][] { //
             { 1.0, 0.0, 0.0 }, //
             { 0.0, 1.0, 0.0 }, //
             { 0.0, 0.0, 1.0 } });
-    private static final Intrinsic SIM_DEFAULT = new Intrinsic(new double[][] { //
+    public static final Intrinsic SIM_DEFAULT = new Intrinsic(new double[][] { //
             { 935.0, 0.0, 550.0 }, //
             { 0.0, 935.0, 550.0 }, //
             { 0.0, 0.0, 1.0 } });
     private static final Intrinsic COLOR_DETECTi = new Intrinsic(new double[][] { //
-            {872.4186642, 0.0, 871.2316943}, //
-            {0.0, 967.5641454, 610.2786945}, //
-            { 0, 0, 1} });
+            { 872.4186642, 0.0, 871.2316943 }, //
+            { 0.0, 967.5641454, 610.2786945 }, //
+            { 0, 0, 1 } });
     private static final Intrinsic CAMERA_2Ai = new Intrinsic(new double[][] { //
-            {874.8730398, 0.0, 875.8991441},
-            {0.0, 954.7454588, 609.6603374},
-            {0, 0, 1} });
+            { 874.8730398, 0.0, 875.8991441 },
+            { 0.0, 954.7454588, 609.6603374 },
+            { 0, 0, 1 } });
     private static final Map<Camera, Intrinsic> intrinsics;
 
     static {
@@ -38,7 +47,6 @@ public class Intrinsic {
         intrinsics.put(Camera.SIM3, SIM_DEFAULT);
         intrinsics.put(Camera.COLOR_DETECT_1, COLOR_DETECTi);
         intrinsics.put(Camera.CAMERA_2A, CAMERA_2Ai);
-
 
         // TODO: more cameras
     }

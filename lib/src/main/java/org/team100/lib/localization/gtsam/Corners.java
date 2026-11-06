@@ -6,6 +6,9 @@ import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.math.geometry.Translation3d;
 
+/**
+ * The camera offset here uses x-forward coordinates not camera coordinates.
+ */
 public record Corners(
         double timestamp,
         Translation3d landmark,

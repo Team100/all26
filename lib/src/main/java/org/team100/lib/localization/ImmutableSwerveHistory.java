@@ -2,10 +2,8 @@ package org.team100.lib.localization;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.team100.lib.coherence.Takt;
 import org.team100.lib.uncertainty.NoisyStateSE2;
 import org.team100.lib.util.TimeInterpolatableBuffer100;
 
