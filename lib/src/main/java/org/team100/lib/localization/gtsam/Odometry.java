@@ -1,5 +1,7 @@
 package org.team100.lib.localization.gtsam;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
@@ -12,7 +14,6 @@ import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Twist2d;
 
 import gtsam.BetweenFactorPose2;
-import gtsam.FixedLagSmoother.KeyTimestampMap;
 import gtsam.Key;
 import gtsam.NonlinearFactorGraph;
 import gtsam.PlanarGyroFactor;
@@ -20,7 +21,6 @@ import gtsam.PlanarGyroFactor.PlanarGyroBiasFactor;
 import gtsam.PlanarGyroFactor.PlanarGyroParams;
 import gtsam.Pose2;
 import gtsam.Rot2;
-import gtsam.Values;
 import gtsam.Vector3;
 import gtsam.shared_ptr;
 import gtsam.noiseModel.Diagonal;
@@ -62,45 +62,45 @@ public class Odometry {
      * 
      * TODO: move the constants here to the class, make this not static.
      */
-    static void odoGyro(
+    static List<Double> odoGyro(
             SwerveDriveKinematics100 m_kinematics,
             shared_ptr<PlanarGyroParams> m_params,
-            double timestamp,
+            double t1,
             TimeInterpolatableBuffer100<OdoGyroMeasurement> m_measurements,
             Supplier<Rotation2d> m_gyro,
             Supplier<SwerveModulePositions> m_positions,
-            NonlinearFactorGraph m_newFactors,
-            Values m_newValues,
-            KeyTimestampMap m_newTimestamps) {
-        Entry<Double, OdoGyroMeasurement> measurementEntry = m_measurements.lowerEntry(timestamp);
-        if (measurementEntry == null) {
-            return;
+            NonlinearFactorGraph factors) {
+        List<Double> timestamps = new ArrayList<>();
+        Entry<Double, OdoGyroMeasurement> m = m_measurements.lowerEntry(t1);
+        if (m == null) {
+            // don't make a new state
+            return timestamps;
         }
-        double previousTimestamp = measurementEntry.getKey();
-        OdoGyroMeasurement previousMeasurement = measurementEntry.getValue();
+        double t0 = m.getKey();
+        OdoGyroMeasurement m0 = m.getValue();
 
-        double dt = timestamp - previousTimestamp;
+        Key x0 = Keys.poseKey(t0);
+        Key x1 = Keys.poseKey(t1);
+        SwerveModulePositions pos1 = m_positions.get();
+        SwerveModulePositions pos0 = m0.odo();
+        factors.add(getOdometryFactor(m_kinematics, x0, x1, pos0, pos1));
 
-        Key x0 = Keys.poseKey(previousTimestamp);
-        Key x1 = Keys.poseKey(timestamp);
+        // gyro factor
+        Key b0 = Keys.biasKey(t0);
+        Key b1 = Keys.biasKey(t1);
+        Rotation2d yaw0 = m0.gyro();
+        Rotation2d yaw1 = m_gyro.get();
+        Rot2 dr = new Rot2(yaw1.minus(yaw0).getRadians());
+        double dt = t1 - t0;
+        factors.add(PlanarGyroFactor.FromRotation(x0, x1, b0, m_params, dr, dt));
 
-        Key b0 = Keys.biasKey(previousTimestamp);
-        Key b1 = Keys.biasKey(timestamp);
-
-        OdoGyroMeasurement newMeasurement = new OdoGyroMeasurement(m_gyro.get(), m_positions.get());
-
-        m_newFactors.add(getOdometryFactor(m_kinematics,
-                x0, x1, previousMeasurement.odo(), newMeasurement.odo()));
-
-        Rot2 dr = new Rot2(newMeasurement.gyro().minus(
-                previousMeasurement.gyro()).getRadians());
-        m_newFactors.add(PlanarGyroFactor.FromRotation(
-                x0, x1, b0, m_params, dr, dt));
-
-        m_newFactors.add(PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
+        factors.add(PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
                 b0, b1, m_params));
 
-        m_measurements.put(timestamp, newMeasurement);
+        OdoGyroMeasurement m1 = new OdoGyroMeasurement(yaw1, pos1);
+        m_measurements.put(t1, m1);
+        timestamps.add(t1);
+        return timestamps;
     }
 
 }

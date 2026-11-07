@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Supplier;
 
 import org.team100.lib.geometry.se2.VelocitySE2;
@@ -25,11 +26,6 @@ import org.team100.lib.uncertainty.NoisyStateSE2;
 import org.team100.lib.util.TimeInterpolatableBuffer100;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Transform3d;
-import org.wpilib.math.geometry.Translation3d;
-import org.wpilib.math.linalg.MatBuilder;
-import org.wpilib.math.util.Nat;
 
 import gtsam.BatchFixedLagSmoother;
 import gtsam.FixedLagSmoother;
@@ -40,13 +36,14 @@ import gtsam.KeyVector;
 import gtsam.LevenbergMarquardtParams;
 import gtsam.Marginals;
 import gtsam.NonlinearFactorGraph;
+import gtsam.PlanarGyroFactor;
+import gtsam.PlanarGyroFactor.PlanarGyroBiasFactor;
 import gtsam.PlanarGyroFactor.PlanarGyroParams;
 import gtsam.Pose2;
+import gtsam.Rot2;
 import gtsam.Symbol;
 import gtsam.Values;
-import gtsam.Vector2;
 import gtsam.shared_ptr;
-import gtsam.noiseModel.Diagonal;
 
 /**
  * State estimator that uses the GTSAM batched smoother.
@@ -64,9 +61,6 @@ public class GtsamStateEstimator implements StateEstimator {
     private static final boolean DEBUG = true;
 
     private static final double LAG_SECONDS = 0.2;
-
- 
-
 
     private final Supplier<Rotation2d> m_gyro;
     private final Supplier<SwerveModulePositions> m_positions;
@@ -172,27 +166,29 @@ public class GtsamStateEstimator implements StateEstimator {
         // m_newValues.insert(b0, lastBias);
         // m_newTimestamps.put(b0, timestamp);
 
-        // Odometry.odoGyro(
-        // m_kinematics, m_params, timestamp, m_measurements,
-        // m_gyro, m_positions, m_newFactors, m_newValues, m_newTimestamps);
-        // Vision.vision(m_kinematics, m_params, m_measurements, m_result, m_vision,
-        // m_newFactors, m_newValues, m_newTimestamps);
+        Collection<Double> timestamps = new TreeSet<>();
 
-        Collection<Double> timestamps = VisionOnly.visionOnly(
-                m_vision.get(), m_newFactors);
+        // timestamps.addAll(Odometry.odoGyro(
+        //         m_kinematics, m_params, timestamp, m_measurements,
+        //         m_gyro, m_positions, m_newFactors));
+        // for (double t : timestamps) {
+        //     Key x = Keys.poseKey(t);
+        //     m_newValues.insert(x, new Pose2());
+        //     m_newTimestamps.put(x, t);
+        //     Key b = Keys.biasKey(t);
+        //     m_newTimestamps.put(b, timestamp);
+        //     m_newValues.insert(b, 0);
+        // }
+        // timestamps.clear();
 
-        // add values, timestamps, priors, and between factors for new vision estimates.
-        for (double t : timestamps) {
-            Key tx = Keys.poseKey(t);
-            if (m_newValues.exists(tx) || m_result.exists(tx)) {
-                // We've already made a new value for this timestamp.
-                continue;
-            }
-            Betweens.poseBetween(m_result, m_newFactors, tx);
-            Priors.posePrior(m_newFactors, tx);
-            m_newValues.insert(tx, new Pose2());
-            m_newTimestamps.put(tx, t);
-        }
+        // vision and interpolation
+        timestamps.addAll(Vision.vision(m_vision.get(), m_newFactors));
+
+        // interpolated odometry
+        // addInterpolatedFactorsAndValues(timestamps);
+
+        // values to match timestamps, no interpolated odometry
+        addValues(timestamps);
 
         // for now, priors
         // TODO: revive this
@@ -219,7 +215,106 @@ public class GtsamStateEstimator implements StateEstimator {
         m_newTimestamps.clear();
 
         return immutableCopy();
+    }
 
+    /**
+     * Add values, timestamps, and interpolated factors for this state and the
+     * time-aligned gyro bias.
+     */
+    private void addInterpolatedFactorsAndValues(Collection<Double> timestamps) {
+        for (double timestamp : timestamps) {
+            Key x = Keys.poseKey(timestamp);
+            Key b = Keys.biasKey(timestamp);
+
+            if (m_newValues.exists(x) || m_result.exists(x)) {
+                // We've already made a new value for this timestamp.
+                continue;
+            }
+            // state for the timestamp, we use this regardless.
+            // TODO: improve initial values.
+            m_newTimestamps.put(x, timestamp);
+            m_newValues.insert(x, new Pose2());
+
+            Entry<Double, OdoGyroMeasurement> before = m_measurements.lowerEntry(timestamp);
+            if (before == null) {
+                // there's no way to interpolate
+                continue;
+            }
+            Entry<Double, OdoGyroMeasurement> after = m_measurements.higherEntry(timestamp);
+            if (after == null) {
+                // there's no way to interpolate
+                continue;
+            }
+
+            double beforeTime = before.getKey();
+            Key x0 = Keys.poseKey(beforeTime);
+            if (x.j == x0.j) {
+                // the vision timestamp happens to be the same as the floor,
+                // so there's nothing more required.
+                continue;
+            }
+            double afterTime = after.getKey();
+            Key x1 = Keys.poseKey(afterTime);
+            if (x.j == x1.j) {
+                // the vision timestamp happens to be the same as the ceiling,
+                // so there's nothing more required.
+                continue;
+            }
+
+            // if we got here, we're going to interpolate.
+
+            m_newTimestamps.put(b, timestamp);
+            m_newValues.insert(b, 0);
+
+            // make a new value in between
+            // and wire up interpolated odometry factors
+
+            // Interpolated measurement for this timestamp
+            OdoGyroMeasurement m = m_measurements.get(timestamp);
+            OdoGyroMeasurement m0 = before.getValue();
+            OdoGyroMeasurement m1 = after.getValue();
+
+            // interpolated odometry factors
+            m_newFactors.add(Odometry.getOdometryFactor(m_kinematics,
+                    x0, x, m0.odo(), m.odo()));
+            m_newFactors.add(Odometry.getOdometryFactor(m_kinematics,
+                    x, x1, m.odo(), m1.odo()));
+
+            // interpolated gyro factors
+            Key b0 = Keys.biasKey(beforeTime);
+            Key b1 = Keys.biasKey(afterTime);
+            Rot2 dr0 = new Rot2(m.gyro().minus(m0.gyro()).getRadians());
+            Rot2 dr1 = new Rot2(m1.gyro().minus(m.gyro()).getRadians());
+            double dt0 = timestamp - beforeTime;
+            double dt1 = afterTime - timestamp;
+            m_newFactors.add(PlanarGyroFactor.FromRotation(
+                    x0, x, b0, m_params, dr0, dt0));
+            m_newFactors.add(PlanarGyroFactor.FromRotation(
+                    x, x1, b, m_params, dr1, dt1));
+
+            // interpolated gyro bias factors
+            m_newFactors.add(PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
+                    b0, b, m_params));
+            m_newFactors.add(PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
+                    b, b1, m_params));
+        }
+    }
+
+    /**
+     * Add values, timestamps, priors, and between factors for new vision
+     * estimates.
+     */
+    private void addValues(Collection<Double> timestamps) {
+        for (double timestamp : timestamps) {
+            Key x = Keys.poseKey(timestamp);
+            if (!m_newValues.exists(x) && !m_result.exists(x)) {
+                // no existing value, make a new one.
+                m_newValues.insert(x, new Pose2());
+                m_newTimestamps.put(x, timestamp);
+                Betweens.poseBetween(m_result, m_newFactors, x);
+                Priors.posePrior(m_newFactors, x);
+            }
+        }
     }
 
     /**
