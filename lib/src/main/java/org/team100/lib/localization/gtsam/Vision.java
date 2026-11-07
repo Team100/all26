@@ -2,18 +2,12 @@ package org.team100.lib.localization.gtsam;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Supplier;
 
 import org.team100.lib.camera.Distortion;
 import org.team100.lib.camera.Intrinsic;
 import org.team100.lib.gtsam.util.Geometry;
-import org.team100.lib.localization.OdoGyroMeasurement;
-import org.team100.lib.subsystems.swerve.kinodynamics.SwerveDriveKinematics100;
-import org.team100.lib.util.Math100;
-import org.team100.lib.util.TimeInterpolatableBuffer100;
 import org.wpilib.math.geometry.Rotation3d;
 import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.geometry.Translation2d;
@@ -21,19 +15,11 @@ import org.wpilib.math.geometry.Translation3d;
 import org.wpilib.math.linalg.MatBuilder;
 import org.wpilib.math.util.Nat;
 
-import gtsam.Cal3DS2;
 import gtsam.FixedLagSmoother.KeyTimestampMap;
 import gtsam.Key;
 import gtsam.NonlinearFactorGraph;
-import gtsam.PlanarGyroFactor;
-import gtsam.PlanarGyroFactor.PlanarGyroBiasFactor;
-import gtsam.PlanarGyroFactor.PlanarGyroParams;
 import gtsam.PlanarProjectionFactor1;
-import gtsam.Point2;
-import gtsam.Point3;
 import gtsam.Pose2;
-import gtsam.Pose3;
-import gtsam.Rot2;
 import gtsam.Values;
 import gtsam.Vector2;
 import gtsam.shared_ptr;
@@ -71,12 +57,23 @@ public class Vision {
      *         prior factors, and between factors (if possible).
      */
     static Collection<Double> vision(
+            Values m_result,
             List<Corners> corners,
-            NonlinearFactorGraph factors) {
+            NonlinearFactorGraph newFactors,
+            Values newValues,
+            KeyTimestampMap newTimestamps) {
         Set<Double> timestamps = new TreeSet<>();
         for (Corners corner : corners) {
-            projection(corner, factors);
+            projection(corner, newFactors, newValues, newTimestamps);
             timestamps.add(corner.timestamp());
+        }
+        // For each new timestamp, make a value and timestamp record.
+        for (double t : timestamps) {
+            Key x = Keys.poseKey(t);
+            if (!newValues.exists(x) && !m_result.exists(x)) {
+                newValues.insert(x, new Pose2());
+                newTimestamps.put(x, t);
+            }
         }
         return timestamps;
     }
@@ -84,7 +81,9 @@ public class Vision {
     /** Add a planar projection factor for this measurement */
     private static void projection(
             Corners corner,
-            NonlinearFactorGraph m_newFactors) {
+            NonlinearFactorGraph newFactors,
+            Values newValues,
+            KeyTimestampMap newTimestamps) {
         double timestamp = corner.timestamp();
         Key x = Keys.poseKey(timestamp);
         Translation3d landmark = corner.landmark();
@@ -92,13 +91,14 @@ public class Vision {
         Transform3d offset = corner.offset().plus(CAM);
         Intrinsic intrinsic = corner.intrinsic();
         Distortion distortion = corner.distortion();
-        m_newFactors.add(PlanarProjectionFactor1.newPlanarProjectionFactor1(
+        newFactors.add(PlanarProjectionFactor1.newPlanarProjectionFactor1(
                 x,
                 Geometry.toPoint3(landmark),
                 Geometry.toPoint2(measurement),
                 Geometry.toPose3(offset),
                 Geometry.toCal3DS2(intrinsic, distortion),
                 PX_NOISE));
+
     }
 
 }

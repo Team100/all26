@@ -121,7 +121,7 @@ public class GtsamStateEstimator implements StateEstimator {
                 IsotropicNoiseSE2.high()));
     }
 
-    /** Returns most-recent key of type c, or null if none exists */
+    /** Returns most-recent key of type c, or null if none exists. */
     static Key lastKey(Values m_result, char c) {
         // TODO: is it slow to do this every time, cache or keep a lookaside.
         KeyVector allkeys = m_result.keys();
@@ -131,6 +131,31 @@ public class GtsamStateEstimator implements StateEstimator {
             Key key = allkeys.at(i);
             Symbol symbol = new Symbol(key);
             double timestamp = Keys.timestamp(symbol);
+            if (symbol.chr() == c) {
+                if (timestamp > maxTime) {
+                    maxTime = timestamp;
+                    maxKey = key;
+                }
+            }
+        }
+        return maxKey;
+    }
+
+    /**
+     * Return most-recent key of type c strictly less than k, or null if none
+     * exists.
+     */
+    static Key lowerKey(Values m_result, char c, Key k) {
+        // TODO: is it slow to do this every time, cache or keep a lookaside.
+        KeyVector allkeys = m_result.keys();
+        double maxTime = -Double.MAX_VALUE;
+        Key maxKey = null;
+        for (int i = 0; i < allkeys.size(); ++i) {
+            Key key = allkeys.at(i);
+            Symbol symbol = new Symbol(key);
+            double timestamp = Keys.timestamp(symbol);
+            if (key.j >= k.j)
+                continue;
             if (symbol.chr() == c) {
                 if (timestamp > maxTime) {
                     maxTime = timestamp;
@@ -183,26 +208,28 @@ public class GtsamStateEstimator implements StateEstimator {
         Collection<Double> timestamps = new TreeSet<>();
 
         // timestamps.addAll(Odometry.odoGyro(
-        //         m_kinematics, m_params, timestamp, m_measurements,
-        //         m_gyro, m_positions, m_newFactors));
+        // m_kinematics, m_params, timestamp, m_measurements,
+        // m_gyro, m_positions, m_newFactors));
         // for (double t : timestamps) {
-        //     Key x = Keys.poseKey(t);
-        //     m_newValues.insert(x, lastPose(m_result));
-        //     m_newTimestamps.put(x, t);
-        //     Key b = Keys.biasKey(t);
-        //     m_newTimestamps.put(b, timestamp);
-        //     m_newValues.insert(b, lastBias(m_result));
+        // Key x = Keys.poseKey(t);
+        // m_newValues.insert(x, lastPose(m_result));
+        // m_newTimestamps.put(x, t);
+        // Key b = Keys.biasKey(t);
+        // m_newTimestamps.put(b, timestamp);
+        // m_newValues.insert(b, lastBias(m_result));
         // }
         // timestamps.clear();
 
-        // vision and interpolation
-        timestamps.addAll(Vision.vision(m_vision.get(), m_newFactors));
+        // add vision factors, new values, and new timestamps.
+        timestamps.addAll(Vision.vision(
+                m_result, m_vision.get(), m_newFactors, m_newValues, m_newTimestamps));
 
         // interpolated odometry
         // addInterpolatedFactorsAndValues(timestamps);
 
-        // values to match timestamps, no interpolated odometry
-        addValues(timestamps);
+        // betweens and priors.
+        betweens(timestamps);
+        priors(timestamps);
 
         // for now, priors
         // TODO: revive this
@@ -218,8 +245,9 @@ public class GtsamStateEstimator implements StateEstimator {
         } catch (IndeterminateSystemException e) {
             System.out.printf("#### IndeterminateSystemException %s", e);
             // it can get stuck here so try just resetting
-            // TODO: reset it to the most-recent good estimate, not zero.
-            reset(timestamp, NoisyStateSE2.ZERO);
+            reset(timestamp, new NoisyStateSE2(
+                    new StateSE2(Geometry.toPose2d(lastPose(m_result))),
+                    IsotropicNoiseSE2.high()));
         }
 
         m_result = m_smoother.calculateEstimate();
@@ -315,18 +343,25 @@ public class GtsamStateEstimator implements StateEstimator {
     }
 
     /**
-     * Add values, timestamps, priors, and between factors for new vision
-     * estimates.
+     * For each new timestamp, add a "between" factor from the previous state, to
+     * smooth out the estimates.
      */
-    private void addValues(Collection<Double> timestamps) {
+    private void betweens(Collection<Double> timestamps) {
         for (double timestamp : timestamps) {
             Key x = Keys.poseKey(timestamp);
             if (!m_newValues.exists(x) && !m_result.exists(x)) {
-                // no existing value, make a new one.
-                // TODO: use an estimate as the initial value
-                m_newValues.insert(x, new Pose2());
-                m_newTimestamps.put(x, timestamp);
                 Betweens.poseBetween(m_result, m_newFactors, x);
+            }
+        }
+    }
+
+    /**
+     * For each new timestamp, add a prior.
+     */
+    private void priors(Collection<Double> timestamps) {
+        for (double timestamp : timestamps) {
+            Key x = Keys.poseKey(timestamp);
+            if (!m_newValues.exists(x) && !m_result.exists(x)) {
                 Priors.posePrior(m_newFactors, x);
             }
         }

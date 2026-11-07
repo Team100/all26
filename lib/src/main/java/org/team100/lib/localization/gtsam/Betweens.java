@@ -19,7 +19,7 @@ public class Betweens {
      */
     static void poseBetween(
             Values m_result, NonlinearFactorGraph m_newFactors, Key x) {
-        Key lastPoseKey = GtsamStateEstimator.lastKey(m_result, 'x');
+        Key lastPoseKey = GtsamStateEstimator.lowerKey(m_result, 'x', x);
         if (lastPoseKey != null) {
             m_newFactors.add(BetweenFactorPose2.newBetweenFactorPose2(
                     lastPoseKey, x, new Pose2(), smootherSigma));
