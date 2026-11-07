@@ -1,6 +1,7 @@
 package org.team100.lib.localization.gtsam;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -64,25 +65,8 @@ public class GtsamStateEstimator implements StateEstimator {
 
     private static final double LAG_SECONDS = 0.2;
 
-    /**
-     * The camera coordinates is z-forward, x-right, but the camera
-     * "offset" is measured in x-forward, z-up coordinates (because
-     * it's simpler to think about). Add this transform to get
-     * the actual offset, with the z-axis pointing in the right
-     * direction.
-     */
-    static final Transform3d CAM = new Transform3d(
-            Translation3d.kZero,
-            new Rotation3d(MatBuilder.fill(Nat.N3(), Nat.N3(), //
-                    0, 0, 1, //
-                    -1, 0, 0, //
-                    0, -1, 0)));
-    // the camera itself is good to a pixel; the apriltag detector
-    // might be good to a few pixels, depending on the lens, and the
-    // lens calibration might be good to a pixel.
-    // TODO: look carefully at camera accuracy
-    static final shared_ptr<Diagonal> m_visionNoise = Diagonal.Sigmas(
-            new Vector2(2, 2));
+ 
+
 
     private final Supplier<Rotation2d> m_gyro;
     private final Supplier<SwerveModulePositions> m_positions;
@@ -152,7 +136,7 @@ public class GtsamStateEstimator implements StateEstimator {
         for (int i = 0; i < allkeys.size(); ++i) {
             Key key = allkeys.at(i);
             Symbol symbol = new Symbol(key);
-            double timestamp = timestamp(symbol);
+            double timestamp = Keys.timestamp(symbol);
             if (symbol.chr() == c) {
                 if (timestamp > maxTime) {
                     maxTime = timestamp;
@@ -165,8 +149,8 @@ public class GtsamStateEstimator implements StateEstimator {
 
     @Override
     public ImmutableSwerveHistory update(double timestamp) {
-        Key x1 = poseKey(timestamp);
-        Key b0 = biasKey(timestamp);
+        Key x1 = Keys.poseKey(timestamp);
+        Key b0 = Keys.biasKey(timestamp);
         if (m_result.exists(x1)) {
             // skip duplicate
             return immutableCopy();
@@ -192,9 +176,24 @@ public class GtsamStateEstimator implements StateEstimator {
         // m_kinematics, m_params, timestamp, m_measurements,
         // m_gyro, m_positions, m_newFactors, m_newValues, m_newTimestamps);
         // Vision.vision(m_kinematics, m_params, m_measurements, m_result, m_vision,
-        //         m_newFactors, m_newValues, m_newTimestamps);
-        VisionOnly.visionOnly(
-                m_result, m_vision, m_newFactors, m_newValues, m_newTimestamps);
+        // m_newFactors, m_newValues, m_newTimestamps);
+
+        Collection<Double> timestamps = VisionOnly.visionOnly(
+                m_vision.get(), m_newFactors);
+
+        // add values, timestamps, priors, and between factors for new vision estimates.
+        for (double t : timestamps) {
+            Key tx = Keys.poseKey(t);
+            if (m_newValues.exists(tx) || m_result.exists(tx)) {
+                // We've already made a new value for this timestamp.
+                continue;
+            }
+            Betweens.poseBetween(m_result, m_newFactors, tx);
+            Priors.posePrior(m_newFactors, tx);
+            m_newValues.insert(tx, new Pose2());
+            m_newTimestamps.put(tx, t);
+        }
+
         // for now, priors
         // TODO: revive this
         // Vector3 poseSigmas = new Vector3(1, 1, 1);
@@ -223,18 +222,6 @@ public class GtsamStateEstimator implements StateEstimator {
 
     }
 
-    static Key poseKey(double timestamp) {
-        return Key.X((long) (timestamp * 1e6));
-    }
-
-    static Key biasKey(double timestamp) {
-        return Key.B((long) (timestamp * 1e6));
-    }
-
-    private static double timestamp(Symbol symbol) {
-        return (double) symbol.index() / 1e6;
-    }
-
     /**
      * Copy all the poses out of GTSAM, with stddev.
      */
@@ -253,7 +240,7 @@ public class GtsamStateEstimator implements StateEstimator {
         for (int i = 0; i < keys.size(); ++i) {
             Key key = keys.at(i);
             Symbol symbol = new Symbol(key);
-            double timestamp = timestamp(symbol);
+            double timestamp = Keys.timestamp(symbol);
             switch (symbol.chr()) {
                 case 'x' -> {
                     if (m_result.exists(key)) {
@@ -338,7 +325,7 @@ public class GtsamStateEstimator implements StateEstimator {
         m_newValues = new Values();
         m_newTimestamps = new FixedLagSmoother.KeyTimestampMap();
 
-        Key x0 = poseKey(timestamp);
+        Key x0 = Keys.poseKey(timestamp);
         Pose2d pose2dPrior = state.pose();
         Pose2 posePrior = Geometry.toPose2(pose2dPrior);
         IsotropicNoiseSE2 poseNoise = state.noise();

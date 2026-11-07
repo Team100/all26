@@ -81,11 +81,11 @@ public class Odometry {
 
         double dt = timestamp - previousTimestamp;
 
-        Key x0 = GtsamStateEstimator.poseKey(previousTimestamp);
-        Key x1 = GtsamStateEstimator.poseKey(timestamp);
+        Key x0 = Keys.poseKey(previousTimestamp);
+        Key x1 = Keys.poseKey(timestamp);
 
-        Key b0 = GtsamStateEstimator.biasKey(previousTimestamp);
-        Key b1 = GtsamStateEstimator.biasKey(timestamp);
+        Key b0 = Keys.biasKey(previousTimestamp);
+        Key b1 = Keys.biasKey(timestamp);
 
         OdoGyroMeasurement newMeasurement = new OdoGyroMeasurement(m_gyro.get(), m_positions.get());
 

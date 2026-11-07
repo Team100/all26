@@ -9,6 +9,11 @@ import org.team100.lib.localization.OdoGyroMeasurement;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveDriveKinematics100;
 import org.team100.lib.util.Math100;
 import org.team100.lib.util.TimeInterpolatableBuffer100;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.linalg.MatBuilder;
+import org.wpilib.math.util.Nat;
 
 import gtsam.Cal3DS2;
 import gtsam.FixedLagSmoother.KeyTimestampMap;
@@ -24,12 +29,34 @@ import gtsam.Pose2;
 import gtsam.Pose3;
 import gtsam.Rot2;
 import gtsam.Values;
+import gtsam.Vector2;
 import gtsam.shared_ptr;
+import gtsam.noiseModel.Diagonal;
 
 /**
  * TODO: remove the odometry stuff from this class, do it elsewhere.
  */
 public class Vision {
+
+    /**
+     * The camera coordinates is z-forward, x-right, but the camera
+     * "offset" is measured in x-forward, z-up coordinates (because
+     * it's simpler to think about). Add this transform to get
+     * the actual offset, with the z-axis pointing in the right
+     * direction.
+     */
+    static final Transform3d CAM = new Transform3d(
+            Translation3d.kZero,
+            new Rotation3d(MatBuilder.fill(Nat.N3(), Nat.N3(), //
+                    0, 0, 1, //
+                    -1, 0, 0, //
+                    0, -1, 0)));
+
+    // the camera itself is good to a pixel; the apriltag detector
+    // might be good to a few pixels, depending on the lens, and the
+    // lens calibration might be good to a pixel.
+    // TODO: look carefully at camera accuracy
+    static final shared_ptr<Diagonal> PX_NOISE = Diagonal.Sigmas(new Vector2(2, 2));
 
     /**
      * TODO: move the constants here to the class, make this not static.
@@ -58,11 +85,11 @@ public class Vision {
 
             Point3 landmark = Geometry.toPoint3(v.landmark());
             Point2 measurement = Geometry.toPoint2(v.measurement());
-            Pose3 offset = Geometry.toPose3(v.offset().plus(GtsamStateEstimator.CAM));
+            Pose3 offset = Geometry.toPose3(v.offset().plus(CAM));
             Cal3DS2 calib = Geometry.toCal3DS2(v.intrinsic(), v.distortion());
 
-            Key x = GtsamStateEstimator.poseKey(timestamp);
-            Key b = GtsamStateEstimator.biasKey(timestamp);
+            Key x = Keys.poseKey(timestamp);
+            Key b = Keys.biasKey(timestamp);
 
             m_newFactors.add(PlanarProjectionFactor1.newPlanarProjectionFactor1(
                     x,
@@ -70,20 +97,20 @@ public class Vision {
                     measurement,
                     offset,
                     calib,
-                    GtsamStateEstimator.m_visionNoise));
+                    PX_NOISE));
 
             if (m_newValues.exists(x)) {
                 // We've already made a new value for this timestamp.
                 continue;
             }
             double beforeTime = before.getKey();
-            Key x0 = GtsamStateEstimator.poseKey(beforeTime);
+            Key x0 = Keys.poseKey(beforeTime);
             if (x.j == x0.j) {
                 // the vision timestamp happens to be the same as the floor
                 continue;
             }
             double afterTime = after.getKey();
-            Key x1 = GtsamStateEstimator.poseKey(afterTime);
+            Key x1 = Keys.poseKey(afterTime);
             if (x.j == x1.j) {
                 // the vision timestamp happens to be the same as the ceiling
                 continue;
@@ -92,8 +119,8 @@ public class Vision {
             // make a new value in between
             // and wire up interpolated odometry factors
 
-            Key b0 = GtsamStateEstimator.biasKey(beforeTime);
-            Key b1 = GtsamStateEstimator.biasKey(afterTime);
+            Key b0 = Keys.biasKey(beforeTime);
+            Key b1 = Keys.biasKey(afterTime);
             double dt0 = timestamp - beforeTime;
             double dt1 = afterTime - timestamp;
             // Interpolated measurement for this timestamp
