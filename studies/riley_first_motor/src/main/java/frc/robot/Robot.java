@@ -89,7 +89,7 @@ public Robot() {
             log.name("indexer"),
             currentLog,
             new CanId(7), 
-            NeutralMode100.COAST,
+            NeutralMode100.BRAKE,
             MotorPhase.FORWARD,
             new CurrentLimit(10, 10),
             new Friction(0, 0, 0, 0),
@@ -151,34 +151,16 @@ public Robot() {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {
-    m_dutyCycle1 = -0.3;
-    m_dutyCycle2 = 0.3;
-    m_dutyCycle3 = 0;
-    m_drumA.setDutyCycle(m_dutyCycle1);
-    m_drumB.setDutyCycle(m_dutyCycle2);
-    m_indexer.setDutyCycle(m_dutyCycle3);
-    try {
-    // Pauses the thread for exactly 4 seconds
-      TimeUnit.SECONDS.sleep(4); 
-      System.out.println("Motors powered");
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-    }
-    m_dutyCycle1 = -0.3;
-    m_dutyCycle2 = 0.3;
-    m_dutyCycle3 = -0.3;
-    m_drumA.setDutyCycle(m_dutyCycle1);
-    m_drumB.setDutyCycle(m_dutyCycle2);
-    m_indexer.setDutyCycle(m_dutyCycle3);
-    
-  }
+  public void teleopInit() {}
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    // double m_speed = m_drumA.encoder().getVelocityRad_S();
-    // System.out.printf("m_speed %.2f%n", m_speed);
+    double m_speed = m_drumA.encoder().getVelocityRad_S();
+    System.out.printf("drum a %.2f%n", m_speed);
+
+    double m_speed2 = m_drumB.encoder().getVelocityRad_S();
+    System.out.printf("drum b %.2f%n", m_speed2);
 
     // Slowly speeds up
     // if(m_dutyCycle < 0.3){
@@ -188,40 +170,22 @@ public Robot() {
     // controlled by controller
     // m_dutyCycle = m_controller.leftY() / 10.0;
 
-    m_dutyCycle1 = -0.3;
-    m_dutyCycle2 = 0.3;
-    m_dutyCycle3 = -0.3;
+    m_dutyCycle1 = -0.132;
+    m_dutyCycle2 = 0.132;
     m_drumA.setDutyCycle(m_dutyCycle1);
     m_drumB.setDutyCycle(m_dutyCycle2);
-    m_indexer.setDutyCycle(m_dutyCycle3);
-    try {
-    // Pauses the thread for exactly 1 seconds
-      Thread.sleep(500); 
-      System.out.println("Motors shooting");
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-    }
-    
-    m_dutyCycle1 = -0.3;
-    m_dutyCycle2 = 0.3;
-    m_dutyCycle3 = 0;
-    m_drumA.setDutyCycle(m_dutyCycle1);
-    m_drumB.setDutyCycle(m_dutyCycle2);
+    m_dutyCycle3 = -0.2;
     m_indexer.setDutyCycle(m_dutyCycle3);
 
-    try {
-    // Pauses the thread for exactly 2 seconds
-      TimeUnit.SECONDS.sleep(2); 
-      System.out.println("Motors repowered");
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
+
+    if(Math.abs(m_speed) > 105 && Math.abs(m_speed2) > 105){
+      m_dutyCycle3 = -0.2;
+      m_indexer.setDutyCycle(m_dutyCycle3);
+    }else{
+      m_dutyCycle3 = 0;
+      m_indexer.setDutyCycle(m_dutyCycle3);
     }
-    m_dutyCycle1 = -0.3;
-    m_dutyCycle2 = 0.3;
-    m_dutyCycle3 = -0.3;
-    m_drumA.setDutyCycle(m_dutyCycle1);
-    m_drumB.setDutyCycle(m_dutyCycle2);
-    m_indexer.setDutyCycle(m_dutyCycle3);
+
   }
 
   /** This function is called once when the robot is disabled. */
