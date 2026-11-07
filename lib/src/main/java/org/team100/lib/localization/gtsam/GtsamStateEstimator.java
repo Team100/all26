@@ -141,6 +141,20 @@ public class GtsamStateEstimator implements StateEstimator {
         return maxKey;
     }
 
+    static Pose2 lastPose(Values m_result) {
+        Key x = lastKey(m_result, 'x');
+        if (x == null)
+            return new Pose2();
+        return m_result.atPose2(x);
+    }
+
+    static double lastBias(Values m_result) {
+        Key x = lastKey(m_result, 'b');
+        if (x == null)
+            return 0;
+        return m_result.atDouble(x);
+    }
+
     @Override
     public ImmutableSwerveHistory update(double timestamp) {
         Key x1 = Keys.poseKey(timestamp);
@@ -173,11 +187,11 @@ public class GtsamStateEstimator implements StateEstimator {
         //         m_gyro, m_positions, m_newFactors));
         // for (double t : timestamps) {
         //     Key x = Keys.poseKey(t);
-        //     m_newValues.insert(x, new Pose2());
+        //     m_newValues.insert(x, lastPose(m_result));
         //     m_newTimestamps.put(x, t);
         //     Key b = Keys.biasKey(t);
         //     m_newTimestamps.put(b, timestamp);
-        //     m_newValues.insert(b, 0);
+        //     m_newValues.insert(b, lastBias(m_result));
         // }
         // timestamps.clear();
 
@@ -309,6 +323,7 @@ public class GtsamStateEstimator implements StateEstimator {
             Key x = Keys.poseKey(timestamp);
             if (!m_newValues.exists(x) && !m_result.exists(x)) {
                 // no existing value, make a new one.
+                // TODO: use an estimate as the initial value
                 m_newValues.insert(x, new Pose2());
                 m_newTimestamps.put(x, timestamp);
                 Betweens.poseBetween(m_result, m_newFactors, x);
