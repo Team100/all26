@@ -422,12 +422,15 @@ public class GtsamStateEstimator implements StateEstimator {
             double t1 = e.getKey();
             NoisyStateSE2 s1 = e.getValue();
             double dt = t1 - prev.getKey();
+            // if (DEBUG)
+                // System.out.printf("%f\n", dt);
             Pose2d p0 = prev.getValue().pose();
             Pose2d p1 = s1.pose();
             VelocitySE2 v1 = VelocitySE2.velocity(p0, p1, dt);
             NoisyStateSE2 s1v = new NoisyStateSE2(
                     new StateSE2(p1, v1), s1.noise());
             resultList.add(Map.entry(t1, s1v));
+            prev = e;
         }
         if (resultList.isEmpty()) {
             NoisyStateSE2 state = new NoisyStateSE2(new StateSE2(), IsotropicNoiseSE2.high());
