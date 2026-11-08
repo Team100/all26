@@ -1,5 +1,7 @@
 package org.team100.lib.localization.gtsam;
 
+import java.util.Collection;
+
 import gtsam.BetweenFactorPose2;
 import gtsam.Key;
 import gtsam.NonlinearFactorGraph;
@@ -23,6 +25,23 @@ public class Betweens {
         if (lastPoseKey != null) {
             m_newFactors.add(BetweenFactorPose2.newBetweenFactorPose2(
                     lastPoseKey, x, new Pose2(), smootherSigma));
+        }
+    }
+
+    /**
+     * For each new timestamp, add a "between" factor from the previous state, to
+     * smooth out the estimates.
+     */
+    static void betweens(
+            Values m_result,
+            Collection<Double> timestamps,
+            NonlinearFactorGraph newFactors,
+            Values newValues) {
+        for (double timestamp : timestamps) {
+            Key x = Keys.poseKey(timestamp);
+            if (!newValues.exists(x) && !m_result.exists(x)) {
+                Betweens.poseBetween(m_result, newFactors, x);
+            }
         }
     }
 }

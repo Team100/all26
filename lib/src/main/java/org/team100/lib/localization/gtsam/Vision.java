@@ -69,13 +69,14 @@ public class Vision {
             timestamps.add(corner.timestamp());
         }
         // For each new timestamp, make a value and timestamp record.
-        for (double t : timestamps) {
-            Key x1 = Keys.poseKey(t);
+        // TODO: maybe move this to the interpolator.
+        for (double t1 : timestamps) {
+            Key x1 = Keys.poseKey(t1);
             if (newValues.exists(x1) || m_result.exists(x1)) {
                 // There's already a value at this time, nothing left to do.
                 continue;
             }
-            newTimestamps.put(x1, t);
+            newTimestamps.put(x1, t1);
 
             // try to find a previous value
             Key x0 = GtsamStateEstimator.lowerKey(m_result, 'x', x1);

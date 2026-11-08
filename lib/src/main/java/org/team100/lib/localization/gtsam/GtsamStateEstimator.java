@@ -183,27 +183,11 @@ public class GtsamStateEstimator implements StateEstimator {
     @Override
     public ImmutableSwerveHistory update(double timestamp) {
         Key x1 = Keys.poseKey(timestamp);
-        Key b0 = Keys.biasKey(timestamp);
+        Key b1 = Keys.biasKey(timestamp);
         if (m_result.exists(x1)) {
             // skip duplicate
             return immutableCopy();
         }
-
-        // For each update, we make a new pose value and a new bias value,
-        // using the latest estimate as the initial value.
-        // TODO: revive this
-        // Key lastPoseKey = lastKey('x');
-        // Pose2 lastPose = m_result.atPose2(lastPoseKey);
-        // Pose2 lastPose = new Pose2();
-        // m_newValues.insert(x1, lastPose);
-        // m_newTimestamps.put(x1, timestamp);
-
-        // for now, skip the bias
-        // TODO: turn this back on
-        // Key lastBiasKey = lastKey('b');
-        // double lastBias = m_result.atDouble(lastBiasKey);
-        // m_newValues.insert(b0, lastBias);
-        // m_newTimestamps.put(b0, timestamp);
 
         Odometry.odoGyro(
                 m_result,
@@ -216,19 +200,8 @@ public class GtsamStateEstimator implements StateEstimator {
         timestamps.addAll(Vision.vision(
                 m_result, m_vision.get(), m_newFactors, m_newValues, m_newTimestamps));
 
-        // interpolated odometry
-        // addInterpolatedFactorsAndValues(timestamps);
-
-        // Betweens and priors. Use these if there's no odometry.
-        // betweens(timestamps);
-        // priors(timestamps);
-
-        // for now, priors
-        // TODO: revive this
-        // Vector3 poseSigmas = new Vector3(1, 1, 1);
-        // shared_ptr<Diagonal> posePriorSigma = Diagonal.Sigmas(poseSigmas);
-        // m_newFactors.add(PriorFactor.PriorFactorPose2(x1, new Pose2(),
-        // posePriorSigma));
+        // Interpolated odometry for the timestamps made by the vision.
+        addInterpolatedFactorsAndValues(timestamps);
 
         try {
             Result result = m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
@@ -256,25 +229,21 @@ public class GtsamStateEstimator implements StateEstimator {
      * time-aligned gyro bias.
      */
     private void addInterpolatedFactorsAndValues(Collection<Double> timestamps) {
-        for (double timestamp : timestamps) {
-            Key x = Keys.poseKey(timestamp);
-            Key b = Keys.biasKey(timestamp);
+        for (double t : timestamps) {
+            Key x = Keys.poseKey(t);
+            Key b = Keys.biasKey(t);
 
-            if (m_newValues.exists(x) || m_result.exists(x)) {
-                // We've already made a new value for this timestamp.
+            if (m_result.exists(x)) {
+                // We don't need to interpolate anything.
                 continue;
             }
-            // state for the timestamp, we use this regardless.
-            // TODO: improve initial values.
-            m_newTimestamps.put(x, timestamp);
-            m_newValues.insert(x, new Pose2());
 
-            Entry<Double, OdoGyroMeasurement> before = m_measurements.lowerEntry(timestamp);
+            Entry<Double, OdoGyroMeasurement> before = m_measurements.lowerEntry(t);
             if (before == null) {
                 // there's no way to interpolate
                 continue;
             }
-            Entry<Double, OdoGyroMeasurement> after = m_measurements.higherEntry(timestamp);
+            Entry<Double, OdoGyroMeasurement> after = m_measurements.higherEntry(t);
             if (after == null) {
                 // there's no way to interpolate
                 continue;
@@ -297,65 +266,40 @@ public class GtsamStateEstimator implements StateEstimator {
 
             // if we got here, we're going to interpolate.
 
-            m_newTimestamps.put(b, timestamp);
+            m_newTimestamps.put(b, t);
             m_newValues.insert(b, 0);
 
             // make a new value in between
             // and wire up interpolated odometry factors
 
             // Interpolated measurement for this timestamp
-            OdoGyroMeasurement m = m_measurements.get(timestamp);
+            OdoGyroMeasurement m = m_measurements.get(t);
             OdoGyroMeasurement m0 = before.getValue();
             OdoGyroMeasurement m1 = after.getValue();
 
-            // interpolated odometry factors
+            // Interpolate odometry factors.
             m_newFactors.add(Odometry.getOdometryFactor(m_kinematics,
                     x0, x, m0.odo(), m.odo()));
             m_newFactors.add(Odometry.getOdometryFactor(m_kinematics,
                     x, x1, m.odo(), m1.odo()));
 
-            // interpolated gyro factors
+            // Interpolate gyro factors.
             Key b0 = Keys.biasKey(beforeTime);
             Key b1 = Keys.biasKey(afterTime);
             Rot2 dr0 = new Rot2(m.gyro().minus(m0.gyro()).getRadians());
             Rot2 dr1 = new Rot2(m1.gyro().minus(m.gyro()).getRadians());
-            double dt0 = timestamp - beforeTime;
-            double dt1 = afterTime - timestamp;
+            double dt0 = t - beforeTime;
+            double dt1 = afterTime - t;
             m_newFactors.add(PlanarGyroFactor.FromRotation(
                     x0, x, b0, m_params, dr0, dt0));
             m_newFactors.add(PlanarGyroFactor.FromRotation(
                     x, x1, b, m_params, dr1, dt1));
 
-            // interpolated gyro bias factors
+            // Interpolate gyro bias factors.
             m_newFactors.add(PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
                     b0, b, m_params));
             m_newFactors.add(PlanarGyroBiasFactor.makeSharedPlanarGyroBiasFactor(
                     b, b1, m_params));
-        }
-    }
-
-    /**
-     * For each new timestamp, add a "between" factor from the previous state, to
-     * smooth out the estimates.
-     */
-    private void betweens(Collection<Double> timestamps) {
-        for (double timestamp : timestamps) {
-            Key x = Keys.poseKey(timestamp);
-            if (!m_newValues.exists(x) && !m_result.exists(x)) {
-                Betweens.poseBetween(m_result, m_newFactors, x);
-            }
-        }
-    }
-
-    /**
-     * For each new timestamp, add a prior.
-     */
-    private void priors(Collection<Double> timestamps) {
-        for (double timestamp : timestamps) {
-            Key x = Keys.poseKey(timestamp);
-            if (!m_newValues.exists(x) && !m_result.exists(x)) {
-                Priors.posePrior(m_newFactors, x, new Pose2());
-            }
         }
     }
 
