@@ -5,15 +5,27 @@ import gtsam.Symbol;
 
 public class Keys {
     static Key poseKey(double timestamp) {
-        return Key.X((long) (timestamp * 1e6));
+        return poseKey((long) (timestamp * 1e6));
+    }
+
+    static Key poseKey(long t) {
+        return Key.X(t);
     }
 
     static Key biasKey(double timestamp) {
-        return Key.B((long) (timestamp * 1e6));
+        return biasKey((long) (timestamp * 1e6));
     }
 
-    static double timestamp(Symbol symbol) {
+    static Key biasKey(long t) {
+        return Key.B(t);
+    }
+
+    static double sec(Symbol symbol) {
         return (double) symbol.index() / 1e6;
+    }
+
+    static long us(Symbol symbol) {
+        return symbol.index();
     }
 
 }

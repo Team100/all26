@@ -105,7 +105,7 @@ public class GroundTruth {
     /**
      * Update, if required, and return the state for the current time.
      */
-    StateSE2 get() {
+    public StateSE2 get() {
         m_cache.run();
         return m_estimates.get(Takt.get());
     }

@@ -26,6 +26,7 @@ import org.team100.lib.localization.gtsam.CornerReader;
 import org.team100.lib.localization.gtsam.GtsamStateEstimator;
 import org.team100.lib.localization.map.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.simulation.GroundTruth;
+import org.team100.lib.localization.simulation.StateError;
 import org.team100.lib.localization.visualization.AprilTagVisualizer;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
@@ -85,7 +86,7 @@ public class Machinery implements AutoCloseable {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        ///////////////////////
+        //////////////////////
         //
         // DRIVETRAIN
         //
@@ -144,7 +145,7 @@ public class Machinery implements AutoCloseable {
                 fieldLogger, () -> m_drive.getState(), "robot");
         new SwerveHistoryVisualization(fieldLogger, m_drive);
 
-        ///////////////////////
+        //////////////////////
         //
         // TARGETING
         //
@@ -166,7 +167,7 @@ public class Machinery implements AutoCloseable {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, t -> m_drive.getState(t).state());
 
-        ////////////////////////
+        ///////////////////////
         //
         // SUBSYSTEMS
         //
@@ -176,13 +177,13 @@ public class Machinery implements AutoCloseable {
         m_feeder = new Feeder(logger, currentLog, m_shooter);
         m_conveyor = new Conveyor(logger, currentLog);
 
-        ////////////////////////
+        ///////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        ////////////////////////
+        ///////////////////////
         //
         // INDICATOR
         //
@@ -195,6 +196,8 @@ public class Machinery implements AutoCloseable {
         ///
         m_groundTruth = new GroundTruth(
                 fieldLogger, logger, m_swerveKinodynamics, m_modules, layout);
+
+        new StateError(logger, m_groundTruth::get, m_drive::getState);
 
         ///////////////////////////////////
         /// 

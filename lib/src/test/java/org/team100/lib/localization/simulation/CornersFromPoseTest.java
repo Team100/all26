@@ -14,7 +14,8 @@ public class CornersFromPoseTest {
     @Test
     void test0() {
         Camera camera = Camera.SIM0;
-        CornersFromPose c = new CornersFromPose();
+        // zero noise for test.
+        CornersFromPose c = new CornersFromPose(() -> 0.0);
         double[] pts = c.corners(
                 camera, new Transform3d(0, 0, 1, new Rotation3d(0, 1, 0)));
         assertArrayEquals(new double[] {
@@ -28,7 +29,8 @@ public class CornersFromPoseTest {
     void test0a() {
         // sim0 k is (935,935,0,550,550)
         Camera camera = Camera.SIM0;
-        CornersFromPose c = new CornersFromPose();
+        // zero noise for test.
+        CornersFromPose c = new CornersFromPose(() -> 0.0);
         Transform3d tagInCamera = new Transform3d(0.6, 0, 1, new Rotation3d(0, 0, 0));
         double[] pts = c.corners(camera, tagInCamera);
         // tag is not fully in view

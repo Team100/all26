@@ -111,7 +111,8 @@ public class SimulatedTagCornerDetector {
         m_inst.setServer("localhost");
         m_inst.startClient("SimulatedTagDetector");
         m_rand = new Random();
-        m_corners = new CornersFromPose();
+        // corner noise std dev is one pixel.
+        m_corners = new CornersFromPose(m_rand::nextGaussian);
         for (Camera camera : m_cameras) {
             // see tag_detector.py
             // name is "vision/{IDENTITY}/blips_with_corners"

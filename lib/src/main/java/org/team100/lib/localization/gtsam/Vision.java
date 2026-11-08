@@ -19,7 +19,6 @@ import gtsam.FixedLagSmoother.KeyTimestampMap;
 import gtsam.Key;
 import gtsam.NonlinearFactorGraph;
 import gtsam.PlanarProjectionFactor1;
-import gtsam.Pose2;
 import gtsam.Values;
 import gtsam.Vector2;
 import gtsam.shared_ptr;
@@ -53,47 +52,20 @@ public class Vision {
     /**
      * TODO: move the constants here to the class, make this not static.
      * 
-     * @return the list of timestamps that need pose values, timestamps,
+     * @return the list of microsecond timestamps that need pose values, timestamps,
      *         prior factors, and between factors (if possible).
      */
-    static Collection<Double> vision(
+    static Collection<Long> vision(
             Values m_result,
             List<Corners> corners,
             NonlinearFactorGraph newFactors,
             Values newValues,
             KeyTimestampMap newTimestamps) {
         // Accumulate unique timestamps since they can be repeated.
-        Set<Double> timestamps = new TreeSet<>();
+        Set<Long> timestamps = new TreeSet<>();
         for (Corners corner : corners) {
             projection(corner, newFactors, newValues, newTimestamps);
-            timestamps.add(corner.timestamp());
-        }
-        // For each new timestamp, make a value and timestamp record.
-        // TODO: maybe move this to the interpolator.
-        for (double t1 : timestamps) {
-            Key x1 = Keys.poseKey(t1);
-            if (newValues.exists(x1) || m_result.exists(x1)) {
-                // There's already a value at this time, nothing left to do.
-                continue;
-            }
-            newTimestamps.put(x1, t1);
-
-            // try to find a previous value
-            Key x0 = GtsamStateEstimator.lowerKey(m_result, 'x', x1);
-            if (x0 == null) {
-                // There is no previous value.
-                // Use zero as the initial value.
-                Pose2 pose1 = new Pose2();
-                newValues.insert(x1, pose1);
-                Priors.posePrior(newFactors, x1, pose1);
-            } else {
-                // There is a previous value.
-                // Use the previous estimate as the initial value.
-                Pose2 pose1 = m_result.atPose2(x0);
-                newValues.insert(x1, pose1);
-                Priors.posePrior(newFactors, x1, pose1);
-            }
-
+            timestamps.add((long) (corner.timestamp() * 1e6));
         }
         return timestamps;
     }

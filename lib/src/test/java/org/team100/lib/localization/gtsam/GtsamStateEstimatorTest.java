@@ -55,7 +55,7 @@ public class GtsamStateEstimatorTest {
         ImmutableSwerveHistory h = estimator.update(0.00);
         NoisyStateSE2 state = h.get(0.00);
         TestUtil.verify(new StateSE2(), state.state());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 6), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(0.1, 0.1), state.noise());
         estimator.dump();
     }
 
@@ -80,7 +80,7 @@ public class GtsamStateEstimatorTest {
         ImmutableSwerveHistory h = estimator.immutableCopy();
         NoisyStateSE2 state = h.get(0.00);
         TestUtil.verify(new StateSE2(), state.state());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 6), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(0.1, 0.1), state.noise());
         estimator.dump();
     }
 
@@ -107,7 +107,7 @@ public class GtsamStateEstimatorTest {
         ImmutableSwerveHistory h = estimator.immutableCopy();
         NoisyStateSE2 state = h.get(0.00);
         TestUtil.verify(new StateSE2(), state.state());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 6), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(0.1, 0.1), state.noise());
 
         System.out.println("#### update at 0.02");
         positions = new SwerveModulePositions(
@@ -120,7 +120,7 @@ public class GtsamStateEstimatorTest {
         // verify the first state hasn't changed
         state = h.get(0.00);
         TestUtil.verify(new StateSE2(), state.state());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 6), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(0.1, 0.1), state.noise());
 
         // verify the new state, note 0.02 movement in 0.02 sec => 1 m/s
         state = h.get(0.02);
@@ -129,7 +129,7 @@ public class GtsamStateEstimatorTest {
                         new Pose2d(0.02, 0, Rotation2d.kZero),
                         new VelocitySE2(1, 0, 0)),
                 state.state());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 6), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(0.1, 0.1), state.noise());
         estimator.dump();
     }
 

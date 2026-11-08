@@ -1,7 +1,7 @@
 package org.team100.lib.localization.simulation;
 
 import java.io.IOException;
-import java.util.Random;
+import java.util.function.DoubleSupplier;
 
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.CvType;
@@ -37,7 +37,12 @@ public class CornersFromPose {
     private static final Transform3d corner2 = new Transform3d(h, -h, 0, Rotation3d.kZero);
     private static final Transform3d corner3 = new Transform3d(-h, -h, 0, Rotation3d.kZero);
 
-    private final Random m_rand = new Random();
+    // private final Random m_rand = new Random();
+    private final DoubleSupplier m_noise;
+
+    public CornersFromPose(DoubleSupplier noise) {
+        m_noise = noise;
+    }
 
     /**
      * Project the corners of the tag into the camera.
@@ -90,7 +95,8 @@ public class CornersFromPose {
      */
     private double v() {
         // std dev is one pixel.
-        return m_rand.nextGaussian();
+        // return m_rand.nextGaussian();
+        return m_noise.getAsDouble();
     }
 
 }
