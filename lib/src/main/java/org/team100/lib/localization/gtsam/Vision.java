@@ -62,6 +62,7 @@ public class Vision {
             NonlinearFactorGraph newFactors,
             Values newValues,
             KeyTimestampMap newTimestamps) {
+        // Accumulate unique timestamps since they can be repeated.
         Set<Double> timestamps = new TreeSet<>();
         for (Corners corner : corners) {
             projection(corner, newFactors, newValues, newTimestamps);
@@ -69,11 +70,29 @@ public class Vision {
         }
         // For each new timestamp, make a value and timestamp record.
         for (double t : timestamps) {
-            Key x = Keys.poseKey(t);
-            if (!newValues.exists(x) && !m_result.exists(x)) {
-                newValues.insert(x, new Pose2());
-                newTimestamps.put(x, t);
+            Key x1 = Keys.poseKey(t);
+            if (newValues.exists(x1) || m_result.exists(x1)) {
+                // There's already a value at this time, nothing left to do.
+                continue;
             }
+            newTimestamps.put(x1, t);
+
+            // try to find a previous value
+            Key x0 = GtsamStateEstimator.lowerKey(m_result, 'x', x1);
+            if (x0 == null) {
+                // There is no previous value.
+                // Use zero as the initial value.
+                Pose2 pose1 = new Pose2();
+                newValues.insert(x1, pose1);
+                Priors.posePrior(newFactors, x1, pose1);
+            } else {
+                // There is a previous value.
+                // Use the previous estimate as the initial value.
+                Pose2 pose1 = m_result.atPose2(x0);
+                newValues.insert(x1, pose1);
+                Priors.posePrior(newFactors, x1, pose1);
+            }
+
         }
         return timestamps;
     }
@@ -98,7 +117,6 @@ public class Vision {
                 Geometry.toPose3(offset),
                 Geometry.toCal3DS2(intrinsic, distortion),
                 PX_NOISE));
-
     }
 
 }

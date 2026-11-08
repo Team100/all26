@@ -205,20 +205,12 @@ public class GtsamStateEstimator implements StateEstimator {
         // m_newValues.insert(b0, lastBias);
         // m_newTimestamps.put(b0, timestamp);
 
-        Collection<Double> timestamps = new TreeSet<>();
+        Odometry.odoGyro(
+                m_result,
+                m_kinematics, m_params, timestamp, m_measurements,
+                m_gyro, m_positions, m_newFactors, m_newValues, m_newTimestamps);
 
-        // timestamps.addAll(Odometry.odoGyro(
-        // m_kinematics, m_params, timestamp, m_measurements,
-        // m_gyro, m_positions, m_newFactors));
-        // for (double t : timestamps) {
-        // Key x = Keys.poseKey(t);
-        // m_newValues.insert(x, lastPose(m_result));
-        // m_newTimestamps.put(x, t);
-        // Key b = Keys.biasKey(t);
-        // m_newTimestamps.put(b, timestamp);
-        // m_newValues.insert(b, lastBias(m_result));
-        // }
-        // timestamps.clear();
+        Collection<Double> timestamps = new TreeSet<>();
 
         // add vision factors, new values, and new timestamps.
         timestamps.addAll(Vision.vision(
@@ -227,9 +219,9 @@ public class GtsamStateEstimator implements StateEstimator {
         // interpolated odometry
         // addInterpolatedFactorsAndValues(timestamps);
 
-        // betweens and priors.
-        betweens(timestamps);
-        priors(timestamps);
+        // Betweens and priors. Use these if there's no odometry.
+        // betweens(timestamps);
+        // priors(timestamps);
 
         // for now, priors
         // TODO: revive this
@@ -362,7 +354,7 @@ public class GtsamStateEstimator implements StateEstimator {
         for (double timestamp : timestamps) {
             Key x = Keys.poseKey(timestamp);
             if (!m_newValues.exists(x) && !m_result.exists(x)) {
-                Priors.posePrior(m_newFactors, x);
+                Priors.posePrior(m_newFactors, x, new Pose2());
             }
         }
     }
