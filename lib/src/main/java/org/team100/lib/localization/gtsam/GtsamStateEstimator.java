@@ -35,19 +35,16 @@ import gtsam.Key;
 import gtsam.KeyVector;
 import gtsam.LevenbergMarquardtParams;
 import gtsam.Marginals;
+import gtsam.NonlinearFactor;
 import gtsam.NonlinearFactorGraph;
 import gtsam.PlanarGyroFactor;
 import gtsam.PlanarGyroFactor.PlanarGyroBiasFactor;
 import gtsam.PlanarGyroFactor.PlanarGyroParams;
 import gtsam.Pose2;
-import gtsam.PriorFactor;
 import gtsam.Rot2;
 import gtsam.Symbol;
 import gtsam.Values;
-import gtsam.Vector1;
-import gtsam.Vector3;
 import gtsam.shared_ptr;
-import gtsam.noiseModel.Diagonal;
 
 /**
  * State estimator that uses the GTSAM batched smoother.
@@ -62,7 +59,7 @@ import gtsam.noiseModel.Diagonal;
  * 30 years of runtime.
  */
 public class GtsamStateEstimator implements StateEstimator {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static final double LAG_SECONDS = 0.2;
     private static final long LAG_US = (long) (LAG_SECONDS * 1e6);
@@ -191,6 +188,8 @@ public class GtsamStateEstimator implements StateEstimator {
         Key b1 = Keys.biasKey(timestamp);
         if (m_result.exists(x1)) {
             // skip duplicate
+            if (DEBUG)
+                System.out.printf("duplicate key: %s\n", x1);
             return immutableCopy();
         }
 
@@ -207,6 +206,10 @@ public class GtsamStateEstimator implements StateEstimator {
         addInterpolatedFactorsAndValues(timestamps);
 
         try {
+            if (DEBUG) {
+                System.out.println("update");
+                m_newFactors.print("new factors");
+            }
             Result result = m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
             m_log_iterations.log(result::getIterations);
 
@@ -219,6 +222,21 @@ public class GtsamStateEstimator implements StateEstimator {
         }
 
         m_result = m_smoother.calculateEstimate();
+
+        if (DEBUG) {
+            System.out.println("### show factor errors");
+            NonlinearFactorGraph factors = m_smoother.getFactors();
+            // factors.printErrors(m_result, "errors");
+            for (int i = 0; i < factors.size(); ++i) {
+                shared_ptr<NonlinearFactor> factor = factors.at(i);
+                NonlinearFactor f = factor.get();
+                if (f == null)
+                    continue;
+                double err = f.error(m_result);
+                System.out.printf("\n### factor %d err %f\n", i, err);
+                f.print();
+            }
+        }
 
         m_newFactors.resize(0);
         m_newValues.clear();
