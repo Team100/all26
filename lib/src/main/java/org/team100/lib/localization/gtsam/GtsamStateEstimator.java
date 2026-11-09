@@ -35,6 +35,7 @@ import gtsam.Key;
 import gtsam.KeyVector;
 import gtsam.LevenbergMarquardtParams;
 import gtsam.Marginals;
+import gtsam.Matrix;
 import gtsam.NonlinearFactor;
 import gtsam.NonlinearFactorGraph;
 import gtsam.PlanarGyroFactor;
@@ -197,7 +198,6 @@ public class GtsamStateEstimator implements StateEstimator {
     @Override
     public ImmutableSwerveHistory update(double timestamp) {
         Key x1 = Keys.poseKey(timestamp);
-        Key b1 = Keys.biasKey(timestamp);
         if (m_result.exists(x1)) {
             // skip duplicate
             if (DEBUG)
@@ -221,6 +221,7 @@ public class GtsamStateEstimator implements StateEstimator {
                 System.out.println("update");
                 m_newFactors.print("new factors");
             }
+            // throws IndeterminateSystemException
             Result result = m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
             m_log_iterations.log(result::getIterations);
 
@@ -378,82 +379,92 @@ public class GtsamStateEstimator implements StateEstimator {
      * Copy all the poses out of GTSAM, with stddev.
      */
     public ImmutableSwerveHistory immutableCopy() {
-        NonlinearFactorGraph factors = m_smoother.getFactors();
+        try {
+            NonlinearFactorGraph factors = m_smoother.getFactors();
+            // throws IndeterminateSystemException
+            Marginals marginals = Marginals.QR(factors, m_result);
 
-        // sometimes the marginals part doesn't work.
-        // TODO: fix that
-        Marginals marginals = Marginals.QR(factors, m_result);
-
-        TreeMap<Double, NoisyStateSE2> states = new TreeMap<>();
-        TreeMap<Double, Double> biases = new TreeMap<>();
-        // all keys of all types known by the model
-        KeyVector keys = m_result.keys();
-        // extract the poses from the model
-        for (int i = 0; i < keys.size(); ++i) {
-            Key key = keys.at(i);
-            Symbol symbol = new Symbol(key);
-            double timestamp = Keys.sec(symbol);
-            switch (symbol.chr()) {
-                case 'x' -> {
-                    if (m_result.exists(key)) {
-                        Pose2 x = m_result.atPose2(key);
-                        Pose2d meanPose2d = Geometry.toPose2d(x);
-                        // zero velocity here, fixed below.
-                        StateSE2 state = new StateSE2(meanPose2d);
-                        Vector stdev = marginals.marginalCovariance(key).diagonal_cwiseSqrt();
-                        IsotropicNoiseSE2 noise = IsotropicNoiseSE2.fromStdDev(
-                                (stdev.at(0) + stdev.at(1)) / 2.0, stdev.at(2));
-                        // IsotropicNoiseSE2 noise = IsotropicNoiseSE2.fromStdDev(0.1, 0.1);
-                        NoisyStateSE2 estimate = new NoisyStateSE2(state, noise);
-                        states.put(timestamp, estimate);
+            TreeMap<Double, NoisyStateSE2> states = new TreeMap<>();
+            TreeMap<Double, Double> biases = new TreeMap<>();
+            // all keys of all types known by the model
+            KeyVector keys = m_result.keys();
+            // extract the poses from the model
+            for (int i = 0; i < keys.size(); ++i) {
+                Key key = keys.at(i);
+                Symbol symbol = new Symbol(key);
+                double timestamp = Keys.sec(symbol);
+                switch (symbol.chr()) {
+                    case 'x' -> {
+                        if (m_result.exists(key)) {
+                            Pose2 x = m_result.atPose2(key);
+                            Pose2d meanPose2d = Geometry.toPose2d(x);
+                            // zero velocity here, fixed below.
+                            StateSE2 state = new StateSE2(meanPose2d);
+                            // throws NoSuchElementException but it should never happen.
+                            Matrix cov = marginals.marginalCovariance(key);
+                            Vector stdev = cov.diagonal_cwiseSqrt();
+                            IsotropicNoiseSE2 noise = IsotropicNoiseSE2.fromStdDev(
+                                    (stdev.at(0) + stdev.at(1)) / 2.0, stdev.at(2));
+                            // IsotropicNoiseSE2 noise = IsotropicNoiseSE2.fromStdDev(0.1, 0.1);
+                            NoisyStateSE2 estimate = new NoisyStateSE2(state, noise);
+                            states.put(timestamp, estimate);
+                        }
+                    }
+                    case 'b' -> {
+                        if (m_result.exists(key)) {
+                            double b = m_result.atDouble(key);
+                            biases.put(timestamp, b);
+                        }
+                    }
+                    default -> {
+                        continue;
                     }
                 }
-                case 'b' -> {
-                    if (m_result.exists(key)) {
-                        double b = m_result.atDouble(key);
-                        biases.put(timestamp, b);
-                    }
-                }
-                default -> {
+            }
+            // Log the most-recent bias.
+            Entry<Double, Double> lastBias = biases.lastEntry();
+            if (lastBias != null) {
+                m_log_gyro_bias.log(() -> lastBias.getValue());
+            }
+            // Infer the velocities by walking through the timestamps
+            // TODO: maybe the consumer can do this if they care?
+            List<Map.Entry<Double, NoisyStateSE2>> resultList = new ArrayList<>();
+            Map.Entry<Double, NoisyStateSE2> prev = null;
+            for (Map.Entry<Double, NoisyStateSE2> e : states.entrySet()) {
+                if (prev == null) {
+                    prev = e;
+                    resultList.add(e);
                     continue;
                 }
-            }
-        }
-        // Log the most-recent bias.
-        Entry<Double, Double> lastBias = biases.lastEntry();
-        if (lastBias != null) {
-            m_log_gyro_bias.log(() -> lastBias.getValue());
-        }
-        // Infer the velocities by walking through the timestamps
-        // TODO: maybe the consumer can do this if they care?
-        List<Map.Entry<Double, NoisyStateSE2>> resultList = new ArrayList<>();
-        Map.Entry<Double, NoisyStateSE2> prev = null;
-        for (Map.Entry<Double, NoisyStateSE2> e : states.entrySet()) {
-            if (prev == null) {
+                double t1 = e.getKey();
+                NoisyStateSE2 s1 = e.getValue();
+                double dt = t1 - prev.getKey();
+                // if (DEBUG)
+                // System.out.printf("%f\n", dt);
+                Pose2d p0 = prev.getValue().pose();
+                Pose2d p1 = s1.pose();
+                VelocitySE2 v1 = VelocitySE2.velocity(p0, p1, dt);
+                NoisyStateSE2 s1v = new NoisyStateSE2(
+                        new StateSE2(p1, v1), s1.noise());
+                resultList.add(Map.entry(t1, s1v));
                 prev = e;
-                resultList.add(e);
-                continue;
             }
-            double t1 = e.getKey();
-            NoisyStateSE2 s1 = e.getValue();
-            double dt = t1 - prev.getKey();
-            // if (DEBUG)
-            // System.out.printf("%f\n", dt);
-            Pose2d p0 = prev.getValue().pose();
-            Pose2d p1 = s1.pose();
-            VelocitySE2 v1 = VelocitySE2.velocity(p0, p1, dt);
-            NoisyStateSE2 s1v = new NoisyStateSE2(
-                    new StateSE2(p1, v1), s1.noise());
-            resultList.add(Map.entry(t1, s1v));
-            prev = e;
+
+            if (!resultList.isEmpty()) {
+                // return the results if there are any
+                return ImmutableSwerveHistory.fromStates(resultList, LAG_SECONDS);
+            }
+
+        } catch (IndeterminateSystemException e) {
+            System.out.printf("*** WARNING: IndeterminateSystemException %s", e);
         }
-        if (resultList.isEmpty()) {
-            NoisyStateSE2 state = new NoisyStateSE2(new StateSE2(), IsotropicNoiseSE2.high());
-            return ImmutableSwerveHistory.fromStates(
-                    List.of(Map.entry(0.0, state)),
-                    LAG_SECONDS);
-        }
-        return ImmutableSwerveHistory.fromStates(resultList, LAG_SECONDS);
+
+        // This should never happen.
+        System.out.println("*** WARNING: using empty history ***");
+        NoisyStateSE2 state = new NoisyStateSE2(new StateSE2(), IsotropicNoiseSE2.high());
+        return ImmutableSwerveHistory.fromStates(
+                List.of(Map.entry(0.0, state)),
+                LAG_SECONDS);
     }
 
     @Override
@@ -495,6 +506,7 @@ public class GtsamStateEstimator implements StateEstimator {
         m_newValues.insert(b0, 0);
         m_newTimestamps.put(b0, timestamp);
 
+        // throws IndeterminateSystemEquation but it should never happen.
         m_smoother.update(m_newFactors, m_newValues, m_newTimestamps);
 
         m_result = m_smoother.calculateEstimate();
