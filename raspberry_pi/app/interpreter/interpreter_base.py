@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=E0611,E1101,R0902,R0903,R0913,R0914,R0917,W0212,W0611
 
 import os
@@ -25,7 +26,7 @@ class InterpreterBase(Interpreter):
         self.img_ts_sec: int = 0
         # Make a place to put example images.
         cwd = os.getcwd()
-        print("*** CWD:", cwd)
+        print(f"[{datetime.now()}] " + "*** CWD:", cwd)
         if not os.path.exists(IMAGE_DIR):
             os.mkdir(IMAGE_DIR)
 

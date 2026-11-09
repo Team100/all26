@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.team100.lib.camera.Camera;
-import org.team100.lib.localization.Blip;
+import org.team100.lib.localization.network.Blip;
 import org.team100.lib.network.RawTags.TagMeasurement;
 
 /** Transform blips into transforms, for testing. */

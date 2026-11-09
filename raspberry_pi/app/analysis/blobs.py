@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=C0103,E1101,R0903,R0914
 from typing import override
 import cv2
@@ -32,7 +33,7 @@ class Blobs(ColorAnalysis):
         :object_lower: ([H, S, V]) lower bound
         :object_higher: ([H, S, V]) upper bound
         """
-        print("*** ColorAnalysis: Blobs")
+        print(f"[{datetime.now()}] " + "*** ColorAnalysis: Blobs")
         self._mtx = cam.get_intrinsic()
         self._dist = cam.get_dist()
         size: Size = cam.get_size()

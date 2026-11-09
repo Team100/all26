@@ -2,7 +2,7 @@ package org.team100.frc2025.setups;
 
 import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.hid.DriverXboxControl;
-import org.team100.lib.localization.AprilTagReader;
+import org.team100.lib.localization.fused.AprilTagReader;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;

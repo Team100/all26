@@ -18,11 +18,10 @@ import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.IntLogger;
 import org.team100.lib.network.CameraReader;
 import org.team100.lib.state.StateSE2;
+import org.team100.lib.targeting.network.Target;
 import org.team100.lib.util.CoalescingCollection;
 import org.team100.lib.util.TrailingHistory;
-
 import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.util.struct.StructBuffer;
 

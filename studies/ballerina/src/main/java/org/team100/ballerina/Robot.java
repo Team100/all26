@@ -10,7 +10,7 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.indicator.SolidIndicator;
-import org.team100.lib.localization.ManualPose;
+import org.team100.lib.localization.simulation.ManualPose;
 import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;

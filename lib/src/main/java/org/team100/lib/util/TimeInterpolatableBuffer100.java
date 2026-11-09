@@ -1,15 +1,14 @@
 package org.team100.lib.util;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.TreeMap;
 
-import org.wpilib.math.interpolation.Interpolator;
+import org.wpilib.math.interpolation.Interpolatable;
 
 /**
  * Uses an Interpolator to provide interpolated sampling with a history limit.
@@ -21,77 +20,53 @@ import org.wpilib.math.interpolation.Interpolator;
  * use zero) and the module positions really are zero). It's simpler not to do
  * that.
  */
-public class TimeInterpolatableBuffer100<T> {
+public class TimeInterpolatableBuffer100<T extends Interpolatable<T>> {
     private static final boolean DEBUG = false;
 
-    private final Interpolator<T> m_interpolator;
     /** Length of the buffer in seconds */
     private final double m_historyS;
     /** Key is timestamp in seconds */
     private final NavigableMap<Double, T> m_pastSnapshots;
 
-    /**
-     * We allow concurrent operations on the map, with one exception: when we want
-     * two reads to be consistent with each other. For this purpose we use a
-     * read-write lock with the semantics inverted: it's the double-read operation
-     * that takes the "write" (exclusive) lock, and the write operations take the
-     * "read" (non-exclusive) lock.
-     */
-    private final ReadWriteLock m_lock;
-
     public TimeInterpolatableBuffer100(
-            Interpolator<T> interpolator,
             double historyS,
             double timeS,
             T initialValue) {
-        m_pastSnapshots = new ConcurrentSkipListMap<>();
-        m_lock = new ReentrantReadWriteLock();
-        m_interpolator = interpolator;
+        m_pastSnapshots = new TreeMap<>();
         m_historyS = historyS;
         m_pastSnapshots.put(timeS, initialValue);
     }
 
     /** For the read-only copy. */
     public TimeInterpolatableBuffer100(
-            Set<Map.Entry<Double, T>> entries,
-            Interpolator<T> interpolator,
+            Collection<Map.Entry<Double, T>> entries,
             double historyS) {
-        m_pastSnapshots = new ConcurrentSkipListMap<>();
+        m_pastSnapshots = new TreeMap<>();
         for (Map.Entry<Double, T> e : entries) {
             m_pastSnapshots.put(e.getKey(), e.getValue());
         }
-        m_lock = new ReentrantReadWriteLock();
-        m_interpolator = interpolator;
         m_historyS = historyS;
     }
 
     /**
      * Remove stale entries and add the new one.
-     * 
-     * TODO: I think this locking stuff can be deleted since we don't have threads
      */
     public void put(double timeS, T value) {
         if (DEBUG) {
             System.out.printf("put %f %s\n", timeS, value);
         }
-        try {
-            // wait for in-progress double-reads
-            m_lock.readLock().lock();
-            while (!m_pastSnapshots.isEmpty()) {
-                Entry<Double, T> oldest = m_pastSnapshots.firstEntry();
-                Double oldestTimeS = oldest.getKey();
-                double oldestAgeS = timeS - oldestTimeS;
-                // if oldest is younger than the history limit, we're done
-                if (oldestAgeS < m_historyS)
-                    break;
-                m_pastSnapshots.remove(oldestTimeS);
-                if (DEBUG)
-                    System.out.printf("removed %f\n", oldestTimeS);
-            }
-            m_pastSnapshots.put(timeS, value);
-        } finally {
-            m_lock.readLock().unlock();
+        while (!m_pastSnapshots.isEmpty()) {
+            Entry<Double, T> oldest = m_pastSnapshots.firstEntry();
+            Double oldestTimeS = oldest.getKey();
+            double oldestAgeS = timeS - oldestTimeS;
+            // if oldest is younger than the history limit, we're done
+            if (oldestAgeS < m_historyS)
+                break;
+            m_pastSnapshots.remove(oldestTimeS);
+            if (DEBUG)
+                System.out.printf("removed %f\n", oldestTimeS);
         }
+        m_pastSnapshots.put(timeS, value);
     }
 
     /**
@@ -101,19 +76,8 @@ public class TimeInterpolatableBuffer100<T> {
         if (DEBUG) {
             System.out.printf("reset %f %s\n", timeS, value);
         }
-        try {
-            // wait for in-progress double-reads
-            m_lock.readLock().lock();
-            m_pastSnapshots.clear();
-            m_pastSnapshots.put(timeS, value);
-        } finally {
-            m_lock.readLock().unlock();
-        }
-    }
-
-    /** Get the entry for t, if it exists, otherwise null. */
-    public T getExact(double t) {
-        return m_pastSnapshots.get(t);
+        m_pastSnapshots.clear();
+        m_pastSnapshots.put(timeS, value);
     }
 
     /**
@@ -130,16 +94,9 @@ public class TimeInterpolatableBuffer100<T> {
             }
             return nowEntry;
         }
-        Entry<Double, T> topBound = null;
-        Entry<Double, T> bottomBound = null;
-        try {
-            // this pair should be consistent, so prohibit writes briefly.
-            m_lock.writeLock().lock();
-            topBound = m_pastSnapshots.ceilingEntry(timeSeconds);
-            bottomBound = m_pastSnapshots.floorEntry(timeSeconds);
-        } finally {
-            m_lock.writeLock().unlock();
-        }
+        Entry<Double, T> topBound = m_pastSnapshots.ceilingEntry(timeSeconds);
+        Entry<Double, T> bottomBound = m_pastSnapshots.floorEntry(timeSeconds);
+
         if (topBound == null && bottomBound == null) {
             throw new IllegalStateException();
         }
@@ -165,8 +122,8 @@ public class TimeInterpolatableBuffer100<T> {
 
             System.out.printf("interpolate %f\n", timeFraction);
         }
-        return m_interpolator.interpolate(
-                bottomBound.getValue(), topBound.getValue(), timeFraction);
+        return bottomBound.getValue().interpolate(
+                topBound.getValue(), timeFraction);
     }
 
     /** Items after the given timestamp, optionally inclusive */
@@ -187,8 +144,8 @@ public class TimeInterpolatableBuffer100<T> {
     }
 
     /** Return entry for key strictly greater than t */
-    public Entry<Double, T> ceilingEntry(double t) {
-        return m_pastSnapshots.ceilingEntry(t);
+    public Entry<Double, T> higherEntry(double t) {
+        return m_pastSnapshots.higherEntry(t);
     }
 
     public int size() {
@@ -198,6 +155,10 @@ public class TimeInterpolatableBuffer100<T> {
     /** Key of the most-recent snapshot. */
     public double lastKey() {
         return m_pastSnapshots.lastKey();
+    }
+
+    public Entry<Double, T> lastEntry() {
+        return m_pastSnapshots.lastEntry();
     }
 
     public Set<Map.Entry<Double, T>> entrySet() {

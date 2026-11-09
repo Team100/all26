@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=E0401
 
 from typing import Any
@@ -16,7 +17,7 @@ class ConfigThriftyMjpeg(Config):
     """
 
     def __init__(self, size: Size) -> None:
-        print("*** Config: ConfigThriftyMjpeg")
+        print(f"[{datetime.now()}] " + "*** Config: ConfigThriftyMjpeg")
         self._size = size
 
     @override

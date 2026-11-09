@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=C0103,E1101,R0903
 from typing import  override
 from collections.abc import Buffer
@@ -20,7 +21,7 @@ class Viewfinder(Interpreter):
         display2: Display,
         network: Network,
     ) -> None:
-        print("*** Interpreter: Viewfinder")
+        print(f"[{datetime.now()}] " + "*** Interpreter: Viewfinder")
         self._display1 = display1
         self._display2 = display2
         # network output for camera FPS

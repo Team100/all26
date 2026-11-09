@@ -24,7 +24,6 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 import org.team100.lib.trajectory.se2.constraint.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
-import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
 import org.wpilib.command2.Command;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;

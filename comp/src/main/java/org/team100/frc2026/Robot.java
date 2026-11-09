@@ -49,13 +49,9 @@ public class Robot extends TimedRobot100 {
     public Robot() {
         Startup.start();
         CTREStartup.start();
-        try {
-            Point2 p = new Point2(4, 5);
-            System.out.printf("GTSAM p %f %f\n", p.x(), p.y());
-        } catch (Throwable e) {
-            System.out.println("GTSAM FAILED!");
-            e.printStackTrace();
-        }
+
+        Point2 p = new Point2(4, 5);
+        System.out.printf("GTSAM p %f %f\n", p.x(), p.y());
 
         System.out.printf("Robot class: %s\n",
                 this.getClass().getName());
@@ -84,7 +80,6 @@ public class Robot extends TimedRobot100 {
         Cache.refresh();
         // Run one iteration of the command scheduler.
         CommandScheduler.getInstance().run();
-        m_machinery.periodic();
         // Poll for logs after all the actuation is done
         LogPoller.log();
         if (Experiments.INSTANCE.enabled(Experiment.FlushOften)) {
@@ -100,7 +95,7 @@ public class Robot extends TimedRobot100 {
 
     }
 
-    ///////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////
     //
     // INITIALIZERS, DO NOT CHANGE THESE
     //
@@ -144,7 +139,7 @@ public class Robot extends TimedRobot100 {
         m_binder.close();
     }
 
-    ///////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////
     //
     // EXIT: CLEAN UP
     //
@@ -154,7 +149,7 @@ public class Robot extends TimedRobot100 {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    ////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////
     //
     // LEAVE ALL THESE EMPTY
     //

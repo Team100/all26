@@ -3,6 +3,7 @@ package org.team100.frc2025.indicator;
 import org.team100.frc2025.Climber.ClimberIntake;
 import org.team100.frc2025.grip.Manipulator;
 import org.team100.lib.coherence.Takt;
+import org.team100.lib.logging.LogPoller;
 import org.wpilib.driverstation.RobotState;
 import org.wpilib.hardware.led.AddressableLED;
 import org.wpilib.hardware.led.AddressableLEDBuffer;
@@ -66,13 +67,13 @@ public class LEDIndicator {
         // m_led.start();
         m_manipulator = manipulator;
         m_climberIntake = climberIntake;
+        LogPoller.register(this::periodic);
     }
 
     /**
      * Periodic does all the real work in this class.
      */
     public void periodic() {
-
         if (RobotState.isDisabled()) {
             // do nothing
         } else if (m_climberIntake.isIn()) {

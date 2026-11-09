@@ -1,10 +1,5 @@
 package org.team100.frc2025.robot;
 
-import static org.wpilib.command2.Commands.parallel;
-import static org.wpilib.command2.Commands.print;
-import static org.wpilib.command2.Commands.runOnce;
-import static org.wpilib.command2.Commands.sequence;
-import static org.wpilib.command2.Commands.waitUntil;
 import static org.team100.frc2025.field.FieldConstants2025.ReefPoint.C;
 import static org.team100.frc2025.field.FieldConstants2025.ReefPoint.D;
 import static org.team100.frc2025.field.FieldConstants2025.ReefPoint.F;
@@ -13,6 +8,10 @@ import static org.team100.frc2025.field.FieldConstants2025.ReefPoint.I;
 import static org.team100.frc2025.field.FieldConstants2025.ReefPoint.K;
 import static org.team100.frc2025.field.FieldConstants2025.ReefPoint.L;
 import static org.team100.lib.config.ElevatorUtil.ScoringLevel.L4;
+import static org.wpilib.command2.Commands.parallel;
+import static org.wpilib.command2.Commands.print;
+import static org.wpilib.command2.Commands.sequence;
+import static org.wpilib.command2.Commands.waitUntil;
 
 import org.team100.frc2025.Swerve.Auto.GoToCoralStation;
 import org.team100.frc2025.field.FieldConstants2025;
@@ -25,7 +24,6 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.subsystems.se2.commands.DriveToPoseWithProfile;
 import org.team100.lib.subsystems.se2.commands.DriveWithTrajectoryFunction;
-
 import org.wpilib.command2.Command;
 
 public class Auton2025 {
@@ -46,9 +44,6 @@ public class Auton2025 {
         m_autoProfile = autoProfile;
         m_autoController = autoController;
     }
-
-    /** While driving to scoring tag, pay attention only to very close tags. */
-    private static final double HEED_RADIUS_M = 3;
 
     public Command leftPreloadOnly() {
         return sequence(
@@ -105,7 +100,6 @@ public class Auton2025 {
                 () -> FieldConstants2025.makeGoal(position, point));
         MoveAndHold toL4 = m_machinery.m_mech.homeToL4();
         return parallel(
-                runOnce(() -> m_machinery.m_drive.setHeedRadiusM(HEED_RADIUS_M)),
                 toReef,
                 waitUntil(() -> toReef.toGo() < 1)
                         .andThen(toL4) //

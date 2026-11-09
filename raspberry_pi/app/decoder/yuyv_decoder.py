@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=E1101
 from typing import override
 from collections.abc import Buffer
@@ -13,7 +14,7 @@ class YuyvDecoder(Decoder):
     """Adapts buffers encoded as YUYV."""
 
     def __init__(self, size: Size):
-        print("*** Decoder: YuyvDecoder")
+        print(f"[{datetime.now()}] " + "*** Decoder: YuyvDecoder")
         self._size = size
 
     @override

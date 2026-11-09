@@ -71,7 +71,7 @@ public class Offset {
                         new Transform3d(0.31, -1, 0.26, new Rotation3d(0, 0, -(Math.PI / 2))),
                         new Transform3d(0.795, -0.456, 0.178, new Rotation3d(0.031, 0.342, -0.113)))));
 
-        //////////////////////////////////////
+        ////////////////////////////////////
         //
         // For unit tests.
         //
@@ -106,27 +106,28 @@ public class Offset {
                         new Translation3d(),
                         new Rotation3d(0, Math.PI / 6, 0))));
 
-        //////////////////////////////////////
+        ////////////////////////////////////
         //
         // For simulated tag detector cameras.
         // These point in the cardinal directions.
+        // New: tilting up a bit, closer to the floor.
         //
         offsets.put(Camera.SIM0, new Offset(
                 new Transform3d(
-                        new Translation3d(0, 0, 0.75),
-                        new Rotation3d(0, 0, 0))));
+                        new Translation3d(0, 0, 0.25),
+                        new Rotation3d(0, -0.1, 0))));
         offsets.put(Camera.SIM1, new Offset(
                 new Transform3d(
-                        new Translation3d(0, 0, 0.75),
-                        new Rotation3d(0, 0, Math.PI / 2))));
+                        new Translation3d(0, 0, 0.25),
+                        new Rotation3d(0, -0.1, Math.PI / 2))));
         offsets.put(Camera.SIM2, new Offset(
                 new Transform3d(
-                        new Translation3d(0, 0, 0.75),
-                        new Rotation3d(0, 0, Math.PI))));
+                        new Translation3d(0, 0, 0.25),
+                        new Rotation3d(0, -0.1, Math.PI))));
         offsets.put(Camera.SIM3, new Offset(
                 new Transform3d(
-                        new Translation3d(0, 0, 0.75),
-                        new Rotation3d(0, 0, -Math.PI / 2))));
+                        new Translation3d(0, 0, 0.25),
+                        new Rotation3d(0, -0.1, -Math.PI / 2))));
         offsets.put(Camera.UNKNOWN,
                 new Offset(new Transform3d()));
     }
@@ -140,12 +141,17 @@ public class Offset {
         return o;
     }
 
+    /** x-forward offset */
     private final Transform3d offset;
 
     public Offset(Transform3d offset) {
         this.offset = offset;
     }
 
+    /**
+     * Transform from the robot to the camera, with the rotation zero still pointing
+     * down +x ("x-forwards").
+     */
     public Transform3d offset() {
         return offset;
     }

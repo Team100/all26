@@ -3,7 +3,7 @@ package org.team100.lib.camera;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.localization.Blip;
+import org.team100.lib.localization.network.Blip;
 
 import org.wpilib.math.linalg.Matrix;
 import org.wpilib.math.util.Nat;

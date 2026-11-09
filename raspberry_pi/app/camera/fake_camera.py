@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=E1101,R0903,R1732
 
 from pathlib import Path
@@ -26,7 +27,7 @@ class FakeCamera(Camera):
         size: if no size is supplied, the native size is used.
         k1: quadratic distortion term for undistortion
         """
-        print("*** Camera: FakeCamera")
+        print(f"[{datetime.now()}] " + "*** Camera: FakeCamera")
         p = Path(__file__).parent / filename
         pathstr: str = str(p)
         # force the file to be read as three-channel BGR

@@ -30,6 +30,8 @@ public class GyroFactory {
                 // having proven the gyro drift works fine, the level now is
                 // a bit more realistic, though still high.
                 double driftRateRad_S = 0.05;
+                // try zero
+                // double driftRateRad_S = 0.0;
                 return new SimulatedGyro(parent, kinodynamics, collection, driftRateRad_S);
 
         }

@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=C0103,E0611,E1101,E1121,R0902,R0903,R0913,R0914,R0917,W0212,W0612
 
 from typing import override
@@ -42,7 +43,7 @@ class DualInterpreter(InterpreterBase):
         :analyzer_color: for color, use None if you don't need it
         """
         super().__init__(network)
-        print("*** Interpreter: DualInterpreter")
+        print(f"[{datetime.now()}] " + "*** Interpreter: DualInterpreter")
 
         self._display1 = display1
         self._display2 = display2

@@ -22,12 +22,6 @@ import org.wpilib.command2.Command;
 
 public class DriveFieldRelative extends Command {
     /**
-     * While driving manually, pay attention to tags even if they are somewhat far
-     * away.
-     */
-    private static final double HEED_RADIUS_M = 6.0;
-
-    /**
      * Velocity control in control units, [-1,1] on all axes. This needs to be
      * mapped to a feasible velocity control as early as possible.
      * Must be smoothed.
@@ -60,7 +54,6 @@ public class DriveFieldRelative extends Command {
 
     @Override
     public void initialize() {
-        m_drive.setHeedRadiusM(HEED_RADIUS_M);
         // make sure the limiter knows what we're doing
         m_limiter.updateSetpoint(m_drive.getState().velocity());
         m_v = VelocitySE2.ZERO;

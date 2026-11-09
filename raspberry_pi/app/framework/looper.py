@@ -1,5 +1,7 @@
+from datetime import datetime
 from abc import ABC, abstractmethod
 from threading import Event
+import sys
 
 
 class Looper(ABC):
@@ -14,8 +16,14 @@ class Looper(ABC):
                 if self._done.is_set():  # exit cleanly
                     return
                 self.execute()
+        except RuntimeError: 
+            pass
+        #    print(f"[{datetime.now()}] " + "exiting, we crashed",file=sys.stderr, flush=True)
+        #    return
+            
         finally:
             self.end()
+        
             self._done.set()
 
     @abstractmethod

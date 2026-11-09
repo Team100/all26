@@ -1,22 +1,31 @@
 package org.team100.lib.camera;
 
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
+import org.wpilib.vision.camera.OpenCvLoader;
 
 /**
  * Camera distortion parameters.
  */
 public class Distortion {
-    private static final Distortion DEFAULT = new Distortion(
+    static {
+        try {
+            OpenCvLoader.forceLoad();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static final Distortion DEFAULT = new Distortion(
             new double[] { 0.0, 0.0, 0.0, 0.0 });
     private static final Distortion COLOR_DETECTd = new Distortion(
-            new double[] {-0.006934480214, -0.009133184923, 0.0006250697999, 0.001300785576});
+            new double[] { -0.006934480214, -0.009133184923, 0.0006250697999, 0.001300785576 });
     private static final Distortion CAMERA_2Ad = new Distortion(
-            new double[] {-0.006602056847, -0.009068537579, 0.000719102838, -0.0005465737481});
+            new double[] { -0.006602056847, -0.009068537579, 0.000719102838, -0.0005465737481 });
     private static final Map<Camera, Distortion> distortions;
 
     static {

@@ -27,6 +27,7 @@ import org.wpilib.math.kinematics.ChassisVelocities;
  * and rotation dimensions independently.
  */
 public class StateSE2 implements Interpolatable<StateSE2> {
+    public static final StateSE2 ZERO = new StateSE2();
     private final StateR1 m_x;
     private final StateR1 m_y;
     private final StateR1 m_theta;

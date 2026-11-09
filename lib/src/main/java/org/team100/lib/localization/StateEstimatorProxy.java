@@ -2,10 +2,9 @@ package org.team100.lib.localization;
 
 import java.util.Map;
 
-import org.team100.lib.state.StateSE2;
-import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.coherence.Takt;
+import org.team100.lib.uncertainty.NoisyStateSE2;
 import org.team100.lib.util.NamedChooser;
-import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.smartdashboard.SendableChooser;
 import org.wpilib.smartdashboard.SmartDashboard;
 
@@ -37,10 +36,21 @@ public class StateEstimatorProxy implements StateEstimator {
 
     private void update(EstimatorChoice choice) {
         m_choice = choice;
+        // Avoid transients when switching estimators.
+        reset(Takt.get());
     }
 
     @Override
-    public StateSE2 getState(double timestampS) {
+    public ImmutableSwerveHistory update(double timestamp) {
+        return switch (m_choice) {
+            case A -> m_A.update(timestamp);
+            case B -> m_B.update(timestamp);
+            default -> throw new IllegalStateException();
+        };
+    }
+
+    @Override
+    public NoisyStateSE2 getState(double timestampS) {
         return switch (m_choice) {
             case A -> m_A.getState(timestampS);
             case B -> m_B.getState(timestampS);
@@ -49,25 +59,25 @@ public class StateEstimatorProxy implements StateEstimator {
     }
 
     @Override
-    public void reset(Pose2d pose, IsotropicNoiseSE2 noise) {
+    public void reset(double timestampS, NoisyStateSE2 state) {
         switch (m_choice) {
-            case A -> m_A.reset(pose, noise);
-            case B -> m_B.reset(pose, noise);
+            case A -> m_A.reset(timestampS, state);
+            case B -> m_B.reset(timestampS, state);
             default -> throw new IllegalStateException();
         }
     }
 
     @Override
-    public void setHeedRadiusM(double heedRadiusM) {
+    public void reset(double timestamp) {
         switch (m_choice) {
-            case A -> m_A.setHeedRadiusM(heedRadiusM);
-            case B -> m_B.setHeedRadiusM(heedRadiusM);
+            case A -> m_A.reset(timestamp);
+            case B -> m_B.reset(timestamp);
             default -> throw new IllegalStateException();
         }
     }
 
     @Override
-    public Map<Double, SwerveState> all() {
+    public Map<Double, NoisyStateSE2> all() {
         return switch (m_choice) {
             case A -> m_A.all();
             case B -> m_B.all();
