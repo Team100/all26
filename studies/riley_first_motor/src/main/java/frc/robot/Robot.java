@@ -125,9 +125,10 @@ public Robot() {
     //   m_dutyCycle += 0.001;
     // }
     // m_motor.setDutyCycle(m_dutyCycle);
-    // System.out.println("duty cycle: " + m_dutyCycle);
-   
-    m_dutyCycle = m_controller.leftY() / 10.0;
+    System.out.println("duty cycle: " + m_dutyCycle);
+    // controlled by controller
+    // m_dutyCycle = 8.leftY() / 10.0;
+    m_dutyCycle = 0.1;
     m_motor.setDutyCycle(m_dutyCycle);
 
   }
