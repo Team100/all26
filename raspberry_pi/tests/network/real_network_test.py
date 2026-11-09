@@ -1,4 +1,4 @@
-from datetime import datetime
+
 import unittest
 
 from threading import Event

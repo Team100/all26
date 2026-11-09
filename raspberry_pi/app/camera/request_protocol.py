@@ -1,4 +1,4 @@
-from datetime import datetime
+
 # pylint: disable=W2301
 
 from typing import Protocol

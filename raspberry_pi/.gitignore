@@ -5,3 +5,4 @@ __pycache__
 image/.rpi-image-gen/
 image/work/
 image/out/
+env2/

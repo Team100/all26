@@ -1,6 +1,4 @@
-from datetime import datetime
 # pylint: disable=R0903
-
 try:
     # this is the linux/raspberry pi version.
     from time import clock_gettime_ns, CLOCK_BOOTTIME  # type:ignore

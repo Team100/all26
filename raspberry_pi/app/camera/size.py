@@ -1,4 +1,4 @@
-from datetime import datetime
+
 from dataclasses import dataclass
 
 from app.camera.model import Model
