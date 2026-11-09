@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=C0103
 
 from enum import Enum, unique
@@ -81,7 +82,7 @@ class Identity(Enum):
     def get() -> "Identity":
         """Returns UNKNOWN if serial is not recognized, and in tests."""
         serial = _serial
-        print("*** Coprocessor serial:", serial)
+        print(f"[{datetime.now()}] " + "*** Coprocessor serial:", serial)
         identity: Identity = Identity(serial)
-        print("*** Coprocessor identity:", identity)
+        print(f"[{datetime.now()}] " + "*** Coprocessor identity:", identity)
         return identity

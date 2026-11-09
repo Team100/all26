@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=E1101,R0903,R1732
 
 from typing import override
@@ -15,7 +16,7 @@ class NoCamera(Camera):
     """A camera with no image."""
 
     def __init__(self) -> None:
-        print("*** Camera: NoCamera")
+        print(f"[{datetime.now()}] " + "*** Camera: NoCamera")
         self.w = 2000
         self.h = 1000
         self._img: MatLike = np.zeros((self.h, self.w, 3), dtype=np.uint8)

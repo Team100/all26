@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=E1101
 from typing import override
 from collections.abc import Buffer
@@ -13,7 +14,7 @@ class Rgb888Decoder(Decoder):
     """Adapts buffers encoded as RGB888, which actually contains BGR tuples."""
 
     def __init__(self, size: Size):
-        print("*** Decoder: Rgb888Decoder")
+        print(f"[{datetime.now()}] " + "*** Decoder: Rgb888Decoder")
         self._size = size
 
     @override

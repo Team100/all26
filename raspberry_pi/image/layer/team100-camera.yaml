@@ -49,6 +49,21 @@
 # build_image.sh replaces for each Pi.
 mmdebstrap:
   packages:
+    # Everyday command-line tools; trixie-minbase has none of them.
+    - less
+    - vim-tiny          # gives you `vi`
+    - man-db
+    - bash-completion
+    - htop
+    - lsof
+    - file
+    - curl
+    - rsync
+    - tmux
+    - iputils-ping
+    - bind9-dnsutils    # dig, nslookup
+    - usbutils          # lsusb
+    - i2c-tools
     - libcamera-dev
     - python3-picamera2
     - python3-venv

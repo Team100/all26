@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=C0114,C0115,C0116,E0401,R0902,R0903,W0212
 
 from queue import Queue
@@ -63,7 +64,7 @@ class RealNetwork(Network):
     """
 
     def __init__(self, identity: Identity, done: Event) -> None:
-        print("*** Network: RealNetwork")
+        print(f"[{datetime.now()}] " + "*** Network: RealNetwork")
         self._identity: Identity = identity
         self._inst: ntcore.NetworkTableInstance = (
             ntcore.NetworkTableInstance.getDefault()

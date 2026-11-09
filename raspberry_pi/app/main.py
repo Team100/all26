@@ -1,3 +1,4 @@
+from datetime import datetime
 """This is the coprocessor main loop.
 
 Each task is run by its own Looper, in its own thread.
@@ -27,7 +28,7 @@ from app.util.timestamps import Timestamps
 
 def main() -> None:
     print_banner()
-    print("*** Starting main.py")
+    print(f"[{datetime.now()}] " + "*** Starting main.py")
     identity: Identity = Identity.get()
     done: Event = Event()  # to shut down all threads
     thread: Thread | None = None
@@ -44,11 +45,11 @@ def main() -> None:
         )
         camera_loop: CameraLoop = CameraLoop(camera, interpreter, done)
         thread = Thread(target=camera_loop.run)
-        print("*** Starting the looper thread")
+        print(f"[{datetime.now()}] " + "*** Starting the looper thread")
         thread.start()
         # looper.run will return when done, so wait for that.
         thread.join()
-        print("*** Looper has exited")
+        print(f"[{datetime.now()}] " + "*** Looper has exited")
 
     finally:
         done.set()  # exit all threads cleanly

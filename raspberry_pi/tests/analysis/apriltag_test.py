@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=E1101,W0212
 
 import unittest
@@ -253,7 +254,7 @@ class AprilTagTest(unittest.TestCase):
         self.assertEqual(0, len(network.blips_with_corners))
 
     def verify_pose(self, pose: Transform3d, delta: float) -> None:
-        print("*** pose: ", pose)
+        print(f"[{datetime.now()}] " + "*** pose: ", pose)
         t: Translation3d = pose.translation()
         self.assertAlmostEqual(-0.186, t.x, delta=delta)
         self.assertAlmostEqual(0.027, t.y, delta=delta)
@@ -306,12 +307,12 @@ class AprilTagTest(unittest.TestCase):
         height = 3
         width = 5
         grid_y, grid_x = np.indices((height, width), dtype=np.float32)
-        print("grid_y", grid_y)
-        print("grid_x", grid_x)
+        print(f"[{datetime.now()}] " + "grid_y", grid_y)
+        print(f"[{datetime.now()}] " + "grid_x", grid_x)
         flat_grid = np.stack([grid_x.ravel(), grid_y.ravel()], axis=-1).reshape(
             -1, 1, 2
         )
-        print("flat_grid", flat_grid)
+        print(f"[{datetime.now()}] " + "flat_grid", flat_grid)
         intrinsic = np.array(
             [
                 [6, 0, 3],
@@ -321,10 +322,10 @@ class AprilTagTest(unittest.TestCase):
         )
         dist = np.array([-0.1, 0, 0, 0])
         distort_map = cv2.undistortPoints(flat_grid, intrinsic, dist, P=intrinsic)
-        print("distort_map 1", distort_map)
+        print(f"[{datetime.now()}] " + "distort_map 1", distort_map)
         distort_map = distort_map.reshape(height, width, 2)
-        print("distort_map 2", distort_map)
+        print(f"[{datetime.now()}] " + "distort_map 2", distort_map)
         map_x = distort_map[:, :, 0]
-        print("map_x", map_x)
+        print(f"[{datetime.now()}] " + "map_x", map_x)
         map_y = distort_map[:, :, 1]
-        print("map_y", map_y)
+        print(f"[{datetime.now()}] " + "map_y", map_y)

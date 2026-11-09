@@ -1,3 +1,4 @@
+from datetime import datetime
 # pylint: disable=R0903
 
 import numpy as np
@@ -29,7 +30,7 @@ class Intrinsic:
     """
 
     def __init__(self, identity: Identity) -> None:
-        print("*** Intrinsic for identity:", identity)
+        print(f"[{datetime.now()}] " + "*** Intrinsic for identity:", identity)
         self._mtx: NDArray[np.float32]
         self._valid: bool = True
         match identity:
@@ -140,15 +141,15 @@ class Intrinsic:
                     ]
                 )
                 self._valid = False
-                print("##########################################")
-                print("#                                        #")
-                print("#  CAMERA INTRINSIC IS NOT CALIBRATED!   #")
-                print("#                                        #")
-                print("#  YOU MUST CALIBRATE IT!!!!             #")
-                print("#                                        #")
-                print("##########################################")
+                print(f"[{datetime.now()}] " + "##########################################")
+                print(f"[{datetime.now()}] " + "#                                        #")
+                print(f"[{datetime.now()}] " + "#  CAMERA INTRINSIC IS NOT CALIBRATED!   #")
+                print(f"[{datetime.now()}] " + "#                                        #")
+                print(f"[{datetime.now()}] " + "#  YOU MUST CALIBRATE IT!!!!             #")
+                print(f"[{datetime.now()}] " + "#                                        #")
+                print(f"[{datetime.now()}] " + "##########################################")
 
-        print("*** INTRINSIC")
+        print(f"[{datetime.now()}] " + "*** INTRINSIC")
         print(self._mtx)
 
     def get(self) -> NDArray[np.float32]:
