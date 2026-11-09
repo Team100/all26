@@ -1,4 +1,4 @@
-from datetime import datetime
+# from datetime import datetime
 # pylint: disable=R0903,W2301
 
 from typing import Protocol
@@ -11,7 +11,7 @@ class MonoAnalysis(Protocol):
     def analyze_mono(
         self,
         img: MatLike,
-        img_display: MatLike,
+        img_display: MatLike, # type: ignore
         servertime: int,
     ) -> None:
         """Analysis of a monochrome image.

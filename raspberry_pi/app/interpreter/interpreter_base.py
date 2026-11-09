@@ -46,7 +46,7 @@ class InterpreterBase(Interpreter):
             # This file does not exist (e.g. on Windows etc)
             pass
 
-    def write_calibration_image(self, img: NDArray[np.uint8]) -> None:
+    def write_calibration_image(self, img: NDArray[np.uint8]) -> None: # type: ignore
         """Write an image for later analysis (e.g. calibration).
 
         WARNING! This is VERY VERY SLOW, like 1 FPS.

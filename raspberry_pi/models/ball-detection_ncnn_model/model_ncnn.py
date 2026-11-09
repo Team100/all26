@@ -1,7 +1,10 @@
-from datetime import datetime
+# type: ignore
+# pylint: disable=E1101,R1705
+# # from datetime import datetime
 import numpy as np
 import ncnn
 import torch
+
 
 def test_inference():
     torch.manual_seed(0)
@@ -22,6 +25,7 @@ def test_inference():
         return out[0]
     else:
         return tuple(out)
+
 
 if __name__ == "__main__":
     print(test_inference())

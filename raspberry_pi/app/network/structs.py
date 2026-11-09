@@ -1,4 +1,4 @@
-from datetime import datetime
+# from datetime import datetime
 # pylint: disable=C0301,R0902,R0903,W0212,W2301
 
 import dataclasses
@@ -67,10 +67,9 @@ class BlipWithCorners:
 
 class Target:
 
-    """Game piece target"""
+    # """Game piece target"""
     #area: int
     """target area"""
-
     timestamp: wpistruct.int64
     """server microseconds"""
     sight: Rotation3d

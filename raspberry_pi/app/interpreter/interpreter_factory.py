@@ -1,7 +1,7 @@
 from datetime import datetime
-# pylint: disable=C0301,E0611,E1101,R0903,R0913,R0917
-import numpy as np
-from numpy.typing import NDArray
+# pylint: disable=C0301,E0611,E1101,R0903,R0911,R0913,R0917
+# import numpy as np
+# from numpy.typing import NDArray
 
 from app.camera.camera_protocol import Camera
 from app.config.identity import Identity
@@ -46,8 +46,8 @@ class InterpreterFactory:
        # object_higher: NDArray[np.int32] = np.array((35, 255, 255))
 
         # YELLOW TARGET VALUES (inside)
-        object_lower: NDArray[np.int32] = np.array((15, 45, 45))
-        object_higher: NDArray[np.int32] = np.array((35, 265, 260))
+        # object_lower: NDArray[np.int32] = np.array((15, 45, 45))
+        # object_higher: NDArray[np.int32] = np.array((35, 265, 260))
 
         # https://medium.com/@pkusolruangchai/find-hsv-range-interactive-sliders-in-opencv-1571c4c64433
 
