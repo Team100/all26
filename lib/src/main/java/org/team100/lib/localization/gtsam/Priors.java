@@ -19,6 +19,7 @@ public class Priors {
     private static shared_ptr<Diagonal> posePriorSigma = Diagonal.Sigmas(
             new Vector3(10, 10, 10));
 
+    /** Bias prior is very soft, we have no idea. */
     private static shared_ptr<Diagonal> biasPriorSigma = Diagonal.Sigmas(new Vector1(1));
 
     /**

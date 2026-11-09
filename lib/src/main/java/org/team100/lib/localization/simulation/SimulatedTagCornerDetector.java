@@ -126,13 +126,6 @@ public class SimulatedTagCornerDetector {
 
     public static SimulatedTagCornerDetector get(
             AprilTagFieldLayoutWithCorrectOrientation layout, DoubleFunction<StateSE2> history) {
-        // just one camera to keep things simple.
-        // return new SimulatedTagCornerDetector(
-        // List.of(Camera.SIM0),
-        // layout,
-        // history);
-
-        // TODO: revive this.
         return new SimulatedTagCornerDetector(
                 List.of(Camera.SIM0, Camera.SIM1, Camera.SIM2, Camera.SIM3),
                 layout,
@@ -186,14 +179,11 @@ public class SimulatedTagCornerDetector {
                             tagPose.getTranslation().getZ(), tagPose.getRotation().getX(), tagPose.getRotation().getY(),
                             tagPose.getRotation().getZ());
                 }
-                // remove noise for now
-                // TODO: revive this!
-                // DO NOT FORGET!
-                // BLARG!
-                // Transform3d tagInCamera = tagInCamera(
-                // () -> m_rand.nextGaussian(), cameraPose3d, tagPose);
+
                 Transform3d tagInCamera = tagInCamera(
-                        () -> 0.0, cameraPose3d, tagPose);
+                        () -> m_rand.nextGaussian(), cameraPose3d, tagPose);
+                // Transform3d tagInCamera = tagInCamera(
+                // () -> 0.0, cameraPose3d, tagPose);
 
                 if (visible(tagInCamera)) {
                     // publish it
@@ -208,10 +198,6 @@ public class SimulatedTagCornerDetector {
                     }
                     blips.add(new BlipWithCorners(time, tagId, tofloat(corners), tagInCamera));
                     // Just one sighting, for now, to make things simpler.
-                    // TODO: remove this!
-                    // BLARG!
-                    // DO NOT FORGET TO REMOVE THIS!
-                    break;
                 } else {
                     // ignore it
                     if (DEBUG) {

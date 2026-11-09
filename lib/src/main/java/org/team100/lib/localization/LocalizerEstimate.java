@@ -6,6 +6,7 @@ import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.state.StateSE2;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
+import org.team100.lib.uncertainty.NoisyStateSE2;
 import org.team100.lib.uncertainty.VariableR1;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.interpolation.Interpolatable;
@@ -53,6 +54,10 @@ public class LocalizerEstimate implements Interpolatable<LocalizerEstimate> {
 
     public IsotropicNoiseSE2 noise() {
         return m_noise;
+    }
+
+    public NoisyStateSE2 noisyState() {
+        return new NoisyStateSE2(m_state, m_noise);
     }
 
     /** Bias in rad/s */

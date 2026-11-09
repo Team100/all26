@@ -9,6 +9,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.StateSE2Logger;
 import org.team100.lib.state.StateSE2;
+import org.team100.lib.uncertainty.NoisyStateSE2;
 
 /**
  * Logs the difference between two states.
@@ -21,7 +22,8 @@ public class StateError {
     /** Ground-truth reference */
     private final Supplier<StateSE2> m_ref;
     /** Pose-estimator output */
-    private final Supplier<StateSE2> m_est;
+    private final Supplier<NoisyStateSE2> m_est;
+    private final DoubleLogger m_log_noise;
     private final StateSE2Logger m_log_stateError;
     private final DoubleLogger m_log_poseDistanceError;
     private final DoubleLogger m_log_speedError;
@@ -29,10 +31,11 @@ public class StateError {
     public StateError(
             LoggerFactory parent,
             Supplier<StateSE2> ref,
-            Supplier<StateSE2> est) {
+            Supplier<NoisyStateSE2> est) {
         m_ref = ref;
         m_est = est;
         LoggerFactory log = parent.type(this);
+        m_log_noise = log.doubleLogger(Level.TRACE, "noise");
         m_log_stateError = log.StateSE2Logger(Level.TRACE, "state");
         m_log_poseDistanceError = log.doubleLogger(Level.TRACE, "distance");
         m_log_speedError = log.doubleLogger(Level.TRACE, "speed");
@@ -40,8 +43,10 @@ public class StateError {
     }
 
     private void log() {
+        m_log_noise.log(
+                () -> m_est.get().noise().cartesian());
         m_log_stateError.log(
-                () -> m_est.get().minus(m_ref.get()));
+                () -> m_est.get().state().minus(m_ref.get()));
         m_log_poseDistanceError.log(
                 () -> Metrics.translationalDistance(
                         m_est.get().pose(), m_ref.get().pose()));

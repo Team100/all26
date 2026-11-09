@@ -24,6 +24,7 @@ import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.NoisyStateSE2;
 import org.team100.lib.util.DiscreteTimeInterpolatableBuffer100;
 import org.team100.lib.util.Math100;
+import org.wpilib.framework.RobotBase;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 
@@ -44,6 +45,7 @@ import gtsam.Pose2;
 import gtsam.Rot2;
 import gtsam.Symbol;
 import gtsam.Values;
+import gtsam.Vector;
 import gtsam.shared_ptr;
 
 /**
@@ -59,7 +61,7 @@ import gtsam.shared_ptr;
  * 30 years of runtime.
  */
 public class GtsamStateEstimator implements StateEstimator {
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final double LAG_SECONDS = 0.2;
     private static final long LAG_US = (long) (LAG_SECONDS * 1e6);
@@ -68,10 +70,13 @@ public class GtsamStateEstimator implements StateEstimator {
     private final Supplier<SwerveModulePositions> m_positions;
     private final Supplier<List<Corners>> m_vision;
     private final SwerveDriveKinematics100 m_kinematics;
+
+    private final Odometry m_odometry;
+
     private final DiscreteTimeInterpolatableBuffer100<OdoGyroMeasurement> m_measurements;
     // TODO: make the gyro params much softer initially, and then tighten
     // in order to correctly calibrate a nonzero drift rate.
-    private final shared_ptr<PlanarGyroParams> m_params;
+    private shared_ptr<PlanarGyroParams> m_params;
     private final DoubleLogger m_log_gyro_bias;
     private final LongLogger m_log_iterations;
 
@@ -99,6 +104,10 @@ public class GtsamStateEstimator implements StateEstimator {
         m_positions = positions;
         m_vision = vision;
         m_kinematics = kinematics;
+        // add noise if this is a simulation.
+        m_odometry = new Odometry(
+                m_kinematics, RobotBase.isSimulation(), m_gyro, m_positions);
+
         m_params = PlanarGyroParams.makeSharedPlanarGyroParams(
                 whiteNoise, biasNoise);
         // the lag in seconds is compared to the max of the timestamp key map.
@@ -193,10 +202,9 @@ public class GtsamStateEstimator implements StateEstimator {
             return immutableCopy();
         }
 
-        Odometry.odoGyro(
-                m_result,
-                m_kinematics, m_params, timestamp, m_measurements,
-                m_gyro, m_positions, m_newFactors, m_newValues, m_newTimestamps);
+        m_odometry.odoGyro(
+                m_result, m_params, timestamp, m_measurements,
+                m_newFactors, m_newValues, m_newTimestamps);
 
         // Vision factors.
         Collection<Long> timestamps = Vision.vision(
@@ -216,9 +224,7 @@ public class GtsamStateEstimator implements StateEstimator {
         } catch (IndeterminateSystemException e) {
             System.out.printf("#### IndeterminateSystemException %s", e);
             // it can get stuck here so try just resetting
-            reset(timestamp, new NoisyStateSE2(
-                    new StateSE2(Geometry.toPose2d(lastPose(m_result))),
-                    IsotropicNoiseSE2.high()));
+            reset(timestamp);
         }
 
         m_result = m_smoother.calculateEstimate();
@@ -243,6 +249,13 @@ public class GtsamStateEstimator implements StateEstimator {
         m_newTimestamps.clear();
 
         return immutableCopy();
+    }
+
+    /** reset to the most-recent pose, with high uncertainty. */
+    public void reset(double timestamp) {
+        reset(timestamp, new NoisyStateSE2(
+                new StateSE2(Geometry.toPose2d(lastPose(m_result))),
+                IsotropicNoiseSE2.high()));
     }
 
     /**
@@ -325,9 +338,9 @@ public class GtsamStateEstimator implements StateEstimator {
             OdoGyroMeasurement m1 = after.getValue();
 
             // Odometry factors using the interpolated measurement.
-            m_newFactors.add(Odometry.getOdometryFactor(m_kinematics,
+            m_newFactors.add(m_odometry.getOdometryFactor(m_kinematics,
                     x0, x, m0.odo(), lerp.odo()));
-            m_newFactors.add(Odometry.getOdometryFactor(m_kinematics,
+            m_newFactors.add(m_odometry.getOdometryFactor(m_kinematics,
                     x, x1, lerp.odo(), m1.odo()));
 
             // Add new bias value, which is used by the factors below.
@@ -382,13 +395,12 @@ public class GtsamStateEstimator implements StateEstimator {
                     if (m_result.exists(key)) {
                         Pose2 x = m_result.atPose2(key);
                         Pose2d meanPose2d = Geometry.toPose2d(x);
-                        // zero velocity here
+                        // zero velocity here, fixed below.
                         StateSE2 state = new StateSE2(meanPose2d);
-                        // TODO: revive this
-                        // Vector stdev = marginals.marginalCovariance(key).diagonal_cwiseSqrt();
-                        // IsotropicNoiseSE2 noise = IsotropicNoiseSE2.fromStdDev(
-                        // (stdev.at(0) + stdev.at(1)) / 2.0, stdev.at(2));
-                        IsotropicNoiseSE2 noise = IsotropicNoiseSE2.fromStdDev(0.1, 0.1);
+                        Vector stdev = marginals.marginalCovariance(key).diagonal_cwiseSqrt();
+                        IsotropicNoiseSE2 noise = IsotropicNoiseSE2.fromStdDev(
+                                (stdev.at(0) + stdev.at(1)) / 2.0, stdev.at(2));
+                        // IsotropicNoiseSE2 noise = IsotropicNoiseSE2.fromStdDev(0.1, 0.1);
                         NoisyStateSE2 estimate = new NoisyStateSE2(state, noise);
                         states.put(timestamp, estimate);
                     }
@@ -423,7 +435,7 @@ public class GtsamStateEstimator implements StateEstimator {
             NoisyStateSE2 s1 = e.getValue();
             double dt = t1 - prev.getKey();
             // if (DEBUG)
-                // System.out.printf("%f\n", dt);
+            // System.out.printf("%f\n", dt);
             Pose2d p0 = prev.getValue().pose();
             Pose2d p1 = s1.pose();
             VelocitySE2 v1 = VelocitySE2.velocity(p0, p1, dt);

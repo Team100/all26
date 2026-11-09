@@ -49,6 +49,12 @@ public class UpdatedEstimate implements StateEstimator {
     }
 
     @Override
+    public void reset(double  timestamp) {
+        m_estimator.reset(timestamp);
+        m_immutable.reset();
+    }
+
+    @Override
     public void close() {
         m_estimator.close();
     }

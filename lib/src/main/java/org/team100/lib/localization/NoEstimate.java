@@ -39,6 +39,10 @@ public class NoEstimate implements StateEstimator {
     }
 
     @Override
+    public void reset(double timestamp) {
+    }
+
+    @Override
     public Map<Double, NoisyStateSE2> all() {
         return new TreeMap<>();
     }

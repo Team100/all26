@@ -47,7 +47,11 @@ public class Vision {
     // might be good to a few pixels, depending on the lens, and the
     // lens calibration might be good to a pixel.
     // TODO: look carefully at camera accuracy
-    static final shared_ptr<Diagonal> PX_NOISE = Diagonal.Sigmas(new Vector2(2, 2));
+    // static final shared_ptr<Diagonal> PX_NOISE = Diagonal.Sigmas(new Vector2(2,
+    // 2));
+
+    // muuuch softer vision noise
+    static final shared_ptr<Diagonal> PX_NOISE = Diagonal.Sigmas(new Vector2(20, 20));
 
     /**
      * TODO: move the constants here to the class, make this not static.

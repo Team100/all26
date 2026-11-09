@@ -2,6 +2,7 @@ package org.team100.lib.localization;
 
 import java.util.Map;
 
+import org.team100.lib.coherence.Takt;
 import org.team100.lib.uncertainty.NoisyStateSE2;
 import org.team100.lib.util.NamedChooser;
 import org.wpilib.smartdashboard.SendableChooser;
@@ -35,6 +36,8 @@ public class StateEstimatorProxy implements StateEstimator {
 
     private void update(EstimatorChoice choice) {
         m_choice = choice;
+        // Avoid transients when switching estimators.
+        reset(Takt.get());
     }
 
     @Override
@@ -60,6 +63,15 @@ public class StateEstimatorProxy implements StateEstimator {
         switch (m_choice) {
             case A -> m_A.reset(timestampS, state);
             case B -> m_B.reset(timestampS, state);
+            default -> throw new IllegalStateException();
+        }
+    }
+
+    @Override
+    public void reset(double timestamp) {
+        switch (m_choice) {
+            case A -> m_A.reset(timestamp);
+            case B -> m_B.reset(timestamp);
             default -> throw new IllegalStateException();
         }
     }

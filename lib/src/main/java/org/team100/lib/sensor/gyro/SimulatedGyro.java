@@ -27,8 +27,8 @@ public class SimulatedGyro implements Gyro {
     // in order to adjust quickly: the initial value is zero.
     // TODO: this value is plainly much too high, figure out why the
     // solver is not 
-    private static final double BIAS_NOISE = 1;
-    // private static final double BIAS_NOISE = 1e-5;
+    // private static final double BIAS_NOISE = 1;
+    private static final double BIAS_NOISE = 1e-5;
     private final Random m_rand;
     private final Rotation2dLogger m_log_yaw;
     private final DoubleLogger m_log_yaw_rate;

@@ -2,8 +2,12 @@ package org.team100.lib.localization.gtsam;
 
 import java.util.Map.Entry;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
+import org.team100.lib.experiments.Experiment;
+import org.team100.lib.experiments.Experiments;
 import org.team100.lib.localization.OdoGyroMeasurement;
+import org.team100.lib.localization.simulation.AddOdometryNoise;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveDriveKinematics100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDeltas;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
@@ -26,8 +30,26 @@ import gtsam.shared_ptr;
 import gtsam.noiseModel.Diagonal;
 
 public class Odometry {
+    private final SwerveDriveKinematics100 m_kinematics;
 
-    static shared_ptr<BetweenFactorPose2> getOdometryFactor(
+    /**
+     * Noise source for simulation.
+     * For a real robot, use UnaryOperator.identity().
+     */
+    private final UnaryOperator<Twist2d> m_noise;
+    private final Supplier<Rotation2d> m_gyro;
+    private final Supplier<SwerveModulePositions> m_positions;
+
+    public Odometry(SwerveDriveKinematics100 kinematics, boolean noisy,
+            Supplier<Rotation2d> gyro,
+            Supplier<SwerveModulePositions> positions) {
+        m_kinematics = kinematics;
+        m_noise = noisy ? new AddOdometryNoise() : UnaryOperator.identity();
+        m_gyro = gyro;
+        m_positions = positions;
+    }
+
+    shared_ptr<BetweenFactorPose2> getOdometryFactor(
             SwerveDriveKinematics100 m_kinematics,
             Key x0,
             Key x1,
@@ -35,6 +57,8 @@ public class Odometry {
             SwerveModulePositions m1) {
         SwerveModuleDeltas deltas = SwerveModuleDeltas.modulePositionDelta(m0, m1);
         Twist2d twist = m_kinematics.forward(deltas);
+        // Add noise if in sim
+        twist = m_noise.apply(twist);
         Vector3 twistVector = new Vector3(twist.dx, twist.dy, twist.dtheta);
         Pose2 measurement = new Pose2().expmap(twistVector);
         return BetweenFactorPose2.newBetweenFactorPose2(
@@ -53,6 +77,10 @@ public class Odometry {
 
     /** Speed-dependent noise. */
     private static double noise(double distance) {
+        if (Experiments.INSTANCE.enabled(Experiment.IgnoreOdometry)) {
+            // very high noise is like ignoring the signal.
+            return 1;
+        }
         // this used to be 0.0001 but gtsam didn't like it
         return 0.001 + 0.02 * distance;
     }
@@ -67,14 +95,11 @@ public class Odometry {
      * 
      * TODO: move the constants here to the class, make this not static.
      */
-    static void odoGyro(
+    void odoGyro(
             Values m_result,
-            SwerveDriveKinematics100 m_kinematics,
             shared_ptr<PlanarGyroParams> m_params,
             double t1,
             DiscreteTimeInterpolatableBuffer100<OdoGyroMeasurement> m_measurements,
-            Supplier<Rotation2d> m_gyro,
-            Supplier<SwerveModulePositions> m_positions,
             NonlinearFactorGraph factors,
             Values newValues,
             KeyTimestampMap newTimestamps) {

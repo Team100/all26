@@ -157,6 +157,10 @@ public class TimeInterpolatableBuffer100<T extends Interpolatable<T>> {
         return m_pastSnapshots.lastKey();
     }
 
+    public Entry<Double, T> lastEntry() {
+        return m_pastSnapshots.lastEntry();
+    }
+
     public Set<Map.Entry<Double, T>> entrySet() {
         return m_pastSnapshots.entrySet();
     }

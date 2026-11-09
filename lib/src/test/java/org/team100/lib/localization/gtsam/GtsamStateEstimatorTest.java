@@ -272,18 +272,18 @@ public class GtsamStateEstimatorTest {
         NoisyStateSE2 state = h.get(0.00);
         TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(0.1, 0.1), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise());
 
         // vision lags more than one update period, so do one odometry update first.
         h = estimator.update(0.02);
         state = h.get(0.00);
         TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(0.1, 0.1), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise());
         state = h.get(0.02);
         TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(0.1, 0.1), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise());
 
         // add vision input that is not consistent with pose at (0,0,0).
         Translation3d landmark = new Translation3d(1, 0, 0);
@@ -306,19 +306,19 @@ public class GtsamStateEstimatorTest {
         state = h.get(0.00);
         TestUtil.verify(new Pose2d(0.054, 0.227, new Rotation2d(0.227)), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(0.1, 0.1), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(8.550, 7.178), state.noise());
         state = h.get(0.01);
         TestUtil.verify(new Pose2d(0.055, 0.228, new Rotation2d(0.227)), state.pose());
         TestUtil.verify(new VelocitySE2(0.000, 0.000, 0.000), state.velocity());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(0.1, 0.1), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(8.550, 7.178), state.noise());
         state = h.get(0.02);
         TestUtil.verify(new Pose2d(0.055, 0.228, new Rotation2d(0.227)), state.pose());
         TestUtil.verify(new VelocitySE2(0.000, 0.000, 0.000), state.velocity());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(0.1, 0.1), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(8.550, 7.178), state.noise());
         state = h.get(0.04);
         TestUtil.verify(new Pose2d(0.055, 0.228, new Rotation2d(0.227)), state.pose());
         TestUtil.verify(new VelocitySE2(0.000, 0.000, 0.000), state.velocity());
-        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(0.1, 0.1), state.noise());
+        TestUtil.verify(IsotropicNoiseSE2.fromStdDev(8.550, 7.178), state.noise());
         estimator.dump();
 
         Map<Double, NoisyStateSE2> all = estimator.all();

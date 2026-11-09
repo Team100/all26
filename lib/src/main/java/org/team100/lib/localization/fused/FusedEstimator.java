@@ -111,6 +111,14 @@ public class FusedEstimator implements StateEstimator {
     }
 
     @Override
+    public void reset(double timestamp) {
+        Entry<Double, LocalizerEstimate> e = m_estimates.lastEntry();
+        if (e == null)
+            return;
+        reset(timestamp, e.getValue().noisyState());
+    }
+
+    @Override
     public void reset(double timestampS, NoisyStateSE2 state) {
         // Always reset both at once, so they stay in sync.
         m_measurements.reset(
