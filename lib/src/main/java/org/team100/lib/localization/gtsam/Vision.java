@@ -7,6 +7,8 @@ import java.util.TreeSet;
 
 import org.team100.lib.camera.Distortion;
 import org.team100.lib.camera.Intrinsic;
+import org.team100.lib.experiments.Experiment;
+import org.team100.lib.experiments.Experiments;
 import org.team100.lib.gtsam.util.Geometry;
 import org.wpilib.math.geometry.Rotation3d;
 import org.wpilib.math.geometry.Transform3d;
@@ -23,6 +25,8 @@ import gtsam.Values;
 import gtsam.Vector2;
 import gtsam.shared_ptr;
 import gtsam.noiseModel.Diagonal;
+import gtsam.noiseModel.Robust;
+import gtsam.noiseModel.mEstimator.Huber;
 
 /**
  * TODO: remove the odometry stuff from this class, do it elsewhere.
@@ -47,11 +51,19 @@ public class Vision {
     // might be good to a few pixels, depending on the lens, and the
     // lens calibration might be good to a pixel.
     // TODO: look carefully at camera accuracy
-    // static final shared_ptr<Diagonal> PX_NOISE = Diagonal.Sigmas(new Vector2(2,
-    // 2));
+    static final shared_ptr<Diagonal> PX_NOISE_LOW = Diagonal.Sigmas(
+            new Vector2(2, 2));
 
-    // muuuch softer vision noise
-    static final shared_ptr<Diagonal> PX_NOISE = Diagonal.Sigmas(new Vector2(20, 20));
+    // Pixel noise.
+    static final shared_ptr<Diagonal> PX_NOISE_HIGH = Diagonal.Sigmas(
+            new Vector2(20, 20));
+
+    // Huber loss is quadratic for small values (like least-squares) but
+    // linear for large values (to avoid overweighing them).
+    // https://en.wikipedia.org/wiki/Huber_loss
+    static final shared_ptr<Robust> PX_NOISE = Robust.Create(
+            Huber.Create(2),
+            Diagonal.Sigmas(new Vector2(2, 2)));
 
     /**
      * TODO: move the constants here to the class, make this not static.
@@ -87,13 +99,20 @@ public class Vision {
         Transform3d offset = corner.offset().plus(CAM);
         Intrinsic intrinsic = corner.intrinsic();
         Distortion distortion = corner.distortion();
+
         newFactors.add(PlanarProjectionFactor1.newPlanarProjectionFactor1(
                 x,
                 Geometry.toPoint3(landmark),
                 Geometry.toPoint2(measurement),
                 Geometry.toPose3(offset),
                 Geometry.toCal3DS2(intrinsic, distortion),
-                PX_NOISE));
+                noise()));
+    }
+
+    static shared_ptr<? extends gtsam.noiseModel.Base> noise() {
+        if (Experiments.INSTANCE.enabled(Experiment.HighVisionNoise))
+            return PX_NOISE_HIGH;
+        return PX_NOISE_LOW;
     }
 
 }

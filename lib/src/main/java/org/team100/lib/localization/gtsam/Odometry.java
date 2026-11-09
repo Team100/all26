@@ -144,9 +144,19 @@ public class Odometry {
         Key x0 = Keys.poseKey(t0us);
         Key b0 = Keys.biasKey(t0us);
 
+        // Previous estimates
+        Pose2 pose0 = m_result.atPose2(x0);
+        double bias0 = m_result.atDouble(b0);
+
         // Use the previous estimates as the initial values
-        newValues.insert(x1, m_result.atPose2(x0));
-        newValues.insert(b1, m_result.atDouble(b0));
+        newValues.insert(x1, pose0);
+        newValues.insert(b1, bias0);
+
+        // Also add prior factors with these same values, to limit variation.
+        // if the model does the wrong thing these priors will also make it
+        // "stick" longer.
+        // Priors.poseSmoother(factors, x1, pose0);
+        // Priors.biasSmoother(factors, b0, bias0);
 
         // Measurement at previous time.
         OdoGyroMeasurement m0 = m.getValue();

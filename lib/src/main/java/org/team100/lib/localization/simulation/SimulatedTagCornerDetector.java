@@ -69,6 +69,8 @@ public class SimulatedTagCornerDetector {
     private static final double OBLIQUE_LIMIT_RAD = 1.4;
     // past about six meters, the tag appears too small to see.
     private static final double MAX_RANGE_M = 6;
+    // try much less range
+    // private static final double MAX_RANGE_M = 2;
     // camera frame is from 85 ms ago, more or less
     private static final double MEAN_DELAY = 0.085;
     private static final double STDEV_DELAY = 0.02;
@@ -180,10 +182,10 @@ public class SimulatedTagCornerDetector {
                             tagPose.getRotation().getZ());
                 }
 
-                Transform3d tagInCamera = tagInCamera(
-                        () -> m_rand.nextGaussian(), cameraPose3d, tagPose);
                 // Transform3d tagInCamera = tagInCamera(
-                // () -> 0.0, cameraPose3d, tagPose);
+                // () -> m_rand.nextGaussian(), cameraPose3d, tagPose);
+                Transform3d tagInCamera = tagInCamera(
+                        () -> 0.0, cameraPose3d, tagPose);
 
                 if (visible(tagInCamera)) {
                     // publish it
@@ -197,7 +199,6 @@ public class SimulatedTagCornerDetector {
                         continue;
                     }
                     blips.add(new BlipWithCorners(time, tagId, tofloat(corners), tagInCamera));
-                    // Just one sighting, for now, to make things simpler.
                 } else {
                     // ignore it
                     if (DEBUG) {

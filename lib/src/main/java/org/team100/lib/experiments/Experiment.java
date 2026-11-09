@@ -23,6 +23,8 @@ public enum Experiment {
      * Useful for testing and calibration.
      */
     IgnoreVision("Ignore camera input"),
+    /** use a very soft noise model for vision input */
+    HighVisionNoise("High vision noise"),
     /**
      * Skip velocity feedforward in steering.
      * 
@@ -99,7 +101,7 @@ public enum Experiment {
      * Impute velocity.
      * 
      * Use consecutive poses in the history to impute a velocity estimate,
-     * instead of using the historical velocity directly.  This is to
+     * instead of using the historical velocity directly. This is to
      * explore the use of imputed velocity with GTSAM.
      */
     ImputeVelocity("Impute velocity"),

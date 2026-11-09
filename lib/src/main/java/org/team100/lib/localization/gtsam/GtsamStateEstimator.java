@@ -61,8 +61,12 @@ import gtsam.shared_ptr;
  * 30 years of runtime.
  */
 public class GtsamStateEstimator implements StateEstimator {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
+    /**
+     * Using a really long lag window doesn't seem to help anything
+     * and it's really slow to solve.
+     */
     private static final double LAG_SECONDS = 0.2;
     private static final long LAG_US = (long) (LAG_SECONDS * 1e6);
 

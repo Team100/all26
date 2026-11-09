@@ -19,8 +19,15 @@ public class Priors {
     private static shared_ptr<Diagonal> posePriorSigma = Diagonal.Sigmas(
             new Vector3(10, 10, 10));
 
+    // at 50hz the pose shouldn't move more than 0.1m per update
+    private static shared_ptr<Diagonal> poseSmootherSigma = Diagonal.Sigmas(
+            new Vector3(0.1, 0.1, 0.1));
+            
     /** Bias prior is very soft, we have no idea. */
     private static shared_ptr<Diagonal> biasPriorSigma = Diagonal.Sigmas(new Vector1(1));
+
+    /** Bias should be very smooth.*/
+    private static shared_ptr<Diagonal> biasSmootherSigma = Diagonal.Sigmas(new Vector1(0.1));
 
     /**
      * Add a weak prior to help the model converge.
@@ -29,8 +36,16 @@ public class Priors {
         m_newFactors.add(PriorFactor.PriorFactorPose2(x, p, posePriorSigma));
     }
 
+    static void poseSmoother(NonlinearFactorGraph m_newFactors, Key x, Pose2 p) {
+        m_newFactors.add(PriorFactor.PriorFactorPose2(x, p, poseSmootherSigma));
+    }
+
     static void biasPrior(NonlinearFactorGraph m_newFactors, Key b, double bias) {
         m_newFactors.add(PriorFactor.PriorFactorDouble(b, bias, biasPriorSigma));
+    }
+
+    static void biasSmoother(NonlinearFactorGraph m_newFactors, Key b, double bias) {
+        m_newFactors.add(PriorFactor.PriorFactorDouble(b, bias, biasSmootherSigma));
     }
 
     /**

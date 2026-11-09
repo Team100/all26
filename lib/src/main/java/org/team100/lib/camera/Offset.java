@@ -110,23 +110,24 @@ public class Offset {
         //
         // For simulated tag detector cameras.
         // These point in the cardinal directions.
+        // New: tilting up a bit, closer to the floor.
         //
         offsets.put(Camera.SIM0, new Offset(
                 new Transform3d(
-                        new Translation3d(0, 0, 0.75),
-                        new Rotation3d(0, 0, 0))));
+                        new Translation3d(0, 0, 0.25),
+                        new Rotation3d(0, -0.1, 0))));
         offsets.put(Camera.SIM1, new Offset(
                 new Transform3d(
-                        new Translation3d(0, 0, 0.75),
-                        new Rotation3d(0, 0, Math.PI / 2))));
+                        new Translation3d(0, 0, 0.25),
+                        new Rotation3d(0, -0.1, Math.PI / 2))));
         offsets.put(Camera.SIM2, new Offset(
                 new Transform3d(
-                        new Translation3d(0, 0, 0.75),
-                        new Rotation3d(0, 0, Math.PI))));
+                        new Translation3d(0, 0, 0.25),
+                        new Rotation3d(0, -0.1, Math.PI))));
         offsets.put(Camera.SIM3, new Offset(
                 new Transform3d(
-                        new Translation3d(0, 0, 0.75),
-                        new Rotation3d(0, 0, -Math.PI / 2))));
+                        new Translation3d(0, 0, 0.25),
+                        new Rotation3d(0, -0.1, -Math.PI / 2))));
         offsets.put(Camera.UNKNOWN,
                 new Offset(new Transform3d()));
     }
