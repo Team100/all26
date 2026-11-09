@@ -79,9 +79,22 @@ public class TestUtil {
         assertEquals(expected.getRotation().getRadians(), actual.getRotation().getRadians(), 1e-3, "r");
     }
 
+    public static void verify(Pose2d expected, Pose2d actual, double tol) {
+        if (DEBUG)
+            System.out.printf("expected %s actual %s\n", StrUtil.poseStr(expected), StrUtil.poseStr(actual));
+        assertEquals(expected.getX(), actual.getX(), tol, "x");
+        assertEquals(expected.getY(), actual.getY(), tol, "y");
+        assertEquals(expected.getRotation().getRadians(), actual.getRotation().getRadians(), tol, "r");
+    }
+
     public static void verify(IsotropicNoiseSE2 expected, IsotropicNoiseSE2 actual) {
         assertEquals(expected.cartesian(), actual.cartesian(), 1e-3, "cartesian");
         assertEquals(expected.rotation(), actual.rotation(), 1e-3, "rotation");
+    }
+
+    public static void verify(IsotropicNoiseSE2 expected, IsotropicNoiseSE2 actual, double tol) {
+        assertEquals(expected.cartesian(), actual.cartesian(), tol, "cartesian");
+        assertEquals(expected.rotation(), actual.rotation(), tol, "rotation");
     }
 
     public static void verify(Pose3d expected, Pose3d actual) {
@@ -253,6 +266,12 @@ public class TestUtil {
         assertEquals(expected.x(), actual.x(), 1e-3, "vx");
         assertEquals(expected.y(), actual.y(), 1e-3, "vy");
         assertEquals(expected.theta(), actual.theta(), 1e-3, "omega");
+    }
+
+    public static void verify(VelocitySE2 expected, VelocitySE2 actual, double tol) {
+        assertEquals(expected.x(), actual.x(), tol, "vx");
+        assertEquals(expected.y(), actual.y(), tol, "vy");
+        assertEquals(expected.theta(), actual.theta(), tol, "omega");
     }
 
     public static void verify(StateSE2 expected, StateSE2 actual) {

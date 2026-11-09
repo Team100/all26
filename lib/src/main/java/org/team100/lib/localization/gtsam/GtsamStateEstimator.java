@@ -9,7 +9,6 @@ import java.util.TreeMap;
 import java.util.function.Supplier;
 
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.gtsam.util.Geometry;
 import org.team100.lib.localization.ImmutableSwerveHistory;
 import org.team100.lib.localization.OdoGyroMeasurement;
 import org.team100.lib.localization.StateEstimator;

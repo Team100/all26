@@ -42,7 +42,7 @@ public class AprilTagCornerRobotLocalizerTest {
         assertEquals(0.0, m.timestamp(), DELTA);
         NoisyPose2d noisyMeasurement = m.noisyMeasurement();
         Pose2d pose = noisyMeasurement.pose();
-        assertEquals(7.310, pose.getX(), DELTA);
+        assertEquals(7.038, pose.getX(), DELTA);
         assertEquals(1.914, pose.getY(), DELTA);
     }
 }

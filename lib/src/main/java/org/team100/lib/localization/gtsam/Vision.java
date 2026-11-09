@@ -9,7 +9,6 @@ import org.team100.lib.camera.Distortion;
 import org.team100.lib.camera.Intrinsic;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
-import org.team100.lib.gtsam.util.Geometry;
 import org.wpilib.math.geometry.Rotation3d;
 import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.geometry.Translation2d;
