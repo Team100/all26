@@ -38,7 +38,7 @@ class Balls(ColorAnalysis):
         # network output for target sightings
         self._targets = network.get_target_sender()
         try:
-            self._model = YOLO("/home/pi/models/ball-detection_ncnn_model", task="detect")
+            self._model = YOLO("/home/pi/models/ball-detection_ncnn_model", task="detect") # type: ignore
         except:
             self._model = None
             print(f"[{datetime.now()}] " + "Model loading failed")
@@ -57,7 +57,7 @@ class Balls(ColorAnalysis):
         :img_display: distorted, for display, annotated.
         :servertime: drift-corrected server-time microsecond timestamp"""
         # DisplayUtil.rectangle(img_display, (200, 200), (50, 50), (0, 255, 0))
-        if self._model is not None:
+        if self._model is not None: # type: ignore
             result = self._model.predict(source=img, imgsz=512, conf=0.5, verbose=False)[0] # type: ignore
             for(cx, cy, w, h) in result.boxes.xywh.tolist(): # type: ignore
                 if img_display is not None:
