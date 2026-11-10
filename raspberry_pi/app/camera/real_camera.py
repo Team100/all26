@@ -1,12 +1,12 @@
+# pylint: disable=C0114,C0115,C0116,E0401,R0902
 from datetime import datetime
-# pylint: disable=E0401,R0902
-
 from pprint import pprint
-from typing import Any
-from typing import override
+from typing import Any, override
+
 import numpy as np
 from numpy.typing import NDArray
 from picamera2 import CompletedRequest, Picamera2  # type: ignore
+
 from app.camera.camera_protocol import Camera, Request
 from app.camera.capture_timestamp import CaptureTimestamp
 from app.camera.config.config_factory import ConfigFactory
@@ -47,13 +47,13 @@ class RealCamera(Camera):
         self._cam: Picamera2 = Picamera2()  # type: ignore
 
         print(f"[{datetime.now()}] " + "*** SENSOR MODES AVAILABLE")
-        pprint(self._cam.sensor_modes)  # type:ignore
+        pprint(self._cam.sensor_modes)  # type: ignore
 
         print(f"[{datetime.now()}] " + "*** CAMERA CONTROLS")
-        pprint(self._cam.camera_controls)  # type:ignore
+        pprint(self._cam.camera_controls)  # type: ignore
 
         print(f"[{datetime.now()}] " + "*** RAW MODES")
-        pprint(self._cam._raw_modes)  # type:ignore
+        pprint(self._cam._raw_modes)  # type: ignore
 
         self._mtx: Intrinsic = Intrinsic(identity)
         self._dist: Distortion = Distortion(identity)
@@ -74,17 +74,17 @@ class RealCamera(Camera):
         pprint(self._camera_config)
 
         # optimal alignment makes the ISP a little faster
-        self._cam.align_configuration(self._camera_config, optimal=True)  # type:ignore
+        self._cam.align_configuration(self._camera_config, optimal=True)  # type: ignore
         print(f"[{datetime.now()}] " + "*** ALIGNED CONFIG")
         pprint(self._camera_config)
 
-        self._cam.configure(self._camera_config)  # type:ignore
+        self._cam.configure(self._camera_config)  # type: ignore
         self._check_config(config)
 
-        self._cam.start()  # type:ignore
+        self._cam.start()  # type: ignore
         # Controls need to be set *after* the camera starts,
         # or AeEnable doesn't do anything!
-        self._cam.set_controls(config.controls())  # type:ignore
+        self._cam.set_controls(config.controls())  # type: ignore
         self._frame_time = Timer.time_ns()
         print(f"[{datetime.now()}] " + "*** Camera setup complete")
 
@@ -92,7 +92,7 @@ class RealCamera(Camera):
     def capture_request(self) -> Request:
         capture_start: int = Timer.time_ns()
         # TODO test this line for bugs
-        req: CompletedRequest = self._cam.capture_request()  # type:ignore 
+        req: CompletedRequest = self._cam.capture_request()  # type: ignore
         total_time_ms = (capture_start - self._frame_time) / 1000000
         self._frame_time = capture_start
         fps = 1000 / total_time_ms
@@ -131,13 +131,13 @@ class RealCamera(Camera):
         controls = conf.controls()
         print(f"[{datetime.now()}] " + "*** REQUESTED CONTROLS:")
         pprint(controls)
-        return cam.create_still_configuration(  # type:ignore
+        return cam.create_still_configuration(  # type: ignore
             buffer_count=conf.buffer_count(),
             queue=conf.queue(),
             sensor=conf.sensor(),
             main=conf.main(),
             raw=conf.raw(),
-            transform=conf.transform(identity),  # type:ignore
+            transform=conf.transform(identity),  # type: ignore
             controls=controls,
         )
 
@@ -145,8 +145,7 @@ class RealCamera(Camera):
         """Verify the requested config matches the camera config."""
         print(f"[{datetime.now()}] " + "*** CONFIG CHECK")
         pprint(self._camera_config)
-        pprint(self._cam.camera_config)  # type:ignore
-        if not config.ok(self._camera_config, self._cam.camera_config):  # type:ignore
+        pprint(self._cam.camera_config)  # type: ignore
+        if not config.ok(self._camera_config, self._cam.camera_config):  # type: ignore
             raise ValueError("Config check fail")
-        else:
-            print(f"[{datetime.now()}] " + "CONFIG CHECK GOOD")
+        print(f"[{datetime.now()}] " + "CONFIG CHECK GOOD")

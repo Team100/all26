@@ -1,6 +1,6 @@
-# from datetime import datetime
-# pylint: disable=R0903,W0212
+# pylint: disable=C0114,E0401,R0903,W0212
 import ntcore
+
 from app.network.network_protocol import Network
 from app.util.timer import Timer
 

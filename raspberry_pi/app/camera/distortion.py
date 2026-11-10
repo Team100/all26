@@ -1,4 +1,6 @@
+# pylint: disable=C0114,C0115,C0116,E0401,R0801,R0903,R0912,W0613
 from datetime import datetime
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -11,7 +13,7 @@ class Distortion:
     This should be measured using mrcal.
 
     We've had good results using the four-parameter model: [k1, k2, p1, p2].
-    
+
 
     Using the 3.2mm lens and GS camera:
     * k1 is quadratic radial, should be around -0.3
@@ -57,10 +59,17 @@ class Distortion:
                     [-0.006934480214, -0.009133184923, 0.0006250697999, 0.001300785576]
                 )
             case Identity.FUNNEL:
-                self._dist = np.array(
-                    [-0.03226, 0.01730, 0.00105, 0.00284]
-                )   
-            #
+                self._dist = np.array([-0.03226, 0.01730, 0.00105, 0.00284])
+            case Identity.SIM0:
+                self._dist = np.array([-0.03226, 0.01730, 0.00105, 0.00284])
+            case Identity.DIST_TEST:
+                self._dist = np.array([-0.03226, 0.01730, 0.00105, 0.00284])
+            case Identity.DEV:
+                self._dist = np.array([0.0, 0.0, 0.0, 0.0])
+            case Identity.FLIPPED:
+                self._dist = np.array([0.0, 0.0, 0.0, 0.0])
+            case Identity.DESKTOP:
+                self._dist = np.array([0.0, 0.0, 0.0, 0.0])  #
             # TODO: clean up the entries below
             #
 
@@ -85,13 +94,34 @@ class Distortion:
                 )
 
                 self._valid = False
-                print(f"[{datetime.now()}] " + "###########################################")
-                print(f"[{datetime.now()}] " + "#                                         #")
-                print(f"[{datetime.now()}] " + "#  CAMERA DISTORTION IS NOT CALIBRATED!   #")
-                print(f"[{datetime.now()}] " + "#                                         #")
-                print(f"[{datetime.now()}] " + "#  YOU MUST CALIBRATE IT!!!!              #")
-                print(f"[{datetime.now()}] " + "#                                         #")
-                print(f"[{datetime.now()}] " + "###########################################")
+                print(
+                    f"[{datetime.now()}] "
+                    + "###########################################"
+                )
+                print(
+                    f"[{datetime.now()}] "
+                    + "#                                         #"
+                )
+                print(
+                    f"[{datetime.now()}] "
+                    + "#  CAMERA DISTORTION IS NOT CALIBRATED!   #"
+                )
+                print(
+                    f"[{datetime.now()}] "
+                    + "#                                         #"
+                )
+                print(
+                    f"[{datetime.now()}] "
+                    + "#  YOU MUST CALIBRATE IT!!!!              #"
+                )
+                print(
+                    f"[{datetime.now()}] "
+                    + "#                                         #"
+                )
+                print(
+                    f"[{datetime.now()}] "
+                    + "###########################################"
+                )
 
         print(f"[{datetime.now()}] " + "*** DISTORTION")
         print(self._dist)

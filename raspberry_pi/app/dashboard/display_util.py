@@ -1,5 +1,4 @@
-# from datetime import datetime
-# pylint: disable=E1101,R0903
+# pylint: disable=C0114,E1101,R0903
 
 import cv2
 from cv2.typing import MatLike
@@ -17,7 +16,7 @@ class DisplayUtil:
     """Methods for manipulating images for display."""
 
     @staticmethod
-    def note(image: MatLike, contour: MatLike, c_x: int, c_y: int) -> None:
+    def note(image: MatLike, contour: MatLike, c_x: int, c_y: int) -> None:  # type: ignore
         """Draw the contour with a circle at the center (c_x, c_y)."""
         cv2.drawContours(image, [contour], -1, (0, 255, 0), 3)
         cv2.circle(image, (c_x, c_y), 7, (255, 0, 0), -1)

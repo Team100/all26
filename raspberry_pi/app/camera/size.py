@@ -1,4 +1,4 @@
-# from datetime import datetime
+# pylint: disable=C0114,C0115,C0116,E0401,R0903,R0911
 from dataclasses import dataclass
 
 from app.camera.model import Model
@@ -47,17 +47,11 @@ class Size:
                 )
             case Model.ARDU_OV9782:
                 return Size(
-                    sensor_width=1280,
-                    sensor_height=800,
-                    width=1280,
-                    height=800
+                    sensor_width=1280, sensor_height=800, width=1280, height=800
                 )
             case Model.ARDU_BO61O:
                 return Size(
-                    sensor_width=1920,
-                    sensor_height=1200,
-                    width=1920,
-                    height=1200
+                    sensor_width=1920, sensor_height=1200, width=1920, height=1200
                 )
             case _:
                 return Size(

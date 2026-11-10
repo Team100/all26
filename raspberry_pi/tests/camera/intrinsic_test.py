@@ -1,4 +1,3 @@
-# from datetime import datetime
 import unittest
 
 from app.camera.intrinsic import Intrinsic
@@ -10,9 +9,11 @@ class IntrinsicTest(unittest.TestCase):
         identity: Identity = Identity.DEV
         Intrinsic(identity)
 
-    # TODO: fix this test
-    @unittest.expectedFailure
     def test_all_identities(self) -> None:
+        """Make sure all identities have intrinsics."""
         for identity in list(Identity):
             intrinsic: Intrinsic = Intrinsic(identity)
+            self.assertEqual(9, intrinsic.get().size)
+            if identity == Identity.UNKNOWN:
+                continue
             self.assertTrue(intrinsic.valid())

@@ -1,14 +1,15 @@
+# pylint: disable=C0114,C0115,C0116,E0401,E1101,R0902,R0903,R0913,R0917,W0613,W2301
 from datetime import datetime
-# pylint: disable=R0903
 from typing import override
-from app.network.structs import Blip, BlipWithCorners, Target
+
 from app.network.network_protocol import (
-    DoubleSender,
     BlipSender,
     BlipWithCornersSender,
-    TargetSender,
+    DoubleSender,
     Network,
+    TargetSender,
 )
+from app.network.structs import Blip, BlipWithCorners, Target
 
 
 class FakeDoubleSender(DoubleSender):

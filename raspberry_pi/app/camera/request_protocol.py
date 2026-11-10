@@ -1,9 +1,9 @@
-# from datetime import datetime
-# pylint: disable=W2301
+# pylint: disable=C0114,E0401,W2301
 
-from typing import Protocol
-from contextlib import AbstractContextManager
 from collections.abc import Buffer
+from contextlib import AbstractContextManager
+from typing import Protocol
+
 from app.decoder.decoder_protocol import Decoder
 
 

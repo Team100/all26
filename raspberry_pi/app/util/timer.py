@@ -1,13 +1,12 @@
-# from datetime import datetime
-# pylint: disable=R0903
+# pylint: disable=C0114,R0903
 
 try:
     # this is the linux/raspberry pi version.
-    from time import clock_gettime_ns, CLOCK_BOOTTIME  # type:ignore
+    from time import CLOCK_BOOTTIME, clock_gettime_ns  # type: ignore
 
     def _time() -> int:
         """Nanoseconds since boot, aligns with SensorTimestamp."""
-        return clock_gettime_ns(CLOCK_BOOTTIME)  # type:ignore
+        return clock_gettime_ns(CLOCK_BOOTTIME)  # type: ignore
 
 except ImportError:
     # this is the windows version

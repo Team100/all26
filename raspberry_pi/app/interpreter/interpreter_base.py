@@ -1,11 +1,11 @@
-from datetime import datetime
-# pylint: disable=E0611,E1101,R0902,R0903,R0913,R0914,R0917,W0212,W0611
-
+# pylint: disable=C0114,C0115,C0116,E0401,E1101,R0903,W0212,W2301
 import os
+from datetime import datetime
+
 import cv2
 import ntcore
-import numpy as np
-from numpy.typing import NDArray
+from cv2.typing import MatLike
+
 from app.interpreter.interpreter_protocol import Interpreter
 from app.network.network_protocol import Network
 
@@ -46,7 +46,7 @@ class InterpreterBase(Interpreter):
             # This file does not exist (e.g. on Windows etc)
             pass
 
-    def write_calibration_image(self, img: NDArray[np.uint8]) -> None: # type: ignore
+    def write_calibration_image(self, img: MatLike) -> None:  # type: ignore
         """Write an image for later analysis (e.g. calibration).
 
         WARNING! This is VERY VERY SLOW, like 1 FPS.

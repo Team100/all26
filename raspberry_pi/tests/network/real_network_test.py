@@ -1,4 +1,3 @@
-# from datetime import datetime
 import unittest
 
 from threading import Event
@@ -17,10 +16,12 @@ class RealNetworkTest(unittest.TestCase):
         inst.startServer()
         sub = inst.getDoubleTopic("pi/unknown/foo").subscribe(0.0)
 
-        network = RealNetwork(Identity.UNKNOWN, Event())
+        done = Event()
+        network = RealNetwork(Identity.UNKNOWN, done)
         sender = network.get_double_sender("foo")
         sender.send(1.0)
         self.assertEqual(1.0, sub.get())
+        done.set()
 
     def test_send_blips_with_corners(self) -> None:
         inst = ntcore.NetworkTableInstance.getDefault()
@@ -29,7 +30,8 @@ class RealNetworkTest(unittest.TestCase):
             "vision/unknown/blips_with_corners", BlipWithCorners
         ).subscribe([])
 
-        network = RealNetwork(Identity.UNKNOWN, Event())
+        done = Event()
+        network = RealNetwork(Identity.UNKNOWN, done)
         sender = network.get_blip_with_corners_sender()
         sender.send(
             [BlipWithCorners.make(0, 0, [0, 0, 1, 1, 2, 2, 3, 3], Transform3d())]
@@ -37,3 +39,4 @@ class RealNetworkTest(unittest.TestCase):
         blips = sub.get()
         self.assertEqual(1, len(blips))
         self.assertEqual(1.0, blips[0].x1)
+        done.set()

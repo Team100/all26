@@ -1,6 +1,5 @@
 # type: ignore
 # pylint: disable=E1101,R1705
-# # from datetime import datetime
 import numpy as np
 import ncnn
 import torch

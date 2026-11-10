@@ -1,7 +1,6 @@
-# from datetime import datetime
-# pylint: disable=R0903
-
+# pylint: disable=C0114,C0115,C0116,E0401,E1101,R0902,R0903,R0913,R0917,W2301
 import ntcore
+
 from app.config.identity import Identity
 
 

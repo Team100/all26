@@ -1,7 +1,7 @@
-# from datetime import datetime
-# pylint: disable=R0903,W2301
+# pylint: disable=C0114,R0903,W2301
 
 from typing import Protocol
+
 from cv2.typing import MatLike
 
 
@@ -11,7 +11,7 @@ class MonoAnalysis(Protocol):
     def analyze_mono(
         self,
         img: MatLike,
-        img_display: MatLike, # type: ignore
+        img_display: MatLike,  # type: ignore
         servertime: int,
     ) -> None:
         """Analysis of a monochrome image.
@@ -27,11 +27,7 @@ class ColorAnalysis(Protocol):
     """Interface for analysis of color images."""
 
     def analyze_color(
-        self,
-        img: MatLike,
-        img_display: MatLike,
-        servertime: int,
-        min_pixels: int
+        self, img: MatLike, img_display: MatLike, servertime: int, min_pixels: int
     ) -> None:
         """Analysis of a color image.
 

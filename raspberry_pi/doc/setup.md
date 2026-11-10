@@ -25,6 +25,7 @@ On both Windows and Linux, you need these vscode extensions:
 * mypy type checker (microsoft)
 * pylint (microsoft)
 * black formatter (microsoft)
+* isort for organizing imports (microsoft)
 
 ## Python
 

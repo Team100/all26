@@ -1,17 +1,20 @@
+# pylint: disable=C0103,C0114,E0401,E1101,R0801,R0903,R0914,R0915
+import math
 from datetime import datetime
-# pylint: disable=C0103,E1101,R0903,R0914
 from typing import override
+
 import cv2
 import numpy as np
 from cv2.typing import MatLike, Moments
 from numpy.typing import NDArray
 from wpimath.geometry import Rotation3d
+
+from app.analysis.analysis_protocol import ColorAnalysis
 from app.camera.camera_protocol import Camera, Size
 from app.dashboard.display_util import DisplayUtil
-from app.analysis.analysis_protocol import ColorAnalysis
 from app.network.network_protocol import Network
 from app.network.structs import Target
-import math
+
 
 class Blobs(ColorAnalysis):
     """A wrapper for OpenCV target finding."""
@@ -25,7 +28,7 @@ class Blobs(ColorAnalysis):
     ) -> None:
         """
         Finds blobs within a color range in HSV.
-        
+
         Note: hue values are 0-180, half the usual range.
 
         :cam: camera implementation
@@ -85,7 +88,7 @@ class Blobs(ColorAnalysis):
         for contour in contours:
             # https://en.wikipedia.org/wiki/Image_moment
             mmnts: Moments = cv2.moments(contour)
-                     
+
             # reject too small (m00 is in pixels)
             if mmnts["m00"] < min_pixels:
                 continue
@@ -99,35 +102,29 @@ class Blobs(ColorAnalysis):
             perimeter = cv2.arcLength(contour, True) ** 2
 
             area = cv2.contourArea(contour)
-            
-            # In a circle, the area is c^2 over 4 pi
-            fourpi = 4*3.14
 
-            if area < roundtolo * ( perimeter / fourpi):
+            # In a circle, the area is c^2 over 4 pi
+            fourpi = 4 * 3.14
+
+            if area < roundtolo * (perimeter / fourpi):
                 continue
-            k_area = 1.50E4
+            k_area = 1.50e4
 
             cX: int = int(mmnts["m10"] / mmnts["m00"])
             cY: int = int(mmnts["m01"] / mmnts["m00"])
-            cA: int =  int(area)
+            cA: int = int(area)
 
             # Insures that range_1 always has a value
-            range_1 = 0
+            range_1: float = 0
 
             # Avoid divide by zero with this check
             if area >= min_pixels:
-                range_1 = math.sqrt(k_area/area)
-            
+                range_1 = math.sqrt(k_area / area)
+
             low_y = 600
 
             if low_y < cY:
                 continue
-
-
-                    
-                    
-
-                    
 
             # Calculates how big the object is based on how far (high in the image) it is.
             min_area = 100
@@ -137,7 +134,7 @@ class Blobs(ColorAnalysis):
 
             points_to_undistort.append([cX, cY])
             contour_info.append((contour, cX, cY, cA, range_1))
-            
+
         if points_to_undistort:
             # Undistort all points at once
             undistorted_points = self.undistort_points(points_to_undistort)
@@ -157,14 +154,11 @@ class Blobs(ColorAnalysis):
                 initial = np.array([1, 0, 0], dtype=np.float64)
                 final = np.array([1, xNormalized, yNormalized], dtype=np.float64)
                 rotation = Rotation3d(initial=initial, final=final)
-                
-                targets.append(Target(int(servertime), rotation, range1))
 
+                targets.append(Target(int(servertime), rotation, range1))
 
                 if img_display is not None:
                     DisplayUtil.note(img_display, c, orig_cX, orig_cY)
-
-            
 
             # only send if there's anything to say
             self._targets.send(targets)

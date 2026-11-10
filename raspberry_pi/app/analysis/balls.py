@@ -1,13 +1,14 @@
+# pylint: disable=C0103,C0114,E0401,E1101,R0801,R0903,R0914,W0613,W0702
 from datetime import datetime
-
-# pylint: disable=C0103,E1101,R0903,R0914,W0702
 from typing import override
+
 from cv2.typing import MatLike
 from ultralytics import YOLO
-from app.camera.camera_protocol import Camera, Size
+
 from app.analysis.analysis_protocol import ColorAnalysis  # type: ignore
-from app.network.network_protocol import Network
+from app.camera.camera_protocol import Camera, Size
 from app.dashboard.display_util import DisplayUtil
+from app.network.network_protocol import Network
 
 
 class Balls(ColorAnalysis):
@@ -33,6 +34,8 @@ class Balls(ColorAnalysis):
         self._height: int = size.height
         # network output for target sightings
         self._targets = network.get_target_sender()
+        # specify the type hint
+        self._model: YOLO | None
         try:
             self._model = YOLO(
                 "/home/pi/models/ball-detection_ncnn_model", task="detect"
