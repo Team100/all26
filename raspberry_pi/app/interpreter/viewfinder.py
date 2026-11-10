@@ -1,8 +1,10 @@
-from datetime import datetime
-# pylint: disable=C0103,E1101,R0903
-from typing import  override
+# pylint: disable=C0114,C0115,C0116,E0401,E1101,R0903,W2301
 from collections.abc import Buffer
+from datetime import datetime
+from typing import override
+
 from cv2.typing import MatLike
+
 from app.camera.camera_protocol import Request
 from app.dashboard.display_protocol import Display
 from app.dashboard.display_util import DisplayUtil
@@ -26,7 +28,6 @@ class Viewfinder(Interpreter):
         self._display2 = display2
         # network output for camera FPS
         self._fps = network.get_double_sender("fps")
-
 
     @override
     def interpret(self, req: Request) -> None:

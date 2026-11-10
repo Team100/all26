@@ -1,7 +1,6 @@
-
-# pylint: disable=R0903,W2301
-
+# pylint: disable=C0114,C0115,C0116,E0401,E1101,R0902,R0903,R0913,R0917,W2301
 from typing import Protocol
+
 from app.network.structs import Blip, BlipWithCorners, Target
 
 

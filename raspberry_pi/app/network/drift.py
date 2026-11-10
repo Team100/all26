@@ -1,8 +1,8 @@
+# pylint: disable=C0114,C0115,C0116,E0401,E1101,R0902,R0903,R0913,R0917,W2301
+from queue import Empty, Queue
 
-# pylint: disable=R0902,R0903,W0212
-
-from queue import Queue, Empty
 import ntcore
+
 from app.config.identity import Identity
 
 

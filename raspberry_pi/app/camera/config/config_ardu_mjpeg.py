@@ -1,8 +1,6 @@
+# pylint: disable=C0114,C0115,C0116,E0401,R0801
 from datetime import datetime
-# pylint: disable=E0401
-
-from typing import Any
-from typing import override
+from typing import Any, override
 
 from app.camera.config.config_protocol import Config
 from app.camera.size import Size
@@ -45,7 +43,6 @@ class ConfigArduMjpeg(Config):
             # Must be true for outside or in bright sun.
             # "AeEnable": True,
             "AeEnable": False,
-        
             # EXPOSURE TIME (microseconds)
             "ExposureTime": 10000,
         }

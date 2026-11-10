@@ -1,5 +1,5 @@
+# pylint: disable=C0114,C0115,C0116,E0401,R0801,R0903,R0912,W0613
 from datetime import datetime
-# pylint: disable=R0903
 
 import numpy as np
 from numpy.typing import NDArray
@@ -108,6 +108,30 @@ class Intrinsic:
                         [0, 0, 1],
                     ]
                 )
+            case Identity.DIST_TEST:
+                self._mtx = np.array(
+                    [
+                        [944.3507484, 0.0, 693.7105365],
+                        [0.0, 943.8611003, 498.1103206],
+                        [0, 0, 1],
+                    ]
+                )
+            case Identity.FLIPPED:
+                self._mtx = np.array(
+                    [
+                        [944.3507484, 0.0, 693.7105365],
+                        [0.0, 943.8611003, 498.1103206],
+                        [0, 0, 1],
+                    ]
+                )
+            case Identity.SIM0:
+                self._mtx = np.array(
+                    [
+                        [944.3507484, 0.0, 693.7105365],
+                        [0.0, 943.8611003, 498.1103206],
+                        [0, 0, 1],
+                    ]
+                )
             case Identity.CLIMB_LEFT:
                 self._mtx = np.array(
                     [
@@ -132,6 +156,14 @@ class Intrinsic:
                         [0, 0, 1],
                     ]
                 )
+            case Identity.DESKTOP:
+                self._mtx = np.array(
+                    [
+                        [944.3507484, 0.0, 693.7105365],
+                        [0.0, 943.8611003, 498.1103206],
+                        [0, 0, 1],
+                    ]
+                )
             case _:
                 self._mtx = np.array(
                     [
@@ -141,13 +173,34 @@ class Intrinsic:
                     ]
                 )
                 self._valid = False
-                print(f"[{datetime.now()}] " + "##########################################")
-                print(f"[{datetime.now()}] " + "#                                        #")
-                print(f"[{datetime.now()}] " + "#  CAMERA INTRINSIC IS NOT CALIBRATED!   #")
-                print(f"[{datetime.now()}] " + "#                                        #")
-                print(f"[{datetime.now()}] " + "#  YOU MUST CALIBRATE IT!!!!             #")
-                print(f"[{datetime.now()}] " + "#                                        #")
-                print(f"[{datetime.now()}] " + "##########################################")
+                print(
+                    f"[{datetime.now()}] "
+                    + "##########################################"
+                )
+                print(
+                    f"[{datetime.now()}] "
+                    + "#                                        #"
+                )
+                print(
+                    f"[{datetime.now()}] "
+                    + "#  CAMERA INTRINSIC IS NOT CALIBRATED!   #"
+                )
+                print(
+                    f"[{datetime.now()}] "
+                    + "#                                        #"
+                )
+                print(
+                    f"[{datetime.now()}] "
+                    + "#  YOU MUST CALIBRATE IT!!!!             #"
+                )
+                print(
+                    f"[{datetime.now()}] "
+                    + "#                                        #"
+                )
+                print(
+                    f"[{datetime.now()}] "
+                    + "##########################################"
+                )
 
         print(f"[{datetime.now()}] " + "*** INTRINSIC")
         print(self._mtx)

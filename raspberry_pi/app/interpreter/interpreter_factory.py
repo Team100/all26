@@ -1,16 +1,13 @@
+# pylint: disable=C0114,C0115,C0116,E0401,E1101,R0903,R0911,R0913,R0917,W2301
 from datetime import datetime
-# pylint: disable=C0301,E0611,E1101,R0903,R0913,R0917
-import numpy as np
-from numpy.typing import NDArray
 
+from app.analysis.apriltags import AprilTags
 from app.camera.camera_protocol import Camera
 from app.config.identity import Identity
 from app.dashboard.display_protocol import Display
+from app.interpreter.dual_interpreter import DualInterpreter
 from app.interpreter.interpreter_protocol import Interpreter
 from app.interpreter.viewfinder import Viewfinder
-from app.analysis.apriltags import AprilTags
-from app.analysis.balls import Balls
-from app.interpreter.dual_interpreter import DualInterpreter
 from app.network.network_protocol import Network
 from app.util.timestamps import Timestamps
 
@@ -42,12 +39,12 @@ class InterpreterFactory:
         # object_higher: NDArray[np.int32] = np.array((255, 150, 255))
 
         # YELLOW TARGET VALUES (outside)
-       #  object_lower: NDArray[np.int32] = np.array((15, 100, 133))
-       # object_higher: NDArray[np.int32] = np.array((35, 255, 255))
+        #  object_lower: NDArray[np.int32] = np.array((15, 100, 133))
+        # object_higher: NDArray[np.int32] = np.array((35, 255, 255))
 
         # YELLOW TARGET VALUES (inside)
-        object_lower: NDArray[np.int32] = np.array((15, 45, 45))
-        object_higher: NDArray[np.int32] = np.array((35, 265, 260))
+        # object_lower: NDArray[np.int32] = np.array((15, 45, 45))
+        # object_higher: NDArray[np.int32] = np.array((35, 265, 260))
 
         # https://medium.com/@pkusolruangchai/find-hsv-range-interactive-sliders-in-opencv-1571c4c64433
 
@@ -62,28 +59,29 @@ class InterpreterFactory:
                     AprilTags(identity, cam, network),
                     None,
                 )
-            case Identity.GAME_PIECE:
-                return DualInterpreter(
-                    cam,
-                    display1,
-                    display2,
-                    network,
-                    timestamps,
-                    None,
-                    Balls(cam, network),
-                )
+            # case Identity.GAME_PIECE:
+            #     return DualInterpreter(
+            #         cam,
+            #         display1,
+            #         display2,
+            #         network,
+            #         timestamps,
+            #         None,
+            #         Balls(cam, network),
+            #     )
             case (
-                Identity.DEV
-                | Identity.DIST_TEST
-                | Identity.LEFTAMP
-                | Identity.CAMERA_BACK
-                | Identity.JOELS_TEST
-                | Identity.RIGHTAMP
+                # Identity.DEV
+                # | Identity.DIST_TEST
+                # | Identity.LEFTAMP
+                # |
+                Identity.CAMERA_BACK
+                # | Identity.JOELS_TEST
+                # | Identity.RIGHTAMP
                 | Identity.SHOOTER
                 | Identity.CLIMB_LEFT
                 | Identity.CLIMB_RIGHT
-                | Identity.SWERVE_RIGHT
-                | Identity.SWERVE_LEFT
+                # | Identity.SWERVE_RIGHT
+                # | Identity.SWERVE_LEFT
             ):
                 return DualInterpreter(
                     cam,
@@ -94,7 +92,11 @@ class InterpreterFactory:
                     AprilTags(identity, cam, network),
                     None,
                 )
-            case Identity.CAMERA_FRONT | Identity.DEV2 | Identity.BALL_DETECT:
+            case (
+                Identity.CAMERA_FRONT
+                #   | Identity.DEV2
+                | Identity.BALL_DETECT
+            ):
                 return DualInterpreter(
                     cam,
                     display1,

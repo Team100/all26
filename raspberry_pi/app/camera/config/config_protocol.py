@@ -1,8 +1,6 @@
+# pylint: disable=C0114,C0115,C0116,E0401,R0801
+from typing import Any, Protocol
 
-# pylint: disable=E0401,R0903,W2301
-
-from typing import Any
-from typing import Protocol
 from picamera2 import libcamera  # type: ignore
 
 from app.config.identity import Identity

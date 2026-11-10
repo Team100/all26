@@ -1,12 +1,13 @@
+# pylint: disable=C0114,C0115,C0116,E0401,E1101,R0801,R0903,R1732
 from datetime import datetime
-# pylint: disable=E1101,R0903,R1732
-
 from pathlib import Path
 from typing import Optional, override
+
 import cv2
 import numpy as np
 from cv2.typing import MatLike
 from numpy.typing import NDArray
+
 from app.camera.camera_protocol import Camera
 from app.camera.fake_request import FakeRequest
 from app.camera.size import Size
@@ -45,14 +46,14 @@ class FakeCamera(Camera):
         self.k1 = k1
 
         # Here we want to *distort* the image, so the the "undistort" below inverts the distortion.
-        self._img: MatLike = self.redistort(self._img)
+        self._img = self.redistort(self._img)
         self._mono: MatLike = cv2.cvtColor(self._img, cv2.COLOR_RGB2GRAY)
         """mono img for testing"""
 
         # uncomment to see the distorted thing
         # cv2.imwrite("debug.jpg", self.img)
 
-    def redistort(self, undistorted_img: MatLike) -> MatLike:
+    def redistort(self, undistorted_img: MatLike) -> MatLike:  # type: ignore
         """Use "remap" to invert the undistortion function.
 
         undistortPoints() takes distorted points as input and yields true points.

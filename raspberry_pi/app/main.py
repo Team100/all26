@@ -1,4 +1,4 @@
-from datetime import datetime
+# pylint: disable=C0116,C0413,E0401,R0914
 """This is the coprocessor main loop.
 
 Each task is run by its own Looper, in its own thread.
@@ -8,23 +8,23 @@ use the script called "runapp.py" in the raspberry_pi directory
 (one level above this one).
 """
 
-# pylint: disable=R0914
-
 import time
+from datetime import datetime
 from threading import Event, Thread
 
 from app.camera.camera_factory import CameraFactory
+from app.camera.camera_loop import CameraLoop
 from app.camera.camera_protocol import Camera
+from app.config.identity import Identity
+from app.dashboard.display_factory import DisplayFactory
+from app.dashboard.display_protocol import Display
 from app.interpreter.interpreter_factory import InterpreterFactory
 from app.interpreter.interpreter_protocol import Interpreter
-from app.camera.camera_loop import CameraLoop
-from app.config.identity import Identity
-from app.dashboard.display_protocol import Display
-from app.dashboard.display_factory import DisplayFactory
 from app.network.network_protocol import Network
 from app.network.real_network import RealNetwork
 from app.util.banner import print_banner
 from app.util.timestamps import Timestamps
+
 
 def main() -> None:
     print_banner()

@@ -1,6 +1,5 @@
+# pylint: disable=C0114,C0115,C0116,C0415,E0401,R0903
 from datetime import datetime
-# pylint: disable=C0415
-
 from platform import system
 
 from app.camera.camera_protocol import Camera

@@ -1,6 +1,6 @@
-
-# pylint: disable=R0903
+# pylint: disable=C0114,E0401,R0903
 from typing import Any, cast
+
 from app.camera.config.config_protocol import Config
 
 # For when the camera doesn't report the exposure time,

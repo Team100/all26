@@ -1,4 +1,3 @@
-
 import unittest
 
 from app.camera.camera_protocol import Camera

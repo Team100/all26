@@ -1,13 +1,11 @@
+# pylint: disable=C0114,C0115,C0116,E0401,R0903
 from datetime import datetime
-# pylint: disable=R0903
-
 from threading import Event
-
 from typing import override
 
 from app.camera.camera_protocol import Camera
-from app.interpreter.interpreter_protocol import Interpreter
 from app.framework.looper import Looper
+from app.interpreter.interpreter_protocol import Interpreter
 
 
 class CameraLoop(Looper):
