@@ -18,6 +18,7 @@ class RealRequest(Request):
     def __init__(
         self,
         req: CompletedRequest,  # type: ignore
+    
         fps: float,
         decoder: Decoder,
         timestamp: CaptureTimestamp,
@@ -27,7 +28,7 @@ class RealRequest(Request):
         # * instantiate a DMA allocator sync for each buffer
         # * tell the camera allocator to mark the buffers as 'in use'
         # * __enter__() each buffer's DmaSync, which calls ioctl DMA_BUF_SYNC_START
-        self._req: CompletedRequest = req
+        self._req: CompletedRequest = req 
         self._fps = fps
         self._decoder = decoder
         self._timestamp = timestamp
@@ -87,3 +88,4 @@ class RealRequest(Request):
         # Note that the _MappedBuffer has already done the ioctl work, so this
         # is redundant.
         self._req.release()  # type: ignore
+    
