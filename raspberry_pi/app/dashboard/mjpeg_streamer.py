@@ -1,4 +1,4 @@
-from datetime import datetime
+# pylint: skip-file
 # type: ignore
 
 """This is a video streaming server to be used for testing in Windows.
@@ -8,17 +8,15 @@ It's a slightly modified version of
 github.com/egeakman/mjpeg-streamer
 """
 
-# pylint: disable=E0401,E1101,R0902
-
 import asyncio
 import threading
 import time
 from collections import deque
+from datetime import datetime
 from typing import List, Optional, Tuple, Union
 
 import aiohttp  # type: ignore
 import cv2
-
 import numpy as np
 from aiohttp import MultipartWriter, web  # type: ignore
 from aiohttp.web_runner import GracefulExit  # type: ignore
@@ -93,7 +91,7 @@ class _StreamHandler:
             frame = await self._stream.get_frame_processed()
             with MultipartWriter("image/jpeg", boundary="image-boundary") as mpwriter:
                 mpwriter.append(
-                    frame.tobytes(), {"Content-Type": "image/jpeg"}  # type:ignore
+                    frame.tobytes(), {"Content-Type": "image/jpeg"}  # type: ignore
                 )
                 try:
                     await mpwriter.write(response, close_boundary=False)
@@ -129,13 +127,13 @@ class MjpegServer:
         self._cap_routes: List[str,] = []
 
     def is_running(self) -> bool:
-        return self._app.is_running  # type:ignore
+        return self._app.is_running  # type: ignore
 
     async def __root_handler(self, _) -> web.Response:
         text = "<h2>Available streams:</h2>"
         for route in self._cap_routes:
             text += f"<a href='http://{self._host[0]}:{self._port}{route}'>{route}</a>\n<br>\n"
-        return aiohttp.web.Response(text=text, content_type="text/html")  # type:ignore
+        return aiohttp.web.Response(text=text, content_type="text/html")  # type: ignore
 
     def add_stream(self, stream: Stream) -> None:
         if self.is_running():
@@ -152,7 +150,7 @@ class MjpegServer:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.run_until_complete(runner.setup())
-        site = web.TCPSite(runner, self._host, self._port)  # type:ignore
+        site = web.TCPSite(runner, self._host, self._port)  # type: ignore
         loop.run_until_complete(site.start())
         loop.run_forever()
 
@@ -165,7 +163,10 @@ class MjpegServer:
             print(f"[{datetime.now()}] " + "\nServer is already running\n")
 
         for addr in self._host:
-            print(f"[{datetime.now()}] " + f"\nStreams index: http://{addr}:{self._port!s}")
+            print(
+                f"[{datetime.now()}] "
+                + f"\nStreams index: http://{addr}:{self._port!s}"
+            )
             print(f"[{datetime.now()}] " + "Available streams:\n")
             for route in self._cap_routes:  # route has a leading slash
                 print(f"[{datetime.now()}] " + f"http://{addr}:{self._port!s}{route}")

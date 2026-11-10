@@ -1,7 +1,9 @@
+# pylint: disable=C0114,C0115,C0116,E0401,R0903,W0613
 from datetime import datetime
-# pylint: disable=R0903
 from typing import override
+
 from cv2.typing import MatLike
+
 from app.analysis.analysis_protocol import ColorAnalysis, MonoAnalysis
 
 
@@ -14,7 +16,7 @@ class FakeMonoAnalysis(MonoAnalysis):
     @override
     def analyze_mono(
         self,
-        img: MatLike,
+        img: MatLike,  # type: ignore
         img_display: MatLike,
         servertime: int,
     ) -> None:
@@ -30,11 +32,7 @@ class FakeColorAnalysis(ColorAnalysis):
 
     @override
     def analyze_color(
-        self,
-        img: MatLike,
-        img_display: MatLike,
-        servertime: int,
-        min_pixels: int
+        self, img: MatLike, img_display: MatLike, servertime: int, min_pixels: int
     ) -> None:
         self.count += 1
         self.size = img.shape

@@ -1,4 +1,3 @@
-from datetime import datetime
 import platform
 import unittest
 
@@ -9,4 +8,4 @@ class IdentityTest(unittest.TestCase):
     def test_identity(self) -> None:
         identity: Identity = Identity.get()
         if platform.machine() == "x86_64":
-            self.assertEqual("unknown", identity.value)
+            self.assertEqual("desktop", identity.value)

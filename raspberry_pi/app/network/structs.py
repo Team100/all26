@@ -1,13 +1,11 @@
-from datetime import datetime
-# pylint: disable=C0301,R0902,R0903,W0212,W2301
-
+# pylint: disable=C0114,C0115,C0116,E0401,E1101,R0902,R0903,R0913,R0917,W2301
 import dataclasses
 
 from wpimath.geometry import Rotation3d, Transform3d
 from wpiutil import wpistruct
 
 
-@wpistruct.make_wpistruct  # type:ignore
+@wpistruct.make_wpistruct  # type: ignore
 @dataclasses.dataclass
 class Blip:
     """AprilTag pose"""
@@ -20,7 +18,7 @@ class Blip:
     """camera-relative"""
 
 
-@wpistruct.make_wpistruct  # type:ignore
+@wpistruct.make_wpistruct  # type: ignore
 @dataclasses.dataclass
 class BlipWithCorners:
     """AprilTag pose with corner pixels (x,y)"""
@@ -62,15 +60,13 @@ class BlipWithCorners:
         return cls(m_timestamp, m_id, *corners, m_pose)
 
 
-@wpistruct.make_wpistruct  # type:ignore
+@wpistruct.make_wpistruct  # type: ignore
 @dataclasses.dataclass
-
 class Target:
 
-    """Game piece target"""
-    #area: int
+    # """Game piece target"""
+    # area: int
     """target area"""
-
     timestamp: wpistruct.int64
     """server microseconds"""
     sight: Rotation3d
@@ -79,7 +75,7 @@ class Target:
     """the target's distance in meters"""
 
 
-@wpistruct.make_wpistruct  # type:ignore
+@wpistruct.make_wpistruct  # type: ignore
 @dataclasses.dataclass
 class SyncRequest:
     """Clock sync request packet.
@@ -89,7 +85,7 @@ class SyncRequest:
     """client microseconds"""
 
 
-@wpistruct.make_wpistruct  # type:ignore
+@wpistruct.make_wpistruct  # type: ignore
 @dataclasses.dataclass
 class SyncReply:
     """Clock sync reply packet.

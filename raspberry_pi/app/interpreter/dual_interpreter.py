@@ -1,20 +1,18 @@
-from datetime import datetime
-# pylint: disable=C0103,E0611,E1101,E1121,R0902,R0903,R0913,R0914,R0917,W0212,W0612
-
-from typing import override
+# pylint: disable=C0114,C0115,C0116,E0401,E1101,R0902,R0903,R0913,R0917,W2301
 from collections.abc import Buffer
+from datetime import datetime
+from typing import override
 
 import cv2
 import numpy as np
-
 from cv2.typing import MatLike
 from numpy.typing import NDArray
 
+from app.analysis.analysis_protocol import ColorAnalysis, MonoAnalysis
 from app.camera.camera_protocol import Camera, Request
 from app.dashboard.display_protocol import Display
 from app.dashboard.display_util import DisplayUtil
 from app.decoder.decoder_protocol import Decoder
-from app.analysis.analysis_protocol import ColorAnalysis, MonoAnalysis
 from app.interpreter.interpreter_base import InterpreterBase
 from app.network.network_protocol import Network
 from app.util.timestamps import Timestamps
@@ -30,8 +28,8 @@ class DualInterpreter(InterpreterBase):
         display2: Display,
         network: Network,
         timestamps: Timestamps,
-        analyzer_mono: MonoAnalysis,
-        analyzer_color: ColorAnalysis,
+        analyzer_mono: MonoAnalysis | None,
+        analyzer_color: ColorAnalysis | None,
     ) -> None:
         """
         :cam: for intrinsic and distortion parameters
@@ -77,7 +75,7 @@ class DualInterpreter(InterpreterBase):
                 timestamp_boottime_us
             )
 
-            (img_bgr, img_mono, img_display) = self._images(buffer, req.decoder())
+            img_bgr, img_mono, img_display = self._images(buffer, req.decoder())
 
             if img_display is None:
                 return
@@ -91,10 +89,14 @@ class DualInterpreter(InterpreterBase):
                 self._display2.put(cv2.undistort(img_display, self._mtx, self._dist))
 
             if img_mono is not None:
-                self._analyzer_mono.analyze_mono(img_mono, img_display, servertime)
+                if self._analyzer_mono:
+                    self._analyzer_mono.analyze_mono(img_mono, img_display, servertime)
 
             if img_bgr is not None:
-                self._analyzer_color.analyze_color(img_bgr, img_display, servertime, 800)
+                if self._analyzer_color:
+                    self._analyzer_color.analyze_color(
+                        img_bgr, img_display, servertime, 800
+                    )
 
             # Send camera FPS to network.
             fps: float = req.fps()
@@ -135,4 +137,4 @@ class DualInterpreter(InterpreterBase):
         elif img_mono is not None:
             img_display = img_mono.copy()
 
-        return (img_bgr, img_mono, img_display)
+        return (img_bgr, img_mono, img_display)  # type: ignore
