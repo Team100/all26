@@ -47,8 +47,8 @@ public class Robot extends TimedRobot100 {
 private final MinionSparkMotor m_drumA;
 private final MinionSparkMotor m_drumB;
 private final MinionSparkMotor m_indexer;
-private double m_dutyCycle1 = 0;
-private double m_dutyCycle2 = 0;
+private double m_velocity1 = 0;
+private double m_velocity2 = 0;
 private double m_dutyCycle3 = 0;
 private DriverXboxControl m_controller;
 
@@ -67,8 +67,8 @@ public Robot() {
             log.name("drum A"),
             currentLog,
             new CanId(39), 
-            NeutralMode100.COAST,
-            MotorPhase.FORWARD,
+            NeutralMode100.BRAKE,
+            MotorPhase.REVERSE,
             new CurrentLimit(10, 10),
             new Friction(0, 0, 0, 0),
             PIDConstants.zero(),
@@ -78,7 +78,7 @@ public Robot() {
             log.name("drum B"),
             currentLog,
             new CanId(8), 
-            NeutralMode100.COAST,
+            NeutralMode100.BRAKE,
             MotorPhase.FORWARD,
             new CurrentLimit(10, 10),
             new Friction(0, 0, 0, 0),
@@ -90,7 +90,7 @@ public Robot() {
             currentLog,
             new CanId(7), 
             NeutralMode100.BRAKE,
-            MotorPhase.FORWARD,
+            MotorPhase.REVERSE,
             new CurrentLimit(10, 10),
             new Friction(0, 0, 0, 0),
             PIDConstants.zero(),
@@ -170,16 +170,14 @@ public Robot() {
     // controlled by controller
     // m_dutyCycle = m_controller.leftY() / 10.0;
 
-    m_dutyCycle1 = -0.132;
-    m_dutyCycle2 = 0.132;
-    m_drumA.setDutyCycle(m_dutyCycle1);
-    m_drumB.setDutyCycle(m_dutyCycle2);
-    m_dutyCycle3 = -0.2;
-    m_indexer.setDutyCycle(m_dutyCycle3);
+    m_velocity1 = 115;
+    m_velocity2 = 115;
+    m_drumA.setVelocity(m_velocity1, 0);
+    m_drumB.setVelocity(m_velocity2, 0);
 
 
-    if(Math.abs(m_speed) > 105 && Math.abs(m_speed2) > 105){
-      m_dutyCycle3 = -0.2;
+    if(Math.abs(m_speed) > 111 && Math.abs(m_speed2) > 111){
+      m_dutyCycle3 = 0.2;
       m_indexer.setDutyCycle(m_dutyCycle3);
     }else{
       m_dutyCycle3 = 0;
