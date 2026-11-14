@@ -6,6 +6,10 @@
         {
             "path": "../lib"
         },
+        {
+            "name": "all26-Riley-1",
+            "path": "../../all26-Riley/all26-Riley-1"
+        }
     ],
     "settings": {
         "chat.disableAIFeatures": true,
