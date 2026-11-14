@@ -92,7 +92,9 @@ class RealCamera(Camera):
     def capture_request(self) -> Request:
         capture_start: int = Timer.time_ns()
         # TODO test this line for bugs
-        req: CompletedRequest = self._cam.capture_request()  # type: ignore
+        #req: CompletedRequest = self._cam.capture_request()  # type: ignore
+        job = self._cam.capture_request(wait=False) # type: ignore
+        req = job.get_result(timeout=0.5) # type: ignore
         total_time_ms = (capture_start - self._frame_time) / 1000000
         self._frame_time = capture_start
         fps = 1000 / total_time_ms
