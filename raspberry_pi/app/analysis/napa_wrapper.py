@@ -60,7 +60,7 @@ class FiducialImageObservationWrapper:
 
         :returns: Corner point
         """
-        return AprilTagDetection.Point(self._corners[ndx][0],self._corners[ndx][1])
+        return AprilTagDetection.Point(self._corners[2*ndx],self._corners[(2*ndx)+1])
 
     def getCorners(
         self,
