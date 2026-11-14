@@ -16,7 +16,7 @@ public class Distortion {
     private static final Distortion COLOR_DETECTd = new Distortion(
             new double[] {-0.006934480214, -0.009133184923, 0.0006250697999, 0.001300785576});
     private static final Distortion CAMERA_2Ad = new Distortion(
-            new double[] {-0.006602056847, -0.009068537579, 0.000719102838, -0.0005465737481});
+            new double[] {-0.0322, 0.0173, 0.0010, 0.0028});
     private static final Map<Camera, Distortion> distortions;
 
     static {
