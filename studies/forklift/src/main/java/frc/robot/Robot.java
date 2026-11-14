@@ -61,9 +61,9 @@ public Robot() {
             log.name("motor"),
             currentLog,
             new CanId(11), 
-            NeutralMode100.COAST,
-            MotorPhase.FORWARD,
-            new CurrentLimit(20, 20),
+            NeutralMode100.BRAKE,
+            MotorPhase.REVERSE,
+            new CurrentLimit(60, 60),
             new Friction(0, 0, 0, 0),
             PIDConstants.zero());
     System.out.println("Motor initialized");
@@ -134,10 +134,13 @@ public Robot() {
     // m_motor.setDutyCycle(m_dutyCycle);
     // controlled by controller
     // m_dutyCycle = m_controller.leftY() / 10.0;
-    if(m_controller.a()){
-      m_dutyCycle1 = 1;
-      m_motor.setDutyCycle(m_dutyCycle1);
-    }
+    // if(m_controller.a()){
+    //   m_dutyCycle1 = 1;
+    //   m_motor.setDutyCycle(m_dutyCycle1);
+    // }
+
+    m_dutyCycle1 = 315;
+    m_motor.setVelocity(m_dutyCycle1, 0);
 
   }
 
