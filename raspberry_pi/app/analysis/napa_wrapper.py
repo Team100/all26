@@ -60,7 +60,7 @@ class FiducialImageObservationWrapper:
 
         :returns: Corner point
         """
-        return self._corners[ndx]
+        return AprilTagDetection.Point(self._corners[ndx][0],self._corners[ndx][1])
 
     def getCorners(
         self,
@@ -84,7 +84,10 @@ class FiducialImageObservationWrapper:
 
         :returns: Corner point array (copy of cornersBuf span)
         """
-        return self._corners
+
+        cornersBuf = tuple(self._corners)
+        return cornersBuf
+
 
     def getDecisionMargin(self) -> float:
         """
@@ -133,7 +136,7 @@ class FiducialImageObservationWrapper:
 
     def getHomographyMatrix(
         self,
-    ) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]:
+    ) -> typing.Annotated[np.typing.NDArray[np.float64], "[3, 3]"]:
         """
         Gets the 3x3 homography matrix describing the projection from an
         "ideal" tag (with corners at (-1,1), (1,1), (1,-1), and (-1,
