@@ -17,6 +17,7 @@ from app.dashboard.display_util import DisplayUtil
 from app.analysis.analysis_protocol import MonoAnalysis
 from app.network.network_protocol import Network
 from app.network.structs import Blip, BlipWithCorners
+from app.analysis.napa_wrapper import NapaDetectorWrapper
 
 # Tag corners for computing homography.
 SRC_POINTS = np.array([[-1, 1], [1, 1], [1, -1], [-1, -1]])
@@ -109,7 +110,7 @@ class AprilTags(MonoAnalysis):
 
     @staticmethod
     def _get_detector() -> AprilTagDetector:
-        at_detector = AprilTagDetector()
+        at_detector = NapaDetectorWrapper()
         config = at_detector.Config()
         # some of the detection steps can be done in parallel; this
         # should be the same as the number of cores on the machine,
