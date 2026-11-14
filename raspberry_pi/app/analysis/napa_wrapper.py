@@ -12,7 +12,7 @@ from napa_vision import (
     FiducialImageObservation,
 )
 
-from robotpy_apriltag import AprilTagDetection, AprilTagDetector, AprilTagPoseEstimator
+from robotpy_apriltag import AprilTagDetection, AprilTagDetector
 
 
 class FiducialImageObservationWrapper:
