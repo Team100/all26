@@ -46,7 +46,7 @@ class Distortion:
             case Identity.CAMERA_2A:
                 # Calibrated 10/15/26.
                 self._dist = np.array(
-                    [-0.006602056847, -0.009068537579, 0.000719102838, -0.0005465737481]
+                    [-0.0322, 0.0173, 0.0010, 0.0028]
                 )
             case Identity.BALL_DETECT:
                 # Calibrated never.
