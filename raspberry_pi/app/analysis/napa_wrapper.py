@@ -164,8 +164,8 @@ class NapaDetectorWrapper:
     QuadThresholdParameters = AprilTagDetector.QuadThresholdParameters
 
     def __init__(self):
-
-        self._detector: NapaDetector = NapaDetector()
+        
+        self._detector: NapaDetector = NapaDetector(max_detections=16,min_tag_px=16,min_contrast=40)
         self._config: AprilTagDetector.Config | None = None
         self._quadThresholdParameters: (
             AprilTagDetector.QuadThresholdParameters | None
@@ -243,6 +243,12 @@ class NapaDetectorWrapper:
         :param config: Configuration
         """
         self._config = config  # TODO: find a way to implement configs
+        self._detector: NapaDetector = NapaDetector(
+            max_detections=16,
+            min_tag_px=16,
+            sharpening=self._config.decodeSharpening,
+            min_contrast=40
+            )
 
     def setQuadThresholdParameters(
         self, params: AprilTagDetector.QuadThresholdParameters
