@@ -1,6 +1,8 @@
 # pylint: disable=C0114,C0115,C0116,E0401,R0902
 from datetime import datetime
 from pprint import pprint
+import subprocess
+import time
 from typing import Any, override
 
 import numpy as np
@@ -102,6 +104,7 @@ class RealCamera(Camera):
         except Exception as e:
             print(f"[{datetime.now()}] " + f"*** Camera capture request error: {e!r}")
             self._capture_error = True
+            self._power_cycle_usb()
             raise
 
     @override
@@ -158,3 +161,19 @@ class RealCamera(Camera):
         if not config.ok(self._camera_config, self._cam.camera_config):  # type: ignore
             raise ValueError("Config check fail")
         print(f"[{datetime.now()}] " + "CONFIG CHECK GOOD")
+
+    def _power_cycle_usb(self) -> None:
+        """Cut power to all USB ports. On the Pi 5 the ports share one power
+        switch, so turning off just the camera's port leaves 5 V on and
+        doesn't reset a wedged camera."""
+        print(f"[{datetime.now()}] *** USB power cycle")
+        try:
+          for hub in ("1", "2", "3", "4"):
+              subprocess.run(["/usr/sbin/uhubctl", "-l", hub, "-a", "off"],
+                             capture_output=True, timeout=10, check=False)
+          time.sleep(3)
+          for hub in ("1", "2", "3", "4"):
+              subprocess.run(["/usr/sbin/uhubctl", "-l", hub, "-a", "on"],
+                             capture_output=True, timeout=10, check=False)
+        except (OSError, subprocess.SubprocessError) as e:
+          print(f"[{datetime.now()}] *** USB power cycle failed: {e!r}")
