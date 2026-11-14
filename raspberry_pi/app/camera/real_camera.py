@@ -44,6 +44,8 @@ class RealCamera(Camera):
         print(f"[{datetime.now()}] " + "*** GLOBAL CAMERA INFO")
         pprint(Picamera2.global_camera_info())  # type: ignore
 
+        self._capture_error: bool = False
+
         self._cam: Picamera2 = Picamera2()  # type: ignore
 
         print(f"[{datetime.now()}] " + "*** SENSOR MODES AVAILABLE")
@@ -91,16 +93,23 @@ class RealCamera(Camera):
     @override
     def capture_request(self) -> Request:
         capture_start: int = Timer.time_ns()
-        # TODO test this line for bugs
-        req: CompletedRequest = self._cam.capture_request()  # type: ignore
-        total_time_ms = (capture_start - self._frame_time) / 1000000
-        self._frame_time = capture_start
-        fps = 1000 / total_time_ms
-        return RealRequest(req, fps, self._decoder, self._timestamp)  # type: ignore
+        try:
+            req: CompletedRequest = self._cam.capture_request(wait=2.0)  # type: ignore
+            total_time_ms = (capture_start - self._frame_time) / 1000000
+            self._frame_time = capture_start
+            fps = 1000 / total_time_ms
+            return RealRequest(req, fps, self._decoder, self._timestamp)  # type: ignore
+        except Exception as e:
+            print(f"[{datetime.now()}] " + f"*** Camera capture request error: {e!r}")
+            self._capture_error = True
+            raise
 
     @override
     def stop(self) -> None:
-        self._cam.stop()  # type: ignore
+        # _cam.stop() can block after a USB disconnect, so we skip it
+        # if a capture request errored out
+        if not self._capture_error:
+            self._cam.stop()  # type: ignore
         print(f"[{datetime.now()}] " + "*** Camera stop")
 
     @override
