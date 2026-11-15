@@ -90,7 +90,7 @@ class Balls(ColorAnalysis):
         undistorted_points = cv2.undistortPoints(
             points_arr, self._mtx, self._dist,R=None, P=self._mtx).reshape(-1, 2)
 
-        initial = np.array([1.0, 0.0, 0.0], dtype=np.float64)
+        initial = np.array([1.0, 0.0, 0.0], dtype=np.float64) #maybe change these number currentky theyre my guess :0
         
         for (cx, cy, range1), (undist_cX, undist_cY) in zip(box_data, undistorted_points):
             yNormalized: float = (self._height / 2 - undist_cY) / self._mtx[1, 1]
