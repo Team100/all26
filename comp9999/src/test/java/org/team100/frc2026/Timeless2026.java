@@ -15,7 +15,7 @@ public interface Timeless2026 {
     @BeforeEach
     default void setupSim() {
         // Do any time-related setup *in your test method* !
-        HAL.initialize(500, 0);
+        HAL.initialize();
         SimHooks.pauseTiming();
         Takt.update();
 

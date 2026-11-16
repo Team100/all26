@@ -55,7 +55,7 @@ public class AheadTwoMeters implements AnnotatedCommand {
         // move towards where the robot is facing (robot-relative +x)
         DirectionSE2 d1 = DirectionSE2.irrotational(p1.getRotation());
         WaypointSE2 w1 = new WaypointSE2(p1, d1, 1);
-        Transform2d t1 = new Transform2d(2, 0, Rotation2d.kZero);
+        Transform2d t1 = new Transform2d(2, 0, Rotation2d.ZERO);
         Pose2d p2 = p1.plus(t1);
         WaypointSE2 w2 = new WaypointSE2(p2, d1, 1);
         List<WaypointSE2> waypoints = List.of(w1, w2);
