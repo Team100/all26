@@ -84,17 +84,6 @@ public class Prewarmer2025 {
 
         double endS = Takt.actual();
 
-        // the duty cycle encoder produces garbage for a few seconds so sleep.
-        try {
-            System.out.println("Waiting for DutyCycle sensors to work ...");
-            Thread.sleep(1000);
-            System.out.println("Waiting for DutyCycle sensors to work ...");
-            Thread.sleep(1000);
-            System.out.println("Waiting for DutyCycle sensors to work ...");
-            Thread.sleep(1000);
-            System.out.println("Done!");
-        } catch (InterruptedException e) {
-        }
         System.out.printf("Total Logger Keys: %d\n", Logging.keyCount());
         System.out.printf("\n*** PREWARM END ET: %f\n", endS - startS);
     }
