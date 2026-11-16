@@ -28,9 +28,9 @@ public class TurnInPlace implements AnnotatedCommand {
             ControllerSE2 controller,
             Machinery machinery,
             double radians) {
+        m_radians = radians;
         LoggerFactory log = parent.name(name());
         m_drive = machinery.m_drive;
-        m_radians = radians;
         ProfileSE2 profile = HolonomicProfileFactory.unwrappedTrapezoidal(
                 3, 10, 0.01, 3, 10, 0.01);
         DriveToPoseWithProfile dtpwp = new DriveToPoseWithProfile(
