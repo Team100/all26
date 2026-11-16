@@ -124,12 +124,12 @@ public class GeometryUtil {
 
     /** Exponential at zero of the twist, scaled by q. */
     public static Pose2d exp(Twist2d t, double q) {
-        return Pose2d.kZero.plus(scale(t, q).exp());
+        return Pose2d.ZERO.plus(scale(t, q).exp());
     }
 
     /** Exponential at zero of the twist, scaled by q. */
     public static Pose3d exp(Twist3d t, double q) {
-        return Pose3d.kZero.plus(scale(t, q).exp());
+        return Pose3d.ZERO.plus(scale(t, q).exp());
     }
 
     /**
@@ -138,7 +138,7 @@ public class GeometryUtil {
      * In affine matrix form this is p0 * p1.
      */
     public static Pose2d compose(Pose2d p0, Pose2d p1) {
-        // return p0.transformBy(new Transform2d(Pose2d.kZero, p1));
+        // return p0.transformBy(new Transform2d(Pose2d.ZERO, p1));
         return new Pose2d(p0.toMatrix().times(p1.toMatrix()));
     }
 
@@ -148,7 +148,7 @@ public class GeometryUtil {
      * In affine matrix form this is p0 * p1.
      */
     public static Pose3d compose(Pose3d p0, Pose3d p1) {
-        // return p0.transformBy(new Transform3d(Pose3d.kZero, p1));
+        // return p0.transformBy(new Transform3d(Pose3d.ZERO, p1));
         return new Pose3d(p0.toMatrix().times(p1.toMatrix()));
     }
 
@@ -173,15 +173,15 @@ public class GeometryUtil {
     }
 
     public static Twist2d slog(final Pose2d p) {
-        return p.minus(Pose2d.kZero).log();
+        return p.minus(Pose2d.ZERO).log();
     }
 
     public static Twist3d slog(final Pose3d p) {
-        return p.minus(Pose3d.kZero).log();
+        return p.minus(Pose3d.ZERO).log();
     }
 
     public static Pose2d sexp(final Twist2d delta) {
-        return Pose2d.kZero.plus(delta.exp());
+        return Pose2d.ZERO.plus(delta.exp());
     }
 
     public static Pose2d fromRotation(final Rotation2d rotation) {
@@ -189,7 +189,7 @@ public class GeometryUtil {
     }
 
     public static Pose2d fromTranslation(final Translation2d translation) {
-        return new Pose2d(translation, Rotation2d.kZero);
+        return new Pose2d(translation, Rotation2d.ZERO);
     }
 
     public static Rotation2d fromRadians(double angle_radians) {

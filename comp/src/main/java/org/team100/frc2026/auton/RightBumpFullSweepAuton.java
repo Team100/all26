@@ -80,9 +80,9 @@ public class RightBumpFullSweepAuton implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(7.75, 2, Rotation2d.kCW_90deg),
+                new WaypointSE2(new Pose2d(7.75, 2, Rotation2d.CW_90DEG),
                         new DirectionSE2(0, 1, 0), 1),
-                new WaypointSE2(new Pose2d(7.75, 6.5, Rotation2d.kCW_90deg),
+                new WaypointSE2(new Pose2d(7.75, 6.5, Rotation2d.CW_90DEG),
                         new DirectionSE2(-0.2, 1, 0), 1),
                 new WaypointSE2(new Pose2d(7, 2, new Rotation2d(-270 * (Math.PI / 180))),
                         new DirectionSE2(0, -1, 0), 1),

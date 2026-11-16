@@ -31,13 +31,13 @@ class TrajectorySE2Test implements Timeless {
     @Test
     void testClosestApproach() {
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forRealisticTest();
-        Pose2d start = Pose2d.kZero;
-        Pose2d end = start.plus(new Transform2d(1, 0, Rotation2d.kZero));
+        Pose2d start = Pose2d.ZERO;
+        Pose2d end = start.plus(new Transform2d(1, 0, Rotation2d.ZERO));
 
         Translation2d currentTranslation = start.getTranslation();
         Translation2d goalTranslation = end.getTranslation();
         Translation2d translationToGoal = goalTranslation.minus(currentTranslation);
-        Rotation2d angleToGoal = translationToGoal.getAngle();
+        Rotation2d angleToGoal = translationToGoal.getAngle().get();
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(start, DirectionSE2.irrotational(angleToGoal), 1),
                 new WaypointSE2(end, DirectionSE2.irrotational(angleToGoal), 1));
@@ -63,13 +63,13 @@ class TrajectorySE2Test implements Timeless {
     @Test
     void testPreviewAndAdvance() {
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forRealisticTest();
-        Pose2d start = Pose2d.kZero;
-        Pose2d end = start.plus(new Transform2d(1, 0, Rotation2d.kZero));
+        Pose2d start = Pose2d.ZERO;
+        Pose2d end = start.plus(new Transform2d(1, 0, Rotation2d.ZERO));
 
         Translation2d currentTranslation = start.getTranslation();
         Translation2d goalTranslation = end.getTranslation();
         Translation2d translationToGoal = goalTranslation.minus(currentTranslation);
-        Rotation2d angleToGoal = translationToGoal.getAngle();
+        Rotation2d angleToGoal = translationToGoal.getAngle().get();
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(start, DirectionSE2.irrotational(angleToGoal), 1),
                 new WaypointSE2(end, DirectionSE2.irrotational(angleToGoal), 1));
@@ -97,13 +97,13 @@ class TrajectorySE2Test implements Timeless {
     @Test
     void testSample() {
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forTest3();
-        Pose2d start = Pose2d.kZero;
-        Pose2d end = start.plus(new Transform2d(1, 0, Rotation2d.kZero));
+        Pose2d start = Pose2d.ZERO;
+        Pose2d end = start.plus(new Transform2d(1, 0, Rotation2d.ZERO));
 
         Translation2d currentTranslation = start.getTranslation();
         Translation2d goalTranslation = end.getTranslation();
         Translation2d translationToGoal = goalTranslation.minus(currentTranslation);
-        Rotation2d angleToGoal = translationToGoal.getAngle();
+        Rotation2d angleToGoal = translationToGoal.getAngle().get();
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(start, DirectionSE2.irrotational(angleToGoal), 1),
                 new WaypointSE2(end, DirectionSE2.irrotational(angleToGoal), 1));
@@ -135,12 +135,12 @@ class TrajectorySE2Test implements Timeless {
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(),
-                                Rotation2d.kZero),
+                                Rotation2d.ZERO),
                         new DirectionSE2(1, 0, 0), 1),
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(1, 0),
-                                Rotation2d.kZero),
+                                Rotation2d.ZERO),
                         new DirectionSE2(1, 0, 0), 1));
 
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forTest3();
@@ -192,11 +192,11 @@ class TrajectorySE2Test implements Timeless {
     // disable to speed up tests
     // @Test
     void testSamplePerformance() {
-        WaypointSE2 p0 = new WaypointSE2(new Pose2d(new Translation2d(), Rotation2d.kZero),
+        WaypointSE2 p0 = new WaypointSE2(new Pose2d(new Translation2d(), Rotation2d.ZERO),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 p1 = new WaypointSE2(new Pose2d(new Translation2d(10, 0), Rotation2d.kCCW_Pi_2),
+        WaypointSE2 p1 = new WaypointSE2(new Pose2d(new Translation2d(10, 0), Rotation2d.CCW_PI_2),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 p2 = new WaypointSE2(new Pose2d(new Translation2d(10, 10), Rotation2d.kPi),
+        WaypointSE2 p2 = new WaypointSE2(new Pose2d(new Translation2d(10, 10), Rotation2d.PI),
                 new DirectionSE2(1, 0, 0), 1);
         List<WaypointSE2> waypoints = List.of(p0, p1, p2);
         List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);

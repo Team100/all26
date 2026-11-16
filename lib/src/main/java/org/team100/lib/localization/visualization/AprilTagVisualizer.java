@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.DoubleFunction;
 import java.util.function.Supplier;
-import java.util.stream.DoubleStream;
 
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.localization.map.AprilTagFieldLayoutWithCorrectOrientation;
@@ -13,11 +12,12 @@ import org.team100.lib.localization.network.BlipWithCorners;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
+import org.team100.lib.logging.LoggerFactory.StructArrayLogger;
 import org.team100.lib.network.CameraReader;
 import org.team100.lib.state.StateSE2;
 import org.team100.lib.util.TrailingHistory;
 import org.wpilib.driverstation.Alliance;
+import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.networktables.NetworkTableInstance;
 import org.wpilib.networktables.StructArrayPublisher;
@@ -44,7 +44,7 @@ public class AprilTagVisualizer {
     private final AprilTagVisualizationTranslator m_translator;
     private final TrailingHistory<Pose3d> m_allTags;
     private final StructArrayPublisher<Pose3d> m_pub_tags;
-    private final DoubleArrayLogger m_log_allTags;
+    private final StructArrayLogger<Pose2d> m_log_allTags;
 
     public AprilTagVisualizer(
             LoggerFactory parent,
@@ -60,7 +60,7 @@ public class AprilTagVisualizer {
         m_allTags = new TrailingHistory<>();
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         m_pub_tags = inst.getStructArrayTopic("tags", Pose3d.struct).publish();
-        m_log_allTags = fieldLogger.doubleArrayLogger(Level.DEBUG, "all tags");
+        m_log_allTags = fieldLogger.structArrayLogger(Level.DEBUG, "all tags", Pose2d.struct);
         LogPoller.register(this::log);
     }
 
@@ -90,12 +90,8 @@ public class AprilTagVisualizer {
         // Show the tags on the Field2d widget and AdvantageScope.
         m_pub_tags.set(m_allTags.getAll().toArray(new Pose3d[0]));
         m_log_allTags.log(
-                () -> m_allTags.getAll().stream().flatMapToDouble(
-                        x -> DoubleStream.of(
-                                x.getX(),
-                                x.getY(),
-                                x.toPose2d().getRotation().getDegrees()))
-                        .toArray());
+                () -> m_allTags.getAll().stream()
+                        .map(x -> x.toPose2d()).toArray(Pose2d[]::new));
     }
 
 }

@@ -15,7 +15,7 @@ import org.wpilib.math.numbers.N3;
 import org.wpilib.math.numbers.N4;
 import org.wpilib.math.numbers.N6;
 import org.wpilib.math.util.Nat;
-import org.wpilib.math.util.Pair;
+import org.wpilib.util.Pair;
 
 /**
  * See modern_robotics/core.py

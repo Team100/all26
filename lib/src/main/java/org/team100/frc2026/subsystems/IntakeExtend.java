@@ -20,12 +20,12 @@ import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.LinearPositionServo;
 import org.team100.lib.servo.OutboardLinearPositionServo;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.Commands;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 import org.wpilib.math.util.MathUtil;
 
 /** Intake must be retracted at startup. */
@@ -33,7 +33,7 @@ public class IntakeExtend extends SubsystemBase implements Music {
     private static final boolean ENABLE = true;
     private static final CanId CAN_ID = new CanId(9);
     private static final CanId CAN_ID2 = new CanId(10);
-    private static final CanBusId busId = new CanBusId(1);
+    private static final CANPort busId = CANPort.CAN_S1;
     private static final double gearRatio = 50.0 / 18.0;
     private static final double gearDiameter = 0.025;
     private static final double RETRACTED_POSITION = 0;

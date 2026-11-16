@@ -2,12 +2,11 @@ package org.team100.frc2025.CalgamesArm;
 
 import org.team100.lib.geometry.prr.PRRConfig;
 import org.team100.lib.logging.LogPoller;
-
 import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.smartdashboard.Mechanism2d;
 import org.wpilib.smartdashboard.MechanismLigament2d;
 import org.wpilib.smartdashboard.MechanismRoot2d;
-import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.telemetry.Telemetry;
 
 public class CalgamesViz {
     private static final double SCALE = 100;
@@ -39,7 +38,6 @@ public class CalgamesViz {
                 SCALE * m_mech.getHandLength(), // constant length
                 wristAngle(q));
         m_arm.append(m_hand);
-        SmartDashboard.putData("View", m_view);
         LogPoller.register(this::run);
     }
 
@@ -48,6 +46,7 @@ public class CalgamesViz {
         m_elevator.setLength(shoulderHeight(q));
         m_arm.setAngle(shoulderAngle(q));
         m_hand.setAngle(wristAngle(q));
+        Telemetry.log("View", m_view);
     }
 
     ///////////////////////////////

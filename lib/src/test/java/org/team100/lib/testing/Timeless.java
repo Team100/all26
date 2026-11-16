@@ -1,6 +1,7 @@
 package org.team100.lib.testing;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.Takt;
@@ -8,6 +9,8 @@ import org.team100.lib.framework.TimedRobot100;
 import org.wpilib.hardware.hal.HAL;
 import org.wpilib.simulation.DriverStationSim;
 import org.wpilib.simulation.SimHooks;
+import org.wpilib.tunable.MockTunableBackend;
+import org.wpilib.tunable.TunableRegistry;
 
 /**
  * Sets up FPGA time stepping for unit tests.
@@ -20,11 +23,17 @@ import org.wpilib.simulation.SimHooks;
  */
 public interface Timeless {
 
+    @BeforeAll
+    static void tunable() {
+        // Stop the TunableRegistry complaining about a missing backend.
+        TunableRegistry.registerBackend("", new MockTunableBackend());
+    }
+
     /** One big method because Junit */
     @BeforeEach
     default void setupSim() {
         // Do any time-related setup *in your test method* !
-        HAL.initialize(500, 0);
+        HAL.initialize();
         SimHooks.pauseTiming();
         Takt.update();
 

@@ -64,7 +64,7 @@ public class FusedEstimator implements StateEstimator {
         OdoGyroMeasurement initialMeasurement = new OdoGyroMeasurement(
                 m_gyro.get(), positions.get());
         LocalizerEstimate initialEstimate = new LocalizerEstimate(
-                new StateSE2(Pose2d.kZero, VelocitySE2.ZERO), IsotropicNoiseSE2.high(),
+                new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO), IsotropicNoiseSE2.high(),
                 VariableR1.fromVariance(0, 1));
         m_bufferDuration = bufferDuration;
         m_estimates = new TimeInterpolatableBuffer100<>(

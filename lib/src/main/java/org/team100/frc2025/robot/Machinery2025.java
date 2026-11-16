@@ -35,12 +35,12 @@ import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
 import org.team100.lib.targeting.Targets;
 import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.uncertainty.NoisyStateSE2;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.visualization.RobotPoseVisualization;
 import org.team100.lib.visualization.TrajectoryVisualization;
 import org.wpilib.driverstation.MatchState;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 /**
  * This should contain all the hardware of the robot: all the subsystems etc
@@ -79,7 +79,7 @@ public class Machinery2025 {
         fieldLogger = field;
         LoggerFactory driveLog = logger.name("Drive");
 
-        ///////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////
         //
         // DRIVETRAIN
         //
@@ -125,26 +125,25 @@ public class Machinery2025 {
                 driveLog, fieldLogger,
                 t -> m_drive.getState(t).state(),
                 layout, MatchState::getAlliance);
-        new RobotPoseVisualization(
-                fieldLogger, () -> m_drive.getState(), "robot");
+        new RobotPoseVisualization(fieldLogger, () -> m_drive.getState(), "robot");
 
-        ///////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////
         //
         // TARGETING
         //
         m_targets = new Targets(
                 driveLog, fieldLogger, 0.2, t -> m_drive.getState(t).state());
 
-        ///////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////
         //
         // SUBSYSTEMS
         //
         m_mech = new CalgamesMech(logger, currentLog, 0.5, 0.343);
         m_manipulator = new Manipulator(logger, currentLog);
-        m_climber = new Climber2025(logger, currentLog, new CanId(13), new CanBusId(0));
-        m_climberIntake = new ClimberIntake(logger, currentLog, new CanId(14), new CanBusId(0));
+        m_climber = new Climber2025(logger, currentLog, new CanId(13), CANPort.CAN_S0);
+        m_climberIntake = new ClimberIntake(logger, currentLog, new CanId(14), CANPort.CAN_S0);
 
-        ///////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////
         //
         // VISUALIZATIONS
         //
@@ -152,7 +151,7 @@ public class Machinery2025 {
         new CalgamesViz(m_mech);
         new ClimberVisualization(m_climber, m_climberIntake);
 
-        ///////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////
         //
         // LED INDICATOR
         //

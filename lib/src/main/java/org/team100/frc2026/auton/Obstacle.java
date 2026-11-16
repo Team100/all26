@@ -3,8 +3,8 @@ package org.team100.frc2026.auton;
 import java.util.List;
 
 import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rectangle2d;
 import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.shape.Rectangle2d;
 
 
     public class Obstacle {

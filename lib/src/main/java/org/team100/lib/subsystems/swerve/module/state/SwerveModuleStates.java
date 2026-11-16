@@ -18,7 +18,7 @@ public record SwerveModuleStates(
     public static final SwerveModuleStates ZERO = new SwerveModuleStates(
             SwerveModuleState100.ZERO, SwerveModuleState100.ZERO,
             SwerveModuleState100.ZERO, SwerveModuleState100.ZERO);
-    private static final Optional<Rotation2d> AHEAD = Optional.of(Rotation2d.kZero);
+    private static final Optional<Rotation2d> AHEAD = Optional.of(Rotation2d.ZERO);
     private static final double SLOW = 1.0;
 
     public static final SwerveModuleStates aheadSlow = new SwerveModuleStates(

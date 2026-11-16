@@ -79,7 +79,7 @@ public class DriveToTranslationFacingWithProfile extends MoveAndHold {
     }
 
     public Pose2d getGoal(Translation2d goalTranslation, Translation2d robotTranslation) {
-        return new Pose2d(goalTranslation, goalTranslation.minus(robotTranslation).getAngle().plus(m_sideFacing));
+        return new Pose2d(goalTranslation, goalTranslation.minus(robotTranslation).getAngle().get().plus(m_sideFacing));
     }
 
     public double toGo() {

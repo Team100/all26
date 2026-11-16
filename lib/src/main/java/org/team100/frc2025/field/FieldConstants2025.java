@@ -1,7 +1,8 @@
 package org.team100.frc2025.field;
 
-import org.team100.lib.config.ElevatorUtil.ScoringLevel;
+import java.util.Optional;
 
+import org.team100.lib.config.ElevatorUtil.ScoringLevel;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -41,7 +42,7 @@ public class FieldConstants2025 {
                 case G, H, GH -> Rotation2d.fromDegrees(0);
                 case I, J, IJ -> Rotation2d.fromDegrees(60);
                 case K, L, KL -> Rotation2d.fromDegrees(120);
-                case NONE -> Rotation2d.kZero;
+                case NONE -> Rotation2d.ZERO;
                 default -> throw new IllegalArgumentException();
             };
         }
@@ -64,13 +65,13 @@ public class FieldConstants2025 {
         return target.getNorm();
     }
 
-    public static Rotation2d angleToReefCenter(Translation2d t) {
+    public static Optional<Rotation2d> angleToReefCenter(Translation2d t) {
         Translation2d target = REEF_CENTER.minus(t);
-        Rotation2d targetAngle = target.getAngle();
+        Optional<Rotation2d> targetAngle = target.getAngle();
         return targetAngle;
     }
 
-    public static Rotation2d calculateDeltaSpline(Rotation2d originalRotation, Rotation2d deltaRotation, double scale) {
+    public static Optional<Rotation2d> calculateDeltaSpline(Rotation2d originalRotation, Rotation2d deltaRotation, double scale) {
         Translation2d originalTranslation = new Translation2d(1, originalRotation);
         Translation2d deltaTranslation = new Translation2d(scale, deltaRotation);
         Translation2d newTranslation = originalTranslation.plus(deltaTranslation);
@@ -91,7 +92,7 @@ public class FieldConstants2025 {
         Translation2d spoke = new Translation2d(radius, sectorAngle);
         // center of the face of the reef
         Translation2d center = REEF_CENTER.plus(spoke);
-        Rotation2d newRotation = sectorAngle.rotateBy(Rotation2d.kCCW_90deg);
+        Rotation2d newRotation = sectorAngle.rotateBy(Rotation2d.CCW_90DEG);
 
         // end-effector is not in the center of robot y, it's offset a little.
         double endEffectorOffset = 0.193;

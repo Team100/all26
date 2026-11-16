@@ -12,9 +12,9 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.Neo550CANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 public class TankDriveFactory {
 
@@ -27,7 +27,7 @@ public class TankDriveFactory {
             CurrentLimit limit,
             CanId canL,
             CanId canR,
-            CanBusId busId,
+            CANPort busId,
             double trackWidthM,
             double maxSpeedM_S,
             double gearRatio,
@@ -70,7 +70,7 @@ public class TankDriveFactory {
             TotalCurrentLog currentLog,
             double freeSpeedRad_S,
             CanId canId,
-            CanBusId busId,
+            CANPort canPort,
             MotorPhase phase,
             CurrentLimit limit,
             Friction friction,
@@ -80,7 +80,7 @@ public class TankDriveFactory {
         int measurementPeriod = 4;
         if (RobotBase.isReal()) {
             return new Neo550CANSparkMotor(
-                    log, currentLog, canId, busId,
+                    log, currentLog, canId, canPort,
                     NeutralMode100.BRAKE, phase,
                     limit, friction, pid, averageDepth, measurementPeriod);
         } else {

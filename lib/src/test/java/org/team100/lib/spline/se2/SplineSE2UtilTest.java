@@ -99,11 +99,11 @@ public class SplineSE2UtilTest {
     @Test
     void testTransform() {
         // Pose2d.transformBy() applies the transform in the pose frame.
-        Pose2d p = new Pose2d(0, 0, Rotation2d.kCCW_Pi_2);
+        Pose2d p = new Pose2d(0, 0, Rotation2d.CCW_PI_2);
         Pose2d p2 = p.transformBy(new Transform2d(1, 0, new Rotation2d()));
         assertEquals(0, p2.getX(), DELTA);
         assertEquals(1, p2.getY(), DELTA);
-        assertEquals(Rotation2d.kCCW_Pi_2.getRadians(), p2.getRotation().getRadians(), DELTA);
+        assertEquals(Rotation2d.CCW_PI_2.getRadians(), p2.getRotation().getRadians(), DELTA);
     }
 
 }

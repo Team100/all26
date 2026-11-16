@@ -64,7 +64,7 @@ public class RightTrenchLeave implements AnnotatedCommand {
                         new DirectionSE2(-1, 0, 0),
                         1),
                 new WaypointSE2(
-                        new Pose2d(2, 4, Rotation2d.kZero),
+                        new Pose2d(2, 4, Rotation2d.ZERO),
                         new DirectionSE2(0, 1, 0),
                         1));
         return planner.restToRest(waypoints);

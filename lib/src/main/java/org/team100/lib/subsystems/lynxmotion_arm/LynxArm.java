@@ -179,7 +179,7 @@ public class LynxArm extends SubsystemBase implements AutoCloseable {
 
         Pose3d newPose = new Pose3d(
                 new Translation3d(t.getX(), t.getY(), p.getZ()),
-                new Rotation3d(0.0, pitch, t.getAngle().getRadians()));
+                new Rotation3d(0.0, pitch, t.getAngle().get().getRadians()));
         setPosition(newPose);
     }
 

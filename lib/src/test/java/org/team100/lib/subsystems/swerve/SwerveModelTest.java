@@ -89,7 +89,7 @@ class StateSE2Test {
     @Test
     void testChassisVelocities0() {
         StateSE2 state = new StateSE2(
-                new Pose2d(new Translation2d(0, 0), Rotation2d.kPi),
+                new Pose2d(new Translation2d(0, 0), Rotation2d.PI),
                 new VelocitySE2(1, 0, 0));
         ChassisVelocities speeds = state.ChassisVelocities();
         assertEquals(-1, speeds.vx, DELTA);
@@ -100,7 +100,7 @@ class StateSE2Test {
     @Test
     void testChassisSpeeds1() {
         StateSE2 state = new StateSE2(
-                new Pose2d(new Translation2d(0, 0), Rotation2d.kCCW_Pi_2),
+                new Pose2d(new Translation2d(0, 0), Rotation2d.CCW_PI_2),
                 new VelocitySE2(1, 0, 1));
         ChassisVelocities speeds = state.ChassisVelocities();
         assertEquals(0, speeds.vx, DELTA);

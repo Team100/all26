@@ -161,10 +161,10 @@ public class PRRKinematics {
         Translation2d shoulder = wrist.minus(shoulderToWrist);
 
         /** Shoulder angle from vertical to arm. */
-        Rotation2d shoulderAngle = shoulderToWrist.getAngle();
+        Rotation2d shoulderAngle = shoulderToWrist.getAngle().get();
 
         /** Wrist angle from arm to tool point. */
-        Rotation2d wristAngle = pose.getRotation().minus(shoulderToWrist.getAngle());
+        Rotation2d wristAngle = pose.getRotation().minus(shoulderToWrist.getAngle().get());
 
         PRRConfig result = new PRRConfig(
                 shoulder.getX(),

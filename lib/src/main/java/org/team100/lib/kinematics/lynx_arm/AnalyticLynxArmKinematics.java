@@ -70,7 +70,7 @@ public class AnalyticLynxArmKinematics implements LynxArmKinematics {
     public LynxArmPose forward(LynxArmConfig joints) {
         // these names mirror the URDF AL5D names.
         // first translate and then rotate
-        Pose3d root = Pose3d.kZero;
+        Pose3d root = Pose3d.ZERO;
         // the end of the swing axis
         Pose3d base_pan = root.transformBy(z(m_swingHeight)).transformBy(joints.swingT());
         // shoulder "link" has zero length, so this pose is still on the yaw axis
@@ -198,7 +198,7 @@ public class AnalyticLynxArmKinematics implements LynxArmKinematics {
         } else {
             // the end pose is not on the swing axis, so we can use the pose translation to
             // get the swing angle.
-            Rotation2d swingAngle = translation.getAngle();
+            Rotation2d swingAngle = translation.getAngle().get();
             swing = OptionalDouble.of(swingAngle.getRadians());
             // to get the wrist rotation, project the swing-relative rotation
             Rotation3d swing3d = new Rotation3d(swingAngle);

@@ -2,20 +2,16 @@ package org.team100.lib.util;
 
 import java.util.EnumSet;
 
-import org.wpilib.smartdashboard.SendableChooser;
-import org.wpilib.smartdashboard.SmartDashboard;
-
 public class EnumChooser<T extends Enum<T>> {
 
-    private final SendableChooser<T> m_chooser;
+    private final NamedChooser<T> m_chooser;
 
     public EnumChooser(String name, T defaultOption) {
         m_chooser = new NamedChooser<>(name);
         for (T level : EnumSet.allOf(defaultOption.getDeclaringClass())) {
-            m_chooser.addOption(level.name(), level);
+            m_chooser.add(level.name(), level);
         }
-        m_chooser.setDefaultOption(defaultOption.name(), defaultOption);
-        SmartDashboard.putData(m_chooser);
+        m_chooser.addDefault(defaultOption.name(), defaultOption);
     }
 
     public T get() {

@@ -39,7 +39,7 @@ public class LynxArmSetup implements Runnable {
         // m_arm.moveTo(new Pose3d(0.15, -0.1, 0.1, new Rotation3d(0, Math.PI / 2,
         // 0))));
 
-        whileTrue(m_controller::getSouthFaceButton,
+        whileTrue(m_controller::getFaceDownButton,
                 m_arm.toggleHeight());
 
         // open/close is left bumper
@@ -47,7 +47,7 @@ public class LynxArmSetup implements Runnable {
                 m_arm.toggleGrip());
 
         // this is one way to do it.
-        whileTrue(m_controller::getWestFaceButton,
+        whileTrue(m_controller::getFaceLeftButton,
 
                 Commands.sequence(
                         m_arm.moveQuicklyUntilDone(new Pose3d(0.12, -0.15, 0.05, new Rotation3d(0, Math.PI / 2, 0))),
@@ -64,7 +64,7 @@ public class LynxArmSetup implements Runnable {
                         m_arm.moveQuicklyUntilDone(new Pose3d(0.26, -0.15, 0.05, new Rotation3d(0, Math.PI / 2, 0)))));
 
         // another way to do it; note this doesn't control the roll axis the same way
-        whileTrue(m_controller::getNorthFaceButton,
+        whileTrue(m_controller::getFaceUpButton,
                 Commands.sequence(
                         m_arm.up(), m_arm.openGrip(),
                         m_arm.moveXY(0.12, -0.15),

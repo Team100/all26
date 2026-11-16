@@ -7,10 +7,9 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.ChassisVelocitiesLogger;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
+import org.team100.lib.logging.LoggerFactory.StructLogger;
 import org.team100.lib.mechanism.LinearMechanism;
-import org.team100.lib.visualization.VizUtil;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.drive.DifferentialDrive;
@@ -27,7 +26,7 @@ import org.wpilib.math.kinematics.DifferentialDriveWheelVelocities;
  * odometry only.
  */
 public class TankDrive extends SubsystemBase {
-    private final DoubleArrayLogger m_log_field_robot;
+    private final StructLogger<Pose2d> m_log_field_robot;
     private final DifferentialDriveDynamics m_dynamics;
     private final double m_trackWidthM;
     private final double m_maxSpeedM_S;
@@ -55,7 +54,7 @@ public class TankDrive extends SubsystemBase {
         m_logChassisVelocities = log.ChassisVelocitiesLogger(Level.TRACE, "chassis speeds");
         m_logLeft = log.doubleLogger(Level.TRACE, "left");
         m_logRight = log.doubleLogger(Level.TRACE, "right");
-        m_log_field_robot = fieldLogger.doubleArrayLogger(Level.COMP, "robot");
+        m_log_field_robot = fieldLogger.structLogger(Level.COMP, "robot", Pose2d.struct);
         m_trackWidthM = trackWidthM;
         m_maxSpeedM_S = maxSpeedM_S;
         m_left = left;
@@ -111,7 +110,7 @@ public class TankDrive extends SubsystemBase {
 
     private void log() {
         updatePose();
-        m_log_field_robot.log(this::poseArray);
+        m_log_field_robot.log(() -> m_pose);
     }
 
     public void setPose(Pose2d p) {
@@ -148,9 +147,5 @@ public class TankDrive extends SubsystemBase {
         Twist2d twist = m_kinematics.toTwist2d(m_positions, newPositions);
         m_positions = newPositions;
         return twist;
-    }
-
-    private double[] poseArray() {
-        return VizUtil.poseToArray(m_pose);
     }
 }

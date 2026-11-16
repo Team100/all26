@@ -41,8 +41,8 @@ public class TrajectoryPursuitReferenceSE2Test {
         Cache.clear();
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         TrajectorySE2 t = ex.restToRest(
-                new Pose2d(0, 0, Rotation2d.kZero),
-                new Pose2d(1, 0, Rotation2d.kZero));
+                new Pose2d(0, 0, Rotation2d.ZERO),
+                new Pose2d(1, 0, Rotation2d.ZERO));
         TrajectoryPursuitReferenceSE2 r = new TrajectoryPursuitReferenceSE2(
                 logger, t, () -> position);
         {

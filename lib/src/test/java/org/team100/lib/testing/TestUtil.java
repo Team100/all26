@@ -35,6 +35,7 @@ import org.wpilib.math.geometry.Rotation3d;
 import org.wpilib.math.geometry.Transform2d;
 import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation3d;
 import org.wpilib.math.geometry.Twist2d;
 import org.wpilib.math.geometry.Twist3d;
 import org.wpilib.math.linalg.Matrix;
@@ -62,6 +63,12 @@ public class TestUtil {
     public static void verify(Translation2d expected, Translation2d actual) {
         assertEquals(expected.getX(), actual.getX(), 1e-3, "x");
         assertEquals(expected.getY(), actual.getY(), 1e-3, "y");
+    }
+
+    public static void verify(Translation3d expected, Translation3d actual) {
+        assertEquals(expected.getX(), actual.getX(), 1e-3, "x");
+        assertEquals(expected.getY(), actual.getY(), 1e-3, "y");
+        assertEquals(expected.getZ(), actual.getZ(), 1e-3, "z");
     }
 
     public static void verify(Pose2d expected, Pose2d actual) {

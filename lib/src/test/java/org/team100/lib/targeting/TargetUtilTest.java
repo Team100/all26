@@ -1,11 +1,11 @@
 package org.team100.lib.targeting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.state.StateSE2;
-
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -16,11 +16,10 @@ class TargetUtilTest {
 
     @Test
     void testUnwrappedAbsoluteBearing() {
-        // no translation => zero bearing
-        // this depends on the bad behavior of Rotation2d, where norm of zero yields angle of zero
-        assertEquals(0, TargetUtil.unwrappedAbsoluteBearing(new Pose2d(), new Translation2d()), DELTA);
-        assertEquals(0, TargetUtil.unwrappedAbsoluteBearing(
-                new Pose2d(0, 0, new Rotation2d(1)), new Translation2d()), DELTA);
+        // no translation => empty bearing
+        assertTrue(TargetUtil.unwrappedAbsoluteBearing(new Pose2d(), new Translation2d()).isEmpty());
+        assertTrue(TargetUtil.unwrappedAbsoluteBearing(
+                new Pose2d(0, 0, new Rotation2d(1)), new Translation2d()).isEmpty());
     }
 
     @Test
@@ -28,27 +27,27 @@ class TargetUtilTest {
         assertEquals(0,
                 TargetUtil.absoluteBearing(
                         new Translation2d(),
-                        new Translation2d(1, 0)).getRadians(),
+                        new Translation2d(1, 0)).get().getRadians(),
                 DELTA);
         assertEquals(Math.PI / 2,
                 TargetUtil.absoluteBearing(
                         new Translation2d(),
-                        new Translation2d(0, 1)).getRadians(),
+                        new Translation2d(0, 1)).get().getRadians(),
                 DELTA);
         assertEquals(Math.PI / 4,
                 TargetUtil.absoluteBearing(
                         new Translation2d(),
-                        new Translation2d(1, 1)).getRadians(),
+                        new Translation2d(1, 1)).get().getRadians(),
                 DELTA);
         assertEquals(3 * Math.PI / 4,
                 TargetUtil.absoluteBearing(
                         new Translation2d(),
-                        new Translation2d(-1, 1)).getRadians(),
+                        new Translation2d(-1, 1)).get().getRadians(),
                 DELTA);
         assertEquals(-Math.PI / 4,
                 TargetUtil.absoluteBearing(
                         new Translation2d(),
-                        new Translation2d(1, -1)).getRadians(),
+                        new Translation2d(1, -1)).get().getRadians(),
                 DELTA);
     }
 
@@ -126,7 +125,7 @@ class TargetUtilTest {
     void testTargetMotionYReversed() {
         // in front of the origin, facing back to it, moving 1m/s +y,
         StateSE2 state = new StateSE2(
-                new Pose2d(1, 0, Rotation2d.kPi),
+                new Pose2d(1, 0, Rotation2d.PI),
                 new VelocitySE2(0, 1, 0));
         // target is dead ahead
         Translation2d target = new Translation2d(0, 0);

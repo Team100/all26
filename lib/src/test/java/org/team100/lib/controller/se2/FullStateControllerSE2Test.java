@@ -268,7 +268,7 @@ class FullStateControllerSE2Test implements Timeless {
         FullStateControllerSE2 controller = new FullStateControllerSE2(logger, 2.4, 2.4, 0.0, 0.0, 0.01, 0.02,
                 0.01, 0.02);
         // measurement is at the origin, facing down y
-        StateSE2 measurement = new StateSE2(new Pose2d(0, 0, Rotation2d.kCCW_Pi_2));
+        StateSE2 measurement = new StateSE2(new Pose2d(0, 0, Rotation2d.CCW_PI_2));
         // motion is in a straight line, down the x axis
         // setpoint is +x, facing down y
         PathSE2Point p = new PathSE2Point(
@@ -450,7 +450,7 @@ class FullStateControllerSE2Test implements Timeless {
         FullStateControllerSE2 controller = new FullStateControllerSE2(logger, 1, 1, 0, 0, 0.01, 0.02, 0.01,
                 0.02);
         // measurement is plus-Y, facing ahead
-        Pose2d currentState = new Pose2d(0, 1, Rotation2d.kZero);
+        Pose2d currentState = new Pose2d(0, 1, Rotation2d.ZERO);
         // setpoint is at the origin
         // motion is in a straight line, down the x axis
         // no curvature
@@ -511,7 +511,7 @@ class FullStateControllerSE2Test implements Timeless {
                 0.02);
 
         // measurement is at the origin, facing down the y axis
-        Pose2d currentState = new Pose2d(0, 0, Rotation2d.kCCW_Pi_2);
+        Pose2d currentState = new Pose2d(0, 0, Rotation2d.CCW_PI_2);
         // setpoint is the same
         // motion is in a straight line, down the x axis
         // no curvature
@@ -540,7 +540,7 @@ class FullStateControllerSE2Test implements Timeless {
         FullStateControllerSE2 controller = new FullStateControllerSE2(logger, 1, 1, 0, 0, 0.01, 0.02, 0.01,
                 0.02);
         // measurement is plus-y, facing down the y axis
-        Pose2d currentState = new Pose2d(0, 1, Rotation2d.kCCW_Pi_2);
+        Pose2d currentState = new Pose2d(0, 1, Rotation2d.CCW_PI_2);
         // setpoint is parallel at the origin
         // motion is in a straight line, down the x axis
         // no curvature
@@ -597,7 +597,7 @@ class FullStateControllerSE2Test implements Timeless {
                 0.02);
 
         // measurement is at the origin, facing +y
-        Pose2d currentPose = new Pose2d(0, 0, Rotation2d.kCCW_Pi_2);
+        Pose2d currentPose = new Pose2d(0, 0, Rotation2d.CCW_PI_2);
         // setpoint postion is the same
         // motion is in a straight line, down the x axis
         // no curvature
@@ -632,7 +632,7 @@ class FullStateControllerSE2Test implements Timeless {
         // measurement is too slow
         StateSE2 measurement = new StateSE2(
                 new Pose2d(0.1, 0.1,
-                        Rotation2d.kCCW_Pi_2.plus(new Rotation2d(0.1))),
+                        Rotation2d.CCW_PI_2.plus(new Rotation2d(0.1))),
                 new VelocitySE2(0.5, 0, 0));
 
         // setpoint postion is ahead in x and y and theta

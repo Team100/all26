@@ -16,11 +16,10 @@ import org.team100.lib.trajectory.se2.TrajectorySE2;
 import org.team100.lib.trajectory.se2.TrajectorySE2Factory;
 import org.team100.lib.trajectory.se2.TrajectorySE2ToVectorSeries;
 import org.team100.lib.util.ChartUtil;
-
 import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rectangle2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.shape.Rectangle2d;
 
 public class VelocityLimitRegionConstraintTest {
 
@@ -28,10 +27,10 @@ public class VelocityLimitRegionConstraintTest {
     @Test
     void test0() {
         WaypointSE2 p0 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 1), Rotation2d.kZero),
+                new Pose2d(new Translation2d(0, 1), Rotation2d.ZERO),
                 new DirectionSE2(1, 0, 0), 1);
         WaypointSE2 p1 = new WaypointSE2(
-                new Pose2d(new Translation2d(5, 1), Rotation2d.kZero),
+                new Pose2d(new Translation2d(5, 1), Rotation2d.ZERO),
                 new DirectionSE2(1, 0, 0), 1);
         List<WaypointSE2> waypoints = List.of(p0, p1);
         List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);

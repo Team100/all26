@@ -21,11 +21,11 @@ import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.state.StateR1;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 /**
  * Shooter hood must be at the minimum position at startup.
@@ -33,7 +33,7 @@ import org.wpilib.framework.RobotBase;
 public class ShooterHood extends SubsystemBase {
     private static final double TUNING_SETTING = 0;
     private static final CanId CAN_ID = new CanId(13);
-    private static final CanBusId busId = new CanBusId(0);
+    private static final CANPort busId = CANPort.CAN_S0;
     // from Yotaro 3/12/26
     private static final double GEAR_RATIO = 270;
     private static final double MIN_POSITION_RAD = 0;

@@ -24,11 +24,11 @@ import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.subsystems.five_bar.commands.Move;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 import org.wpilib.math.geometry.Translation2d;
 
 /**
@@ -82,7 +82,7 @@ public class FiveBarCartesian extends SubsystemBase {
                     loggerP1,
                     currentLog,
                     new CanId(1),
-                    new CanBusId(0),
+                    CANPort.CAN_S0,
                     NeutralMode100.COAST,
                     MotorPhase.REVERSE,
                     new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
@@ -92,7 +92,7 @@ public class FiveBarCartesian extends SubsystemBase {
                     loggerP5,
                     currentLog,
                     new CanId(5),
-                    new CanBusId(0),
+                    CANPort.CAN_S0,
                     NeutralMode100.COAST,
                     MotorPhase.REVERSE,
                     new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
@@ -173,7 +173,7 @@ public class FiveBarCartesian extends SubsystemBase {
             m_log_position.log(() -> p.get());
     }
 
-    //////////////////
+    /////////////////
 
     private void setDutyCycle(double p1, double p5) {
         m_mechP1.setDutyCycle(p1);
@@ -190,7 +190,7 @@ public class FiveBarCartesian extends SubsystemBase {
         m_sensorP5.setUnwrappedEncoderPositionRad(1.22);
     }
 
-    ///////////////////
+    //////////////////
     //
     // Commands
 

@@ -143,14 +143,16 @@ public class RevConfigurator {
         SparkMaxConfig conf = new SparkMaxConfig();
         if (m_averageDepth != 0) {
             if (isFlex) {
-                conf.encoder.uvwAverageDepth(m_averageDepth);
+                // TODO: verify that this works
+                conf.encoder.quadratureAverageDepth(m_averageDepth);
             } else {
                 conf.encoder.quadratureAverageDepth(m_averageDepth);
             }
         }
         if (m_measurementPeriod != 0) {
             if (isFlex) {
-                conf.encoder.uvwMeasurementPeriod(m_measurementPeriod);
+                // TODO: verify that this works
+                conf.encoder.quadratureMeasurementPeriod(m_measurementPeriod);
             } else {
                 conf.encoder.quadratureMeasurementPeriod(m_measurementPeriod);
             }

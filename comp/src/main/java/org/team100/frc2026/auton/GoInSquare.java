@@ -56,7 +56,7 @@ public class GoInSquare implements AnnotatedCommand {
         DirectionSE2 d1 = DirectionSE2.irrotational(p1.getRotation());
         WaypointSE2 w1 = new WaypointSE2(p1, d1, 1);
         
-        Transform2d t1 = new Transform2d(1, 0, Rotation2d.kZero);
+        Transform2d t1 = new Transform2d(1, 0, Rotation2d.ZERO);
         Pose2d p2 = p1.plus(t1);
         WaypointSE2 w2 = new WaypointSE2(p2, d1, 1);
 
@@ -65,7 +65,7 @@ public class GoInSquare implements AnnotatedCommand {
         Pose2d p3 = p2.plus(t2);
         WaypointSE2 w3 = new WaypointSE2(p3, d3, 1);
 
-        Transform2d t3 = new Transform2d(1, 0, Rotation2d.kZero);
+        Transform2d t3 = new Transform2d(1, 0, Rotation2d.ZERO);
         Pose2d p4 = p3.plus(t3);
         WaypointSE2 w4 = new WaypointSE2(p4, d3, 1);
 
@@ -74,7 +74,7 @@ public class GoInSquare implements AnnotatedCommand {
         Pose2d p5 = p4.plus(t4);
         WaypointSE2 w5 = new WaypointSE2(p5, d5, 1);
 
-        Transform2d t5 = new Transform2d(1, 0, Rotation2d.kZero);
+        Transform2d t5 = new Transform2d(1, 0, Rotation2d.ZERO);
         Pose2d p6 = p5.plus(t5);
         WaypointSE2 w6 = new WaypointSE2(p6, d5, 1);
 
@@ -83,7 +83,7 @@ public class GoInSquare implements AnnotatedCommand {
         Pose2d p7 = p6.plus(t6);
         WaypointSE2 w7 = new WaypointSE2(p7, d7, 1);
 
-        Transform2d t7 = new Transform2d(1, 0, Rotation2d.kZero);
+        Transform2d t7 = new Transform2d(1, 0, Rotation2d.ZERO);
         Pose2d p8 = p7.plus(t7);
         WaypointSE2 w8 = new WaypointSE2(p8, d7, 1);
 

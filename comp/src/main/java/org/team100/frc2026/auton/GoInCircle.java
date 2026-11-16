@@ -54,14 +54,14 @@ public class GoInCircle implements AnnotatedCommand {
     TrajectorySE2 t1(Pose2d p1) {
         // code from UTurnWithRotation
         DirectionSE2 d1 = DirectionSE2.fromDirections(p1.getRotation(), 1);
-        DirectionSE2 d2 = DirectionSE2.fromDirections(p1.getRotation().plus(Rotation2d.kPi), 1);
+        DirectionSE2 d2 = DirectionSE2.fromDirections(p1.getRotation().plus(Rotation2d.PI), 1);
         WaypointSE2 w1 = new WaypointSE2(p1, d1, 2.5);
-        Transform2d t1 = new Transform2d(0, 2, Rotation2d.kPi);
+        Transform2d t1 = new Transform2d(0, 2, Rotation2d.PI);
         Pose2d p2 = p1.plus(t1);
         WaypointSE2 w2 = new WaypointSE2(p2, d2, 2.5);
         // new code
-        DirectionSE2 d3 = DirectionSE2.fromDirections(p2.getRotation().plus(Rotation2d.kPi), 1);
-        Transform2d t2 = new Transform2d(0, 2, Rotation2d.kPi);
+        DirectionSE2 d3 = DirectionSE2.fromDirections(p2.getRotation().plus(Rotation2d.PI), 1);
+        Transform2d t2 = new Transform2d(0, 2, Rotation2d.PI);
         Pose2d p3 = p2.plus(t2);
         WaypointSE2 w3 = new WaypointSE2(p3, d3, 2.5);
 

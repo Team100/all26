@@ -78,10 +78,9 @@ public class Robot extends TimedRobot100 {
         // System.out.printf("Right Trigger %f\n",
         // m_binder.m_driver.RightTriggerAxis());
         // System.out.printf(" Left Trigger %f\n", m_binder.m_driver.LeftTriggerAxis());
-
     }
 
-    ///////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////
     //
     // INITIALIZERS, DO NOT CHANGE THESE
     //
@@ -125,7 +124,7 @@ public class Robot extends TimedRobot100 {
         m_binder.close();
     }
 
-    ///////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////
     //
     // EXIT: CLEAN UP
     //
@@ -135,7 +134,7 @@ public class Robot extends TimedRobot100 {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    ////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////
     //
     // LEAVE ALL THESE EMPTY
     //

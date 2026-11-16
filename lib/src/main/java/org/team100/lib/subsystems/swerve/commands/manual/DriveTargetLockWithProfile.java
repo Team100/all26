@@ -1,6 +1,7 @@
 
 package org.team100.lib.subsystems.swerve.commands.manual;
 
+import java.util.OptionalDouble;
 import java.util.function.Supplier;
 
 import org.team100.lib.config.DriverSkill;
@@ -15,9 +16,9 @@ import org.team100.lib.hid.DriverVelocity;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.StateR1Logger;
+import org.team100.lib.logging.LoggerFactory.StructLogger;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.state.ControlR1;
@@ -30,6 +31,8 @@ import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
 import org.team100.lib.targeting.TargetUtil;
 import org.team100.lib.util.Math100;
 import org.wpilib.command2.Command;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
 
 /**
@@ -67,7 +70,7 @@ public class DriveTargetLockWithProfile extends Command {
     private final ProfileR1 m_profile;
 
     private final DoubleLogger m_log_apparent_motion;
-    private final DoubleArrayLogger m_log_target;
+    private final StructLogger<Pose2d> m_log_target;
     private final ControlR1Logger m_log_setpoint;
     private final StateR1Logger m_log_goal;
     private final DoubleLogger m_log_thetaFB;
@@ -94,7 +97,7 @@ public class DriveTargetLockWithProfile extends Command {
 
         m_drive = drive;
         m_limiter = limiter;
-        m_log_target = fieldLogger.doubleArrayLogger(Level.TRACE, "target");
+        m_log_target = fieldLogger.structLogger(Level.TRACE, "target", Pose2d.struct);
         m_swerveKinodynamics = swerveKinodynamics;
         m_target = target;
         m_thetaController = thetaController;
@@ -126,17 +129,16 @@ public class DriveTargetLockWithProfile extends Command {
 
         // the goal omega should match the target's apparent motion
         Translation2d target = m_target.get();
-        m_log_target.log(() -> new double[] {
-                target.getX(),
-                target.getY(),
-                0 });
+        m_log_target.log(() -> new Pose2d(target, Rotation2d.ZERO));
         double targetMotion = TargetUtil.targetMotion(state, target);
         m_log_apparent_motion.log(() -> targetMotion);
 
-        double unwrappedBearing = TargetUtil.unwrappedAbsoluteBearing(state.pose(), target);
+        OptionalDouble unwrappedBearing = TargetUtil.unwrappedAbsoluteBearing(state.pose(), target);
+        if (unwrappedBearing.isEmpty())
+            return;
 
         // StateR1 goal = new StateR1(unwrappedBearing, 0);
-        StateR1 goal = new StateR1(unwrappedBearing, targetMotion);
+        StateR1 goal = new StateR1(unwrappedBearing.getAsDouble(), targetMotion);
         m_log_goal.log(() -> goal);
 
         // Make sure the old setpoint uses the modulus close to the measurement.

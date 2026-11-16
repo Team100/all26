@@ -16,7 +16,7 @@ public class OpenCVUtil {
      * The extrinsic matrix is the inverse of the camera pose.
      */
     public static Transform3d extrinsic(Pose3d cameraPose) {
-        return new Transform3d(Pose3d.kZero, cameraPose).inverse();
+        return new Transform3d(Pose3d.ZERO, cameraPose).inverse();
     }
 
     /**

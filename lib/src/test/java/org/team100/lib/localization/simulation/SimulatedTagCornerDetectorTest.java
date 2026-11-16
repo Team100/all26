@@ -32,7 +32,7 @@ public class SimulatedTagCornerDetectorTest {
 
     @BeforeEach
     void init() {
-        HAL.initialize(500, 0);
+        HAL.initialize();
     }
 
     @Test
@@ -44,7 +44,7 @@ public class SimulatedTagCornerDetectorTest {
         SimulatedTagCornerDetector sim = new SimulatedTagCornerDetector(
                 cameras,
                 layout,
-                x -> new StateSE2(new Pose2d(2.6576, 4.0259, Rotation2d.kZero)));
+                x -> new StateSE2(new Pose2d(2.6576, 4.0259, Rotation2d.ZERO)));
         // sim uses alliance from driver station
         DriverStationSim.setAllianceStationId(AllianceStationID.RED_1);
         DriverStationSim.notifyNewData();
@@ -176,7 +176,7 @@ public class SimulatedTagCornerDetectorTest {
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
                 "2025-reefscape.json");
         // right in front of tag 7
-        Pose2d robotPose = new Pose2d(2.6576, 4.0259, Rotation2d.kZero);
+        Pose2d robotPose = new Pose2d(2.6576, 4.0259, Rotation2d.ZERO);
         Pose3d robotPose3d = new Pose3d(robotPose);
 
         Transform3d cameraOffset = Offset.get(camera).offset();

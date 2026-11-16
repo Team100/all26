@@ -142,7 +142,7 @@ public class TimeOfFlightRecursion implements Solver {
                 double targetMotion = TargetUtil.targetMotion(
                         state, soln.targetPositionAtTOF);
                 return Optional.of(new Solution(
-                        soln.targetPositionAtTOF.getAngle(),
+                        soln.targetPositionAtTOF.getAngle().get(),
                         targetMotion,
                         soln.params));
             }

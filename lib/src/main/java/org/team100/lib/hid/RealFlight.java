@@ -4,6 +4,7 @@ import static org.team100.lib.hid.ControlUtil.clamp;
 import static org.team100.lib.hid.ControlUtil.deadband;
 import static org.team100.lib.hid.ControlUtil.expo;
 
+import org.wpilib.driverstation.DriverStation;
 import org.wpilib.driverstation.GenericHID;
 
 /**
@@ -44,7 +45,7 @@ public class RealFlight {
     private final GenericHID hid;
 
     public RealFlight() {
-        hid = new GenericHID(0);
+        hid = DriverStation.getGenericHID(0);
     }
 
     /**

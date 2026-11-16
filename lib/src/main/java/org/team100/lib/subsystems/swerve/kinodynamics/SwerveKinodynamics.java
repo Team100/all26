@@ -234,7 +234,7 @@ public class SwerveKinodynamics {
                 ChassisVelocities.vy * dt,
                 new Rotation2d(ChassisVelocities.omega * dt));
 
-        return new DiscreteSpeed(desiredDeltaPose.minus(Pose2d.kZero).log(), dt);
+        return new DiscreteSpeed(desiredDeltaPose.minus(Pose2d.ZERO).log(), dt);
     }
 
     /**

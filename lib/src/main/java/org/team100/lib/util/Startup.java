@@ -4,9 +4,9 @@ import org.team100.lib.config.Identity;
 import org.team100.lib.experiments.Experiments;
 import org.wpilib.command2.CommandScheduler;
 import org.wpilib.driverstation.internal.DriverStationBackend;
-import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.system.RobotController;
 import org.wpilib.system.WPILibVersion;
+import org.wpilib.tunable.TunableRegistry;
 
 /** Stuff we always do when the robot starts. */
 public class Startup {
@@ -31,11 +31,11 @@ public class Startup {
         // Show the experiment picker on glass.
         Experiments.INSTANCE.show();
         // Show what the scheduler is doing.
-        SmartDashboard.putData(CommandScheduler.getInstance());
+        TunableRegistry.publish("Scheduler", CommandScheduler.getInstance());
         // Set the period to forever, to make the watchdog shut up.
         CommandScheduler.getInstance().setPeriod(100);
         // Make the joystick complainer shut up.
-        DriverStationBackend.silenceJoystickConnectionWarning(true);
+        DriverStationBackend.silenceJoystickConnectionAlert(true);
     }
 
 }

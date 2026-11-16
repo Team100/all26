@@ -17,9 +17,9 @@ import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 /** Configuration of motors on the demobot shooter. */
 public class DualDrumShooterFactory {
@@ -38,7 +38,7 @@ public class DualDrumShooterFactory {
     private final CurrentLimit limit;
     private final CanId canL;
     private final CanId canR;
-    private final CanBusId busId;
+    private final CANPort busId;
     private final double gearRatio;
     private final double wheelDiaM;
     private final boolean profiled;
@@ -52,7 +52,7 @@ public class DualDrumShooterFactory {
             CurrentLimit limit,
             CanId canL,
             CanId canR,
-            CanBusId busId,
+            CANPort busId,
             double gearRatio,
             double wheelDiaM,
             boolean profiled,
@@ -131,7 +131,7 @@ public class DualDrumShooterFactory {
             TotalCurrentLog currentLog,
             CurrentLimit limit,
             CanId canId,
-            CanBusId busId,
+            CANPort busId,
             double gearRatio,
             double wheelDiaM,
             LoggerFactory log,
@@ -154,7 +154,7 @@ public class DualDrumShooterFactory {
             TotalCurrentLog currentLog,
             double freeSpeedRad_S,
             CanId canId,
-            CanBusId busId,
+            CANPort busId,
             MotorPhase phase,
             Friction friction,
             PIDConstants pid) {

@@ -8,9 +8,9 @@ import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
+import org.team100.lib.logging.LoggerFactory.StructLogger;
 import org.team100.lib.state.StateSE2;
-
+import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
 
@@ -21,7 +21,7 @@ import org.wpilib.math.geometry.Translation2d;
  */
 public class BallR2 implements Ball {
     private static final double DT = TimedRobot100.LOOP_PERIOD_S;
-    private final DoubleArrayLogger m_log_field_ball;
+    private final StructLogger<Pose2d> m_log_field_ball;
     private final Supplier<StateSE2> m_robot;
     private final Supplier<Rotation2d> m_azimuth;
     /** Projectile speed m/s */
@@ -43,7 +43,7 @@ public class BallR2 implements Ball {
             Supplier<StateSE2> robot,
             Supplier<Rotation2d> azimuth,
             DoubleSupplier speed) {
-        m_log_field_ball = field.doubleArrayLogger(Level.COMP, "ball");
+        m_log_field_ball = field.structLogger(Level.COMP, "ball", Pose2d.struct);
         m_robot = robot;
         m_azimuth = azimuth;
         m_speed = speed;
@@ -77,9 +77,9 @@ public class BallR2 implements Ball {
         m_log_field_ball.log(this::poseArray);
     }
 
-    private double[] poseArray() {
+    private Pose2d poseArray() {
         Translation2d t = location();
-        return new double[] { t.getX(), t.getY(), 0 };
+        return new Pose2d(t.getX(), t.getY(), Rotation2d.ZERO);
     }
 
     private Translation2d location() {

@@ -5,6 +5,7 @@ import static org.team100.lib.hid.ControlUtil.deadband;
 import static org.team100.lib.hid.ControlUtil.expo;
 
 import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.driverstation.DriverStation;
 import org.wpilib.driverstation.GenericHID;
 
 /**
@@ -23,7 +24,7 @@ public class VKBJoystick {
     private final GenericHID m_hid;
 
     protected VKBJoystick() {
-        m_hid = new GenericHID(0);
+        m_hid = DriverStation.getGenericHID(0);
     }
 
     public boolean useReefLock() {
@@ -61,7 +62,7 @@ public class VKBJoystick {
 
     public Rotation2d desiredRotation() {
         // TODO: fix for 2027
-        return Rotation2d.kZero;
+        return Rotation2d.ZERO;
         // POV 2 is the center one
         // double desiredAngleDegrees = m_hid.getPOV(2);
         // if (desiredAngleDegrees < 0) {

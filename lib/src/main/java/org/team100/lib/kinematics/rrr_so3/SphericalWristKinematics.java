@@ -30,7 +30,7 @@ public class SphericalWristKinematics {
 
     /** Forward kinematics is simply composition. */
     public SphericalWristPose forward(SphericalWristConfig q) {
-        Pose3d p4 = Pose3d.kZero.plus(r4(q.q4()));
+        Pose3d p4 = Pose3d.ZERO.plus(r4(q.q4()));
         Pose3d p5 = p4.plus(o5()).plus(r5(q.q5()));
         Pose3d p6 = p5.plus(o6()).plus(r6(q.q6()));
         if (DEBUG) {
@@ -126,20 +126,20 @@ public class SphericalWristKinematics {
     /** Origin of joint 5: no offset. */
     private Transform3d o5() {
         return new Transform3d(
-                Translation3d.kZero,
+                Translation3d.ZERO,
                 new Rotation3d(0, 0, 0));
     }
 
     /** Origin of joint 6: no offset. */
     private Transform3d o6() {
         return new Transform3d(
-                Translation3d.kZero,
+                Translation3d.ZERO,
                 new Rotation3d(0, 0, 0));
     }
 
     /** Rotate in child frame */
     private Transform3d R(double x, double y, double z, double q) {
-        return new Transform3d(Translation3d.kZero, new Rotation3d(v(x, y, z), q));
+        return new Transform3d(Translation3d.ZERO, new Rotation3d(v(x, y, z), q));
     }
 
     /** convenience method for vector */

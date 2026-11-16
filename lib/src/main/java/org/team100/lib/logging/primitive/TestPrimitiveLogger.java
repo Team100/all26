@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.wpilib.util.struct.Struct;
+
 /** Prints logs to stdout. */
 public class TestPrimitiveLogger implements PrimitiveLogger {
     private final boolean m_print;
@@ -95,6 +97,32 @@ public class TestPrimitiveLogger implements PrimitiveLogger {
             public void log(String val) {
                 if (m_print) {
                     System.out.printf("%s/%s\n", label, val);
+                }
+            }
+        };
+    }
+
+    @Override
+    public <T> PrimitiveStructLogger<T> structLogger(String label, Struct<T> struct) {
+        keys.add(label);
+        return new PrimitiveStructLogger<>() {
+            @Override
+            public void log(T val) {
+                if (m_print) {
+                    System.out.printf("%s/%s\n", label, val);
+                }
+            }
+        };
+    }
+
+    @Override
+    public <T> PrimitiveStructArrayLogger<T> structArrayLogger(String label, Struct<T> struct) {
+        keys.add(label);
+        return new PrimitiveStructArrayLogger<>() {
+            @Override
+            public void log(T[] val) {
+                if (m_print) {
+                    System.out.printf("%s/%s\n", label, Arrays.toString(val));
                 }
             }
         };

@@ -9,13 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.localization.map.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.network.Blip;
 import org.wpilib.driverstation.Alliance;
+import org.wpilib.fields.Field;
+import org.wpilib.fields.Field.OriginPosition;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation3d;
 import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.geometry.Translation3d;
 import org.wpilib.system.Filesystem;
-import org.wpilib.vision.apriltag.AprilTagFieldLayout;
-import org.wpilib.vision.apriltag.AprilTagFieldLayout.OriginPosition;
+
 
 class PoseEstimationHelperTest {
     private static final boolean DEBUG = false;
@@ -426,8 +427,8 @@ class PoseEstimationHelperTest {
         // "raw" layout, which is "out of the page" tag orientation.j
         // which is WRONG WRONG WRONG
         Path path = Filesystem.getDeployDirectory().toPath().resolve("2025-reefscape.json");
-        AprilTagFieldLayout layout = new AprilTagFieldLayout(path);
-        layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+        Field layout = Field.loadFromFile(path);
+        layout.setOrigin(OriginPosition.BLUE_ALLIANCE_WALL_RIGHT_SIDE);
 
         Pose3d tagInField = layout.getTagPose(7).get();
 

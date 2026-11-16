@@ -28,7 +28,7 @@ public class FieldConstantsLuke {
         Translation2d spoke = new Translation2d(radius, sectorAngle);
         // center of the face of the reef
         Translation2d center = REEF_CENTER.plus(spoke);
-        Rotation2d newRotation = sectorAngle.rotateBy(Rotation2d.kCCW_90deg);
+        Rotation2d newRotation = sectorAngle.rotateBy(Rotation2d.CCW_90DEG);
 
         // end-effector is not in the center of robot y, it's offset a little.
         double endEffectorOffset = -0.193;

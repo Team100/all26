@@ -13,7 +13,7 @@ public class PoseFromCornersTest {
         Camera camera = Camera.SIM0;
         double[] corners = { 500, 600, 600, 600, 600, 500, 500, 500 };
         Transform3d zfwd = estimator.pose(camera, corners);
-        TestUtil.verify(new Transform3d(0, 0, 1.543, Rotation3d.kZero), zfwd);
+        TestUtil.verify(new Transform3d(0, 0, 1.543, Rotation3d.ZERO), zfwd);
     }
 
 }

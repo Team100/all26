@@ -6,8 +6,6 @@ import java.util.function.Consumer;
 
 import org.team100.lib.util.NamedChooser;
 
-import org.wpilib.smartdashboard.SmartDashboard;
-
 public class AutonChooser {
 
     private final NamedChooser<AnnotatedCommand> m_chooser;
@@ -18,15 +16,14 @@ public class AutonChooser {
         m_chooser = new NamedChooser<>("Auton Command");
         m_names = new HashSet<>();
         addAsDefault(new AnnotatedCommandImpl("NONE", null, null, null));
-        SmartDashboard.putData(m_chooser);
     }
 
     public void addAsDefault(AnnotatedCommand cmd) {
-        m_chooser.setDefaultOption(unique(cmd.name()), cmd);
+        m_chooser.addDefault(unique(cmd.name()), cmd);
     }
 
     public void add(AnnotatedCommand cmd) {
-        m_chooser.addOption(unique(cmd.name()), cmd);
+        m_chooser.add(unique(cmd.name()), cmd);
     }
 
     public AnnotatedCommand get() {
