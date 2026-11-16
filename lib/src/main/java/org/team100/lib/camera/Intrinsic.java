@@ -25,8 +25,8 @@ public class Intrinsic {
             {0.0, 967.5641454, 610.2786945}, //
             { 0, 0, 1} });
     private static final Intrinsic CAMERA_2Ai = new Intrinsic(new double[][] { //
-            {874.8730398, 0.0, 875.8991441},
-            {0.0, 954.7454588, 609.6603374},
+            {1378.681461, 0.0, 768.4795113},
+            {0.0, 1376.344836, 693.79454},
             {0, 0, 1} });
     private static final Map<Camera, Intrinsic> intrinsics;
 
