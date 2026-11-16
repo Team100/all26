@@ -9,7 +9,7 @@ Main builds:
 | [![CI](https://github.com/Team100/all26/actions/workflows/lib.yml/badge.svg?branch=main)](https://github.com/Team100/all26/actions/workflows/lib.yml) | [![CI](https://github.com/Team100/all26/actions/workflows/lib.yml/badge.svg?branch=2027)](https://github.com/Team100/all26/actions/workflows/lib.yml) 
 
 
-[![CI](https://github.com/Team100/all26/actions/workflows/raspberry_pi.yml/badge.svg?branch=main)](https://github.com/Team100/all26/actions/workflows/raspberry_pi.yml)
+[![CI](https://github.com/Team100/all26/actions/workflows/raspberry_pi.yml/badge.svg?branch=2027)](https://github.com/Team100/all26/actions/workflows/raspberry_pi.yml)
 
 Study builds:
 
