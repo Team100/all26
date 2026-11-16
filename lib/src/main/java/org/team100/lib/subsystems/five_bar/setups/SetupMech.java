@@ -31,16 +31,16 @@ public class SetupMech implements Runnable {
         // These bindings are remembered by the trigger event loop, so we don't need to
         // retain them.
         // button 1, "z" in the sim
-        whileTrue(controller::getSouthFaceButton,
+        whileTrue(controller::getFaceDownButton,
                 m_fiveBar.home());
         // button 2, "x" in the sim
-        onTrue(controller::getEastFaceButton,
+        onTrue(controller::getFaceRightButton,
                 m_fiveBar.zero());
         // button 3, "c" in the sim
-        onTrue(controller::getWestFaceButton,
+        onTrue(controller::getFaceLeftButton,
                 m_pen.down());
         // button 4, "v" in the sim.
-        onTrue(controller::getNorthFaceButton,
+        onTrue(controller::getFaceUpButton,
                 m_pen.up());
     }
 

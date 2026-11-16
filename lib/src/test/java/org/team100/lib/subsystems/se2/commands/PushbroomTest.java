@@ -15,8 +15,8 @@ public class PushbroomTest {
     @Test
     void testCandidate0() {
         Translation2d target = new Translation2d(0, 0);
-        Pose2d robot = new Pose2d(0, 0, Rotation2d.kZero);
-        Transform2d offset = new Transform2d(0, 0, Rotation2d.kZero);
+        Pose2d robot = new Pose2d(0, 0, Rotation2d.ZERO);
+        Transform2d offset = new Transform2d(0, 0, Rotation2d.ZERO);
         Pose2d candidate = Pushbroom.candidate(new Pose2d(), target, robot, offset);
         assertEquals(0, candidate.getX(), DELTA);
         assertEquals(0, candidate.getY(), DELTA);
@@ -27,7 +27,7 @@ public class PushbroomTest {
     @Test
     void testCandidate1() {
         Translation2d target = new Translation2d(0, 0);
-        Pose2d robot = new Pose2d(0, 0, Rotation2d.kZero);
+        Pose2d robot = new Pose2d(0, 0, Rotation2d.ZERO);
         Transform2d offset = new Transform2d(0, 0, Rotation2d.k180deg);
         Pose2d candidate = Pushbroom.candidate(new Pose2d(), target, robot, offset);
         assertEquals(0, candidate.getX(), DELTA);
@@ -39,8 +39,8 @@ public class PushbroomTest {
     @Test
     void testCandidate2() {
         Translation2d target = new Translation2d(1, 0);
-        Pose2d robot = new Pose2d(0, 0, Rotation2d.kZero);
-        Transform2d offset = new Transform2d(0, 0, Rotation2d.kZero);
+        Pose2d robot = new Pose2d(0, 0, Rotation2d.ZERO);
+        Transform2d offset = new Transform2d(0, 0, Rotation2d.ZERO);
         Pose2d candidate = Pushbroom.candidate(new Pose2d(), target, robot, offset);
         assertEquals(1, candidate.getX(), DELTA);
         assertEquals(0, candidate.getY(), DELTA);
@@ -51,7 +51,7 @@ public class PushbroomTest {
     @Test
     void testCandidate3() {
         Translation2d target = new Translation2d(1, 0);
-        Pose2d robot = new Pose2d(0, 0, Rotation2d.kZero);
+        Pose2d robot = new Pose2d(0, 0, Rotation2d.ZERO);
         Transform2d offset = new Transform2d(0, 0, Rotation2d.k180deg);
         Pose2d candidate = Pushbroom.candidate(new Pose2d(), target, robot, offset);
         assertEquals(1, candidate.getX(), DELTA);

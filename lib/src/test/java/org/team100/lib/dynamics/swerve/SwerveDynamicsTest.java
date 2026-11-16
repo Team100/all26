@@ -96,7 +96,7 @@ public class SwerveDynamicsTest {
         // no accel
         AccelerationSE2 a = new AccelerationSE2(0, 0, 0);
         ChassisAcceleration accel = ChassisAcceleration.fromFieldRelative(
-                a, Rotation2d.kZero);
+                a, Rotation2d.ZERO);
         SwerveEffort e = d.effort(s, accel);
         assertEquals(0, e.fl().f(), 0.001);
         assertEquals(0, e.fl().angle().get().getRadians(), 0.001);
@@ -117,7 +117,7 @@ public class SwerveDynamicsTest {
         // longitudinal accel
         AccelerationSE2 a = new AccelerationSE2(1, 0, 0);
         ChassisAcceleration accel = ChassisAcceleration.fromFieldRelative(
-                a, Rotation2d.kZero);
+                a, Rotation2d.ZERO);
         SwerveEffort e = d.effort(s, accel);
         // one-quarter of the required force in the longitudinal direction
         assertEquals(17.5, e.fl().f(), 0.001);
@@ -140,7 +140,7 @@ public class SwerveDynamicsTest {
         AccelerationSE2 a = new AccelerationSE2(1, 0, 0);
         // -pi/2 rotation
         ChassisAcceleration accel = ChassisAcceleration.fromFieldRelative(
-                a, Rotation2d.kCW_Pi_2);
+                a, Rotation2d.CW_PI_2);
         SwerveEffort e = d.effort(s, accel);
         // no longitudinal
         assertEquals(0, e.fl().f(), 0.001);
@@ -165,7 +165,7 @@ public class SwerveDynamicsTest {
         // lateral accel +y
         AccelerationSE2 a = new AccelerationSE2(0, 1, 0);
         ChassisAcceleration accel = ChassisAcceleration.fromFieldRelative(
-                a, Rotation2d.kZero);
+                a, Rotation2d.ZERO);
         SwerveEffort e = d.effort(s, accel);
         // the wheel headed in +x is incapable of providing
         // longitudinal force in the correct direction,
@@ -181,7 +181,7 @@ public class SwerveDynamicsTest {
         SwerveDynamics d = new SwerveDynamics(
                 70, 6, new Tire(200, 0), fl, fr, rl, rr);
 
-        SwerveModuleState100 s = new SwerveModuleState100(1, Optional.of(Rotation2d.kZero));
+        SwerveModuleState100 s = new SwerveModuleState100(1, Optional.of(Rotation2d.ZERO));
         CornerForce cf = new CornerForce(0, 17.5); // lateral accel +y
         ModuleEffort e = d.cornerEffort(s, cf);
 
@@ -198,7 +198,7 @@ public class SwerveDynamicsTest {
         SwerveDynamics d = new SwerveDynamics(
                 70, 6, new Tire(200, 0.05), fl, fr, rl, rr);
 
-        SwerveModuleState100 s = new SwerveModuleState100(1, Optional.of(Rotation2d.kZero));
+        SwerveModuleState100 s = new SwerveModuleState100(1, Optional.of(Rotation2d.ZERO));
         CornerForce cf = new CornerForce(0, 17.5); // lateral force +y
         ModuleEffort e = d.cornerEffort(s, cf);
 

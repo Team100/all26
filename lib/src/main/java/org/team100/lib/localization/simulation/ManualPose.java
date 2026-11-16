@@ -12,12 +12,9 @@ import org.team100.lib.hid.DriverVelocity;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
+import org.team100.lib.logging.LoggerFactory.StructLogger;
 import org.team100.lib.state.StateSE2;
-import org.team100.lib.visualization.VizUtil;
 import org.wpilib.math.geometry.Pose2d;
-
-
 
 /**
  * Provide a pose estimate with manual control.
@@ -31,7 +28,7 @@ public class ManualPose {
     private static final double DT = TimedRobot100.LOOP_PERIOD_S;
     private static final double MAX_V = 2.0;
     private static final double MAX_OMEGA = 2.0;
-    private final DoubleArrayLogger m_log_field_robot;
+    private final StructLogger<Pose2d> m_log_field_robot;
     private final Supplier<DriverVelocity> m_input;
     private final ObjectCache<StateSE2> m_stateCache;
     /** Used only by update(). */
@@ -41,7 +38,7 @@ public class ManualPose {
             LoggerFactory fieldLogger,
             Supplier<DriverVelocity> v,
             Pose2d initial) {
-        m_log_field_robot = fieldLogger.doubleArrayLogger(Level.COMP, "robot");
+        m_log_field_robot = fieldLogger.structLogger(Level.COMP, "robot", Pose2d.struct);
         m_input = v;
         m_state = new StateSE2(initial);
         m_stateCache = Cache.of(this::update);
@@ -57,12 +54,7 @@ public class ManualPose {
     }
 
     private void log() {
-        m_log_field_robot.log(this::poseArray);
-    }
-
-    private double[] poseArray() {
-        Pose2d pose = getPose();
-        return VizUtil.poseToArray(pose);
+        m_log_field_robot.log(this::getPose);
     }
 
     private StateSE2 update() {

@@ -59,8 +59,8 @@ public class DriveWithTrajectoryTest implements Timeless {
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         TrajectorySE2 t = ex.restToRest(
-                new Pose2d(0, 0, Rotation2d.kZero),
-                new Pose2d(1, 0, Rotation2d.kZero));
+                new Pose2d(0, 0, Rotation2d.ZERO),
+                new Pose2d(1, 0, Rotation2d.ZERO));
         // first state is motionless
         assertEquals(0, t.sample(0).point().velocity(), DELTA);
         ControllerSE2 controller = ControllerFactorySE2.test(logger);
@@ -116,8 +116,8 @@ public class DriveWithTrajectoryTest implements Timeless {
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         TrajectorySE2 t = ex.restToRest(
-                new Pose2d(0, 0, Rotation2d.kZero),
-                new Pose2d(1, 0, Rotation2d.kZero));
+                new Pose2d(0, 0, Rotation2d.ZERO),
+                new Pose2d(1, 0, Rotation2d.ZERO));
         // first state is motionless
         assertEquals(0, t.sample(0).point().velocity(), DELTA);
         ControllerSE2 controller = ControllerFactorySE2.test(logger);
@@ -132,7 +132,7 @@ public class DriveWithTrajectoryTest implements Timeless {
             stepTime();
             c.execute();
             // we have magically reached the end
-            d.m_state = new StateSE2(new Pose2d(1, 0, Rotation2d.kZero));
+            d.m_state = new StateSE2(new Pose2d(1, 0, Rotation2d.ZERO));
         }
         assertTrue(c.isDone());
 
@@ -155,8 +155,8 @@ public class DriveWithTrajectoryTest implements Timeless {
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         TrajectorySE2 trajectory = ex.restToRest(
-                new Pose2d(0, 0, Rotation2d.kZero),
-                new Pose2d(1, 0, Rotation2d.kZero));
+                new Pose2d(0, 0, Rotation2d.ZERO),
+                new Pose2d(1, 0, Rotation2d.ZERO));
         // first state is motionless
         assertEquals(0, trajectory.sample(0).point().velocity(), DELTA);
         ControllerSE2 controller = ControllerFactorySE2.test(logger);

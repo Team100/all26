@@ -19,11 +19,11 @@ import org.team100.lib.music.Player;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.LinearPositionServo;
 import org.team100.lib.servo.OutboardLinearPositionServo;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 public class DualLinearSubsystem extends SubsystemBase implements Music {
     private final LoggerFactory m_log1;
@@ -36,7 +36,7 @@ public class DualLinearSubsystem extends SubsystemBase implements Music {
             TotalCurrentLog currentLog,
             CanId canId1,
             CanId canId2,
-            CanBusId busId,
+            CANPort canPort,
             NeutralMode100 neutral,
             MotorPhase phase1,
             MotorPhase phase2,
@@ -57,9 +57,9 @@ public class DualLinearSubsystem extends SubsystemBase implements Music {
         final Motor m2;
         if (enable && RobotBase.isReal()) {
             m1 = new KrakenX44Motor(
-                    m_log1, currentLog, canId1, busId, neutral, phase1, limit, friction, pid);
+                    m_log1, currentLog, canId1, canPort, neutral, phase1, limit, friction, pid);
             m2 = new KrakenX44Motor(
-                    m_log2, currentLog, canId2, busId, neutral, phase2, limit, friction, pid);
+                    m_log2, currentLog, canId2, canPort, neutral, phase2, limit, friction, pid);
         } else {
             m1 = new SimulatedMotor(m_log1, 600);
             m2 = new SimulatedMotor(m_log2, 600);

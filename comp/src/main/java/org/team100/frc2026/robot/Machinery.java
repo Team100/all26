@@ -86,7 +86,7 @@ public class Machinery implements AutoCloseable {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        /////////////////////
+        ///////////////////
         //
         // DRIVETRAIN
         //
@@ -141,11 +141,10 @@ public class Machinery implements AutoCloseable {
         new AprilTagVisualizer(
                 driveLog, fieldLogger,
                 t -> m_drive.getState(t).state(), layout, MatchState::getAlliance);
-        new RobotPoseVisualization(
-                fieldLogger, () -> m_drive.getState(), "robot");
+        new RobotPoseVisualization(fieldLogger, () -> m_drive.getState(), "robot");
         new SwerveHistoryVisualization(fieldLogger, m_drive);
 
-        /////////////////////
+        ///////////////////
         //
         // TARGETING
         //
@@ -167,7 +166,7 @@ public class Machinery implements AutoCloseable {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, t -> m_drive.getState(t).state());
 
-        //////////////////////
+        ////////////////////
         //
         // SUBSYSTEMS
         //
@@ -177,13 +176,13 @@ public class Machinery implements AutoCloseable {
         m_feeder = new Feeder(logger, currentLog, m_shooter);
         m_conveyor = new Conveyor(logger, currentLog);
 
-        //////////////////////
+        ////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        //////////////////////
+        ////////////////////
         //
         // INDICATOR
         //
@@ -252,7 +251,7 @@ public class Machinery implements AutoCloseable {
     public Command zeroRotation() {
         return Commands.runOnce(() -> {
             Translation2d t = m_drive.getState().pose().getTranslation();
-            Pose2d p = new Pose2d(t, Rotation2d.kZero);
+            Pose2d p = new Pose2d(t, Rotation2d.ZERO);
             // no influence over cartesian variance
             // a strong claim about rotation variance
             IsotropicNoiseSE2 noise = IsotropicNoiseSE2.fromStdDev(10, 0.001);
@@ -290,6 +289,7 @@ public class Machinery implements AutoCloseable {
         m_modules.close();
         m_solver.close();
         m_proxyEstimator.close();
+        m_drive.close();
     }
 
 }

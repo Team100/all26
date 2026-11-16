@@ -73,8 +73,8 @@ public record URDFJoint(
     Transform3d transform(Double q) {
         Transform3d jointTransform = switch (type()) {
             case revolute, continuous -> new Transform3d(0, 0, 0, new Rotation3d(axis(), q));
-            case prismatic -> new Transform3d(new Translation3d(axis().times(q)), Rotation3d.kZero);
-            case fixed -> Transform3d.kZero;
+            case prismatic -> new Transform3d(new Translation3d(axis().times(q)), Rotation3d.ZERO);
+            case fixed -> Transform3d.ZERO;
             default -> throw new UnsupportedOperationException();
         };
 

@@ -22,8 +22,8 @@ public class TrajectorySE3Test implements Timeless {
 
     @Test
     void testSample() {
-        Pose3d start = Pose3d.kZero;
-        Pose3d end = new Pose3d(1, 0, 0, Rotation3d.kZero);
+        Pose3d start = Pose3d.ZERO;
+        Pose3d end = new Pose3d(1, 0, 0, Rotation3d.ZERO);
 
         List<WaypointSE3> waypoints = List.of(
                 new WaypointSE3(start, new DirectionSE3(1, 0, 0, 0, 0, 0), 1),

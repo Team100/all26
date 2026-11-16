@@ -8,8 +8,7 @@ import static org.wpilib.command2.Commands.sequence;
 import org.team100.lib.util.Banner;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.Commands;
-import org.wpilib.driverstation.Alert;
-import org.wpilib.driverstation.Alert.Level;
+import org.wpilib.util.Alert;
 
 
 
@@ -21,7 +20,7 @@ public class Tester {
 
     public Tester(Machinery machinery) {
         m_machinery = machinery;
-        m_alert = new Alert(text("test"), Level.LOW);
+        m_alert = new Alert("test", text("test"), Alert.Level.LOW);
         m_alert.set(false);
     }
 

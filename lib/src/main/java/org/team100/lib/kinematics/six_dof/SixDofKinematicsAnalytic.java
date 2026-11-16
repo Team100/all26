@@ -2,6 +2,7 @@ package org.team100.lib.kinematics.six_dof;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.team100.lib.geometry.rr.RRConfig;
 import org.team100.lib.geometry.se3.AccelerationSE3;
@@ -70,7 +71,7 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
      */
     @Override
     public SixDofPose forward(SixDofConfig q) {
-        Pose3d p1 = Pose3d.kZero.plus(o1()).plus(r1(q.q1()));
+        Pose3d p1 = Pose3d.ZERO.plus(o1()).plus(r1(q.q1()));
         Pose3d p2 = p1.plus(o2()).plus(r2(q.q2()));
         Pose3d p3 = p2.plus(o3()).plus(r3(q.q3()));
         if (DEBUG) {
@@ -82,9 +83,9 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
         // wrist origin
         Pose3d p4o = p3.plus(o4());
         SphericalWristPose wp = wk.forward(new SphericalWristConfig(q.q4(), q.q5(), q.q6()));
-        Pose3d p4 = p4o.plus(new Transform3d(Pose3d.kZero, wp.p4()));
-        Pose3d p5 = p4o.plus(new Transform3d(Pose3d.kZero, wp.p5()));
-        Pose3d p6 = p4o.plus(new Transform3d(Pose3d.kZero, wp.p6()));
+        Pose3d p4 = p4o.plus(new Transform3d(Pose3d.ZERO, wp.p4()));
+        Pose3d p5 = p4o.plus(new Transform3d(Pose3d.ZERO, wp.p5()));
+        Pose3d p6 = p4o.plus(new Transform3d(Pose3d.ZERO, wp.p6()));
         Pose3d tcp = p6.plus(tool());
         if (DEBUG) {
             System.out.printf("p6  %s\n", StrUtil.poseStr2(p6));
@@ -178,7 +179,7 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
         return null;
     }
 
-    /////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////
 
     /**
      * Swing joint. Wrist origin must be in the swing plane. One or two solutions.
@@ -201,7 +202,7 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
             // in this case we don't do both alternatives, just the one default.
             return List.of(q1Default);
         }
-        double radians = w.getAngle().getRadians();
+        double radians = w.getAngle().get().getRadians();
         return List.of(radians, MathUtil.angleModulus(radians + Math.PI));
     }
 
@@ -216,9 +217,9 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
      */
     private List<RRConfig> rrConfig(Translation3d w, double q1, Double q2Default) {
         // Is this the "inline" or the "flip" case?
-        Rotation2d rot = w.toTranslation2d().getAngle();
+        Optional<Rotation2d> rot = w.toTranslation2d().getAngle();
         double signum = 0;
-        if (MathUtil.isNear(q1, rot.getRadians(), 1e-3))
+        if (rot.isEmpty() || MathUtil.isNear(q1, rot.get().getRadians(), 1e-3))
             // forward
             signum = 1;
         else
@@ -251,7 +252,7 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
     /** The rotation of the wrist origin */
     private Rotation3d wristOrigin(double q1, double q2, double q3) {
         // Each joint pose up to the wrist.
-        Pose3d p1 = Pose3d.kZero.plus(o1()).plus(r1(q1));
+        Pose3d p1 = Pose3d.ZERO.plus(o1()).plus(r1(q1));
         Pose3d p2 = p1.plus(o2()).plus(r2(q2));
         Pose3d p3 = p2.plus(o3()).plus(r3(q3));
         // Wrist origin.
@@ -281,8 +282,8 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
     /** Origin of joint 1: no offset. */
     private Transform3d o1() {
         return new Transform3d(
-                Translation3d.kZero,
-                Rotation3d.kZero);
+                Translation3d.ZERO,
+                Rotation3d.ZERO);
     }
 
     /** Origin of joint 2: offset up. */
@@ -296,7 +297,7 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
     private Transform3d o3() {
         return new Transform3d(
                 new Translation3d(boom, 0, 0),
-                Rotation3d.kZero);
+                Rotation3d.ZERO);
     }
 
     /** Origin of joint 4: offset out. */
@@ -310,12 +311,12 @@ public class SixDofKinematicsAnalytic implements SixDofKinematics {
     private Transform3d tool() {
         return new Transform3d(
                 new Translation3d(tool, 0, 0),
-                Rotation3d.kZero);
+                Rotation3d.ZERO);
     }
 
     /** Rotate in child frame */
     private Transform3d R(double x, double y, double z, double q) {
-        return new Transform3d(Translation3d.kZero, new Rotation3d(v(x, y, z), q));
+        return new Transform3d(Translation3d.ZERO, new Rotation3d(v(x, y, z), q));
     }
 
     /** convenience method for vector */

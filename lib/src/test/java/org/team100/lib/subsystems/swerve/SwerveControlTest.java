@@ -96,7 +96,7 @@ class SwerveControlTest {
     @Test
     void testChassisVelocities0() {
         ControlSE2 state = new ControlSE2(
-                new Pose2d(new Translation2d(0, 0), Rotation2d.kPi),
+                new Pose2d(new Translation2d(0, 0), Rotation2d.PI),
                 new VelocitySE2(1, 0, 0));
         ChassisVelocities speeds = state.ChassisVelocities();
         assertEquals(-1, speeds.vx, DELTA);
@@ -107,7 +107,7 @@ class SwerveControlTest {
     @Test
     void testChassisVelocities1() {
         ControlSE2 state = new ControlSE2(
-                new Pose2d(new Translation2d(0, 0), Rotation2d.kCCW_Pi_2),
+                new Pose2d(new Translation2d(0, 0), Rotation2d.CCW_PI_2),
                 new VelocitySE2(1, 0, 1));
         ChassisVelocities speeds = state.ChassisVelocities();
         assertEquals(0, speeds.vx, DELTA);

@@ -18,14 +18,15 @@ public class DoubleCircleAutonTest {
     private static final SwerveKinodynamics dynamics = SwerveKinodynamicsFactory.get();
     private static final ControllerSE2 controller = new FullStateControllerSE2(
             log, 3.0, 3.5, 0, 0, 0.01, 0.01, 0.01, 0.01);
-    private static final Machinery machinery = new Machinery(log, log, currentLog);
 
     @Test
     void test0() {
-        DoubleCircleAuton a = new DoubleCircleAuton(
-                log, dynamics, controller, machinery.m_solver, machinery);
-        TrajectorySE2 t = a.t1(a.start());
-        t.getLastPoint();
+        try (Machinery machinery = new Machinery(log, log, currentLog)) {
+            DoubleCircleAuton a = new DoubleCircleAuton(
+                    log, dynamics, controller, machinery.m_solver, machinery);
+            TrajectorySE2 t = a.t1(a.start());
+            t.getLastPoint();
+        }
     }
 
 }

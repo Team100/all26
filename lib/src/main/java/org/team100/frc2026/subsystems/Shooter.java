@@ -22,11 +22,11 @@ import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 public class Shooter extends SubsystemBase implements Music {
     private static final boolean ENABLE = true;
@@ -37,7 +37,7 @@ public class Shooter extends SubsystemBase implements Music {
     private static final CanId CAN_ID_2 = new CanId(14);
     private static final CanId CAN_ID_3 = new CanId(15);
     private static final CanId CAN_ID_4 = new CanId(16);
-    private static final CanBusId busId = new CanBusId(0);
+    private static final CANPort busId = CANPort.CAN_S0;
     private static final double TOLERANCE_M_S = 1;
     // private static final double GEAR_RATIO = 18.0 / 24.0;
     private static final double GEAR_RATIO = 24.0 / 18.0;

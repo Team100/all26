@@ -57,7 +57,7 @@ public interface LynxArmKinematics {
             return p;
         }
         // it's not vertical.
-        double yaw = p.getTranslation().toTranslation2d().getAngle().getRadians();
+        double yaw = p.getTranslation().toTranslation2d().getAngle().get().getRadians();
         if (DEBUG) {
             System.out.printf("yaw %s\n", yaw);
         }
@@ -93,7 +93,7 @@ public interface LynxArmKinematics {
             return p;
         }
         // it's not vertical.
-        double yaw = p.getTranslation().toTranslation2d().getAngle().getRadians();
+        double yaw = p.getTranslation().toTranslation2d().getAngle().get().getRadians();
         if (DEBUG) {
             System.out.printf("yaw %s\n", yaw);
         }

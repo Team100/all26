@@ -21,12 +21,12 @@ public class SplineFactorySE2Test {
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(0, 0),
-                                Rotation2d.kZero),
+                                Rotation2d.ZERO),
                         new DirectionSE2(0, 0, 1), 1),
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(0, 0),
-                                Rotation2d.kCCW_90deg),
+                                Rotation2d.CCW_90DEG),
                         new DirectionSE2(0, 0, 1), 1));
         assertThrows(IllegalArgumentException.class,
                 () -> SplineSE2Factory.splinesFromWaypoints(waypoints));

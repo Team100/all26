@@ -62,7 +62,7 @@ public class LeftSequenceExample implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
                         new DirectionSE2(-1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(2, 4, Rotation2d.kCW_Pi_2),
+                new WaypointSE2(new Pose2d(2, 4, Rotation2d.CW_PI_2),
                         new DirectionSE2(0, -1, 0), 1));
         return planner.restToRest(waypoints);
     }

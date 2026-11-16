@@ -32,11 +32,11 @@ public class Prewarmer2025 {
         // Exercise the trajectory planner.
         List<WaypointSE2> waypoints = new ArrayList<>();
         waypoints.add(new WaypointSE2(
-                new Pose2d(new Translation2d(), Rotation2d.kZero),
+                new Pose2d(new Translation2d(), Rotation2d.ZERO),
                 new DirectionSE2(1, 0, 0),
                 1));
         waypoints.add(new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), Rotation2d.kZero),
+                new Pose2d(new Translation2d(1, 0), Rotation2d.ZERO),
                 new DirectionSE2(1, 0, 0),
                 1));
         List<TimingConstraint> constraints = new TimingConstraintFactory(machinery.m_swerveKinodynamics).medium();

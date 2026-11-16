@@ -18,7 +18,7 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
+import org.team100.lib.logging.LoggerFactory.StructLogger;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.mechanism.RotaryMechanism;
@@ -46,11 +46,11 @@ import org.team100.lib.targeting.FiringParameters;
 import org.team100.lib.targeting.Solution;
 import org.team100.lib.targeting.Solver;
 import org.team100.lib.targeting.TimeOfFlightRecursion;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -71,8 +71,8 @@ public class Turret extends SubsystemBase {
 
     private final BooleanLogger m_log_aiming;
     private final BooleanLogger m_log_solved;
-    private final DoubleArrayLogger m_log_field_turret;
-    private final DoubleArrayLogger m_log_field_target;
+    private final StructLogger<Pose2d> m_log_field_turret;
+    private final StructLogger<Pose2d> m_log_field_target;
     private final Supplier<StateSE2> m_state;
     private final Supplier<Optional<Translation2d>> m_target;
     private final AngularPositionServo m_pivot;
@@ -97,20 +97,20 @@ public class Turret extends SubsystemBase {
             CanId azimuthCanId,
             CanId elevationCanId,
             CanId drumCanId,
-            CanBusId busId,
+            CANPort canPort,
             DoubleFunction<Optional<FiringParameters>> rangeToParams,
             Supplier<StateSE2> state,
             Supplier<Optional<Translation2d>> target) {
         LoggerFactory log = parent.type(this);
         m_log_aiming = log.booleanLogger(Level.TRACE, "aiming");
         m_log_solved = log.booleanLogger(Level.TRACE, "solved");
-        m_log_field_turret = field.doubleArrayLogger(Level.COMP, "turret");
-        m_log_field_target = field.doubleArrayLogger(Level.COMP, "target");
+        m_log_field_turret = field.structLogger(Level.COMP, "turret", Pose2d.struct);
+        m_log_field_target = field.structLogger(Level.COMP, "target", Pose2d.struct);
         m_state = state;
         m_target = target;
-        m_pivot = pivot(log.name("azimuth"), currentLog, azimuthCanId, busId);
-        m_elevation = elevation(log.name("elevation"), currentLog, elevationCanId, busId);
-        m_drum = drum(log.name("drum"), currentLog, drumCanId, busId);
+        m_pivot = pivot(log.name("azimuth"), currentLog, azimuthCanId, canPort);
+        m_elevation = elevation(log.name("elevation"), currentLog, elevationCanId, canPort);
+        m_drum = drum(log.name("drum"), currentLog, drumCanId, canPort);
         // Laser solver always works
         // m_solver = new LaserSolver(rangeToParams);
         m_solver = new TimeOfFlightRecursion(rangeToParams, 0.01);
@@ -123,7 +123,7 @@ public class Turret extends SubsystemBase {
             LoggerFactory log,
             TotalCurrentLog currentLog,
             CanId canId,
-            CanBusId busId) {
+            CANPort canPort) {
         // TODO: the pivot inertia is definitely not a disc.
         RDynamics dyn = new Disc(0.005);
         ProfileR1 profile = new TrapezoidProfileR1(5, 10, 0.05);
@@ -132,7 +132,7 @@ public class Turret extends SubsystemBase {
         Motor motor;
         if (RobotBase.isReal()) {
             motor = new KrakenX44Motor(
-                    log, currentLog, canId, busId,
+                    log, currentLog, canId, canPort,
                     NeutralMode100.BRAKE, MotorPhase.FORWARD,
                     new CurrentLimit(1, 1),
                     new Friction(0, 0, 0, 0),
@@ -155,7 +155,7 @@ public class Turret extends SubsystemBase {
             LoggerFactory log,
             TotalCurrentLog currentLog,
             CanId canId,
-            CanBusId busId) {
+            CANPort canPort) {
         RDynamicsAnalytic dyn = new RDynamicsAnalytic(0, 0, 0, 0);
         ProfileR1 profile = new TrapezoidProfileR1(5, 10, 0.05);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
@@ -163,7 +163,7 @@ public class Turret extends SubsystemBase {
         Motor motor;
         if (RobotBase.isReal()) {
             motor = new KrakenX44Motor(
-                    log, currentLog, canId, busId,
+                    log, currentLog, canId, canPort,
                     NeutralMode100.BRAKE, MotorPhase.FORWARD,
                     new CurrentLimit(1, 1),
                     new Friction(0, 0, 0, 0),
@@ -186,7 +186,7 @@ public class Turret extends SubsystemBase {
             LoggerFactory log,
             TotalCurrentLog currentLog,
             CanId canId,
-            CanBusId busId) {
+            CANPort canPort) {
         PDynamics dyn = PDynamics.drum(0.0001, DRUM_DIAMETER / 2);
         VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(10);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
@@ -194,7 +194,7 @@ public class Turret extends SubsystemBase {
         Motor motor;
         if (RobotBase.isReal()) {
             motor = new KrakenX44Motor(
-                    log, currentLog, canId, busId,
+                    log, currentLog, canId, canPort,
                     NeutralMode100.BRAKE, MotorPhase.FORWARD,
                     new CurrentLimit(1, 1),
                     new Friction(0, 0, 0, 0),
@@ -280,8 +280,7 @@ public class Turret extends SubsystemBase {
         if (targetOpt.isEmpty())
             return Optional.empty();
         Translation2d targetTranslation = targetOpt.get();
-        m_log_field_target.log(() -> new double[] {
-                targetTranslation.getX(), targetTranslation.getY(), 0 });
+        m_log_field_target.log(() -> new Pose2d(targetTranslation, Rotation2d.ZERO));
         StateR2 target = new StateR2(targetTranslation, VelocityR2.ZERO);
         return m_solver.solve(m_state.get(), target);
     }
@@ -312,14 +311,13 @@ public class Turret extends SubsystemBase {
         m_log_solved.log(() -> m_solved);
     }
 
-    private double[] poseArray() {
+    private Pose2d poseArray() {
         Pose2d pose = m_state.get().pose();
-        return new double[] {
+        return new Pose2d(
                 pose.getX(),
                 pose.getY(),
                 pose.getRotation().plus(
-                        new Rotation2d(m_pivot.getWrappedPositionRad()))
-                        .getDegrees() };
+                        new Rotation2d(m_pivot.getWrappedPositionRad())));
     }
 
 }

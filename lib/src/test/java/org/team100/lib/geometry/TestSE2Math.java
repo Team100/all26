@@ -16,7 +16,7 @@ class TestSE2Math {
     @Test
     void testRotation2d() {
         // Test constructors
-        Rotation2d rot1 = Rotation2d.kZero;
+        Rotation2d rot1 = Rotation2d.ZERO;
         assertEquals(1, rot1.getCos(), EPSILON);
         assertEquals(0, rot1.getSin(), EPSILON);
         assertEquals(0, rot1.getTan(), EPSILON);
@@ -82,7 +82,7 @@ class TestSE2Math {
         assertEquals(0, rot3.getRadians(), EPSILON);
 
         // A rotation times its inverse should be the identity
-        Rotation2d identity = Rotation2d.kZero;
+        Rotation2d identity = Rotation2d.ZERO;
         rot1 = Rotation2d.fromDegrees(21.45);
         rot2 = rot1.rotateBy(rot1.unaryMinus());
         assertEquals(identity.getCos(), rot2.getCos(), EPSILON);
@@ -197,7 +197,7 @@ class TestSE2Math {
     @Test
     void testPose2d() {
         // Test constructors
-        Pose2d pose1 = Pose2d.kZero;
+        Pose2d pose1 = Pose2d.ZERO;
         assertEquals(0, pose1.getTranslation().getX(), EPSILON);
         assertEquals(0, pose1.getTranslation().getY(), EPSILON);
         assertEquals(0, pose1.getRotation().getDegrees(), EPSILON);
@@ -223,7 +223,7 @@ class TestSE2Math {
         assertEquals(0, pose3.getRotation().getDegrees(), EPSILON);
 
         // A pose times its inverse should be the identity
-        Pose2d identity = Pose2d.kZero;
+        Pose2d identity = Pose2d.ZERO;
         pose1 = new Pose2d(new Translation2d(3.51512152, 4.23), Rotation2d.fromDegrees(91.6));
         pose2 = GeometryUtil.transformBy(pose1, GeometryUtil.inverse(pose1));
         assertEquals(identity.getTranslation().getX(), pose2.getTranslation().getX(), EPSILON);
@@ -254,7 +254,7 @@ class TestSE2Math {
     void testTwist0() {
         // Exponentiation (integrate twist to obtain a Pose2d)
         Twist2d twist = new Twist2d(1.0, 0.0, 0.0);
-        Pose2d pose = Pose2d.kZero.plus(twist.exp());
+        Pose2d pose = Pose2d.ZERO.plus(twist.exp());
         assertEquals(1.0, pose.getTranslation().getX(), EPSILON);
         assertEquals(0.0, pose.getTranslation().getY(), EPSILON);
         assertEquals(0.0, pose.getRotation().getDegrees(), EPSILON);
@@ -264,7 +264,7 @@ class TestSE2Math {
     void testTwist1() {
         // Scaled.
         Twist2d twist = new Twist2d(1.0, 0.0, 0.0);
-        Pose2d pose = Pose2d.kZero.plus(GeometryUtil.scale(twist, 2.5).exp());
+        Pose2d pose = Pose2d.ZERO.plus(GeometryUtil.scale(twist, 2.5).exp());
         assertEquals(2.5, pose.getTranslation().getX(), EPSILON);
         assertEquals(0.0, pose.getTranslation().getY(), EPSILON);
         assertEquals(0.0, pose.getRotation().getDegrees(), EPSILON);
@@ -274,13 +274,13 @@ class TestSE2Math {
     void testTwist2() {
         // Logarithm (find the twist to apply to obtain a given Pose2d)
         Pose2d pose = new Pose2d(new Translation2d(2.0, 2.0), Rotation2d.fromRadians(Math.PI / 2));
-        Twist2d twist = pose.minus(Pose2d.kZero).log();
+        Twist2d twist = pose.minus(Pose2d.ZERO).log();
         assertEquals(Math.PI, twist.dx, EPSILON);
         assertEquals(0.0, twist.dy, EPSILON);
         assertEquals(Math.PI / 2, twist.dtheta, EPSILON);
 
         // Logarithm is the inverse of exponentiation.
-        Pose2d new_pose = Pose2d.kZero.plus(twist.exp());
+        Pose2d new_pose = Pose2d.ZERO.plus(twist.exp());
         assertEquals(new_pose.getTranslation().getX(), pose.getTranslation().getX(), EPSILON);
         assertEquals(new_pose.getTranslation().getY(), pose.getTranslation().getY(), EPSILON);
         assertEquals(new_pose.getRotation().getDegrees(), pose.getRotation().getDegrees(), EPSILON);

@@ -14,7 +14,7 @@ import org.wpilib.math.numbers.N3;
 public class AdjointSE2Test {
     @Test
     void test0() {
-        Pose2d p = Pose2d.kZero;
+        Pose2d p = Pose2d.ZERO;
         Matrix<N3, N3> ad = AdjointSE2.ad(p);
         Twist2d t = new Twist2d(1, 0, 0);
         Vector<N3> v = GeometryUtil.toVec(t);

@@ -52,13 +52,13 @@ import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.prr.SubsystemPRR;
 import org.team100.lib.subsystems.prr.commands.FollowJointProfiles;
 import org.team100.lib.subsystems.se2.PositionSubsystemSE2;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
 import org.team100.lib.util.StrUtil;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 
@@ -183,7 +183,7 @@ public class CalgamesMech extends SubsystemBase
             elevatorFrontMotor = new KrakenX60Motor(
                     elevatorfrontLog, currentLog,
                     new CanId(11),
-                    new CanBusId(0),
+                    CANPort.CAN_S0,
                     NeutralMode100.BRAKE, MotorPhase.REVERSE,
                     new CurrentLimit(100, 100),
                     new Friction(0.100, 0.100, 0.005, 0.5),
@@ -191,7 +191,7 @@ public class CalgamesMech extends SubsystemBase
             elevatorBackMotor = new KrakenX60Motor(
                     elevatorbackLog, currentLog,
                     new CanId(12),
-                    new CanBusId(0),
+                    CANPort.CAN_S0,
                     NeutralMode100.BRAKE, MotorPhase.FORWARD,
                     new CurrentLimit(100, 100),
                     new Friction(0.100, 0.100, 0.005, 0.5),
@@ -202,7 +202,7 @@ public class CalgamesMech extends SubsystemBase
             shoulderMotor = new KrakenX60Motor(
                     shoulderLog, currentLog,
                     new CanId(24),
-                    new CanBusId(0),
+                    CANPort.CAN_S0,
                     NeutralMode100.BRAKE, MotorPhase.REVERSE,
                     new CurrentLimit(100, 100),
                     new Friction(0.100, 0.100, 0.005, 0.5),
@@ -226,7 +226,7 @@ public class CalgamesMech extends SubsystemBase
             wristMotor = new KrakenX60Motor(
                     wristLog, currentLog,
                     new CanId(22),
-                    new CanBusId(0),
+                    CANPort.CAN_S0,
                     NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(40, 60),
                     new Friction(0.100, 0.100, 0.005, 0.5),

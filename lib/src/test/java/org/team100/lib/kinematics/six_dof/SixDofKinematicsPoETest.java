@@ -65,14 +65,14 @@ public class SixDofKinematicsPoETest {
     void testForward1() {
         SixDofKinematicsPoE k = new SixDofKinematicsPoE(0.25, 0.75, 0.75, 0.15);
         SixDofPose p = k.forward(new SixDofConfig(0, 0, 0, 0, 0, 0));
-        TestUtil.verify(new Pose3d(0, 0, 0, Rotation3d.kZero), p.p1());
-        TestUtil.verify(new Pose3d(0, 0, 0.25, Rotation3d.kZero), p.p2());
-        TestUtil.verify(new Pose3d(0.75, 0, 0.25, Rotation3d.kZero), p.p3());
-        TestUtil.verify(new Pose3d(1.5, 0, 0.25, Rotation3d.kZero), p.p4());
-        TestUtil.verify(new Pose3d(1.5, 0, 0.25, Rotation3d.kZero), p.p5());
-        TestUtil.verify(new Pose3d(1.5, 0, 0.25, Rotation3d.kZero), p.p6());
+        TestUtil.verify(new Pose3d(0, 0, 0, Rotation3d.ZERO), p.p1());
+        TestUtil.verify(new Pose3d(0, 0, 0.25, Rotation3d.ZERO), p.p2());
+        TestUtil.verify(new Pose3d(0.75, 0, 0.25, Rotation3d.ZERO), p.p3());
+        TestUtil.verify(new Pose3d(1.5, 0, 0.25, Rotation3d.ZERO), p.p4());
+        TestUtil.verify(new Pose3d(1.5, 0, 0.25, Rotation3d.ZERO), p.p5());
+        TestUtil.verify(new Pose3d(1.5, 0, 0.25, Rotation3d.ZERO), p.p6());
         // note the zero rotation, different than the other implementation.
-        TestUtil.verify(new Pose3d(1.65, 0, 0.25, Rotation3d.kZero), p.p7());
+        TestUtil.verify(new Pose3d(1.65, 0, 0.25, Rotation3d.ZERO), p.p7());
     }
 
     @Test
@@ -225,7 +225,7 @@ public class SixDofKinematicsPoETest {
         SixDofConfig q = new SixDofConfig(0, 0, 0, 0, 0, 0);
         // TCP is here:
         SixDofPose p = k.forward(q);
-        TestUtil.verify(new Pose3d(1.65, 0, 0.25, Rotation3d.kZero), p.p7());
+        TestUtil.verify(new Pose3d(1.65, 0, 0.25, Rotation3d.ZERO), p.p7());
         Matrix<N6, N6> J = k.J(q);
         TestUtil.verify(MatBuilder.fill(Nat.N6(), Nat.N6(),
                 0.00, 0.00, 0.00, 0.0, 0.00, 0.0, // zero because singular

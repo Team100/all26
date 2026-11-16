@@ -13,7 +13,7 @@ import org.wpilib.math.numbers.N4;
 import org.wpilib.math.numbers.N6;
 import org.wpilib.math.util.Nat;
 import org.wpilib.math.util.Num;
-import org.wpilib.math.util.Pair;
+import org.wpilib.util.Pair;
 
 /**
  * Direct port of Modern Robotics dynamics python code.

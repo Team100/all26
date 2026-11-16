@@ -124,10 +124,10 @@ public class PathFactorySE2Test implements Timeless {
     @Test
     void test() {
         WaypointSE2 p1 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 0), Rotation2d.kZero),
+                new Pose2d(new Translation2d(0, 0), Rotation2d.ZERO),
                 new DirectionSE2(1, 0, 0), 1.2);
         WaypointSE2 p2 = new WaypointSE2(
-                new Pose2d(new Translation2d(15, 10), Rotation2d.kZero),
+                new Pose2d(new Translation2d(15, 10), Rotation2d.ZERO),
                 new DirectionSE2(1, 5, 0), 1.2);
         SplineSE2 s = new SplineSE2(p1, p2);
 
@@ -162,12 +162,12 @@ public class PathFactorySE2Test implements Timeless {
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(0, -1),
-                                Rotation2d.kZero),
+                                Rotation2d.ZERO),
                         new DirectionSE2(1, 0, 0), 1),
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(1, 0),
-                                Rotation2d.kZero),
+                                Rotation2d.ZERO),
                         new DirectionSE2(0, 1, 0), 1));
         List<SplineSE2> splines = List.of(s0);
         PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.001, 0.001);

@@ -265,12 +265,12 @@ class SplineSE2Test implements Timeless {
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(0, 0),
-                                Rotation2d.kZero),
+                                Rotation2d.ZERO),
                         new DirectionSE2(0, 0, 1), scale),
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(0, 0),
-                                Rotation2d.kCCW_90deg),
+                                Rotation2d.CCW_90DEG),
                         new DirectionSE2(0, 0, 1), scale)));
     }
 
@@ -290,13 +290,13 @@ class SplineSE2Test implements Timeless {
                 new Pose2d(new Translation2d(1, 0), Rotation2d.k180deg),
                 new DirectionSE2(0, 1, 1), scale);
         WaypointSE2 p1 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 1), Rotation2d.kCW_90deg),
+                new Pose2d(new Translation2d(0, 1), Rotation2d.CW_90DEG),
                 new DirectionSE2(-1, 0, 1), scale);
         WaypointSE2 p2 = new WaypointSE2(
-                new Pose2d(new Translation2d(-1, 0), Rotation2d.kZero),
+                new Pose2d(new Translation2d(-1, 0), Rotation2d.ZERO),
                 new DirectionSE2(0, -1, 1), scale);
         WaypointSE2 p3 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, -1), Rotation2d.kCCW_90deg),
+                new Pose2d(new Translation2d(0, -1), Rotation2d.CCW_90DEG),
                 new DirectionSE2(1, 0, 1), scale);
         SplineSE2 s0 = new SplineSE2(p0, p1);
         SplineSE2 s1 = new SplineSE2(p1, p2);
@@ -316,7 +316,7 @@ class SplineSE2Test implements Timeless {
                 new Pose2d(new Translation2d(1, 0), Rotation2d.k180deg),
                 new DirectionSE2(0, 1, 1), scale);
         WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 1), Rotation2d.kCW_90deg),
+                new Pose2d(new Translation2d(0, 1), Rotation2d.CW_90DEG),
                 new DirectionSE2(-1, 0, 1), scale);
         SplineSE2 spline = new SplineSE2(w0, w1);
         PathSE2Point p0 = spline.entry(0.0).point();
@@ -360,7 +360,7 @@ class SplineSE2Test implements Timeless {
                 actualRangeError = Math.max(actualRangeError, Math.abs(1.0 - range));
 
                 // the heading should point to the origin all the time.
-                Rotation2d angleFromOrigin = p.getTranslation().unaryMinus().getAngle();
+                Rotation2d angleFromOrigin = p.getTranslation().unaryMinus().getAngle().get();
                 Rotation2d error = angleFromOrigin.minus(p.getRotation());
                 // there's about 2 degrees of error here because the spline is not quite a
                 // circle.
@@ -382,7 +382,7 @@ class SplineSE2Test implements Timeless {
     @Test
     void testLine() {
         WaypointSE2 w0 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 0), Rotation2d.kZero),
+                new Pose2d(new Translation2d(0, 0), Rotation2d.ZERO),
                 new DirectionSE2(1, 0, 0), 1);
         WaypointSE2 w1 = new WaypointSE2(
                 new Pose2d(new Translation2d(1, 0), new Rotation2d(1)),
@@ -438,19 +438,19 @@ class SplineSE2Test implements Timeless {
         // this goes straight ahead to (1,0)
         // derivatives point straight ahead
         WaypointSE2 w0 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 0), Rotation2d.kZero),
+                new Pose2d(new Translation2d(0, 0), Rotation2d.ZERO),
                 new DirectionSE2(1, 0, 0), 1);
         WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), Rotation2d.kZero),
+                new Pose2d(new Translation2d(1, 0), Rotation2d.ZERO),
                 new DirectionSE2(1, 0, 0), 1);
         SplineSE2 s0 = new SplineSE2(w0, w1);
         // this is a sharp turn to the left
         // derivatives point to the left
         WaypointSE2 w2 = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), Rotation2d.kZero),
+                new Pose2d(new Translation2d(1, 0), Rotation2d.ZERO),
                 new DirectionSE2(0, 1, 0), 1);
         WaypointSE2 w3 = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 1), Rotation2d.kZero),
+                new Pose2d(new Translation2d(1, 1), Rotation2d.ZERO),
                 new DirectionSE2(0, 1, 0), 1);
         SplineSE2 s1 = new SplineSE2(w2, w3);
         List<SplineSE2> splines = List.of(s0, s1);
@@ -482,10 +482,10 @@ class SplineSE2Test implements Timeless {
         // radius is 1 m.
         SplineSE2 s0 = new SplineSE2(
                 new WaypointSE2(
-                        new Pose2d(new Translation2d(0, -1), Rotation2d.kZero),
+                        new Pose2d(new Translation2d(0, -1), Rotation2d.ZERO),
                         new DirectionSE2(1, 0, 0), 1.2),
                 new WaypointSE2(
-                        new Pose2d(new Translation2d(1, 0), Rotation2d.kZero),
+                        new Pose2d(new Translation2d(1, 0), Rotation2d.ZERO),
                         new DirectionSE2(0, 1, 0), 1.2));
         if (DEBUG) {
             for (double s = 0; s < 1; s += 0.03) {

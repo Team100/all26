@@ -33,7 +33,6 @@ import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.trajectory.se2.TrajectorySE2Entry;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VariableR1;
-
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Rotation3d;
@@ -41,8 +40,10 @@ import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.math.geometry.Translation3d;
 import org.wpilib.math.geometry.Twist2d;
+import org.wpilib.math.kinematics.ChassisAccelerations;
 import org.wpilib.math.kinematics.ChassisVelocities;
-import org.wpilib.math.trajectory.Trajectory.State;
+import org.wpilib.math.trajectory.DrivetrainSplineSample;
+import org.wpilib.util.struct.Struct;
 
 /**
  * This is the logger factory class.
@@ -108,7 +109,7 @@ public class LoggerFactory {
         return a + "/" + b;
     }
 
-    //////////////////////////////////////////////////////
+    //////////////////////////////////////////
 
     private boolean allow(Level level) {
         Level allowed = m_level.get();
@@ -119,7 +120,7 @@ public class LoggerFactory {
         return allowed.admit(level);
     }
 
-    /////////////////////////////////////////////////////
+    /////////////////////////////////////////
     //
     // logger inner classes
     //
@@ -585,6 +586,33 @@ public class LoggerFactory {
         return new ChassisVelocitiesLogger(level, leaf);
     }
 
+    public class ChassisAccelerationsLogger {
+        private final Level m_level;
+        private final DoubleLogger m_axLogger;
+        private final DoubleLogger m_ayLogger;
+        private final DoubleLogger m_alphaLogger;
+
+        ChassisAccelerationsLogger(Level level, String leaf) {
+            m_level = level;
+            m_axLogger = doubleLogger(level, join(leaf, "ax m_s2"));
+            m_ayLogger = doubleLogger(level, join(leaf, "ay m_s2"));
+            m_alphaLogger = doubleLogger(level, join(leaf, "alpha rad_s2"));
+        }
+
+        public void log(Supplier<ChassisAccelerations> vals) {
+            if (!allow(m_level))
+                return;
+            ChassisAccelerations val = vals.get();
+            m_axLogger.log(() -> val.ax);
+            m_ayLogger.log(() -> val.ay);
+            m_alphaLogger.log(() -> val.alpha);
+        }
+    }
+
+    public ChassisAccelerationsLogger ChassisAccelerationsLogger(Level level, String leaf) {
+        return new ChassisAccelerationsLogger(level, leaf);
+    }
+
     public class GlobaDeltaSE2Logger {
         private final Level m_level;
         private final DoubleLogger m_xLogger;
@@ -959,21 +987,21 @@ public class LoggerFactory {
         private final Level m_level;
         private final Pose2dLogger m_poseLogger;
         private final DoubleLogger m_curvatureLogger;
-        private final DoubleLogger m_velocityLogger;
-        private final DoubleLogger m_accelLogger;
+        private final ChassisVelocitiesLogger m_velocityLogger;
+        private final ChassisAccelerationsLogger m_accelLogger;
 
         StateLogger(Level level, String leaf) {
             m_level = level;
             m_poseLogger = pose2dLogger(level, join(leaf, "pose"));
             m_curvatureLogger = doubleLogger(level, join(leaf, "curvature"));
-            m_velocityLogger = doubleLogger(level, join(leaf, "velocity"));
-            m_accelLogger = doubleLogger(level, join(leaf, "accel"));
+            m_velocityLogger = ChassisVelocitiesLogger(level, join(leaf, "velocity"));
+            m_accelLogger = ChassisAccelerationsLogger(level, join(leaf, "accel"));
         }
 
-        public void log(Supplier<State> vals) {
+        public void log(Supplier<DrivetrainSplineSample> vals) {
             if (!allow(m_level))
                 return;
-            State val = vals.get();
+            DrivetrainSplineSample val = vals.get();
             m_poseLogger.log(() -> val.pose);
             m_curvatureLogger.log(() -> val.curvature);
             m_velocityLogger.log(() -> val.velocity);
@@ -1192,6 +1220,48 @@ public class LoggerFactory {
 
     public LocalizerEstimateLogger localizerEstimateLogger(Level level, String leaf) {
         return new LocalizerEstimateLogger(level, leaf);
+    }
+
+    public class StructLogger<T> {
+        private final Level m_level;
+        private final PrimitiveLogger.PrimitiveStructLogger<T> m_p;
+
+        public StructLogger(Level level, String leaf, Struct<T> struct) {
+            m_level = level;
+            m_p = m_pLogger.structLogger(root(leaf), struct);
+        }
+
+        public void log(Supplier<T> vals) {
+            if (!allow(m_level))
+                return;
+            T val = vals.get();
+            m_p.log(val);
+        }
+    }
+
+    public <T> StructLogger<T> structLogger(Level level, String leaf, Struct<T> struct) {
+        return new StructLogger<>(level, leaf, struct);
+    }
+
+    public class StructArrayLogger<T> {
+        private final Level m_level;
+        private final PrimitiveLogger.PrimitiveStructArrayLogger<T> m_p;
+
+        public StructArrayLogger(Level level, String leaf, Struct<T> struct) {
+            m_level = level;
+            m_p = m_pLogger.structArrayLogger(root(leaf), struct);
+        }
+
+        public void log(Supplier<T[]> vals) {
+            if (!allow(m_level))
+                return;
+            T[] val = vals.get();
+            m_p.log(val);
+        }
+    }
+
+    public <T> StructArrayLogger<T> structArrayLogger(Level level, String leaf, Struct<T> struct) {
+        return new StructArrayLogger<>(level, leaf, struct);
     }
 
 }

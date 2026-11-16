@@ -25,6 +25,9 @@ import org.wpilib.command2.CommandScheduler;
 import org.wpilib.command2.Commands;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.smartdashboard.Field2d;
+import org.wpilib.smartdashboard.FieldObject2d;
+import org.wpilib.telemetry.Telemetry;
 
 import gtsam.Point2;
 
@@ -45,6 +48,10 @@ public class Robot extends TimedRobot100 {
     private final Autons m_autons;
     private final Binder m_binder;
     private final Command m_play;
+
+    // figuring out the field logging again
+    // Field2d f = new Field2d();
+    // FieldObject2d asdf = f.getObject("asdf");
 
     public Robot() {
         Startup.start();
@@ -93,9 +100,13 @@ public class Robot extends TimedRobot100 {
         // m_binder.m_driver.RightTriggerAxis());
         // System.out.printf(" Left Trigger %f\n", m_binder.m_driver.LeftTriggerAxis());
 
+        // f.setRobotPose(Pose2d.ZERO);
+        // Telemetry.log("Field", f);
+        // asdf.setPoses(Pose2d.ZERO, Pose2d.ZERO);
+        // Telemetry.log("asdf", asdf);
     }
 
-    //////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////
     //
     // INITIALIZERS, DO NOT CHANGE THESE
     //
@@ -139,7 +150,7 @@ public class Robot extends TimedRobot100 {
         m_binder.close();
     }
 
-    //////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////
     //
     // EXIT: CLEAN UP
     //
@@ -149,7 +160,7 @@ public class Robot extends TimedRobot100 {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    ///////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////
     //
     // LEAVE ALL THESE EMPTY
     //

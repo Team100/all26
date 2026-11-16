@@ -29,7 +29,7 @@ public class SplineSE2Util {
     public static Vector<N2> offsetRprime(SplineSE2 spline, double l, double s) {
         Pose2d pose = spline.pose(s);
         Rotation2d radial = pose.getRotation().plus(Rotation2d.k180deg);
-        Rotation2d tangential = radial.plus(Rotation2d.kCCW_Pi_2);
+        Rotation2d tangential = radial.plus(Rotation2d.CCW_PI_2);
         // dtheta/ds
         double headingRate = spline.dheading(s);
         // dx/ds = dtheta/ds * x/theta
@@ -45,7 +45,7 @@ public class SplineSE2Util {
     public static Vector<N2> offsetRprimeprime(SplineSE2 spline, double l, double s) {
         Pose2d pose = spline.pose(s);
         Rotation2d radial = pose.getRotation().plus(Rotation2d.k180deg);
-        Rotation2d tangential = radial.plus(Rotation2d.kCCW_Pi_2);
+        Rotation2d tangential = radial.plus(Rotation2d.CCW_PI_2);
 
         // centripetal a = r omega^2
         // dtheta/ds

@@ -6,7 +6,7 @@ import org.team100.lib.localization.StateEstimator;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
+import org.team100.lib.logging.LoggerFactory.StructArrayLogger;
 import org.wpilib.math.geometry.Pose2d;
 
 /**
@@ -14,11 +14,11 @@ import org.wpilib.math.geometry.Pose2d;
  * trajectory visualizer.
  */
 public class SwerveHistoryVisualization {
-    private final DoubleArrayLogger m_log_history;
+    private final StructArrayLogger<Pose2d> m_log_history;
     private final StateEstimator m_estimator;
 
     public SwerveHistoryVisualization(LoggerFactory fieldLogger, StateEstimator estimator) {
-        m_log_history = fieldLogger.doubleArrayLogger(Level.TRACE, "history");
+        m_log_history = fieldLogger.structArrayLogger(Level.TRACE, "history", Pose2d.struct);
         m_estimator = estimator;
         LogPoller.register(this::log);
     }
@@ -26,6 +26,6 @@ public class SwerveHistoryVisualization {
     private void log() {
         List<Pose2d> poses = m_estimator.all().values().stream().map(
                 x -> x.pose()).toList();
-        m_log_history.log(() -> VizUtil.fromPoses(poses));
+        m_log_history.log(() -> poses.toArray(Pose2d[]::new));
     }
 }

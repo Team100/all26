@@ -4,15 +4,15 @@ import java.util.function.DoubleSupplier;
 
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.Logging;
-
 import org.wpilib.smartdashboard.Mechanism2d;
 import org.wpilib.smartdashboard.MechanismLigament2d;
 import org.wpilib.smartdashboard.MechanismRoot2d;
-import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.telemetry.Telemetry;
 
 /** Visualization for any single rotary thing. */
 public class ArmVisualization implements Runnable {
     private final DoubleSupplier m_source;
+    private final String m_name;
     private final double m_offsetRad;
     private final Mechanism2d m_view;
     private final MechanismRoot2d m_root;
@@ -25,18 +25,19 @@ public class ArmVisualization implements Runnable {
      */
     public ArmVisualization(DoubleSupplier source, String name, double offsetRad) {
         m_source = source;
+        m_name=name;
         m_offsetRad = offsetRad;
         m_view = new Mechanism2d(100, 100);
         m_root = m_view.getRoot("root", 50, 50);
         m_arm = new MechanismLigament2d("arm", 40, 0);
         m_root.append(m_arm);
-        SmartDashboard.putData(name, m_view);
     }
 
     @Override
     public void run() {
         if (Logging.admit(Level.TRACE)) {
             m_arm.setAngle(Math.toDegrees(m_source.getAsDouble() + m_offsetRad));
+            Telemetry.log(m_name, m_view);
         }
     }
 }

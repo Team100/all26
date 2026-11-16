@@ -143,8 +143,8 @@ class TrajectorySE2PlannerTest implements Timeless {
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
-        StateSE2 start = new StateSE2(Pose2d.kZero, new VelocitySE2(0, 0, 0));
-        Pose2d end = new Pose2d(1, 0, Rotation2d.kZero);
+        StateSE2 start = new StateSE2(Pose2d.ZERO, new VelocitySE2(0, 0, 0));
+        Pose2d end = new Pose2d(1, 0, Rotation2d.ZERO);
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         TrajectorySE2 trajectory = ex.restToRest(start.pose(), end);
         assertEquals(1.565, trajectory.duration(), DELTA);
@@ -174,13 +174,13 @@ class TrajectorySE2PlannerTest implements Timeless {
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
-        StateSE2 start = new StateSE2(Pose2d.kZero, new VelocitySE2(1, 0, 0));
-        Pose2d end = new Pose2d(1, 0, Rotation2d.kZero);
+        StateSE2 start = new StateSE2(Pose2d.ZERO, new VelocitySE2(1, 0, 0));
+        Pose2d end = new Pose2d(1, 0, Rotation2d.ZERO);
 
         VelocitySE2 startVelocity = start.velocity();
 
         Translation2d full = end.getTranslation().minus(start.translation());
-        Rotation2d courseToGoal = full.getAngle();
+        Rotation2d courseToGoal = full.getAngle().get();
         Rotation2d startingAngle = startVelocity.angle().orElse(courseToGoal);
 
         // use the start velocity to adjust the first magic number.
@@ -219,12 +219,12 @@ class TrajectorySE2PlannerTest implements Timeless {
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
-        StateSE2 start = new StateSE2(Pose2d.kZero, new VelocitySE2(0, 1, 0));
-        Pose2d end = new Pose2d(1, 0, Rotation2d.kZero);
+        StateSE2 start = new StateSE2(Pose2d.ZERO, new VelocitySE2(0, 1, 0));
+        Pose2d end = new Pose2d(1, 0, Rotation2d.ZERO);
         VelocitySE2 startVelocity = start.velocity();
 
         Translation2d full = end.getTranslation().minus(start.translation());
-        Rotation2d courseToGoal = full.getAngle();
+        Rotation2d courseToGoal = full.getAngle().get();
         Rotation2d startingAngle = startVelocity.angle().orElse(courseToGoal);
 
         // use the start velocity to adjust the first magic number.
@@ -369,13 +369,13 @@ class TrajectorySE2PlannerTest implements Timeless {
                 new Pose2d(new Translation2d(1, 0), Rotation2d.k180deg),
                 new DirectionSE2(0, 1, 1), scale);
         WaypointSE2 p1 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 1), Rotation2d.kCW_90deg),
+                new Pose2d(new Translation2d(0, 1), Rotation2d.CW_90DEG),
                 new DirectionSE2(-1, 0, 1), scale);
         WaypointSE2 p2 = new WaypointSE2(
-                new Pose2d(new Translation2d(-1, 0), Rotation2d.kZero),
+                new Pose2d(new Translation2d(-1, 0), Rotation2d.ZERO),
                 new DirectionSE2(0, -1, 1), scale);
         WaypointSE2 p3 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, -1), Rotation2d.kCCW_90deg),
+                new Pose2d(new Translation2d(0, -1), Rotation2d.CCW_90DEG),
                 new DirectionSE2(1, 0, 1), scale);
 
         List<WaypointSE2> waypoints = List.of(p0, p1, p2, p3, p0);
@@ -399,7 +399,7 @@ class TrajectorySE2PlannerTest implements Timeless {
                 new Pose2d(new Translation2d(1, 0), Rotation2d.k180deg),
                 new DirectionSE2(0, 1, 1), scale);
         WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 1), Rotation2d.kCW_90deg),
+                new Pose2d(new Translation2d(0, 1), Rotation2d.CW_90DEG),
                 new DirectionSE2(-1, 0, 1), scale);
         List<WaypointSE2> waypoints = List.of(w0, w1);
 

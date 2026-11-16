@@ -42,7 +42,7 @@ public class DriverVelocityTest implements Timeless {
     void testDiamond0() {
         // zero is no-op
         DriverVelocity input = new DriverVelocity(0, 0, 0);
-        DriverVelocity actual = input.diamond(1, 1, Rotation2d.kZero);
+        DriverVelocity actual = input.diamond(1, 1, Rotation2d.ZERO);
         assertEquals(0, actual.x(), DELTA);
         assertEquals(0, actual.y(), DELTA);
         assertEquals(0, actual.theta(), DELTA);
@@ -52,7 +52,7 @@ public class DriverVelocityTest implements Timeless {
     void testDiamond1() {
         // ahead: get maxX
         DriverVelocity input = new DriverVelocity(1, 0, 0);
-        DriverVelocity actual = input.diamond(1, 0.5, Rotation2d.kZero);
+        DriverVelocity actual = input.diamond(1, 0.5, Rotation2d.ZERO);
         assertEquals(1, actual.x(), DELTA);
         assertEquals(0, actual.y(), DELTA);
     }
@@ -61,7 +61,7 @@ public class DriverVelocityTest implements Timeless {
     void testDiamond1_5() {
         // right, rotated: get maxY
         DriverVelocity input = new DriverVelocity(1, 0, 0);
-        DriverVelocity actual = input.diamond(1, 0.5, Rotation2d.kCCW_90deg);
+        DriverVelocity actual = input.diamond(1, 0.5, Rotation2d.CCW_90DEG);
         assertEquals(0.5, actual.x(), DELTA);
         assertEquals(0, actual.y(), DELTA);
     }
@@ -70,7 +70,7 @@ public class DriverVelocityTest implements Timeless {
     void testDiamond2() {
         // left: get maxY
         DriverVelocity input = new DriverVelocity(0, 1, 0);
-        DriverVelocity actual = input.diamond(1, 0.5, Rotation2d.kZero);
+        DriverVelocity actual = input.diamond(1, 0.5, Rotation2d.ZERO);
         assertEquals(0, actual.x(), DELTA);
         assertEquals(0.5, actual.y(), DELTA);
 
@@ -80,7 +80,7 @@ public class DriverVelocityTest implements Timeless {
     void testSquare() {
         // diagonal: get less
         DriverVelocity input = new DriverVelocity(1, 1, 0);
-        DriverVelocity actual = input.diamond(1, 1, Rotation2d.kZero);
+        DriverVelocity actual = input.diamond(1, 1, Rotation2d.ZERO);
         assertEquals(0.5, actual.x(), DELTA);
         assertEquals(0.5, actual.y(), DELTA);
     }
@@ -89,7 +89,7 @@ public class DriverVelocityTest implements Timeless {
     void testDiamond3() {
         // diagonal: get less; preserve angle
         DriverVelocity input = new DriverVelocity(1, 1, 0);
-        DriverVelocity actual = input.diamond(1, 0.5, Rotation2d.kZero);
+        DriverVelocity actual = input.diamond(1, 0.5, Rotation2d.ZERO);
         assertEquals(0.333, actual.x(), DELTA);
         assertEquals(0.333, actual.y(), DELTA);
     }
@@ -98,7 +98,7 @@ public class DriverVelocityTest implements Timeless {
     void testDiamond4() {
         // ahead but with angle
         DriverVelocity input = new DriverVelocity(0, 1, 0);
-        DriverVelocity actual = input.diamond(1, 0.5, Rotation2d.kCCW_90deg);
+        DriverVelocity actual = input.diamond(1, 0.5, Rotation2d.CCW_90DEG);
         assertEquals(0, actual.x(), DELTA);
         assertEquals(1, actual.y(), DELTA);
     }
@@ -107,7 +107,7 @@ public class DriverVelocityTest implements Timeless {
     void testDiamond5() {
         // leave the inside alone
         DriverVelocity input = new DriverVelocity(0.5, 0.5, 0);
-        DriverVelocity actual = input.diamond(1, 1, Rotation2d.kZero);
+        DriverVelocity actual = input.diamond(1, 1, Rotation2d.ZERO);
         assertEquals(0.5, actual.x(), DELTA);
         assertEquals(0.5, actual.y(), DELTA);
     }
@@ -116,7 +116,7 @@ public class DriverVelocityTest implements Timeless {
     void testsquashedDiamond0() {
         // zero is no-op
         DriverVelocity input = new DriverVelocity(0, 0, 0);
-        DriverVelocity actual = input.squashedDiamond(1, 1, Rotation2d.kZero);
+        DriverVelocity actual = input.squashedDiamond(1, 1, Rotation2d.ZERO);
         assertEquals(0, actual.x(), DELTA);
         assertEquals(0, actual.y(), DELTA);
         assertEquals(0, actual.theta(), DELTA);
@@ -126,7 +126,7 @@ public class DriverVelocityTest implements Timeless {
     void testsquashedDiamond1() {
         // ahead: get maxX
         DriverVelocity input = new DriverVelocity(1, 0, 0);
-        DriverVelocity actual = input.squashedDiamond(1, 0.5, Rotation2d.kZero);
+        DriverVelocity actual = input.squashedDiamond(1, 0.5, Rotation2d.ZERO);
         assertEquals(1, actual.x(), DELTA);
         assertEquals(0, actual.y(), DELTA);
     }
@@ -135,7 +135,7 @@ public class DriverVelocityTest implements Timeless {
     void testsquashedDiamond1_5() {
         // right, rotated: get maxY
         DriverVelocity input = new DriverVelocity(1, 0, 0);
-        DriverVelocity actual = input.squashedDiamond(1, 0.5, Rotation2d.kCCW_90deg);
+        DriverVelocity actual = input.squashedDiamond(1, 0.5, Rotation2d.CCW_90DEG);
         assertEquals(0.5, actual.x(), DELTA);
         assertEquals(0, actual.y(), DELTA);
     }
@@ -144,7 +144,7 @@ public class DriverVelocityTest implements Timeless {
     void testsquashedDiamond2() {
         // left: get maxY
         DriverVelocity input = new DriverVelocity(0, 1, 0);
-        DriverVelocity actual = input.squashedDiamond(1, 0.5, Rotation2d.kZero);
+        DriverVelocity actual = input.squashedDiamond(1, 0.5, Rotation2d.ZERO);
         assertEquals(0, actual.x(), DELTA);
         assertEquals(0.5, actual.y(), DELTA);
 
@@ -154,7 +154,7 @@ public class DriverVelocityTest implements Timeless {
     void testsquashedSquare() {
         //
         DriverVelocity input = new DriverVelocity(0.707, 0.707, 0);
-        DriverVelocity actual = input.squashedDiamond(1, 1, Rotation2d.kZero);
+        DriverVelocity actual = input.squashedDiamond(1, 1, Rotation2d.ZERO);
         assertEquals(0.5, actual.x(), DELTA);
         assertEquals(0.5, actual.y(), DELTA);
     }
@@ -163,7 +163,7 @@ public class DriverVelocityTest implements Timeless {
     void testsquashedDiamond3() {
         // diagonal: get less; preserve angle
         DriverVelocity input = new DriverVelocity(0.707, 0.707, 0);
-        DriverVelocity actual = input.squashedDiamond(1, 0.5, Rotation2d.kZero);
+        DriverVelocity actual = input.squashedDiamond(1, 0.5, Rotation2d.ZERO);
         assertEquals(0.333, actual.x(), DELTA);
         assertEquals(0.333, actual.y(), DELTA);
     }
@@ -172,7 +172,7 @@ public class DriverVelocityTest implements Timeless {
     void testsquashedDiamond4() {
         // ahead but with angle
         DriverVelocity input = new DriverVelocity(0, 1, 0);
-        DriverVelocity actual = input.squashedDiamond(1, 0.5, Rotation2d.kCCW_90deg);
+        DriverVelocity actual = input.squashedDiamond(1, 0.5, Rotation2d.CCW_90DEG);
         assertEquals(0, actual.x(), DELTA);
         assertEquals(1, actual.y(), DELTA);
     }
@@ -181,7 +181,7 @@ public class DriverVelocityTest implements Timeless {
     void testsquashedDiamond5() {
         // inside is also scaled.  this is half max input
         DriverVelocity input = new DriverVelocity(0.353, 0.353, 0);
-        DriverVelocity actual = input.squashedDiamond(1, 1, Rotation2d.kZero);
+        DriverVelocity actual = input.squashedDiamond(1, 1, Rotation2d.ZERO);
         assertEquals(0.25, actual.x(), DELTA);
         assertEquals(0.25, actual.y(), DELTA);
     }

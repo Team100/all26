@@ -12,11 +12,11 @@ import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.LazySimulatedMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 public class ClimberIntake extends SubsystemBase {
 
@@ -27,7 +27,7 @@ public class ClimberIntake extends SubsystemBase {
     public ClimberIntake(LoggerFactory parent,
             TotalCurrentLog currentLog,
             CanId canID,
-            CanBusId busId) {
+            CANPort busId) {
         LoggerFactory log = parent.type(this);
         count = 0;
         if (RobotBase.isReal()) {

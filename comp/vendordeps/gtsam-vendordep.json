@@ -2,7 +2,7 @@
     "fileName": "gtsam-vendordep.json",
     "name": "GTSAM Vendor Dependency",
     "version": "0.0.4",
-    "wpilibYear": "2027_alpha5",
+    "wpilibYear": "2027_alpha7",
     "uuid": "cd883302-12b7-4fb5-8831-4b4c7337d0b7",
     "mavenUrls": [
         "https://truher.github.io/repo/"

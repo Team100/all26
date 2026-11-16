@@ -15,7 +15,7 @@ public class AdjointSE3Test {
 
     @Test
     void test0() {
-        Pose3d p = Pose3d.kZero;
+        Pose3d p = Pose3d.ZERO;
         Matrix<N6, N6> ad = AdjointSE3.ad(p);
         // twist +x in body frame
         Twist3d t = new Twist3d(1, 0, 0, 0, 0, 0);

@@ -1,16 +1,14 @@
 package org.team100.lib.visualization;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
 import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
+import org.team100.lib.logging.LoggerFactory.StructArrayLogger;
 import org.team100.lib.trajectory.se2.TrajectorySE2;
-
 import org.wpilib.math.geometry.Pose2d;
 
 /**
@@ -18,17 +16,17 @@ import org.wpilib.math.geometry.Pose2d;
  */
 public class AutonVisualization {
     private static final boolean DEBUG = false;
-    private final DoubleArrayLogger m_log_poses;
-    private final DoubleArrayLogger m_log_paths;
+    private final StructArrayLogger<Pose2d> m_log_poses;
+    private final StructArrayLogger<Pose2d> m_log_paths;
 
     public AutonVisualization(LoggerFactory fieldLogger) {
-        m_log_poses = fieldLogger.doubleArrayLogger(Level.COMP, "auton_poses");
-        m_log_paths = fieldLogger.doubleArrayLogger(Level.COMP, "auton_paths");
+        m_log_poses = fieldLogger.structArrayLogger(Level.COMP, "auton_poses", Pose2d.struct);
+        m_log_paths = fieldLogger.structArrayLogger(Level.COMP, "auton_paths", Pose2d.struct);
     }
 
     public void clear() {
-        m_log_poses.log(() -> new double[0]);
-        m_log_paths.log(() -> new double[0]);
+        m_log_poses.log(() -> new Pose2d[] {});
+        m_log_paths.log(() -> new Pose2d[] {});
     }
 
     public void show(AnnotatedCommand cmd) {
@@ -67,14 +65,11 @@ public class AutonVisualization {
                     System.out.printf("AutonVisualization: sample %f %s\n", time, pose);
             }
         }
-        double[] points = ts.stream()
-                .map(VizUtil::fromTrajectorySE2)
-                .flatMapToDouble(Arrays::stream)
-                .toArray();
+        Pose2d[] points = ts.stream()
+                .map((m_trajectory) -> {return m_trajectory.getPoints().stream().map(p1 -> p1.point().point().waypoint().pose()).toArray(Pose2d[]::new);}).toArray(Pose2d[]::new);
         m_log_paths.log(() -> points);
 
-        double[] poses = ps.stream().map(VizUtil::poseToArray).flatMapToDouble(Arrays::stream).toArray();
-        m_log_poses.log(() -> poses);
+        m_log_poses.log(() -> ps.toArray(Pose2d[]::new));
     }
 
 }

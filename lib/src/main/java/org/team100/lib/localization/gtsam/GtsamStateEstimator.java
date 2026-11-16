@@ -132,7 +132,7 @@ public class GtsamStateEstimator implements StateEstimator {
                 LAG_US, (long) (initialTimestamp * 1e6), initialMeasurement);
 
         reset(0, new NoisyStateSE2(
-                new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                 IsotropicNoiseSE2.high()));
     }
 

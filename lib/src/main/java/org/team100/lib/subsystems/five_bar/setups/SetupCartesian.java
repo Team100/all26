@@ -34,9 +34,9 @@ public class SetupCartesian implements Runnable {
 
         // These bindings are remembered by the trigger event loop, so we don't need to
         // retain them.
-        whileTrue(controller::getSouthFaceButton,
+        whileTrue(controller::getFaceDownButton,
                 m_fiveBar.home());
-        onTrue(controller::getEastFaceButton,
+        onTrue(controller::getFaceRightButton,
                 m_fiveBar.zero());
 
         // Make a little square. Also illustrates "print" commands for
@@ -45,7 +45,7 @@ public class SetupCartesian implements Runnable {
         // a little square.
         double XX = 0.05;
         double YY = 0.05;
-        whileTrue(controller::getWestFaceButton,
+        whileTrue(controller::getFaceLeftButton,
                 Commands.sequence(
                         print("move to origin"),
                         m_fiveBar.move(new Translation2d(0, 0)),

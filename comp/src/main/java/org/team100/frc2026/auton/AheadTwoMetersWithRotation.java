@@ -54,7 +54,7 @@ public class AheadTwoMetersWithRotation implements AnnotatedCommand {
         // cartesian is robot-relative +x, also rotate CCW.
         DirectionSE2 d1 = DirectionSE2.fromDirections(p1.getRotation(), 1);
         WaypointSE2 w1 = new WaypointSE2(p1, d1, 1);
-        Transform2d t1 = new Transform2d(2, 0, Rotation2d.kPi);
+        Transform2d t1 = new Transform2d(2, 0, Rotation2d.PI);
         Pose2d p2 = p1.plus(t1);
         WaypointSE2 w2 = new WaypointSE2(p2, d1, 1);
         List<WaypointSE2> waypoints = List.of(w1, w2);

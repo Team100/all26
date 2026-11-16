@@ -14,7 +14,7 @@ public class RRRKinematicsNumericTest {
         RRRKinematicsNumeric k = new RRRKinematicsNumeric(1, 1, 1);
         Vector<N3> q = VecBuilder.fill(0, 0, 0);
         Pose3d x = k.forward(q);
-        TestUtil.verify(new Pose3d(3, 0, 0, Rotation3d.kZero), x);
+        TestUtil.verify(new Pose3d(3, 0, 0, Rotation3d.ZERO), x);
     }
 
     @Test

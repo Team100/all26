@@ -61,13 +61,13 @@ public class RRRKinematicsPoE {
         this.l3 = l3;
 
         // shoulder
-        M1 = new Pose2d(0, 0, Rotation2d.kZero);
+        M1 = new Pose2d(0, 0, Rotation2d.ZERO);
         // elbow
-        M2 = new Pose2d(l1, 0, Rotation2d.kZero);
+        M2 = new Pose2d(l1, 0, Rotation2d.ZERO);
         // wrist
-        M3 = new Pose2d(l1 + l2, 0, Rotation2d.kZero);
+        M3 = new Pose2d(l1 + l2, 0, Rotation2d.ZERO);
         // tool point
-        M4 = new Pose2d(l1 + l2 + l3, 0, Rotation2d.kZero);
+        M4 = new Pose2d(l1 + l2 + l3, 0, Rotation2d.ZERO);
 
         // joint 1 (base) around z
         S1 = Poe.S(new Translation2d(0, 0));

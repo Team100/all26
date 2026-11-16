@@ -492,11 +492,11 @@ public class NewtonsMethodTest {
         // the resulting end-angle is 5pi/6
         Pose2d XXd = new Pose2d(0, 1, new Rotation2d(2.618));
 
-        Function<Vector<N2>, Pose2d> fwd = q -> Pose2d.kZero
+        Function<Vector<N2>, Pose2d> fwd = q -> Pose2d.ZERO
                 .transformBy(new Transform2d(0, 0, new Rotation2d(q.get(0))))
-                .transformBy(new Transform2d(l0, 0, Rotation2d.kZero))
+                .transformBy(new Transform2d(l0, 0, Rotation2d.ZERO))
                 .transformBy(new Transform2d(0, 0, new Rotation2d(q.get(1))))
-                .transformBy(new Transform2d(l1, 0, Rotation2d.kZero));
+                .transformBy(new Transform2d(l1, 0, Rotation2d.ZERO));
         Function<Vector<N2>, Vector<N3>> err = q -> GeometryUtil.toVec(fwd.apply(q).minus(XXd).log());
 
         // initial joint angles

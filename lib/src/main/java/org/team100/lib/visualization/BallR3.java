@@ -8,10 +8,11 @@ import org.team100.lib.geometry.r3.GlobalVelocityR3;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
+import org.team100.lib.logging.LoggerFactory.StructLogger;
 import org.team100.lib.state.StateSE2;
 import org.team100.lib.targeting.Drag;
+import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation3d;
 import org.wpilib.math.linalg.Matrix;
@@ -26,7 +27,7 @@ import org.wpilib.math.system.NumericalIntegration;
 public class BallR3 implements Ball {
     private static final double DT = TimedRobot100.LOOP_PERIOD_S;
     private final DoubleLogger m_log_ball_altitude;
-    private final DoubleArrayLogger m_log_field_ball;
+    private final StructLogger<Pose2d> m_log_field_ball;
     private final Drag m_drag;
     private final Supplier<StateSE2> m_robot;
     private final Supplier<Rotation2d> m_azimuth;
@@ -62,7 +63,7 @@ public class BallR3 implements Ball {
             DoubleSupplier omega) {
         LoggerFactory log = parent.type(this);
         m_log_ball_altitude = log.doubleLogger(Level.COMP, "altitude");
-        m_log_field_ball = field.doubleArrayLogger(Level.COMP, "ball");
+        m_log_field_ball = field.structLogger(Level.COMP, "ball", Pose2d.struct);
         m_drag = drag;
         m_robot = robot;
         m_azimuth = azimuth;
@@ -109,9 +110,9 @@ public class BallR3 implements Ball {
         m_log_field_ball.log(this::poseArray);
     }
 
-    private double[] poseArray() {
+    private Pose2d poseArray() {
         Translation3d t = location();
-        return new double[] { t.getX(), t.getY(), 0 };
+        return new Pose2d(t.getX(), t.getY(), Rotation2d.ZERO);
     }
 
     private double altitude() {

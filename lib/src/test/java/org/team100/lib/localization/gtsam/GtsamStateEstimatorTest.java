@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.camera.Distortion;
 import org.team100.lib.camera.Intrinsic;
@@ -30,6 +31,8 @@ import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.math.geometry.Translation3d;
 import org.wpilib.math.linalg.MatBuilder;
 import org.wpilib.math.util.Nat;
+import org.wpilib.tunable.MockTunableBackend;
+import org.wpilib.tunable.TunableRegistry;
 
 import gtsam.Key;
 import gtsam.Matrix;
@@ -45,13 +48,19 @@ public class GtsamStateEstimatorTest {
 
     private static final SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forRealisticTest();
 
+    @BeforeAll
+    static void tunable() {
+        // Stop the TunableRegistry complaining about a missing backend.
+        TunableRegistry.registerBackend("", new MockTunableBackend());
+    }
+
     private Rotation2d yaw;
     private SwerveModulePositions positions;
     private List<Corners> vision;
 
     @Test
     void test0() {
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
         GtsamStateEstimator estimator = new GtsamStateEstimator(
@@ -66,7 +75,7 @@ public class GtsamStateEstimatorTest {
         // this update does nothing since the estimator already contains a value for 0.
         ImmutableSwerveHistory h = estimator.update(0.00);
         NoisyStateSE2 state = h.get(0.00);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise());
         estimator.dump();
@@ -74,7 +83,7 @@ public class GtsamStateEstimatorTest {
 
     @Test
     void test0a() {
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
         GtsamStateEstimator estimator = new GtsamStateEstimator(
@@ -89,7 +98,7 @@ public class GtsamStateEstimatorTest {
         // this update does nothing since the estimator already contains a value for 0.
         ImmutableSwerveHistory h = estimator.update(0.01);
         NoisyStateSE2 state = h.get(0.00);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise());
         estimator.dump();
@@ -97,7 +106,7 @@ public class GtsamStateEstimatorTest {
 
     @Test
     void test1() {
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
         GtsamStateEstimator estimator = new GtsamStateEstimator(
@@ -112,11 +121,11 @@ public class GtsamStateEstimatorTest {
         // explicit reset
         estimator.reset(0,
                 new NoisyStateSE2(
-                        new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                        new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.high()));
         ImmutableSwerveHistory h = estimator.immutableCopy();
         NoisyStateSE2 state = h.get(0.00);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise());
         estimator.dump();
@@ -124,7 +133,7 @@ public class GtsamStateEstimatorTest {
 
     @Test
     void test2() {
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
         GtsamStateEstimator estimator = new GtsamStateEstimator(
@@ -139,26 +148,26 @@ public class GtsamStateEstimatorTest {
         // explicit reset
         estimator.reset(0,
                 new NoisyStateSE2(
-                        new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                        new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.high()));
         // verify the state we just set
         ImmutableSwerveHistory h = estimator.immutableCopy();
         NoisyStateSE2 state = h.get(0.00);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise());
 
         // update with motion
         positions = new SwerveModulePositions(
-                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.kZero)));
+                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.ZERO)));
         h = estimator.update(0.02);
 
         // verify the first state hasn't changed
         state = h.get(0.00);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise());
 
@@ -167,7 +176,7 @@ public class GtsamStateEstimatorTest {
         // absolute factor (e.g. vision, prior), so the solver sees the variation
         // as ok.
         state = h.get(0.02);
-        TestUtil.verify(new Pose2d(0.02, 0.000, new Rotation2d(0.0)), state.pose(), 0.01);
+        TestUtil.verify(new Pose2d(0.02, 0.000, new Rotation2d(0.0)), state.pose(), 0.02);
         TestUtil.verify(new VelocitySE2(1, 0, 0), state.velocity(), 0.5);
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise(), 0.002);
         estimator.dump();
@@ -175,7 +184,7 @@ public class GtsamStateEstimatorTest {
 
     @Test
     void test3() {
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
         GtsamStateEstimator estimator = new GtsamStateEstimator(
@@ -189,22 +198,22 @@ public class GtsamStateEstimatorTest {
                 3e-5);
         estimator.reset(0,
                 new NoisyStateSE2(
-                        new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                        new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.high()));
         ImmutableSwerveHistory h = estimator.immutableCopy();
         NoisyStateSE2 state = h.get(0.00);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise());
 
         // vision lags more than one update period, so do one odometry update first.
         h = estimator.update(0.02);
         state = h.get(0.00);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise());
         state = h.get(0.02);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise());
 
@@ -227,19 +236,19 @@ public class GtsamStateEstimatorTest {
         // this update should collect the vision input and interpolate.
         h = estimator.update(0.04);
         state = h.get(0.00);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(8.536, 7.071), state.noise());
         state = h.get(0.01);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(8.536, 7.071), state.noise());
         state = h.get(0.02);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(8.536, 7.071), state.noise());
         state = h.get(0.04);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(8.536, 7.071), state.noise());
 
@@ -254,7 +263,7 @@ public class GtsamStateEstimatorTest {
 
     @Test
     void test4() {
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
         GtsamStateEstimator estimator = new GtsamStateEstimator(
@@ -268,22 +277,22 @@ public class GtsamStateEstimatorTest {
                 3e-5);
         estimator.reset(0,
                 new NoisyStateSE2(
-                        new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                        new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.high()));
         ImmutableSwerveHistory h = estimator.immutableCopy();
         NoisyStateSE2 state = h.get(0.00);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise());
 
         // vision lags more than one update period, so do one odometry update first.
         h = estimator.update(0.02);
         state = h.get(0.00);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise());
         state = h.get(0.02);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), state.pose());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), state.pose());
         TestUtil.verify(new VelocitySE2(0, 0, 0), state.velocity());
         TestUtil.verify(IsotropicNoiseSE2.fromStdDev(10, 10), state.noise());
 

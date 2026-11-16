@@ -17,8 +17,8 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.Motor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
+import org.wpilib.hardware.bus.CANPort;
 import org.wpilib.units.measure.Angle;
 import org.wpilib.units.measure.AngularAcceleration;
 import org.wpilib.units.measure.AngularVelocity;
@@ -112,7 +112,7 @@ public abstract class Talon6Motor implements Motor {
             LoggerFactory parent,
             TotalCurrentLog currentLog,
             CanId canId,
-            CanBusId busId,
+            CANPort canPort,
             NeutralMode100 neutral,
             MotorPhase motorPhase,
             CurrentLimit limit,
@@ -141,7 +141,7 @@ public abstract class Talon6Motor implements Motor {
         m_positionVoltage.UpdateFreqHz = 0;
 
         m_log = parent.type(this);
-        m_motor = new TalonFX(canId.id, CANBus.systemcore(busId.id));
+        m_motor = new TalonFX(canId.id, new CANBus(canPort));
         m_friction = friction;
 
         m_configurator = new PhoenixConfigurator(

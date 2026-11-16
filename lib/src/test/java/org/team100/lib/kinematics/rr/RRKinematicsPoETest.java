@@ -37,8 +37,8 @@ public class RRKinematicsPoETest {
         RRPose p = k.forward(new RRConfig(0, 0));
         TestUtil.verify(new RRPose(
                 new Pose2d(),
-                new Pose2d(1, 0, Rotation2d.kZero),
-                new Pose2d(2, 0, Rotation2d.kZero)), p);
+                new Pose2d(1, 0, Rotation2d.ZERO),
+                new Pose2d(2, 0, Rotation2d.ZERO)), p);
     }
 
     @Test
@@ -48,8 +48,8 @@ public class RRKinematicsPoETest {
         RRPose p = k.forward(new RRConfig(0, Math.PI / 2));
         TestUtil.verify(new RRPose(
                 new Pose2d(),
-                new Pose2d(1, 0, Rotation2d.kZero),
-                new Pose2d(1, 1, Rotation2d.kCCW_Pi_2)), p);
+                new Pose2d(1, 0, Rotation2d.ZERO),
+                new Pose2d(1, 1, Rotation2d.CCW_PI_2)), p);
     }
 
     @Test

@@ -21,7 +21,7 @@ public class MecanumDynamicsTest {
                 new Translation2d(-0.25, -0.25));
         AccelerationSE2 a = new AccelerationSE2(1, 0, 0);
         ChassisAcceleration accel = ChassisAcceleration.fromFieldRelative(
-                a, Rotation2d.kZero);
+                a, Rotation2d.ZERO);
         MecanumEffort e = d.effort(accel);
         assertEquals(0.5, e.fl(), 0.001);
         assertEquals(0.5, e.fr(), 0.001);
@@ -41,7 +41,7 @@ public class MecanumDynamicsTest {
         AccelerationSE2 a = new AccelerationSE2(1, 0, 0);
         // this rotation should turn the +x accel into +y at the wheels
         ChassisAcceleration accel = ChassisAcceleration.fromFieldRelative(
-                a, Rotation2d.kCW_Pi_2);
+                a, Rotation2d.CW_PI_2);
         MecanumEffort e = d.effort(accel);
         assertEquals(-0.5, e.fl(), 0.001);
         assertEquals(0.5, e.fr(), 0.001);
@@ -60,7 +60,7 @@ public class MecanumDynamicsTest {
                 new Translation2d(-0.25, -0.25));
         AccelerationSE2 a = new AccelerationSE2(0, 1, 0);
         ChassisAcceleration accel = ChassisAcceleration.fromFieldRelative(
-                a, Rotation2d.kZero);
+                a, Rotation2d.ZERO);
         MecanumEffort e = d.effort(accel);
         assertEquals(-0.5, e.fl(), 0.001);
         assertEquals(0.5, e.fr(), 0.001);
@@ -79,7 +79,7 @@ public class MecanumDynamicsTest {
                 new Translation2d(-0.25, -0.25));
         AccelerationSE2 a = new AccelerationSE2(0, 0, 1);
         ChassisAcceleration accel = ChassisAcceleration.fromFieldRelative(
-                a, Rotation2d.kZero);
+                a, Rotation2d.ZERO);
         MecanumEffort e = d.effort(accel);
         assertEquals(-1, e.fl(), 0.001);
         assertEquals(1, e.fr(), 0.001);
@@ -98,7 +98,7 @@ public class MecanumDynamicsTest {
                 new Translation2d(-0.25, -0.25));
         AccelerationSE2 a = new AccelerationSE2(1, 1, 0);
         ChassisAcceleration accel = ChassisAcceleration.fromFieldRelative(
-                a, Rotation2d.kZero);
+                a, Rotation2d.ZERO);
         MecanumEffort e = d.effort(accel);
         assertEquals(0, e.fl(), 0.001);
         assertEquals(1, e.fr(), 0.001);

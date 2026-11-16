@@ -4,11 +4,10 @@ import java.util.function.DoubleSupplier;
 
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.Logging;
-
 import org.wpilib.smartdashboard.Mechanism2d;
 import org.wpilib.smartdashboard.MechanismLigament2d;
 import org.wpilib.smartdashboard.MechanismRoot2d;
-import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.telemetry.Telemetry;
 
 /**
  * Visualization for anything that moves, if the position isn't important, e.g.
@@ -17,6 +16,7 @@ import org.wpilib.smartdashboard.SmartDashboard;
  */
 public class SpinnyVisualization implements Runnable {
     private final DoubleSupplier m_source;
+    private final String m_name;
     private final double m_scale;
     private final Mechanism2d m_view;
     private final MechanismRoot2d m_root;
@@ -30,12 +30,12 @@ public class SpinnyVisualization implements Runnable {
      */
     public SpinnyVisualization(DoubleSupplier source, String name, double scale) {
         m_source = source;
+        m_name = name;
         m_scale = scale;
         m_view = new Mechanism2d(100, 100);
         m_root = m_view.getRoot("root", 50, 50);
         m_arm = new MechanismLigament2d("arm", 40, 0);
         m_root.append(m_arm);
-        SmartDashboard.putData(name, m_view);
     }
 
     @Override
@@ -43,6 +43,7 @@ public class SpinnyVisualization implements Runnable {
         angle += m_scale * m_source.getAsDouble();
         if (Logging.admit(Level.TRACE)) {
             m_arm.setAngle(angle);
+            Telemetry.log(m_name, m_view);
         }
     }
 

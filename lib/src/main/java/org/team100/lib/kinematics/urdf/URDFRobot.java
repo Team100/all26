@@ -194,7 +194,7 @@ public class URDFRobot<Q extends Num> {
         URDFJoint parent = parentJoint(jointName);
         if (parent == null) {
             // this is the root
-            Pose3d basePose = Pose3d.kZero.transformBy(t);
+            Pose3d basePose = Pose3d.ZERO.transformBy(t);
             poses.put(jointName, basePose);
             return basePose;
         }

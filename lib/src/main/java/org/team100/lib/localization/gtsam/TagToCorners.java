@@ -20,10 +20,10 @@ import org.wpilib.math.geometry.Translation2d;
 public class TagToCorners {
     private static final double TAG_SIZE_M = 0.1651;
     private static final double H = TAG_SIZE_M / 2;
-    private static final Transform3d LL = new Transform3d(0, H, -H, Rotation3d.kZero);
-    private static final Transform3d LR = new Transform3d(0, -H, -H, Rotation3d.kZero);
-    private static final Transform3d UR = new Transform3d(0, -H, H, Rotation3d.kZero);
-    private static final Transform3d UL = new Transform3d(0, H, H, Rotation3d.kZero);
+    private static final Transform3d LL = new Transform3d(0, H, -H, Rotation3d.ZERO);
+    private static final Transform3d LR = new Transform3d(0, -H, -H, Rotation3d.ZERO);
+    private static final Transform3d UR = new Transform3d(0, -H, H, Rotation3d.ZERO);
+    private static final Transform3d UL = new Transform3d(0, H, H, Rotation3d.ZERO);
 
     private final AprilTagFieldLayoutWithCorrectOrientation m_layout;
     private final Supplier<Optional<Alliance>> m_alliance;

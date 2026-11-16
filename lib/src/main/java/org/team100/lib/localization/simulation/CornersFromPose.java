@@ -32,10 +32,10 @@ public class CornersFromPose {
             throw new RuntimeException(e);
         }
     }
-    private static final Transform3d corner0 = new Transform3d(-h, h, 0, Rotation3d.kZero);
-    private static final Transform3d corner1 = new Transform3d(h, h, 0, Rotation3d.kZero);
-    private static final Transform3d corner2 = new Transform3d(h, -h, 0, Rotation3d.kZero);
-    private static final Transform3d corner3 = new Transform3d(-h, -h, 0, Rotation3d.kZero);
+    private static final Transform3d corner0 = new Transform3d(-h, h, 0, Rotation3d.ZERO);
+    private static final Transform3d corner1 = new Transform3d(h, h, 0, Rotation3d.ZERO);
+    private static final Transform3d corner2 = new Transform3d(h, -h, 0, Rotation3d.ZERO);
+    private static final Transform3d corner3 = new Transform3d(-h, -h, 0, Rotation3d.ZERO);
 
     // private final Random m_rand = new Random();
     private final DoubleSupplier m_noise;

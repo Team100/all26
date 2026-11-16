@@ -60,9 +60,9 @@ public class MoveWithTrajectoryR2 extends MoveAndHold {
 
     @Override
     public void initialize() {
-        Pose2d start = new Pose2d(m_arm.translation(), Rotation2d.kZero);
+        Pose2d start = new Pose2d(m_arm.translation(), Rotation2d.ZERO);
         Translation2d currTranslation = start.getTranslation();
-        Rotation2d courseToGoal = m_goal.getTranslation().minus(currTranslation).getAngle();
+        Rotation2d courseToGoal = m_goal.getTranslation().minus(currTranslation).getAngle().get();
 
         List<WaypointSE2> waypoints = new ArrayList<>();
         waypoints.add(new WaypointSE2(start, DirectionSE2.irrotational(courseToGoal), 1));

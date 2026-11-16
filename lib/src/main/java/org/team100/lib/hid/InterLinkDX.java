@@ -11,6 +11,7 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
+import org.wpilib.driverstation.DriverStation;
 import org.wpilib.driverstation.GenericHID;
 import org.wpilib.math.filter.LinearFilter;
 
@@ -94,7 +95,7 @@ public class InterLinkDX {
 
     public InterLinkDX(LoggerFactory parent, int port) {
         LoggerFactory log = parent.type(this);
-        m_hid = new GenericHID(port);
+        m_hid = DriverStation.getGenericHID(port);
         // Match the control sampling rate.
         m_filterRightX = LinearFilter.movingAverage(BOXCAR);
         m_filterRightY = LinearFilter.movingAverage(BOXCAR);
@@ -172,7 +173,7 @@ public class InterLinkDX {
         return button(15);
     }
 
-    ///////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////
 
     /** Get raw axis value. */
     private double axis(int axis) {

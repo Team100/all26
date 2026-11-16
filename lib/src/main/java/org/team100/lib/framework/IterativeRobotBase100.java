@@ -7,7 +7,7 @@ import org.wpilib.hardware.hal.DriverStationJNI;
 import org.wpilib.hardware.hal.HAL;
 import org.wpilib.hardware.hal.RobotMode;
 import org.wpilib.networktables.NetworkTableInstance;
-import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.tunable.TunableRegistry;
 
 /**
  * Copy of {@link edu.wpi.first.wpilibj.IterativeRobotBase} but with the
@@ -307,7 +307,8 @@ public abstract class IterativeRobotBase100 extends RobotBase {
         robotPeriodic();
         // m_watchdog.addEpoch("robotPeriodic()");
 
-        SmartDashboard.updateValues();
+        // SmartDashboard.updateValues();
+        TunableRegistry.update();
         // m_watchdog.addEpoch("SmartDashboard.updateValues()");
 
         if (isSimulation()) {

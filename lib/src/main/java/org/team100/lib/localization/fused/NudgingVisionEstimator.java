@@ -104,7 +104,7 @@ public class NudgingVisionEstimator {
 
         Translation2d newTranslation;
         if (deltaNorm > 1e-6) {
-            Rotation2d deltaTranslationDirection = deltaTranslation.getAngle();
+            Rotation2d deltaTranslationDirection = deltaTranslation.getAngle().get();
             Translation2d scaledTranslation = new Translation2d(
                     cartesian.mean(), deltaTranslationDirection);
             newTranslation = samplePose.getTranslation().plus(scaledTranslation);

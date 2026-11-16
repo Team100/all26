@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.DoubleFunction;
-import java.util.stream.DoubleStream;
 
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.SideEffect;
@@ -13,15 +12,17 @@ import org.team100.lib.geometry.r2.CentroidR2;
 import org.team100.lib.geometry.r2.NearR2;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.IntLogger;
+import org.team100.lib.logging.LoggerFactory.StructArrayLogger;
+import org.team100.lib.logging.LoggerFactory.StructLogger;
 import org.team100.lib.network.CameraReader;
 import org.team100.lib.state.StateSE2;
 import org.team100.lib.targeting.network.Target;
 import org.team100.lib.util.CoalescingCollection;
 import org.team100.lib.util.TrailingHistory;
 import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.util.struct.StructBuffer;
 
@@ -50,9 +51,9 @@ public class Targets {
      */
     private final double m_maxSightAgeS;
 
-    public final DoubleArrayLogger m_log_closestTarget;
-    public final DoubleArrayLogger m_log_allTargets;
-    public final DoubleArrayLogger m_log_coalescedTargets;
+    public final StructLogger<Pose2d> m_log_closestTarget;
+    public final StructArrayLogger<Pose2d> m_log_allTargets;
+    public final StructArrayLogger<Pose2d> m_log_coalescedTargets;
 
     private final TargetTranslator m_translator;
     /** state = f(takt seconds) from history. */
@@ -80,9 +81,9 @@ public class Targets {
         m_log_poseTimestamp = log.doubleLogger(Level.TRACE, "pose timestamp");
         m_maxSightAgeS = maxSightAge;
         m_log_historySize = log.intLogger(Level.TRACE, "history size");
-        m_log_closestTarget = fieldLogger.doubleArrayLogger(Level.TRACE, "closest target");
-        m_log_allTargets = fieldLogger.doubleArrayLogger(Level.TRACE, "all targets");
-        m_log_coalescedTargets = fieldLogger.doubleArrayLogger(Level.TRACE, "coalesced targets");
+        m_log_closestTarget = fieldLogger.structLogger(Level.TRACE, "closest target", Pose2d.struct);
+        m_log_allTargets = fieldLogger.structArrayLogger(Level.TRACE, "all targets", Pose2d.struct);
+        m_log_coalescedTargets = fieldLogger.structArrayLogger(Level.TRACE, "coalesced targets", Pose2d.struct);
 
         m_translator = new TargetTranslator(history);
         m_history = history;
@@ -136,19 +137,20 @@ public class Targets {
         m_closestTarget = ObjectPicker.closestObject(m_targets.getAll(), robotPose);
 
         // Show the closest target on the field2d widget.
-        m_log_closestTarget.log(
-                () -> m_closestTarget.stream().flatMapToDouble(
-                        x1 -> DoubleStream.of(x1.getX(), x1.getY(), 0.0)).toArray());
+        if (m_closestTarget.isPresent()) {
+            m_log_closestTarget.log(
+                    () -> new Pose2d(m_closestTarget.get(), Rotation2d.ZERO));
+        }
 
         // Show coalesced targets on the field2d widget.
         m_log_coalescedTargets.log(
-                () -> m_targets.getAll().stream().flatMapToDouble(
-                        x2 -> DoubleStream.of(x2.getX(), x2.getY(), 0.0)).toArray());
+                () -> m_targets.getAll().stream().map(
+                        x2 -> new Pose2d(x2, Rotation2d.ZERO)).toArray(Pose2d[]::new));
 
         // Show *all* the targets.
         m_log_allTargets.log(
-                () -> m_allTargets.getAll().stream().flatMapToDouble(
-                        x -> DoubleStream.of(x.getX(), x.getY(), 0.0)).toArray());
+                () -> m_allTargets.getAll().stream().map(
+                        x -> new Pose2d(x, Rotation2d.ZERO)).toArray(Pose2d[]::new));
 
         m_log_historySize.log(() -> m_targets.size());
     }

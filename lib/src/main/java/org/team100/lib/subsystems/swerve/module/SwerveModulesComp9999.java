@@ -7,9 +7,9 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.subsystems.swerve.module.WCPSwerveModule100.DriveRatio;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
+import org.wpilib.hardware.bus.CANPort;
 
 public class SwerveModulesComp9999 extends SwerveModuleCollection {
     public SwerveModulesComp9999(
@@ -21,7 +21,7 @@ public class SwerveModulesComp9999 extends SwerveModuleCollection {
                 WCPSwerveModule100.getKrakenDriveKrakenSteer(
                         log.name("Front Left"), currentLog, driveLimit, steerLimit,
                         new CanId(3), // drive
-                        new CanBusId(0),
+                        CANPort.CAN_S0,
                         DriveRatio.MEDIUM,
                         new CanId(6), // steer
                         new RoboRioChannel(8),
@@ -30,7 +30,7 @@ public class SwerveModulesComp9999 extends SwerveModuleCollection {
                 WCPSwerveModule100.getKrakenDriveKrakenSteer(
                         log.name("Front Right"), currentLog, driveLimit, steerLimit,
                         new CanId(8), // drive
-                        new CanBusId(0),
+                        CANPort.CAN_S0,
                         DriveRatio.MEDIUM,
                         new CanId(5), // steer
                         new RoboRioChannel(6),
@@ -39,7 +39,7 @@ public class SwerveModulesComp9999 extends SwerveModuleCollection {
                 WCPSwerveModule100.getKrakenDriveKrakenSteer(
                         log.name("Rear Left"), currentLog, driveLimit, steerLimit,
                         new CanId(2), // drive
-                        new CanBusId(0),
+                        CANPort.CAN_S0,
                         DriveRatio.MEDIUM,
                         new CanId(7), // steer
                         new RoboRioChannel(7),
@@ -48,7 +48,7 @@ public class SwerveModulesComp9999 extends SwerveModuleCollection {
                 WCPSwerveModule100.getKrakenDriveKrakenSteer(
                         log.name("Rear Right"), currentLog, driveLimit, steerLimit,
                         new CanId(4), // drive
-                        new CanBusId(0),
+                        CANPort.CAN_S0,
                         DriveRatio.MEDIUM,
                         new CanId(8), // steer
                         new RoboRioChannel(0),

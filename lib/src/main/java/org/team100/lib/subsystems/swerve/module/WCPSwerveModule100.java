@@ -19,9 +19,9 @@ import org.team100.lib.sensor.position.absolute.ReduxPositionSensor;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.wpi.AS5048RotaryPositionSensor;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
+import org.wpilib.hardware.bus.CANPort;
 
 public class WCPSwerveModule100 extends SwerveModule100 {
     /**
@@ -63,7 +63,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             CurrentLimit driveLimit,
             CurrentLimit steerLimit,
             CanId driveMotorCanId,
-            CanBusId busId,
+            CANPort busId,
             DriveRatio ratio,
             CanId turningMotorCanId,
             RoboRioChannel turningEncoderChannel,
@@ -103,11 +103,11 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             CurrentLimit driveLimit,
             CurrentLimit steerLimit,
             CanId driveMotorCanId,
-            CanBusId busId,
+            CANPort busId,
             DriveRatio ratio,
             CanId turningMotorCanId,
             CanId turningEncoderCanId,
-            CanBusId encoderBusId,
+            CANPort encoderBusId,
             double turningOffset,
             EncoderDrive encoderDrive,
             NeutralMode100 neutral,
@@ -149,7 +149,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             CurrentLimit driveLimit,
             CurrentLimit steerLimit,
             CanId driveMotorCanId,
-            CanBusId busId,
+            CANPort busId,
             DriveRatio ratio,
             CanId turningMotorCanId,
             RoboRioChannel turningEncoderChannel,
@@ -188,7 +188,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             CurrentLimit driveLimit,
             CurrentLimit steerLimit,
             CanId driveMotorCanId,
-            CanBusId busId,
+            CANPort busId,
             DriveRatio ratio,
             CanId turningMotorCanId,
             RoboRioChannel turningEncoderChannel,
@@ -224,7 +224,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             TotalCurrentLog currentLog,
             CurrentLimit limit,
             CanId driveMotorCanId,
-            CanBusId busId,
+            CANPort busId,
             DriveRatio ratio) {
         // note (10/2/24) 0.4 produces oscillation, on carpet.
         Friction friction = new Friction(0.26, 0.26, 0.006, 0.5);
@@ -255,7 +255,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             TotalCurrentLog currentLog,
             CurrentLimit limit,
             CanId driveMotorCanId,
-            CanBusId busId,
+            CANPort busId,
             DriveRatio ratio) {
         Friction friction = new Friction(0.260, 0.260, 0.002, 0.5);
         PIDConstants pid = PIDConstants.makeVelocityPID(0.05);
@@ -280,7 +280,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             TotalCurrentLog currentLog,
             CurrentLimit limit,
             CanId turningMotorCanId,
-            CanBusId busId,
+            CANPort busId,
             RoboRioChannel turningEncoderChannel,
             double turningOffset,
             double gearRatio,
@@ -327,7 +327,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             TotalCurrentLog currentLog,
             CurrentLimit limit,
             CanId turningMotorCanId,
-            CanBusId busId,
+            CANPort busId,
             RotaryPositionSensor turningSensor,
             double gearRatio,
             NeutralMode100 neutral,

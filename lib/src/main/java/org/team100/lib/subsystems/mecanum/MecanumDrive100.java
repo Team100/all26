@@ -9,7 +9,7 @@ import org.team100.lib.kinematics.mecanum.MecanumKinematics100.Slip;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
+import org.team100.lib.logging.LoggerFactory.StructLogger;
 import org.team100.lib.logging.LoggerFactory.VelocityControlSE2Logger;
 import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.sensor.gyro.Gyro;
@@ -17,7 +17,8 @@ import org.team100.lib.state.StateSE2;
 import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
-
+import org.wpilib.command2.Command;
+import org.wpilib.command2.SubsystemBase;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -25,15 +26,13 @@ import org.wpilib.math.geometry.Twist2d;
 import org.wpilib.math.kinematics.ChassisVelocities;
 import org.wpilib.math.kinematics.MecanumDriveWheelPositions;
 import org.wpilib.math.kinematics.MecanumDriveWheelVelocities;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.SubsystemBase;
 
 /**
  * Mecanum drive with optional gyro.
  */
 public class MecanumDrive100 extends SubsystemBase implements VelocitySubsystemSE2 {
 
-    private final DoubleArrayLogger m_log_field_robot;
+    private final StructLogger<Pose2d> m_log_field_robot;
     private final VelocityControlSE2Logger m_log_input;
     /** May be null. */
     private final Gyro m_gyro;
@@ -68,7 +67,7 @@ public class MecanumDrive100 extends SubsystemBase implements VelocitySubsystemS
             LinearMechanism rearLeft,
             LinearMechanism rearRight) {
         LoggerFactory log = parent.type(this);
-        m_log_field_robot = fieldLogger.doubleArrayLogger(Level.COMP, "robot");
+        m_log_field_robot = fieldLogger.structLogger(Level.COMP, "robot", Pose2d.struct);
         m_log_input = log.velocityControlSE2Logger(Level.TRACE, "drive input");
         m_gyro = gyro;
         m_trackWidthM = trackWidthM;
@@ -155,7 +154,7 @@ public class MecanumDrive100 extends SubsystemBase implements VelocitySubsystemS
 
     private void log() {
         updatePose();
-        m_log_field_robot.log(this::poseArray);
+        m_log_field_robot.log(()->m_pose);
     }
 
     private void resetPoseAndGyro() {
@@ -186,13 +185,4 @@ public class MecanumDrive100 extends SubsystemBase implements VelocitySubsystemS
         m_positions = newPositions;
         return twist;
     }
-
-    private double[] poseArray() {
-        return new double[] {
-                m_pose.getX(),
-                m_pose.getY(),
-                m_pose.getRotation().getDegrees()
-        };
-    }
-
 }

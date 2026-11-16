@@ -21,13 +21,13 @@ import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.geometry.Translation3d;
 import org.wpilib.math.linalg.MatBuilder;
 import org.wpilib.math.util.Nat;
-import org.wpilib.math.util.Pair;
 import org.wpilib.smartdashboard.Mechanism2d;
 import org.wpilib.smartdashboard.MechanismLigament2d;
 import org.wpilib.smartdashboard.MechanismRoot2d;
-import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.telemetry.Telemetry;
 import org.wpilib.util.Color;
 import org.wpilib.util.Color8Bit;
+import org.wpilib.util.Pair;
 import org.wpilib.vision.camera.OpenCvLoader;
 
 /** Visualize any serial chain in 3d. */
@@ -40,7 +40,7 @@ public class Serial3dVisualization {
     private static final Translation3d CENTER = new Translation3d(0.25, 0, 0);
     // Reverses the rotation.
     private static final Transform3d FLIP = new Transform3d(
-            Pose3d.kZero, new Pose3d(0, 0, 0, new Rotation3d(0, 0, Math.PI)));
+            Pose3d.ZERO, new Pose3d(0, 0, 0, new Rotation3d(0, 0, Math.PI)));
     // Transforms the camera z to look along -x
     private static final Transform3d LOOKAT = new Transform3d(
             new Translation3d(),
@@ -81,14 +81,13 @@ public class Serial3dVisualization {
         m_pitch = -0.615;
         // start behind the arm and to the right
         m_yaw = -2.356;
-
-        SmartDashboard.putData("View", m_view);
     }
 
     public void periodic() {
         // Orbit in yaw.
         m_yaw += 0.002;
         paintAll();
+        Telemetry.log("View", m_view);
     }
 
     void paintAll() {
@@ -98,12 +97,12 @@ public class Serial3dVisualization {
         paint(m_base, "actual_arm", m_cameraPose, pList, Color.ORANGE_RED);
 
         List<Pose3d> tList3 = List.of(
-                new Pose3d(0, 0, 0, Rotation3d.kZero),
-                new Pose3d(0, 0.5, 0, Rotation3d.kZero),
-                new Pose3d(0.5, 0.5, 0, Rotation3d.kZero),
-                new Pose3d(0.5, -0.5, 0, Rotation3d.kZero),
-                new Pose3d(0, -0.5, 0, Rotation3d.kZero),
-                new Pose3d(0, 0, 0, Rotation3d.kZero));
+                new Pose3d(0, 0, 0, Rotation3d.ZERO),
+                new Pose3d(0, 0.5, 0, Rotation3d.ZERO),
+                new Pose3d(0.5, 0.5, 0, Rotation3d.ZERO),
+                new Pose3d(0.5, -0.5, 0, Rotation3d.ZERO),
+                new Pose3d(0, -0.5, 0, Rotation3d.ZERO),
+                new Pose3d(0, 0, 0, Rotation3d.ZERO));
         paint(m_base, "tabletop", m_cameraPose, tList3, Color.GRAY);
     }
 

@@ -127,11 +127,11 @@ public class SimulatedGyro implements Gyro {
 
     @Override
     public Rotation2d getPitchNWU() {
-        return Rotation2d.kZero;
+        return Rotation2d.ZERO;
     }
 
     @Override
     public Rotation2d getRollNWU() {
-        return Rotation2d.kZero;
+        return Rotation2d.ZERO;
     }
 }
