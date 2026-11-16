@@ -24,7 +24,6 @@ jobs:
 
       - run: python -m pip install --upgrade pip
       - run: pip install pytest
-      - run: pip install pytest-forked
       - run: pip install numpy
       - run: pip install robotpy
       - run: pip install robotpy-cscore
@@ -34,19 +33,19 @@ jobs:
       - run: pip install ncnn
       - run: pip install pnnx==20260526
         
-      - run: pytest --forked -vv -rA --full-trace tests/analysis
+      - run: pytest -vv -rA --full-trace tests/analysis
         if: ${{ always() }}
-      - run: pytest --forked -vv -rA --full-trace tests/camera
+      - run: pytest -vv -rA --full-trace tests/camera
         if: ${{ always() }}
-      - run: pytest --forked -vv -rA --full-trace tests/config
+      - run: pytest -vv -rA --full-trace tests/config
         if: ${{ always() }}
-      - run: pytest --forked -vv -rA --full-trace tests/dashboard
+      - run: pytest -vv -rA --full-trace tests/dashboard
         if: ${{ always() }}
-      - run: pytest --forked -vv -rA --full-trace tests/integration
+      - run: pytest -vv -rA --full-trace tests/integration
         if: ${{ always() }}
-      - run: pytest --forked -vv -rA --full-trace tests/interpreter
+      - run: pytest -vv -rA --full-trace tests/interpreter
         if: ${{ always() }}
-      - run: pytest --forked -vv -rA --full-trace tests/network
+      - run: pytest -vv -rA --full-trace tests/network
         if: ${{ always() }}
-      - run: pytest --forked -vv -rA --full-trace tests/util
+      - run: pytest -vv -rA --full-trace tests/util
         if: ${{ always() }}
