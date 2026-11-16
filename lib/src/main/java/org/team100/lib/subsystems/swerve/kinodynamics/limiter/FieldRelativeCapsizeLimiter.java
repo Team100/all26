@@ -24,7 +24,7 @@ public class FieldRelativeCapsizeLimiter {
 
     private final SwerveKinodynamics limits;
 
-    public FieldRelativeCapsizeLimiter(dd
+    public FieldRelativeCapsizeLimiter(
             LoggerFactory parent,
             SwerveKinodynamics m_limits) {
         LoggerFactory log = parent.type(this);
