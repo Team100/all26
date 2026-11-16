@@ -4,8 +4,8 @@
 # Run from the root of the all26 repo, on a branch with raspberry_pi/image
 # (e.g. 2027):
 #
-#   ./build_pi_image.sh 31            # makes raspberry_pi/image/out/camera31.img
-#   ./build_pi_image.sh 32 camera32   # optional hostname (default camera<N>)
+#  ./raspberry_pi/image/build_image_docker_mac.sh 31            # makes raspberry_pi/image/out/camera31.img
+#  ./raspberry_pi/image/build_image_docker_mac.sh 32 camera32   # optional hostname (default camera<N>)
 #
 # The first build takes 20+ minutes. The Docker container (t100img) is kept,
 # so later builds reuse its base image and take a minute or two. To start
@@ -27,6 +27,12 @@ if ! docker info >/dev/null 2>&1; then
 fi
 if ! git cat-file -e HEAD:raspberry_pi/image/build_image.sh 2>/dev/null; then
   echo "Run this from the all26 repo root, on a branch with raspberry_pi/image (e.g. git checkout 2027)." >&2
+  exit 1
+fi
+if [ -n "$(git status --porcelain -- raspberry_pi/image raspberry_pi/supervisor)" ]; then
+  echo "Uncommitted changes in raspberry_pi/image or raspberry_pi/supervisor:" >&2
+  git status --short -- raspberry_pi/image raspberry_pi/supervisor >&2
+  echo "This builds from the last commit ($(git rev-parse --short HEAD)), so commit them first." >&2
   exit 1
 fi
 

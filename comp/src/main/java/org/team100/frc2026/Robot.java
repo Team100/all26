@@ -99,11 +99,6 @@ public class Robot extends TimedRobot100 {
         // System.out.printf("Right Trigger %f\n",
         // m_binder.m_driver.RightTriggerAxis());
         // System.out.printf(" Left Trigger %f\n", m_binder.m_driver.LeftTriggerAxis());
-
-        // f.setRobotPose(Pose2d.ZERO);
-        // Telemetry.log("Field", f);
-        // asdf.setPoses(Pose2d.ZERO, Pose2d.ZERO);
-        // Telemetry.log("asdf", asdf);
     }
 
     ///////////////////////////////////////////////////////

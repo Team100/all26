@@ -63,7 +63,9 @@ mmdebstrap:
     - iputils-ping
     - bind9-dnsutils    # dig, nslookup
     - usbutils          # lsusb
+    - uhubctl           # USB port power control (power-cycle a wedged camera)
     - i2c-tools
+    - v4l-utils         # v4l2-ctl
     - libcamera-dev
     - python3-picamera2
     - python3-venv

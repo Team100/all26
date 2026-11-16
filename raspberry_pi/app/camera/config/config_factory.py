@@ -1,13 +1,13 @@
+# pylint: disable=C0114,C0115,C0116,E0401,R0903,R0911
 from datetime import datetime
-# pylint: disable=R0903,W0611
 
 from app.camera.config.config_ardu_mjpeg import ConfigArduMjpeg
-from app.camera.config.config_protocol import Config
-from app.camera.size import Size
-from app.config.identity import Identity
-from app.camera.config.config_thrifty_mjpeg import ConfigThriftyMjpeg
 from app.camera.config.config_gs_color import ConfigGsColor
 from app.camera.config.config_gs_mono import ConfigGsMono
+from app.camera.config.config_protocol import Config
+from app.camera.config.config_thrifty_mjpeg import ConfigThriftyMjpeg
+from app.camera.size import Size
+from app.config.identity import Identity
 
 
 class ConfigFactory:
@@ -25,7 +25,7 @@ class ConfigFactory:
                 # return ConfigThriftyYuyv(size)
             case Identity.CLIMB_RIGHT:
                 return ConfigThriftyMjpeg(size)
-            case Identity.CLIMB_LEFT :
+            case Identity.CLIMB_LEFT:
                 return ConfigGsColor(size)
             case Identity.SHOOTER:
                 return ConfigGsMono(size)

@@ -1,15 +1,15 @@
-from datetime import datetime
-# pylint: disable=R0902,R0903,W0212
-
+# pylint: disable=C0114,C0115,C0116,E0401,E1101,R0902,R0903,R0913,R0917,W2301
 import time
-from queue import Queue, Full
+from datetime import datetime
+from queue import Full, Queue
 from threading import Event
 from typing import override
 
 import ntcore
+
 from app.config.identity import Identity
 from app.framework.looper import Looper
-from app.network.structs import SyncRequest, SyncReply
+from app.network.structs import SyncReply, SyncRequest
 
 
 class SyncLoop(Looper):
@@ -47,11 +47,14 @@ class SyncLoop(Looper):
             syncreply: SyncReply = replies[-1].value
             now: int = ntcore._now()  # pylint: disable=W0212
             measurement = self.offset(syncreply.org, syncreply.rec, syncreply.xmt, now)
-            self._offset: int = self.fuse(self._offset, measurement)
+            self._offset = self.fuse(self._offset, measurement)
             try:
                 self._queue.put_nowait(self._offset)
             except Full:
-                print(f"[{datetime.now()}] " + "*** queue is full, which should never happen ***")
+                print(
+                    f"[{datetime.now()}] "
+                    + "*** queue is full, which should never happen ***"
+                )
 
         self._inst.flush()
         # avoid spinning too fast

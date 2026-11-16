@@ -1,21 +1,18 @@
+# pylint: disable=C0114,E0401,E1101,R0903
 from datetime import datetime
-# pylint: disable=E1101,R0903
-
 from typing import Any, override
+
 import cv2
 import numpy as np
-
 from cv2.typing import MatLike
 from numpy.typing import NDArray
-
 from robotpy_apriltag import AprilTagDetection, AprilTagDetector, AprilTagPoseEstimator
-
 from wpimath.geometry._geometry import Transform3d
 
+from app.analysis.analysis_protocol import MonoAnalysis
 from app.camera.camera_protocol import Camera
 from app.config.identity import Identity
 from app.dashboard.display_util import DisplayUtil
-from app.analysis.analysis_protocol import MonoAnalysis
 from app.network.network_protocol import Network
 from app.network.structs import Blip, BlipWithCorners
 
@@ -151,7 +148,9 @@ class AprilTags(MonoAnalysis):
         return at_detector
 
     @staticmethod
-    def _get_estimator(tag_size: float, mtx: NDArray[np.float32]) -> AprilTagPoseEstimator:
+    def _get_estimator(
+        tag_size: float, mtx: NDArray[np.float32]
+    ) -> AprilTagPoseEstimator:
         return AprilTagPoseEstimator(
             AprilTagPoseEstimator.Config(
                 tag_size, mtx[0, 0], mtx[1, 1], mtx[0, 2], mtx[1, 2]

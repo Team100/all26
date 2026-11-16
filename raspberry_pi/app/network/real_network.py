@@ -1,20 +1,20 @@
+# pylint: disable=C0114,C0115,C0116,E0401,E1101,R0902,R0903,R0913,R0917,W2301
 from datetime import datetime
-# pylint: disable=C0114,C0115,C0116,E0401,R0902,R0903,W0212
-
 from queue import Queue
 from threading import Event, Thread
 from typing import override
 
 import ntcore
+
 from app.config.identity import Identity
 from app.network.calibrate import Calibrate
 from app.network.drift import Drift
 from app.network.network_protocol import (
-    DoubleSender,
     BlipSender,
     BlipWithCornersSender,
-    TargetSender,
+    DoubleSender,
     Network,
+    TargetSender,
 )
 from app.network.structs import Blip, BlipWithCorners, Target
 from app.network.sync_loop import SyncLoop
@@ -96,7 +96,6 @@ class RealNetwork(Network):
 
     @override
     def calibrate(self) -> bool:
-        #return True
         return self._calibrate.get()
 
     @override

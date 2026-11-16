@@ -1,11 +1,12 @@
+# pylint: disable=C0114,C0115,C0116,E0401,E1101,R0801,R0903,R1732
 from datetime import datetime
-# pylint: disable=E1101,R0903,R1732
-
 from typing import override
+
 import cv2
 import numpy as np
 from cv2.typing import MatLike
 from numpy.typing import NDArray
+
 from app.camera.camera_protocol import Camera
 from app.camera.fake_request import FakeRequest
 from app.camera.size import Size
@@ -26,7 +27,7 @@ class NoCamera(Camera):
             (180, 550),
             cv2.FONT_HERSHEY_COMPLEX,
             5,
-            (255, 255, 255)
+            (255, 255, 255),
         )
         self.frame_time = Timer.time_ns()
 
