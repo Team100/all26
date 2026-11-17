@@ -8,7 +8,7 @@ import org.team100.lib.geometry.prr.PRRConfig;
 import org.team100.lib.geometry.prr.PRRVelocity;
 import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.kinematics.prr.PRRKinematics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
@@ -55,9 +55,9 @@ public class TrajectoryJointTest {
         TrajectorySE2Planner m_planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 
         TrajectorySE2 t = m_planner.restToRest(List.of(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(1, 0, new Rotation2d(0)), 0, 1.2),
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(1.9, 0.5, new Rotation2d(2.5)), 2, 1.2)));
 
         PRRKinematics k = new PRRKinematics(0.5, 0.3, PRRKinematics.Solver.ANALYTIC);

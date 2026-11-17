@@ -1,7 +1,7 @@
-package org.team100.lib.geometry.se2;
+package org.team100.lib.geometry.se2_universal_cover;
 
+import org.team100.lib.geometry.se2.DirectionSE2;
 import org.team100.lib.util.Math100;
-
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 
@@ -31,21 +31,21 @@ import org.wpilib.math.geometry.Rotation2d;
  * @param course direction of travel (in SE(2), course includes rotation)
  * @param scale  influence of the course, relative to the spline parameter [0,1]
  */
-public record WaypointSE2(Pose2d pose, DirectionSE2 course, double scale) {
+public record WindingWaypointSE2(WindingPose2d pose, DirectionSE2 course, double scale) {
     private static final boolean DEBUG = false;
 
     /** Course without rotation, with unit scale. */
-    public static WaypointSE2 irrotational(Pose2d p, double course, double scale) {
-        return new WaypointSE2(p, DirectionSE2.irrotational(course), scale);
+    public static WindingWaypointSE2 irrotational(Pose2d p, double course, double scale) {
+        return new WindingWaypointSE2(new WindingPose2d(p), DirectionSE2.irrotational(course), scale);
     }
 
     /**
      * For tank drive, heading and course are the same, with unit scale.
      * This is like the WPI non-holonomic trajectory.
      */
-    public static WaypointSE2 tank(Pose2d p) {
+    public static WindingWaypointSE2 tank(Pose2d p) {
         Rotation2d r = p.getRotation();
-        return new WaypointSE2(p, new DirectionSE2(r.getCos(), r.getSin(), 0), 1.0);
+        return new WindingWaypointSE2(new WindingPose2d(p), new DirectionSE2(r.getCos(), r.getSin(), 0), 1.0);
     }
 
     @Override
@@ -55,13 +55,13 @@ public record WaypointSE2(Pose2d pose, DirectionSE2 course, double scale) {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof WaypointSE2)) {
+        if (!(obj instanceof WindingWaypointSE2)) {
             if (DEBUG)
                 System.out.println("wrong type");
             return false;
         }
 
-        WaypointSE2 other = (WaypointSE2) obj;
+        WindingWaypointSE2 other = (WindingWaypointSE2) obj;
 
         if (!pose.equals(other.pose)) {
             if (DEBUG)

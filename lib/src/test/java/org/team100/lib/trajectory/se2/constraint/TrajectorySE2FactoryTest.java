@@ -10,7 +10,8 @@ import java.util.List;
 import org.jfree.data.xy.VectorSeries;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.path.se2.PathSE2;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.path.se2.PathSE2ToVectorSeries;
@@ -21,7 +22,6 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Entry;
 import org.team100.lib.trajectory.se2.TrajectorySE2Factory;
 import org.team100.lib.trajectory.se2.TrajectorySE2ToVectorSeries;
 import org.team100.lib.util.ChartUtil;
-
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -32,11 +32,11 @@ public class TrajectorySE2FactoryTest {
     private static final double DELTA = 0.01;
 
     /** Straight, then s-shaped, then straight. **/
-    public static final List<WaypointSE2> waypoints = Arrays.asList(
-            WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-            WaypointSE2.irrotational(new Pose2d(2, 0, new Rotation2d(0)), 0, 1.2),
-            WaypointSE2.irrotational(new Pose2d(3, 1, new Rotation2d(0)), 0, 1.2),
-            WaypointSE2.irrotational(new Pose2d(5, 1, new Rotation2d(0)), 0, 1.2));
+    public static final List<WindingWaypointSE2> waypoints = Arrays.asList(
+            WindingWaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
+            WindingWaypointSE2.irrotational(new Pose2d(2, 0, new Rotation2d(0)), 0, 1.2),
+            WindingWaypointSE2.irrotational(new Pose2d(3, 1, new Rotation2d(0)), 0, 1.2),
+            WindingWaypointSE2.irrotational(new Pose2d(5, 1, new Rotation2d(0)), 0, 1.2));
 
     /** Low accel, high velocity, makes a triangle profile */
     @Test
@@ -190,12 +190,12 @@ public class TrajectorySE2FactoryTest {
     @Test
     void testPerformance() {
         // A sweeping left turn without rotation.
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(), new Rotation2d()),
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(), 0),
                         new DirectionSE2(1, 0, 0), 1.2),
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(1, 1), new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 1), 0),
                         new DirectionSE2(0, 1, 0), 1.2));
         List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
 

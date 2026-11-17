@@ -3,7 +3,6 @@ package org.team100.lib.logging;
 import org.team100.lib.logging.primitive.NTPrimitiveLogger;
 import org.team100.lib.logging.primitive.PrimitiveLogger;
 import org.team100.lib.util.NamedChooser;
-import org.wpilib.smartdashboard.Field2d;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.revrobotics.util.StatusLogger;

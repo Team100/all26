@@ -1,7 +1,6 @@
 package org.team100.frc2026.auton;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 
 /**
  * These measurements are guesses.
@@ -12,12 +11,12 @@ import org.wpilib.math.geometry.Rotation2d;
 public class StartingPositions {
     /** Barely overlaps the tape */
     private static final double X = 4.0;
-    public static final Pose2d LEFT_TRENCH = new Pose2d(X, 7.4, new Rotation2d(180 * (Math.PI / 180)));
-    public static final Pose2d LEFT_TRENCH_OUTER = new Pose2d(X, 7.4, new Rotation2d(0 * (Math.PI / 180)));
-    public static final Pose2d LEFT_BUMP = new Pose2d(X, 5.5, new Rotation2d(180 * (Math.PI / 180)));
-    public static final Pose2d CENTER = new Pose2d(X, 4.0, Rotation2d.ZERO);
-    public static final Pose2d CENTER_BACK = new Pose2d(X-1, 4.0, Rotation2d.ZERO);
-    public static final Pose2d RIGHT_BUMP = new Pose2d(X, 2.5, new Rotation2d(180 * (Math.PI / 180)));
-    public static final Pose2d RIGHT_TRENCH = new Pose2d(X, 0.6, new Rotation2d(180 * (Math.PI / 180)));
-    public static final Pose2d RIGHT_TRENCH_OUTER = new Pose2d(X, 0.6, new Rotation2d(0 * (Math.PI / 180)));
+    public static final WindingPose2d LEFT_TRENCH = new WindingPose2d(X, 7.4, Math.PI);
+    public static final WindingPose2d LEFT_TRENCH_OUTER = new WindingPose2d(X, 7.4, 0);
+    public static final WindingPose2d LEFT_BUMP = new WindingPose2d(X, 5.5, Math.PI / 180);
+    public static final WindingPose2d CENTER = new WindingPose2d(X, 4.0, 0);
+    public static final WindingPose2d CENTER_BACK = new WindingPose2d(X - 1, 4.0, 0);
+    public static final WindingPose2d RIGHT_BUMP = new WindingPose2d(X, 2.5, Math.PI);
+    public static final WindingPose2d RIGHT_TRENCH = new WindingPose2d(X, 0.6, Math.PI);
+    public static final WindingPose2d RIGHT_TRENCH_OUTER = new WindingPose2d(X, 0.6, 0);
 }

@@ -5,7 +5,8 @@ import java.util.List;
 
 import org.team100.lib.commands.MoveAndHold;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.reference.se2.TrajectoryReferenceSE2;
@@ -17,7 +18,6 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Factory;
 import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
-import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
 
@@ -38,12 +38,12 @@ import org.wpilib.math.geometry.Translation2d;
 public class MoveWithTrajectoryR2 extends MoveAndHold {
     private final LoggerFactory m_log;
     private final RRArm m_arm;
-    private final Pose2d m_goal;
+    private final WindingPose2d m_goal;
     private final TrajectorySE2Planner m_planner;
     /** Non-null when the command is running, otherwise null. */
     private PositionReferenceControllerSE2 m_referenceController;
 
-    public MoveWithTrajectoryR2(LoggerFactory parent, RRArm arm, Pose2d goal, double speed) {
+    public MoveWithTrajectoryR2(LoggerFactory parent, RRArm arm, WindingPose2d goal, double speed) {
         m_log = parent.type(this);
         m_arm = arm;
         m_goal = goal;
@@ -60,13 +60,13 @@ public class MoveWithTrajectoryR2 extends MoveAndHold {
 
     @Override
     public void initialize() {
-        Pose2d start = new Pose2d(m_arm.translation(), Rotation2d.ZERO);
+        WindingPose2d start = new WindingPose2d(m_arm.translation(), 0);
         Translation2d currTranslation = start.getTranslation();
         Rotation2d courseToGoal = m_goal.getTranslation().minus(currTranslation).getAngle().get();
 
-        List<WaypointSE2> waypoints = new ArrayList<>();
-        waypoints.add(new WaypointSE2(start, DirectionSE2.irrotational(courseToGoal), 1));
-        waypoints.add(new WaypointSE2(m_goal, DirectionSE2.irrotational(courseToGoal), 1));
+        List<WindingWaypointSE2> waypoints = new ArrayList<>();
+        waypoints.add(new WindingWaypointSE2(start, DirectionSE2.irrotational(courseToGoal), 1));
+        waypoints.add(new WindingWaypointSE2(m_goal, DirectionSE2.irrotational(courseToGoal), 1));
 
         TrajectorySE2 trajectory = m_planner.restToRest(waypoints);
         TrajectoryReferenceSE2 reference = new TrajectoryReferenceSE2(m_log, trajectory);

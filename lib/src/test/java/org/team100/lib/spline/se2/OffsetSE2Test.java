@@ -6,7 +6,8 @@ import java.util.List;
 import org.jfree.data.xy.VectorSeries;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.se2.PathSE2;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.path.se2.PathSE2ToVectorSeries;
@@ -16,9 +17,6 @@ import org.team100.lib.trajectory.se2.TrajectorySE2ToVectorSeries;
 import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.util.ChartUtil;
-
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
 
 public class OffsetSE2Test {
@@ -26,12 +24,10 @@ public class OffsetSE2Test {
     /** Render spline and offset spline */
     @Test
     void test0() {
-        WaypointSE2 w0 = new WaypointSE2(
-                new Pose2d(new Translation2d(), new Rotation2d(Math.PI / 2)),
-                new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(Math.PI / 2, 0), new Rotation2d(0)),
-                new DirectionSE2(1, 0, -1), 1);
+        WindingWaypointSE2 w0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(), Math.PI / 2), new DirectionSE2(1, 0, -1), 1);
+        WindingWaypointSE2 w1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(Math.PI / 2, 0), 0), new DirectionSE2(1, 0, -1), 1);
         SplineSE2 toolpoint = new SplineSE2(w0, w1);
         List<VectorSeries> series = new SplineSE2ToVectorSeries(0.1).convert(List.of(toolpoint));
         // this is always zero
@@ -55,20 +51,20 @@ public class OffsetSE2Test {
     /** Render full cycloid spline and offset spline */
     @Test
     void test0a() {
-        WaypointSE2 w0 = new WaypointSE2(
-                new Pose2d(new Translation2d(), new Rotation2d(Math.PI / 2)),
+        WindingWaypointSE2 w0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(), Math.PI / 2),
                 new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(Math.PI / 2, 0), new Rotation2d(0)),
+        WindingWaypointSE2 w1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(Math.PI / 2, 0), 0),
                 new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w2 = new WaypointSE2(
-                new Pose2d(new Translation2d(Math.PI, 0), new Rotation2d(-Math.PI / 2)),
+        WindingWaypointSE2 w2 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(Math.PI, 0), -Math.PI / 2),
                 new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w3 = new WaypointSE2(
-                new Pose2d(new Translation2d(3 * Math.PI / 2, 0), new Rotation2d(-Math.PI)),
+        WindingWaypointSE2 w3 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(3 * Math.PI / 2, 0), -Math.PI),
                 new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w4 = new WaypointSE2(
-                new Pose2d(new Translation2d(2 * Math.PI, 0), new Rotation2d(Math.PI / 2)),
+        WindingWaypointSE2 w4 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(2 * Math.PI, 0), Math.PI / 2),
                 new DirectionSE2(1, 0, -1), 1);
 
         List<SplineSE2> toolpoint = SplineSE2Factory.splinesFromWaypoints(List.of(w0, w1, w2, w3, w4));
@@ -96,12 +92,10 @@ public class OffsetSE2Test {
     /** Render path and offset path */
     @Test
     void test1() {
-        WaypointSE2 w0 = new WaypointSE2(
-                new Pose2d(new Translation2d(), new Rotation2d(Math.PI / 2)),
-                new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(Math.PI / 2, 0), new Rotation2d(0)),
-                new DirectionSE2(1, 0, -1), 1);
+        WindingWaypointSE2 w0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(), Math.PI / 2), new DirectionSE2(1, 0, -1), 1);
+        WindingWaypointSE2 w1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(Math.PI / 2, 0), 0), new DirectionSE2(1, 0, -1), 1);
         SplineSE2 toolpoint = new SplineSE2(w0, w1);
         double length = 1.0;
         OffsetSE2 offset = new OffsetSE2(toolpoint, length);
@@ -131,20 +125,20 @@ public class OffsetSE2Test {
     /** Render full cyloid and offset path */
     @Test
     void test1a() {
-        WaypointSE2 w0 = new WaypointSE2(
-                new Pose2d(new Translation2d(), new Rotation2d(Math.PI / 2)),
+        WindingWaypointSE2 w0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(), Math.PI / 2),
                 new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(Math.PI / 2, 0), new Rotation2d(0)),
+        WindingWaypointSE2 w1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(Math.PI / 2, 0), 0),
                 new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w2 = new WaypointSE2(
-                new Pose2d(new Translation2d(Math.PI, 0), new Rotation2d(-Math.PI / 2)),
+        WindingWaypointSE2 w2 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(Math.PI, 0), -Math.PI / 2),
                 new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w3 = new WaypointSE2(
-                new Pose2d(new Translation2d(3 * Math.PI / 2, 0), new Rotation2d(-Math.PI)),
+        WindingWaypointSE2 w3 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(3 * Math.PI / 2, 0), -Math.PI),
                 new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w4 = new WaypointSE2(
-                new Pose2d(new Translation2d(2 * Math.PI, 0), new Rotation2d(Math.PI / 2)),
+        WindingWaypointSE2 w4 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(2 * Math.PI, 0), Math.PI / 2),
                 new DirectionSE2(1, 0, -1), 1);
 
         List<SplineSE2> toolpoint = SplineSE2Factory.splinesFromWaypoints(List.of(w0, w1, w2, w3, w4));
@@ -177,11 +171,11 @@ public class OffsetSE2Test {
     /** Render trajectory and offset trajectory */
     @Test
     void test2() {
-        WaypointSE2 w0 = new WaypointSE2(
-                new Pose2d(new Translation2d(), new Rotation2d(Math.PI / 2)),
+        WindingWaypointSE2 w0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(), Math.PI / 2),
                 new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(Math.PI / 2, 0), new Rotation2d(0)),
+        WindingWaypointSE2 w1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(Math.PI / 2, 0), 0),
                 new DirectionSE2(1, 0, -1), 1);
         SplineSE2 toolpoint = new SplineSE2(w0, w1);
         double length = 1.0;
@@ -217,20 +211,20 @@ public class OffsetSE2Test {
     /** Render the full cyloid */
     @Test
     void test2a() {
-        WaypointSE2 w0 = new WaypointSE2(
-                new Pose2d(new Translation2d(), new Rotation2d(Math.PI / 2)),
+        WindingWaypointSE2 w0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(), Math.PI / 2),
                 new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(Math.PI / 2, 0), new Rotation2d(0)),
+        WindingWaypointSE2 w1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(Math.PI / 2, 0), 0),
                 new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w2 = new WaypointSE2(
-                new Pose2d(new Translation2d(Math.PI, 0), new Rotation2d(-Math.PI / 2)),
+        WindingWaypointSE2 w2 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(Math.PI, 0), -Math.PI / 2),
                 new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w3 = new WaypointSE2(
-                new Pose2d(new Translation2d(3 * Math.PI / 2, 0), new Rotation2d(-Math.PI)),
+        WindingWaypointSE2 w3 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(3 * Math.PI / 2, 0), -Math.PI),
                 new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w4 = new WaypointSE2(
-                new Pose2d(new Translation2d(2 * Math.PI, 0), new Rotation2d(Math.PI / 2)),
+        WindingWaypointSE2 w4 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(2 * Math.PI, 0), Math.PI / 2),
                 new DirectionSE2(1, 0, -1), 1);
 
         List<SplineSE2> toolpoint = SplineSE2Factory.splinesFromWaypoints(List.of(w0, w1, w2, w3, w4));

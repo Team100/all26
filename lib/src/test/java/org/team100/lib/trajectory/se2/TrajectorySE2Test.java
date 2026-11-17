@@ -7,7 +7,9 @@ import java.util.List;
 import org.jfree.data.xy.VectorSeries;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingTransform2d;
 import org.team100.lib.path.se2.PathSE2;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.spline.se2.SplineSE2;
@@ -18,10 +20,7 @@ import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 import org.team100.lib.util.ChartUtil;
-
-import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Transform2d;
 import org.wpilib.math.geometry.Translation2d;
 
 class TrajectorySE2Test implements Timeless {
@@ -31,16 +30,16 @@ class TrajectorySE2Test implements Timeless {
     @Test
     void testClosestApproach() {
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forRealisticTest();
-        Pose2d start = Pose2d.ZERO;
-        Pose2d end = start.plus(new Transform2d(1, 0, Rotation2d.ZERO));
+        WindingPose2d start = WindingPose2d.ZERO;
+        WindingPose2d end = start.plus(new WindingTransform2d(1, 0, 0));
 
         Translation2d currentTranslation = start.getTranslation();
         Translation2d goalTranslation = end.getTranslation();
         Translation2d translationToGoal = goalTranslation.minus(currentTranslation);
         Rotation2d angleToGoal = translationToGoal.getAngle().get();
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(start, DirectionSE2.irrotational(angleToGoal), 1),
-                new WaypointSE2(end, DirectionSE2.irrotational(angleToGoal), 1));
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(start, DirectionSE2.irrotational(angleToGoal), 1),
+                new WindingWaypointSE2(end, DirectionSE2.irrotational(angleToGoal), 1));
 
         List<TimingConstraint> constraints = new TimingConstraintFactory(limits).fast();
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
@@ -63,16 +62,16 @@ class TrajectorySE2Test implements Timeless {
     @Test
     void testPreviewAndAdvance() {
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forRealisticTest();
-        Pose2d start = Pose2d.ZERO;
-        Pose2d end = start.plus(new Transform2d(1, 0, Rotation2d.ZERO));
+        WindingPose2d start = WindingPose2d.ZERO;
+        WindingPose2d end = start.plus(new WindingTransform2d(1, 0, 0));
 
         Translation2d currentTranslation = start.getTranslation();
         Translation2d goalTranslation = end.getTranslation();
         Translation2d translationToGoal = goalTranslation.minus(currentTranslation);
         Rotation2d angleToGoal = translationToGoal.getAngle().get();
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(start, DirectionSE2.irrotational(angleToGoal), 1),
-                new WaypointSE2(end, DirectionSE2.irrotational(angleToGoal), 1));
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(start, DirectionSE2.irrotational(angleToGoal), 1),
+                new WindingWaypointSE2(end, DirectionSE2.irrotational(angleToGoal), 1));
 
         List<TimingConstraint> constraints = new TimingConstraintFactory(limits).fast();
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
@@ -97,16 +96,16 @@ class TrajectorySE2Test implements Timeless {
     @Test
     void testSample() {
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forTest3();
-        Pose2d start = Pose2d.ZERO;
-        Pose2d end = start.plus(new Transform2d(1, 0, Rotation2d.ZERO));
+        WindingPose2d start = WindingPose2d.ZERO;
+        WindingPose2d end = start.plus(new WindingTransform2d(1, 0, 0));
 
         Translation2d currentTranslation = start.getTranslation();
         Translation2d goalTranslation = end.getTranslation();
         Translation2d translationToGoal = goalTranslation.minus(currentTranslation);
         Rotation2d angleToGoal = translationToGoal.getAngle().get();
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(start, DirectionSE2.irrotational(angleToGoal), 1),
-                new WaypointSE2(end, DirectionSE2.irrotational(angleToGoal), 1));
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(start, DirectionSE2.irrotational(angleToGoal), 1),
+                new WindingWaypointSE2(end, DirectionSE2.irrotational(angleToGoal), 1));
 
         List<TimingConstraint> constraints = new TimingConstraintFactory(limits).fast();
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
@@ -131,16 +130,12 @@ class TrajectorySE2Test implements Timeless {
      */
     @Test
     void testSampleThoroughly() {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                Rotation2d.ZERO),
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(), 0),
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 0),
-                                Rotation2d.ZERO),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 0), 0),
                         new DirectionSE2(1, 0, 0), 1));
 
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forTest3();
@@ -192,13 +187,13 @@ class TrajectorySE2Test implements Timeless {
     // disable to speed up tests
     // @Test
     void testSamplePerformance() {
-        WaypointSE2 p0 = new WaypointSE2(new Pose2d(new Translation2d(), Rotation2d.ZERO),
+        WindingWaypointSE2 p0 = new WindingWaypointSE2(new WindingPose2d(new Translation2d(), 0),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 p1 = new WaypointSE2(new Pose2d(new Translation2d(10, 0), Rotation2d.CCW_PI_2),
+        WindingWaypointSE2 p1 = new WindingWaypointSE2(new WindingPose2d(new Translation2d(10, 0), Math.PI / 2),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 p2 = new WaypointSE2(new Pose2d(new Translation2d(10, 10), Rotation2d.PI),
+        WindingWaypointSE2 p2 = new WindingWaypointSE2(new WindingPose2d(new Translation2d(10, 10), Math.PI),
                 new DirectionSE2(1, 0, 0), 1);
-        List<WaypointSE2> waypoints = List.of(p0, p1, p2);
+        List<WindingWaypointSE2> waypoints = List.of(p0, p1, p2);
         List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
 
         int reps = 100000;
@@ -238,7 +233,7 @@ class TrajectorySE2Test implements Timeless {
             System.out.printf("PATH duration (ns) total (ms) %.0f per sample (ns) %.2f\n",
                     0.000001 * duration, (double) duration / (reps * times));
 
-        /////////////
+        /////////
         // INTERPOLATE TRAJECTORY POINTS (335 ns)
 
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forTest3();

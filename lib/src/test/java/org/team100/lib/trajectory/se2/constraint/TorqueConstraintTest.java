@@ -3,7 +3,7 @@ package org.team100.lib.trajectory.se2.constraint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.se2.PathSE2Point;
 
 import org.wpilib.math.linalg.VecBuilder;
@@ -18,7 +18,7 @@ public class TorqueConstraintTest {
         TorqueConstraint jc = new TorqueConstraint(6);
         // moving +x at (1,0,0)
         PathSE2Point state = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(1, 0, new Rotation2d(0)), 0, 1.2),
                  VecBuilder.fill(0, 0));
         // no tangential motion => no limit
@@ -31,7 +31,7 @@ public class TorqueConstraintTest {
         TorqueConstraint jc = new TorqueConstraint(6);
         // at (1,0,0), moving (0,1,0)
         PathSE2Point state = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(1, 0, new Rotation2d(0)), Math.PI / 2, 1.2),
                  VecBuilder.fill(0, 0));
         // tangential motion at 1 m
@@ -44,7 +44,7 @@ public class TorqueConstraintTest {
         TorqueConstraint jc = new TorqueConstraint(6);
         // moving +x+y at (1,0,0)
         PathSE2Point state = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(1, 0, new Rotation2d(0)), Math.PI / 4, 1.2),
                  VecBuilder.fill(0, 0));
         // motion at 45 deg => higher limit
@@ -57,7 +57,7 @@ public class TorqueConstraintTest {
         TorqueConstraint jc = new TorqueConstraint(6);
         // moving +y at (2,0,0)
         PathSE2Point state = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(2, 0, new Rotation2d(0)), Math.PI / 2, 1.2),
                  VecBuilder.fill(0, 0));
         // more r => lower limit
@@ -70,7 +70,7 @@ public class TorqueConstraintTest {
         TorqueConstraint jc = new TorqueConstraint(6);
         // moving +y at (3,0,0)
         PathSE2Point state = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(3, 0, new Rotation2d(0)), Math.PI / 2, 1.2),
                 VecBuilder.fill(0, 0));
         // more r => lower limit
@@ -83,7 +83,7 @@ public class TorqueConstraintTest {
         TorqueConstraint jc = new TorqueConstraint(30);
         // moving +y at (1,0,0)
         PathSE2Point state = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(1, 0, new Rotation2d(0)), Math.PI / 2, 1.2),
                 VecBuilder.fill(0, 0));
         // should match the constant constraint at around 1 m

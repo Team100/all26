@@ -12,7 +12,8 @@ import org.team100.frc2026.robot.Machinery;
 import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.subsystems.se2.commands.DriveWithTrajectoryFunction;
@@ -68,10 +69,10 @@ public class LeftBumpPreloadedAuton implements AnnotatedCommand {
     }
 
     TrajectorySE2 t1(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose,
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(new WindingPose2d(startingPose),
                         new DirectionSE2(-1, 0, 0), 1),
-                new WaypointSE2(AutonPositions.SHOOT_LEFT,
+                new WindingWaypointSE2(AutonPositions.SHOOT_LEFT,
                         new DirectionSE2(-1, 0, 0), 1));
         return planner.restToRest(waypoints);
     }
@@ -83,7 +84,7 @@ public class LeftBumpPreloadedAuton implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return StartingPositions.LEFT_BUMP;
+        return StartingPositions.LEFT_BUMP.pose2d();
     }
 
     @Override

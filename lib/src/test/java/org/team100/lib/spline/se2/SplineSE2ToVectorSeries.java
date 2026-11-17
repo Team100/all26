@@ -5,8 +5,7 @@ import java.util.List;
 
 import org.jfree.data.xy.VectorSeries;
 import org.jfree.data.xy.XYSeries;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.numbers.N2;
 
@@ -31,13 +30,12 @@ public class SplineSE2ToVectorSeries {
             ISplineSE2 spline = splines.get(i);
             VectorSeries series = new VectorSeries(String.format("%d", i));
             for (double s = 0; s <= 1.001; s += 1 / POINTS) {
-                // Pose2d p = spline.entry(s).point().waypoint().pose();
-                Pose2d p = spline.pose(s);
+                WindingPose2d p = spline.pose(s);
                 double x = p.getX();
                 double y = p.getY();
-                Rotation2d heading = p.getRotation();
-                double dx = m_scale * heading.getCos();
-                double dy = m_scale * heading.getSin();
+                double heading = p.getRotation();
+                double dx = m_scale * Math.cos(heading);
+                double dy = m_scale * Math.sin(heading);
                 series.add(x, y, dx, dy);
             }
             result.add(series);
@@ -52,7 +50,7 @@ public class SplineSE2ToVectorSeries {
             ISplineSE2 spline = splines.get(i);
             VectorSeries series = new VectorSeries(String.format("%d", i));
             for (double s = 0; s <= 1.001; s += 1 / POINTS) {
-                Pose2d p = spline.pose(s);
+                WindingPose2d p = spline.pose(s);
                 double x = p.getX();
                 double y = p.getY();
                 Vector<N2> K = spline.K(s);

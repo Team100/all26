@@ -3,6 +3,7 @@ package org.team100.frc2025.field;
 import java.util.Optional;
 
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -51,10 +52,10 @@ public class FieldConstants2025 {
     public enum CoralStation {
         LEFT, RIGHT;
 
-        public Pose2d pose() {
+        public WindingPose2d pose() {
             return switch (this) {
-                case LEFT -> new Pose2d(1.12, 7.14, Rotation2d.fromDegrees(-54)); // 1.2 7.0
-                case RIGHT -> new Pose2d(1.12, 0.98, Rotation2d.fromDegrees(54));
+                case LEFT -> new WindingPose2d(1.12, 7.14, Math.toRadians(-54)); // 1.2 7.0
+                case RIGHT -> new WindingPose2d(1.12, 0.98, Math.toRadians(54));
                 default -> throw new IllegalArgumentException("invalid station");
             };
         }

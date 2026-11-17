@@ -11,7 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.se2.DirectionSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.state.StateSE2;
@@ -26,7 +27,6 @@ import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.se2.constraint.YawRateConstraint;
 import org.team100.lib.trajectory.se2.examples.TrajectoryExamples;
 import org.team100.lib.util.ChartUtil;
-
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -37,16 +37,12 @@ class TrajectorySE2PlannerTest implements Timeless {
 
     @Test
     void testLinear() {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                new Rotation2d()),
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(), 0),
                         new DirectionSE2(1, 0, 0), 1.2),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 0),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 0), 0),
                         new DirectionSE2(1, 0, 0), 1.2));
         List<TimingConstraint> constraints = new ArrayList<>();
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
@@ -64,16 +60,12 @@ class TrajectorySE2PlannerTest implements Timeless {
 
     @Test
     void testLinearRealistic() {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                new Rotation2d()),
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(), 0),
                         new DirectionSE2(1, 0, 0), 1.2),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 0),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 0), 0),
                         new DirectionSE2(1, 0, 0), 1.2));
         // these are the same as StraightLineTrajectoryTest.
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forRealisticTest();
@@ -101,16 +93,12 @@ class TrajectorySE2PlannerTest implements Timeless {
      */
     @Test
     void testPerformance() {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                new Rotation2d()),
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(), 0),
                         new DirectionSE2(1, 0, 0), 1.2),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 1),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 1), 0),
                         new DirectionSE2(0, 1, 0), 1.2));
         List<TimingConstraint> constraints = new ArrayList<>();
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
@@ -144,9 +132,9 @@ class TrajectorySE2PlannerTest implements Timeless {
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         StateSE2 start = new StateSE2(Pose2d.ZERO, new VelocitySE2(0, 0, 0));
-        Pose2d end = new Pose2d(1, 0, Rotation2d.ZERO);
+        WindingPose2d end = new WindingPose2d(1, 0, 0);
         TrajectoryExamples ex = new TrajectoryExamples(planner);
-        TrajectorySE2 trajectory = ex.restToRest(start.pose(), end);
+        TrajectorySE2 trajectory = ex.restToRest(new WindingPose2d(start.pose()), end);
         assertEquals(1.565, trajectory.duration(), DELTA);
 
         /** progress along trajectory */
@@ -175,7 +163,7 @@ class TrajectorySE2PlannerTest implements Timeless {
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         StateSE2 start = new StateSE2(Pose2d.ZERO, new VelocitySE2(1, 0, 0));
-        Pose2d end = new Pose2d(1, 0, Rotation2d.ZERO);
+        WindingPose2d end = new WindingPose2d(1, 0, 0);
 
         VelocitySE2 startVelocity = start.velocity();
 
@@ -188,11 +176,11 @@ class TrajectorySE2PlannerTest implements Timeless {
         double e1 = 2.0 * startVelocity.norm() / full.getNorm();
         TrajectorySE2 traj = planner.generateTrajectory(
                 List.of(
-                        new WaypointSE2(
-                                start.pose(),
+                        new WindingWaypointSE2(
+                                new WindingPose2d(start.pose()),
                                 DirectionSE2.irrotational(startingAngle),
                                 e1),
-                        new WaypointSE2(
+                        new WindingWaypointSE2(
                                 end,
                                 DirectionSE2.irrotational(courseToGoal),
                                 1.2)),
@@ -220,7 +208,7 @@ class TrajectorySE2PlannerTest implements Timeless {
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         StateSE2 start = new StateSE2(Pose2d.ZERO, new VelocitySE2(0, 1, 0));
-        Pose2d end = new Pose2d(1, 0, Rotation2d.ZERO);
+        WindingPose2d end = new WindingPose2d(1, 0, 0);
         VelocitySE2 startVelocity = start.velocity();
 
         Translation2d full = end.getTranslation().minus(start.translation());
@@ -230,9 +218,9 @@ class TrajectorySE2PlannerTest implements Timeless {
         // use the start velocity to adjust the first magic number.
         // divide by the distance because the spline multiplies by it
         double e1 = 2.0 * startVelocity.norm() / full.getNorm();
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(start.pose(), DirectionSE2.irrotational(startingAngle), e1),
-                new WaypointSE2(end, DirectionSE2.irrotational(courseToGoal), 1.2));
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(new WindingPose2d(start.pose()), DirectionSE2.irrotational(startingAngle), e1),
+                new WindingWaypointSE2(end, DirectionSE2.irrotational(courseToGoal), 1.2));
         TrajectorySE2 traj = planner.generateTrajectory(
                 waypoints, startVelocity.norm(), 0);
         if (DEBUG)
@@ -255,11 +243,11 @@ class TrajectorySE2PlannerTest implements Timeless {
      */
     @Test
     void test2d2() {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(new Pose2d(0, 0, new Rotation2d()), new DirectionSE2(1, 0, 0), 1.3),
-                new WaypointSE2(new Pose2d(1, 0, new Rotation2d()), new DirectionSE2(1, 0, 0), 1.3),
-                new WaypointSE2(new Pose2d(2, 1, new Rotation2d()), new DirectionSE2(0, 1, 0), 1.3),
-                new WaypointSE2(new Pose2d(2, 2, new Rotation2d()), new DirectionSE2(0, 1, 0), 1.3));
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(new WindingPose2d(0, 0, 0), new DirectionSE2(1, 0, 0), 1.3),
+                new WindingWaypointSE2(new WindingPose2d(1, 0, 0), new DirectionSE2(1, 0, 0), 1.3),
+                new WindingWaypointSE2(new WindingPose2d(2, 1, 0), new DirectionSE2(0, 1, 0), 1.3),
+                new WindingWaypointSE2(new WindingPose2d(2, 2, 0), new DirectionSE2(0, 1, 0), 1.3));
 
         List<TimingConstraint> constraints = List.of(
                 new ConstantConstraint(1, 1),
@@ -313,9 +301,9 @@ class TrajectorySE2PlannerTest implements Timeless {
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(new Pose2d(0, 0, new Rotation2d()), new DirectionSE2(1, 0, 0), 1.3),
-                new WaypointSE2(new Pose2d(4, 0, new Rotation2d()), new DirectionSE2(1, 0, 0), 1.3));
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(new WindingPose2d(0, 0, 0), new DirectionSE2(1, 0, 0), 1.3),
+                new WindingWaypointSE2(new WindingPose2d(4, 0, 0), new DirectionSE2(1, 0, 0), 1.3));
         TrajectorySE2 traj = planner.generateTrajectory(waypoints, 0, 0);
         if (DEBUG)
             traj.dump();
@@ -338,8 +326,8 @@ class TrajectorySE2PlannerTest implements Timeless {
         TrajectorySE2Planner p = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectoryExamples ex = new TrajectoryExamples(p);
         TrajectorySE2 t = ex.restToRest(
-                new Pose2d(0, 0, new Rotation2d()),
-                new Pose2d(10, 1, new Rotation2d()));
+                new WindingPose2d(0, 0, 0),
+                new WindingPose2d(10, 1, 0));
 
         TrajectorySE2ToVectorSeries converter = new TrajectorySE2ToVectorSeries(0.5);
         List<VectorSeries> series = converter.convert(t);
@@ -354,8 +342,8 @@ class TrajectorySE2PlannerTest implements Timeless {
         TrajectorySE2Planner p = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectoryExamples ex = new TrajectoryExamples(p);
         TrajectorySE2 t = ex.restToRest(
-                new Pose2d(0, 0, new Rotation2d()),
-                new Pose2d(0, 0, new Rotation2d(1)));
+                new WindingPose2d(0, 0, 0),
+                new WindingPose2d(0, 0, 1));
         assertTrue(t.isEmpty());
     }
 
@@ -365,20 +353,20 @@ class TrajectorySE2PlannerTest implements Timeless {
         // this is to see how to create the dtheta and curvature
         // without the spline.
         double scale = 1.3;
-        WaypointSE2 p0 = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), Rotation2d.k180deg),
+        WindingWaypointSE2 p0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 0), Math.PI),
                 new DirectionSE2(0, 1, 1), scale);
-        WaypointSE2 p1 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 1), Rotation2d.CW_90DEG),
+        WindingWaypointSE2 p1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 1), -Math.PI / 2),
                 new DirectionSE2(-1, 0, 1), scale);
-        WaypointSE2 p2 = new WaypointSE2(
-                new Pose2d(new Translation2d(-1, 0), Rotation2d.ZERO),
+        WindingWaypointSE2 p2 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(-1, 0), 0),
                 new DirectionSE2(0, -1, 1), scale);
-        WaypointSE2 p3 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, -1), Rotation2d.CCW_90DEG),
+        WindingWaypointSE2 p3 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, -1), Math.PI / 2),
                 new DirectionSE2(1, 0, 1), scale);
 
-        List<WaypointSE2> waypoints = List.of(p0, p1, p2, p3, p0);
+        List<WindingWaypointSE2> waypoints = List.of(p0, p1, p2, p3, p0);
 
         List<TimingConstraint> c = List.of(
                 new ConstantConstraint(2, 0.5),
@@ -395,13 +383,13 @@ class TrajectorySE2PlannerTest implements Timeless {
     @Test
     void testDheading() {
         double scale = 1.3;
-        WaypointSE2 w0 = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), Rotation2d.k180deg),
+        WindingWaypointSE2 w0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 0), Math.PI),
                 new DirectionSE2(0, 1, 1), scale);
-        WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 1), Rotation2d.CW_90DEG),
+        WindingWaypointSE2 w1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 1), -Math.PI / 2),
                 new DirectionSE2(-1, 0, 1), scale);
-        List<WaypointSE2> waypoints = List.of(w0, w1);
+        List<WindingWaypointSE2> waypoints = List.of(w0, w1);
 
         List<TimingConstraint> c = List.of(
                 new ConstantConstraint(2, 0.5),
@@ -417,9 +405,9 @@ class TrajectorySE2PlannerTest implements Timeless {
                     "t, intrinsic_heading_dt, heading_dt, intrinsic_ca, extrinsic_ca, extrinsic v, intrinsic v, dcourse, dcourse1");
         for (double t = 0.04; t < duration; t += 0.04) {
             TrajectorySE2Entry p1 = trajectory.sample(t);
-            Rotation2d heading0 = p0.point().point().waypoint().pose().getRotation();
-            Rotation2d heading1 = p1.point().point().waypoint().pose().getRotation();
-            double dheading = heading1.minus(heading0).getRadians();
+            double heading0 = p0.point().point().waypoint().pose().getRotation();
+            double heading1 = p1.point().point().waypoint().pose().getRotation();
+            double dheading = heading1 - heading0;
             // compute time derivative of heading two ways:
             // this just compares the poses and uses the known time step
             double dheadingDt = dheading / 0.04;
@@ -450,7 +438,7 @@ class TrajectorySE2PlannerTest implements Timeless {
     /**
      * Yields a curve.
      * 
-     * A WaypointSE2 allows separate specification of heading (which way the
+     * A WindingWaypointSE2 allows separate specification of heading (which way the
      * front of the robot is facing) and course (which way the robot is moving).
      * 
      * In this case, is facing +x, and moving +x, and it ends up moving +y but
@@ -464,12 +452,12 @@ class TrajectorySE2PlannerTest implements Timeless {
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(c);
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner p = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(1, 1), new Rotation2d()),
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 1), 0),
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(9, 9), new Rotation2d(-Math.PI / 2)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(9, 9), -Math.PI / 2),
                         new DirectionSE2(0, 1, 0), 1));
         TrajectorySE2 t = p.restToRest(waypoints);
 
@@ -491,15 +479,15 @@ class TrajectorySE2PlannerTest implements Timeless {
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(c);
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner p = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(1, 1), new Rotation2d()),
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 1), 0),
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(5, 5), new Rotation2d(-2)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(5, 5), -2),
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(9, 9), new Rotation2d(-Math.PI / 2)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(9, 9), -Math.PI / 2),
                         new DirectionSE2(0, 1, 0), 1));
         TrajectorySE2 t = p.restToRest(waypoints);
 

@@ -4,7 +4,8 @@ import java.util.List;
 
 import org.team100.lib.commands.MoveAndHold;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.reference.se2.TrajectoryReferenceSE2;
 import org.team100.lib.subsystems.se2.PositionSubsystemSE2;
@@ -19,7 +20,7 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 public class GoToPosePosition extends MoveAndHold {
     private final LoggerFactory m_log;
     private final PositionSubsystemSE2 m_subsystem;
-    private final WaypointSE2 m_goal;
+    private final WindingWaypointSE2 m_goal;
     private final DirectionSE2 m_course;
     private final TrajectorySE2Planner m_planner;
 
@@ -29,7 +30,7 @@ public class GoToPosePosition extends MoveAndHold {
             LoggerFactory parent,
             PositionSubsystemSE2 subsystem,
             DirectionSE2 course,
-            WaypointSE2 goal,
+            WindingWaypointSE2 goal,
             TrajectorySE2Planner planner) {
         m_log = parent.type(this);
         m_subsystem = subsystem;
@@ -41,8 +42,9 @@ public class GoToPosePosition extends MoveAndHold {
 
     @Override
     public void initialize() {
-        WaypointSE2 m_currentPose = new WaypointSE2(
-                m_subsystem.getState().pose(),
+        // Note, uses zero-winding sheet
+        WindingWaypointSE2 m_currentPose = new WindingWaypointSE2(
+                new WindingPose2d(m_subsystem.getState().pose()),
                 m_course, 1);
         TrajectorySE2 m_trajectory = m_planner.restToRest(
                 List.of(m_currentPose, m_goal));

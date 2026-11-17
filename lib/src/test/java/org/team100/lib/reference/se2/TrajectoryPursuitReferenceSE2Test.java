@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.coherence.Cache;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
@@ -20,8 +21,6 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.se2.examples.TrajectoryExamples;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
 
 public class TrajectoryPursuitReferenceSE2Test {
@@ -41,8 +40,8 @@ public class TrajectoryPursuitReferenceSE2Test {
         Cache.clear();
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         TrajectorySE2 t = ex.restToRest(
-                new Pose2d(0, 0, Rotation2d.ZERO),
-                new Pose2d(1, 0, Rotation2d.ZERO));
+                new WindingPose2d(0, 0, 0),
+                new WindingPose2d(1, 0, 0));
         TrajectoryPursuitReferenceSE2 r = new TrajectoryPursuitReferenceSE2(
                 logger, t, () -> position);
         {

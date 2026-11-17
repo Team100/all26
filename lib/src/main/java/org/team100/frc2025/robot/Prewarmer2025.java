@@ -5,7 +5,8 @@ import java.util.List;
 
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.state.VelocityControlSE2;
@@ -13,11 +14,8 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Factory;
 import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
-
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.command2.Command;
+import org.wpilib.math.geometry.Translation2d;
 
 /**
  * Exercise some code to try to force various initialization and GC delays to
@@ -30,13 +28,13 @@ public class Prewarmer2025 {
         double startS = Takt.actual();
 
         // Exercise the trajectory planner.
-        List<WaypointSE2> waypoints = new ArrayList<>();
-        waypoints.add(new WaypointSE2(
-                new Pose2d(new Translation2d(), Rotation2d.ZERO),
+        List<WindingWaypointSE2> waypoints = new ArrayList<>();
+        waypoints.add(new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(), 0),
                 new DirectionSE2(1, 0, 0),
                 1));
-        waypoints.add(new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), Rotation2d.ZERO),
+        waypoints.add(new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 0), 0),
                 new DirectionSE2(1, 0, 0),
                 1));
         List<TimingConstraint> constraints = new TimingConstraintFactory(machinery.m_swerveKinodynamics).medium();

@@ -2,6 +2,7 @@ package org.team100.lib.reference.se2;
 
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.framework.TimedRobot100;
+import org.team100.lib.geometry.Metrics;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
@@ -21,6 +22,7 @@ public class TrajectoryReferenceSE2 implements ReferenceSE2 {
     private final ControlSE2Logger m_log_next;
     private final BooleanLogger m_log_done;
     private final StateSE2Logger m_log_goal;
+    private final DoubleLogger m_logToGo;
     private final DoubleLogger m_log_progress;
     private double m_startTimeS;
 
@@ -34,6 +36,7 @@ public class TrajectoryReferenceSE2 implements ReferenceSE2 {
         m_log_next = log.controlSE2Logger(Level.TRACE, "next");
         m_log_done = log.booleanLogger(Level.TRACE, "done");
         m_log_goal = log.StateSE2Logger(Level.TRACE, "goal");
+        m_logToGo = log.doubleLogger(Level.TRACE, "to go");
     }
 
     /** Ignores the measurement, resets the trajectory timer. */
@@ -72,7 +75,17 @@ public class TrajectoryReferenceSE2 implements ReferenceSE2 {
         return goal;
     }
 
-    ////////////////////////////////////////////////////
+    @Override
+    public double toGo() {
+        TrajectorySE2Entry entry = m_trajectory.getLastPoint();
+        TrajectorySE2Point point = entry.point();
+        StateSE2 goal = point.control().state();
+        double l2 = Metrics.l2Norm(goal.minus(current()));
+        m_logToGo.log(() -> l2);
+        return l2;
+    }
+
+    //////////////////////////////////////////////
 
     private double progress() {
         double progress = Takt.get() - m_startTimeS;

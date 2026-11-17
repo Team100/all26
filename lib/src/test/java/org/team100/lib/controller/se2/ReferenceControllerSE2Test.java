@@ -9,7 +9,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
@@ -31,7 +32,6 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Planner;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.se2.examples.TrajectoryExamples;
-
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -52,8 +52,8 @@ public class ReferenceControllerSE2Test implements Timeless {
         // stepTime();
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         TrajectorySE2 t = ex.restToRest(
-                new Pose2d(0, 0, Rotation2d.ZERO),
-                new Pose2d(1, 0, Rotation2d.ZERO));
+                new WindingPose2d(0, 0, 0),
+                new WindingPose2d(1, 0, 0));
         // first state is motionless
         assertEquals(0, t.sample(0).point().velocity(), DELTA);
         ControllerSE2 controller = ControllerFactorySE2.test(logger);
@@ -108,8 +108,8 @@ public class ReferenceControllerSE2Test implements Timeless {
         stepTime();
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         TrajectorySE2 t = ex.restToRest(
-                new Pose2d(0, 0, Rotation2d.ZERO),
-                new Pose2d(1, 0, Rotation2d.ZERO));
+                new WindingPose2d(0, 0, 0),
+                new WindingPose2d(1, 0, 0));
         // first state is motionless
         assertEquals(0, t.sample(0).point().velocity(), DELTA);
         ControllerSE2 controller = ControllerFactorySE2.test(logger);
@@ -137,21 +137,15 @@ public class ReferenceControllerSE2Test implements Timeless {
 
     @Test
     void testFieldRelativeTrajectory() {
-        List<WaypointSE2> waypoints = new ArrayList<>();
-        waypoints.add(new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(),
-                        Rotation2d.fromDegrees(180)),
+        List<WindingWaypointSE2> waypoints = new ArrayList<>();
+        waypoints.add(new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(), Math.toRadians(180)),
                 new DirectionSE2(1, 0, 0), 1));
-        waypoints.add(new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(100, 4),
-                        Rotation2d.fromDegrees(180)),
+        waypoints.add(new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(100, 4), Math.toRadians(180)),
                 new DirectionSE2(1, 0, 0), 1));
-        waypoints.add(new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(196, 13),
-                        Rotation2d.fromDegrees(0)),
+        waypoints.add(new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(196, 13), 0),
                 new DirectionSE2(1, 0, 0), 1));
 
         double start_vel = 0.0;
@@ -180,7 +174,7 @@ public class ReferenceControllerSE2Test implements Timeless {
         VelocityReferenceControllerSE2 referenceController = new VelocityReferenceControllerSE2(
                 logger, drive, swerveController, reference);
 
-        Pose2d pose = trajectory.sample(0).point().point().waypoint().pose();
+        WindingPose2d pose = trajectory.sample(0).point().point().waypoint().pose();
         VelocityControlSE2 velocity = VelocityControlSE2.ZERO;
 
         double dt = 0.02;
@@ -189,14 +183,19 @@ public class ReferenceControllerSE2Test implements Timeless {
             if (++i > 500)
                 break;
             stepTime();
-            drive.m_state = new StateSE2(pose, velocity.velocity());
+            drive.m_state = new StateSE2(pose.pose2d(), velocity.velocity());
             referenceController.execute();
             velocity = drive.m_setpoint;
-            pose = new Pose2d(
-                    pose.getX() + velocity.x().v() * dt + velocity.x().a() * dt * dt / 2,
-                    pose.getY() + velocity.y().v() * dt + velocity.y().a() * dt * dt / 2,
-                    new Rotation2d(pose.getRotation().getRadians() + velocity.theta().v() * dt
-                            + velocity.theta().a() * dt * dt / 2));
+            pose = new WindingPose2d(
+                    pose.getX()
+                            + velocity.x().v() * dt
+                            + velocity.x().a() * dt * dt / 2,
+                    pose.getY()
+                            + velocity.y().v() * dt
+                            + velocity.y().a() * dt * dt / 2,
+                    pose.getRotation()
+                            + velocity.theta().v() * dt
+                            + velocity.theta().a() * dt * dt / 2);
             if (DEBUG)
                 System.out.printf("pose %s vel %s\n", pose, velocity);
         }
@@ -204,7 +203,7 @@ public class ReferenceControllerSE2Test implements Timeless {
         // this should be exactly right but it's not.
         assertEquals(196, pose.getTranslation().getX(), 0.001);
         assertEquals(13, pose.getTranslation().getY(), 0.001);
-        assertEquals(0, pose.getRotation().getRadians(), 0.001);
+        assertEquals(0, pose.getRotation(), 0.001);
     }
 
 }
