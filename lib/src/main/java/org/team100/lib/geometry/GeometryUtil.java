@@ -462,6 +462,10 @@ public class GeometryUtil {
         return VecBuilder.fill(twist.dx, twist.dy, twist.dtheta);
     }
 
+    public static Twist2d fromVec(Vector<N3> v) {
+        return new Twist2d(v.get(0), v.get(1), v.get(2));
+    }
+
     public static Vector<N6> toVec(Twist3d t) {
         return VecBuilder.fill(t.dx, t.dy, t.dz, t.rx, t.ry, t.rz);
     }

@@ -1,5 +1,10 @@
 package org.team100.lib.uncertainty;
 
+import java.util.Random;
+
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N3;
 import org.wpilib.math.util.MathUtil;
 
 /**
@@ -34,6 +39,13 @@ public class IsotropicNoiseSE2 {
     /** Effectively infinite uncertainty. */
     public static IsotropicNoiseSE2 high() {
         return IsotropicNoiseSE2.fromStdDev(10, 6);
+    }
+
+    public Vector<N3> sample(Random rand) {
+        return VecBuilder.fill(
+                cartesian() * rand.nextGaussian(),
+                cartesian() * rand.nextGaussian(),
+                rotation() * rand.nextGaussian());
     }
 
     /** Just adds the variances */

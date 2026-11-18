@@ -2,6 +2,8 @@ package org.team100.lib.uncertainty;
 
 import org.team100.lib.geometry.Metrics;
 import org.wpilib.math.geometry.Twist2d;
+import org.wpilib.math.linalg.MatBuilder;
+import org.wpilib.math.util.Nat;
 
 /**
  * Uncertainty estimates for odometry, using kinda wild guesses.
@@ -26,6 +28,29 @@ public class OdometryNoise {
         double odometryDistanceM = Metrics.translationalNorm(twist);
         double odometryRotationRad = twist.dtheta;
         return get(odometryDistanceM, odometryRotationRad);
+    }
+
+    /** This is a wild guess. */
+    public static AnisotropicNoiseSE2 getFull(Twist2d twist) {
+        double l2 = Metrics.l2Norm(twist);
+        if (l2 < 1e-6)
+            return new AnisotropicNoiseSE2();
+        double rad = twist.dtheta;
+        double cartesian = cartesian(l2);
+        double rotation = rotation(l2, rad);
+        double c = twist.dx / l2;
+        double s = twist.dy / l2;
+        double r = twist.dtheta / l2;
+        // note regularization terms
+        double w00 = cartesian * c + 1e-6;
+        double w11 = cartesian * s + 1e-6;
+        double w22 = rotation * r + 1e-6;
+        // the 0.8 below is a total hack
+        return new AnisotropicNoiseSE2(
+                MatBuilder.fill(Nat.N3(), Nat.N3(),
+                        w00 * w00, 0.8 * w00 * w11, 0.8 * w00 * w22, //
+                        0.8 * w00 * w11, w11 * w11, 0.8 * w11 * w22, //
+                        0.8 * w00 * w22, 0.8 * w11 * w22, w22 * w22));
     }
 
     /**
