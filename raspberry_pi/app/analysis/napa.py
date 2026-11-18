@@ -9,7 +9,7 @@ from wpimath.geometry._geometry import Transform3d, Pose3d
 from app.dashboard.display_util import DisplayUtil
 from app.analysis.analysis_protocol import MonoAnalysis
 from app.network.network_protocol import Network
-from app.network.structs import Blip, BlipWithCorners
+from app.network.structs import BlipWithCorners
 from napa_vision import NapaDetector
 from napa_vision.types import FiducialImageObservation, FiducialDetector
 
@@ -22,13 +22,12 @@ class Napa(MonoAnalysis):
         self,
         network: Network,
     ) -> None:
-        """Finds Apriltags.
+        """Finds Apriltags & their corners.
 
         :network: to send results
         """
 
         print("*** MonoAnalysis: Napa")
-        self._blips = network.get_blip_sender()
         self._blips_with_corners = network.get_blip_with_corners_sender()
         self._at_detector: FiducialDetector = Napa._get_detector()
     
@@ -49,7 +48,6 @@ class Napa(MonoAnalysis):
             img
         )
 
-        blips: list[Blip] = []
         blips_with_corners: list[BlipWithCorners] = []
         detection: FiducialImageObservation
         for detection in result:
@@ -61,7 +59,6 @@ class Napa(MonoAnalysis):
             raw_corners = Napa._raw_corners(detection)
 
             # Send dummy pose data
-            blips.append(Blip(int(servertime), detection.tag_id, ZERO_POSE))
             blips_with_corners.append(
                 BlipWithCorners.make(
                     int(servertime), detection.tag_id, raw_corners, ZERO_POSE
@@ -70,7 +67,6 @@ class Napa(MonoAnalysis):
             if img_display is not None:
                 DisplayUtil.tag(img_display, detection, ZERO_POSE)
 
-        self._blips.send(blips)
         self._blips_with_corners.send(blips_with_corners)
 
     @staticmethod
