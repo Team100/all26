@@ -10,16 +10,11 @@ import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.numbers.N3;
 
 public class AnisotropicNoiseSE2Sampler {
-    private final AnisotropicNoiseSE2 m_noise;
+    private final Random r = new Random();
 
-    public AnisotropicNoiseSE2Sampler(AnisotropicNoiseSE2 noise) {
-        m_noise = noise;
-    }
-
-    public Twist2d apply(Twist2d t) {
+    public Twist2d apply(AnisotropicNoiseSE2 m_noise, Twist2d t) {
         Matrix<N3, N3> llt = m_noise.cov().times(10000).lltDecompose(true).div(100);
         Vector<N3> mean = GeometryUtil.toVec(t);
-        Random r = new Random();
         Vector<N3> z = VecBuilder.fill(r.nextGaussian(), r.nextGaussian(), r.nextGaussian());
         Vector<N3> Lz = new Vector<>(llt.times(z));
         Vector<N3> sampleVec = mean.plus(Lz);
