@@ -41,7 +41,7 @@ class Napa(MonoAnalysis):
     ) -> None:
         """Detect from img, show on img_display, send (raw) corners over the network.
         :img: 8-bit mono, distorted, for detection.
-        :img_display: distorted, for display, annotated with tag positions
+        :img_display: distorted, for display, annotated with tag corners
         :servertime: drift-corrected server-time microsecond image timestamp"""
 
         result: list[FiducialImageObservation] = self._at_detector.detect(
