@@ -11,7 +11,7 @@ from app.config.identity import Identity
 from app.dashboard.display_protocol import Display
 from app.dashboard.linux_display import LinuxDisplay
 from app.interpreter.interpreter_protocol import Interpreter
-from app.analysis.apriltags import AprilTags
+from app.analysis.napa import Napa
 from app.analysis.blobs import Blobs
 from app.interpreter.dual_interpreter import DualInterpreter
 from app.network.network_protocol import Network
@@ -54,7 +54,7 @@ class SemiRealTest(unittest.TestCase):
             display2,
             network,
             timestamps,
-            AprilTags(identity, camera, network),
+            Napa(network),
             None,
         )
         camera_loop: CameraLoop = CameraLoop(camera, interpreter, done)
@@ -142,7 +142,7 @@ class SemiRealTest(unittest.TestCase):
             display2,
             network,
             timestamps,
-            AprilTags(identity, camera, network),
+            Napa(network),
             Blobs(camera, network, object_lower, object_higher),
         )
         camera_loop: CameraLoop = CameraLoop(camera, interpreter, done)

@@ -7,7 +7,7 @@ from app.config.identity import Identity
 from app.dashboard.display_protocol import Display
 from app.interpreter.interpreter_protocol import Interpreter
 from app.interpreter.viewfinder import Viewfinder
-from app.analysis.apriltags import AprilTags
+from app.analysis.napa import Napa
 from app.analysis.balls import Balls
 from app.interpreter.dual_interpreter import DualInterpreter
 from app.network.network_protocol import Network
@@ -58,7 +58,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    AprilTags(identity, cam, network),
+                    Napa(network),
                     None,
                 )
             case Identity.GAME_PIECE:
@@ -90,7 +90,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    AprilTags(identity, cam, network),
+                    Napa(network),
                     None,
                 )
             case Identity.CAMERA_FRONT | Identity.DEV2 | Identity.BALL_DETECT:
@@ -100,7 +100,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    AprilTags(identity, cam, network),
+                    Napa(network),
                     Balls(cam, network),
                 )
             case Identity.CAMERA_2A:
@@ -110,7 +110,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    AprilTags(identity, cam, network),
+                    Napa(network),
                     None,
                 )
             case Identity.COLOR_DETECT_1:
@@ -120,7 +120,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    AprilTags(identity, cam, network),
+                    Napa(network),
                     None,
                 )
             case _:
@@ -130,6 +130,6 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    AprilTags(identity, cam, network),
+                    Napa(network),
                     None,
                 )

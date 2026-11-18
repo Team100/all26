@@ -8,7 +8,7 @@ import cv2
 
 from app.camera.fake_camera import FakeCamera
 from app.config.identity import Identity
-from app.analysis.apriltags import AprilTags
+from app.analysis.napa import Napa
 from app.network.fake_network import FakeNetwork
 
 
@@ -20,7 +20,7 @@ class AprilTagTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/big_sharp.png")
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type: ignore
 
         self.assertEqual(1, len(network.blips))
@@ -35,7 +35,7 @@ class AprilTagTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/big_sharp90.png")
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips))
@@ -50,7 +50,7 @@ class AprilTagTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/big_sharpY.png")
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips))
@@ -64,7 +64,7 @@ class AprilTagTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/scale1.png")
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips))
@@ -77,7 +77,7 @@ class AprilTagTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/scale2.png")
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips))
@@ -90,7 +90,7 @@ class AprilTagTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/scale3.pnm")
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips))
@@ -103,7 +103,7 @@ class AprilTagTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/scale4.pnm")
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips))
@@ -118,7 +118,7 @@ class AprilTagTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/scale5.pnm")
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips))
@@ -132,7 +132,7 @@ class AprilTagTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/scale6.pnm")
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
         self.assertEqual(0, len(network.blips))
         self.assertEqual(0, len(network.blips_with_corners))
@@ -141,7 +141,7 @@ class AprilTagTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/tag_and_board.jpg", (1100, 620))
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips))
@@ -155,7 +155,7 @@ class AprilTagTest(unittest.TestCase):
         network = FakeNetwork()
         # nothing in this image
         camera = FakeCamera("images/white_square.jpg")
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(0, len(network.blips))
@@ -168,7 +168,7 @@ class AprilTagTest(unittest.TestCase):
 
         # No distortion.
         camera = FakeCamera("images/tag_and_board.jpg", (1100, 620), 0)
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips))
@@ -176,7 +176,7 @@ class AprilTagTest(unittest.TestCase):
         # A moderate amount of distortion
         network = FakeNetwork()
         camera = FakeCamera("images/tag_and_board.jpg", (1100, 620), -0.1)
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
         self.assertEqual(1, len(network.blips))
         # A tiny bit more tolerance
@@ -184,7 +184,7 @@ class AprilTagTest(unittest.TestCase):
         # A realistic amount of distortion
         network = FakeNetwork()
         camera = FakeCamera("images/tag_and_board.jpg", (1100, 620), -0.3)
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
         self.assertEqual(1, len(network.blips))
         # A bit more tolerance
@@ -193,7 +193,7 @@ class AprilTagTest(unittest.TestCase):
         # Note: this is a truly enormous amount of distortion.
         network = FakeNetwork()
         camera = FakeCamera("images/tag_and_board.jpg", (1100, 620), -2)
-        apriltags = AprilTags(identity, camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
     def test_redistort(self) -> None:

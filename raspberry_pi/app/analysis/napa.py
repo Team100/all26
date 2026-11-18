@@ -1,15 +1,11 @@
 # pylint: disable=E1101,R0903
 
 from typing import override
-import numpy as np
 
 from cv2.typing import MatLike
-from numpy.typing import NDArray
 
 from wpimath.geometry._geometry import Transform3d, Pose3d
 
-from app.camera.camera_protocol import Camera
-from app.config.identity import Identity
 from app.dashboard.display_util import DisplayUtil
 from app.analysis.analysis_protocol import MonoAnalysis
 from app.network.network_protocol import Network
@@ -20,38 +16,22 @@ from napa_vision.types import FiducialImageObservation, FiducialDetector
 ZERO_POSE = Transform3d(Pose3d(), Pose3d())
 
 class Napa(MonoAnalysis):
-    """A wrapper for the AprilTag detector."""
+    """A wrapper for the Napa AprilTag detector."""
 
     def __init__(
         self,
-        identity: Identity,
-        cam: Camera,
         network: Network,
     ) -> None:
         """Finds Apriltags.
 
-        :identity: chooses tag size
-        :cam: camera implementation
         :network: to send results
         """
 
-        print("*** MonoAnalysis: AprilTags")
-        self._mtx: NDArray[np.float32] = cam.get_intrinsic()
-        self._dist: NDArray[np.float32] = cam.get_dist()
+        print("*** MonoAnalysis: Napa")
         self._blips = network.get_blip_sender()
         self._blips_with_corners = network.get_blip_with_corners_sender()
         self._at_detector: FiducialDetector = Napa._get_detector()
-        
-        if identity == Identity.DIST_TEST:
-            # the distortion rig uses a 33 mm, 20% scale, tag.
-            tag_size = 0.033
-        elif identity == Identity.FUNNEL:
-            # for rotation testing rig
-            tag_size = 0.059
-        else:
-            # normal tag size is 6.5 inches
-            tag_size = 0.1651
-        print("*** Tag size:", tag_size)
+    
 
     @override
     def analyze_mono(
@@ -60,9 +40,7 @@ class Napa(MonoAnalysis):
         img_display: MatLike | None,
         servertime: int,
     ) -> None:
-        """Detect from img, show on img_display, undistort, extract pose,
-        and send pose and (raw) corners over the network.
-
+        """Detect from img, show on img_display, send (raw) corners over the network.
         :img: 8-bit mono, distorted, for detection.
         :img_display: distorted, for display, annotated with tag positions
         :servertime: drift-corrected server-time microsecond image timestamp"""
@@ -76,13 +54,13 @@ class Napa(MonoAnalysis):
         detection: FiducialImageObservation
         for detection in result:
 
-            if detection.hamming > 0:  # Skip imperfect reads.
+            if detection.hamming > 0:  # Skip imperfect reads. TODO: Is this actually necessary? Why are we skipping these reads?
                 continue
 
             # Extract raw (x,y) corners from the tag.
             raw_corners = Napa._raw_corners(detection)
 
-            # Estimate the pose.
+            # Send dummy pose data
             blips.append(Blip(int(servertime), detection.tag_id, ZERO_POSE))
             blips_with_corners.append(
                 BlipWithCorners.make(
