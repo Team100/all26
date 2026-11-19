@@ -7,7 +7,8 @@ class AprilTagDetection(Protocol):
 
     def get_corners(self) -> tuple[Point2D, Point2D, Point2D, Point2D]:
         """
-        Gets all four corners of the AprilTag
+        Gets all four corners of the AprilTag. 
+        Corners are returned in the following order: lower left, lower right, upper right, upper left.
 
         :return: All four of the corners
         :rtype: tuple[Point2D, Point2D, Point2D, Point2D]
@@ -17,6 +18,7 @@ class AprilTagDetection(Protocol):
     def get_corner(self, ndx: int) -> Point2D:
         """
         Gets the position of individual corner of the AprilTag, by index
+        Corners are indexed in the following order: lower left, lower right, upper right, upper left
 
         :param ndx: The index/number of the corner to get.
         :type ndx: int
