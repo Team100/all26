@@ -23,17 +23,17 @@
     "python.analysis.autoImportCompletions": true,
     "python.analysis.diagnosticMode": "workspace",
     "editor.stickyScroll.scrollWithEditor": false,
-    "workbench.colorTheme": "Solarized Light",
+    "workbench.colorTheme": "Default Dark Modern",
     "workbench.tree.enableStickyScroll": false,
     "editor.stickyScroll.enabled": false,
     "editor.cursorWidth":2,
-    "editor.multiCursorLimit": 1,
+    "editor.multiCursorLimit": 100,
     "workbench.editor.revealIfOpen": true,
     "python.analysis.diagnosticSeverityOverrides": {
         "reportArgumentType": "none",
         "reportOptionalMemberAccess": "none"
     },
-    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.defaultEnvManager": "ms-python.python:venv",
     "python-envs.pythonProjects": [],
     "terminal.integrated.enablePersistentSessions": false
 }

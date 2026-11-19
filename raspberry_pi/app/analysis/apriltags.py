@@ -15,6 +15,7 @@ from app.config.identity import Identity
 from app.dashboard.display_util import DisplayUtil
 from app.network.network_protocol import Network
 from app.network.structs import Blip, BlipWithCorners
+from app.util.robotpy_detections import RobotPyTagDetection
 
 # Tag corners for computing homography.
 SRC_POINTS = np.array([[-1, 1], [1, 1], [1, -1], [-1, -1]])
@@ -100,7 +101,7 @@ class AprilTags(MonoAnalysis):
                 BlipWithCorners.make(int(servertime), tag.getId(), raw_corners, pose)
             )
             if img_display is not None:
-                DisplayUtil.tag(img_display, tag, pose)
+                DisplayUtil.tag(img_display, RobotPyTagDetection(tag), pose)
 
         self._blips.send(blips)
         self._blips_with_corners.send(blips_with_corners)

@@ -8,6 +8,8 @@ from app.dashboard.display_protocol import Display
 from app.interpreter.dual_interpreter import DualInterpreter
 from app.interpreter.interpreter_protocol import Interpreter
 from app.interpreter.viewfinder import Viewfinder
+from app.analysis.apriltags import AprilTags
+from app.interpreter.dual_interpreter import DualInterpreter
 from app.network.network_protocol import Network
 from app.util.timestamps import Timestamps
 
@@ -56,7 +58,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    AprilTags(identity, cam, network),
+                    Napa(network),
                     None,
                 )
             # case Identity.GAME_PIECE:
@@ -89,7 +91,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    AprilTags(identity, cam, network),
+                    Napa(network),
                     None,
                 )
             case (
@@ -103,7 +105,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    AprilTags(identity, cam, network),
+                    Napa(network),
                     None,
                 )
             case Identity.CAMERA_2A:
@@ -113,7 +115,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    AprilTags(identity, cam, network),
+                    Napa(network),
                     None,
                 )
             case Identity.COLOR_DETECT_1:
@@ -123,7 +125,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    AprilTags(identity, cam, network),
+                    Napa(network),
                     None,
                 )
             case _:
@@ -133,6 +135,6 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    AprilTags(identity, cam, network),
+                    Napa(network),
                     None,
                 )
