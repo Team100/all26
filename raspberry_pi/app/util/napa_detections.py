@@ -47,4 +47,4 @@ class NapaTagDetection(AprilTagDetection):
     def _raw_center(
         detection: FiducialImageObservation,
     ) -> tuple[float, float]:
-        return tuple(detection.center.flatten().tolist())  # type: ignore
+        return tuple((detection.center + 0.5).flatten().tolist())  # type: ignore
