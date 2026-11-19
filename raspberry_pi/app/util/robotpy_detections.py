@@ -12,16 +12,16 @@ class RobotPyTagDetection(AprilTagDetection):
 
     @override
     def get_center(self) -> Point2D:
-        return Point2D(RobotPy._raw_center(self._detection)[0], RobotPy._raw_center(self._detection)[1])
+        return Point2D(RobotPyTagDetection._raw_center(self._detection)[0], RobotPyTagDetection._raw_center(self._detection)[1])
 
     @override
     def get_corner(self, ndx: int) -> Point2D:
-        raw = RobotPy._raw_corners(self._detection)
+        raw = RobotPyTagDetection._raw_corners(self._detection)
         return Point2D(raw[(2 * ndx)], raw[(2 * ndx) + 1])
 
     @override
     def get_corners(self) -> tuple[Point2D, Point2D, Point2D, Point2D]:
-        raw = RobotPy._raw_corners(self._detection)
+        raw = RobotPyTagDetection._raw_corners(self._detection)
         return (
             Point2D(raw[0], raw[1]),
             Point2D(raw[2], raw[3]),
@@ -48,4 +48,4 @@ class RobotPyTagDetection(AprilTagDetection):
         detection: robotpy_AprilTagDetection,
     ) -> tuple[float, float]:
         c = detection.getCenter()
-        return tuple(c.x, c.y) # type: ignore
+        return (c.x, c.y) # type: ignore
