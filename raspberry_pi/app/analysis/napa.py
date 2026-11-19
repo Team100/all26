@@ -52,7 +52,7 @@ class Napa(MonoAnalysis):
         blips_with_corners: list[BlipWithCorners] = []
         detection: FiducialImageObservation
         for detection in result:
-            if detection.hamming > 0:  # Skip imperfect reads. TODO: Is this actually necessary? Why are we skipping these reads?
+            if detection.hamming > 0:  # Skip imperfect reads. TODO: Is this actually necessary? Why are we skipping these reads? # type: ignore
                 continue
 
             # Extract raw (x,y) corners from the tag.
