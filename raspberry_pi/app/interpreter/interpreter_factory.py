@@ -8,7 +8,7 @@ from app.dashboard.display_protocol import Display
 from app.interpreter.dual_interpreter import DualInterpreter
 from app.interpreter.interpreter_protocol import Interpreter
 from app.interpreter.viewfinder import Viewfinder
-from app.analysis.apriltags import AprilTags
+from app.analysis.napa import Napa
 from app.interpreter.dual_interpreter import DualInterpreter
 from app.network.network_protocol import Network
 from app.util.timestamps import Timestamps
