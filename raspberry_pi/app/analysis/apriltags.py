@@ -80,7 +80,7 @@ class AprilTags(MonoAnalysis):
             # Extract raw (x,y) corners from the tag.
             raw_corners: tuple[
                 float, float, float, float, float, float, float, float
-            ] = AprilTags._raw_corners(tag)
+            ] = RobotPyTagDetection.raw_corners(tag)
 
             # Undistort the corners.
             undistorted_corners: tuple[
@@ -158,13 +158,7 @@ class AprilTags(MonoAnalysis):
             )
         )
 
-    @staticmethod
-    def _raw_corners(
-        result_item: AprilTagDetection,
-    ) -> tuple[float, float, float, float, float, float, float, float]:
-        """Return corners from a detection as a tuple.
-        The order is: lower left, lower right, upper right, upper left."""
-        return result_item.getCorners((0, 0, 0, 0, 0, 0, 0, 0))
+
 
     @staticmethod
     def _undistorted_corners(

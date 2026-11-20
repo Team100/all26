@@ -16,12 +16,12 @@ class NapaTagDetection(AprilTagDetection):
 
     @override
     def get_corner(self, ndx: int) -> Point2D:
-        raw = NapaTagDetection._raw_corners(self._detection)
+        raw = NapaTagDetection.raw_corners(self._detection)
         return Point2D(raw[(2 * ndx)], raw[(2 * ndx) + 1])
 
     @override
     def get_corners(self) -> tuple[Point2D, Point2D, Point2D, Point2D]:
-        raw = NapaTagDetection._raw_corners(self._detection)
+        raw = NapaTagDetection.raw_corners(self._detection)
         return (
             Point2D(raw[0], raw[1]),
             Point2D(raw[2], raw[3]),
@@ -38,9 +38,13 @@ class NapaTagDetection(AprilTagDetection):
         return self._detection.family
     
     @staticmethod
-    def _raw_corners(
+    def raw_corners(
         detection: FiducialImageObservation,
-    ) -> tuple[float, float, float, float, float, float, float, float]:
+    ) -> tuple[float, float, float, float, float, float, float, float]: # type: ignore
+        """
+        Return corners from a detection as a tuple.
+        The order is: lower left, lower right, upper right, upper left.
+        """
         return tuple((detection.corners[[1, 0, 3, 2]] + 0.5).flatten().tolist())  # type: ignore
     
     @staticmethod

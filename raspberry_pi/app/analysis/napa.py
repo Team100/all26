@@ -56,7 +56,7 @@ class Napa(MonoAnalysis):
                 continue
 
             # Extract raw (x,y) corners from the tag.
-            raw_corners = Napa._raw_corners(detection)
+            raw_corners = NapaTagDetection.raw_corners(detection)
 
             # Send dummy pose data
             blips_with_corners.append(
@@ -83,11 +83,3 @@ class Napa(MonoAnalysis):
         }
 
         return NapaDetector(**config)
-
-    @staticmethod
-    def _raw_corners(
-        result_item: FiducialImageObservation,
-    ) -> tuple[float, float, float, float, float, float, float, float]:
-        """Return corners from a detection as a tuple.
-        The order is: lower left, lower right, upper right, upper left."""
-        return tuple((result_item.corners[[1, 0, 3, 2]] + 0.5).flatten().tolist())

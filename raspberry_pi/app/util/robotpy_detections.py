@@ -16,12 +16,12 @@ class RobotPyTagDetection(AprilTagDetection):
 
     @override
     def get_corner(self, ndx: int) -> Point2D:
-        raw = RobotPyTagDetection._raw_corners(self._detection)
+        raw = RobotPyTagDetection.raw_corners(self._detection)
         return Point2D(raw[(2 * ndx)], raw[(2 * ndx) + 1])
 
     @override
     def get_corners(self) -> tuple[Point2D, Point2D, Point2D, Point2D]:
-        raw = RobotPyTagDetection._raw_corners(self._detection)
+        raw = RobotPyTagDetection.raw_corners(self._detection)
         return (
             Point2D(raw[0], raw[1]),
             Point2D(raw[2], raw[3]),
@@ -38,10 +38,12 @@ class RobotPyTagDetection(AprilTagDetection):
         return self._detection.getFamily()
 
     @staticmethod
-    def _raw_corners(
-        detection: robotpy_AprilTagDetection,
+    def raw_corners(
+        detection: AprilTagDetection,
     ) -> tuple[float, float, float, float, float, float, float, float]:
-        return detection.getCorners((0,0,0,0,0,0,0,0)) # type: ignore
+        """Return corners from a detection as a tuple.
+        The order is: lower left, lower right, upper right, upper left."""
+        return detection.getCorners((0, 0, 0, 0, 0, 0, 0, 0))
     
     @staticmethod
     def _raw_center(
