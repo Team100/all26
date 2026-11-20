@@ -43,7 +43,7 @@ class RobotPyTagDetection(AprilTagDetection):
     ) -> tuple[float, float, float, float, float, float, float, float]:
         """Return corners from a detection as a tuple.
         The order is: lower left, lower right, upper right, upper left."""
-        return detection.getCorners((0, 0, 0, 0, 0, 0, 0, 0))
+        return detection.getCorners((0, 0, 0, 0, 0, 0, 0, 0)) # type: ignore
     
     @staticmethod
     def _raw_center(
