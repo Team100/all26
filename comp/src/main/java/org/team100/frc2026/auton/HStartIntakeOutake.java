@@ -49,7 +49,7 @@ public class HStartIntakeOutake implements AnnotatedCommand {
                 BumpZones.constraint(bumpV).stream(),
                 List.of(
                         // high velocity, moderate accel
-                        new ConstantConstraint(8, 20),
+                        new ConstantConstraint(20, 20),
                         // absolute maxima
                         // new SwerveDriveDynamicsConstraint(log, kinodynamics, 1, 1),
                         // high yaw limits
@@ -67,13 +67,13 @@ public class HStartIntakeOutake implements AnnotatedCommand {
 
       command = sequence(
                 parallel(
-                        IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(6),
+                        IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(10),
                         // Assumed that the intake shouldn't deploy over the bump
                         sequence(
                                 Commands.waitUntil(() -> FieldConstants2026
                                         .isInNeutralZone(machinery.m_drive.getState().translation())),
                                 parallel(machinery.m_intakeExtend.goToExtendedPosition()
-                                        .andThen(machinery.m_intake.intake())).withTimeout(3),
+                                        .andThen(machinery.m_intake.intake())).withTimeout(10),
 
                                 Commands.waitUntil(() -> FieldConstants2026
                                         .isInAllianceZone(machinery.m_drive.getState().translation())),
@@ -113,9 +113,9 @@ public class HStartIntakeOutake implements AnnotatedCommand {
 
                 new WaypointSE2(new Pose2d(4, 7.3, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(7.6, 6.8, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(1, -1, 1), 1),
+                new WaypointSE2(new Pose2d(7, 6.8, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(1, -1, 1), 1),
                 
-                new WaypointSE2(new Pose2d(7.3, 0.9, new Rotation2d(255 * (Math.PI / 180))), new DirectionSE2(0, -1, 0), 1),
+                new WaypointSE2(new Pose2d(7, 0.9, new Rotation2d(255 * (Math.PI / 180))), new DirectionSE2(-1, -1, 0), 1),
 
                 new WaypointSE2(new Pose2d(8.2, 0.9, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
                
