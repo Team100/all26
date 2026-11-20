@@ -58,7 +58,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    Napa(cam, network),
+                    Napa(network),
                     None,
                 )
             # case Identity.GAME_PIECE:
@@ -91,7 +91,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    Napa(cam, network),
+                    Napa(network),
                     None,
                 )
             case (
@@ -105,7 +105,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    Napa(cam, network),
+                    Napa(network),
                     None,
                 )
             case Identity.CAMERA_2A:
@@ -115,7 +115,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    Napa(cam, network),
+                    Napa(network),
                     None,
                 )
             case Identity.COLOR_DETECT_1:
@@ -125,7 +125,7 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    Napa(cam, network),
+                    Napa(network),
                     None,
                 )
             case _:
@@ -135,6 +135,6 @@ class InterpreterFactory:
                     display2,
                     network,
                     timestamps,
-                    Napa(cam, network),
+                    Napa(network),
                     None,
                 )

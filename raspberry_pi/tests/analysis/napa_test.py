@@ -20,7 +20,7 @@ class NapaTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/big_sharp.png")
-        apriltags = Napa(camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type: ignore
 
         self.assertEqual(1, len(network.blips_with_corners))
@@ -33,7 +33,7 @@ class NapaTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/big_sharp90.png")
-        apriltags = Napa(camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips_with_corners))
@@ -46,7 +46,7 @@ class NapaTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/big_sharpY.png")
-        apriltags = Napa(camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips_with_corners))
@@ -58,7 +58,7 @@ class NapaTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/scale1.png")
-        apriltags = Napa(camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips_with_corners))
@@ -70,7 +70,7 @@ class NapaTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/scale2.png")
-        apriltags = Napa(camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips_with_corners))
@@ -82,7 +82,7 @@ class NapaTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/scale3.pnm")
-        apriltags = Napa(camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips_with_corners))
@@ -94,7 +94,7 @@ class NapaTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/scale4.pnm")
-        apriltags = Napa(camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips_with_corners))
@@ -108,7 +108,7 @@ class NapaTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/scale5.pnm")
-        apriltags = Napa(camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips_with_corners))
@@ -121,7 +121,7 @@ class NapaTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/scale6.pnm")
-        apriltags = Napa(camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
         self.assertEqual(0, len(network.blips_with_corners))
 
@@ -129,7 +129,7 @@ class NapaTest(unittest.TestCase):
         identity = Identity.UNKNOWN
         network = FakeNetwork()
         camera = FakeCamera("images/tag_and_board.jpg", (1100, 620))
-        apriltags = Napa(camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(1, len(network.blips_with_corners))
@@ -142,7 +142,7 @@ class NapaTest(unittest.TestCase):
         network = FakeNetwork()
         # nothing in this image
         camera = FakeCamera("images/white_square.jpg")
-        apriltags = Napa(camera, network)
+        apriltags = Napa(network)
         apriltags.analyze_mono(camera._mono, None, 0)  # type:ignore
 
         self.assertEqual(0, len(network.blips_with_corners))
