@@ -57,18 +57,19 @@ public class CenterHalfSweepAuton implements AnnotatedCommand {
         // Intake, score
         command = sequence(
                 parallel(
-                        IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(6),
+                        IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(12),
                         // Assumed that the intake shouldn't deploy over the bump
                         sequence(
                                 Commands.waitUntil(() -> FieldConstants2026
                                         .isInNeutralZone(machinery.m_drive.getState().translation())),
-                                parallel(machinery.m_intakeExtend.goToExtendedPosition()
-                                        .andThen(machinery.m_intake.intake())).withTimeout(3),
+                                parallel(machinery.m_intakeExtend.goToExtendedPosition(),
+                                         machinery.m_intake.intake()).withTimeout(5),
 
                                 Commands.waitUntil(() -> FieldConstants2026
                                         .isInAllianceZone(machinery.m_drive.getState().translation())),
+                                Commands.waitSeconds(1),
                                 parallel(
-                                        machinery.m_intake.stop(),
+
                                         machinery.m_intakeExtend.AgitationPosition(),
                                         machinery.m_feeder.proportional(),
                                         machinery.m_conveyor.convey(),
