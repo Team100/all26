@@ -32,6 +32,7 @@ jobs:
       - run: pip install ultralytics==8.4.187
       - run: pip install ncnn
       - run: pip install pnnx==20260526
+      - run: pip install napa-vision
         
       - run: pytest -vv -rA --full-trace tests/analysis
         if: ${{ always() }}
