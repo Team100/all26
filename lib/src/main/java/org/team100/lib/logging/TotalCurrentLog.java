@@ -12,7 +12,7 @@ public class TotalCurrentLog {
     }
 
     private final List<Reporter> m_reporters;
-    private final DoubleLogger m_logSupplyCurrent;
+    public final DoubleLogger m_logSupplyCurrent;
 
     public TotalCurrentLog(LoggerFactory parent) {
         m_reporters = new ArrayList<>();
