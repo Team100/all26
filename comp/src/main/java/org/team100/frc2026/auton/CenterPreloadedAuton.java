@@ -55,13 +55,9 @@ public class CenterPreloadedAuton implements AnnotatedCommand {
 
         // Shoot preloaded balls
         command = sequence(
-                parallel(
-                        ScoreSetUp.until(ScoreSetUp::isDone).withTimeout(3.5),
-                        machinery.m_shooter.testRun()),
                 machinery.m_feeder.proportional(),
                 machinery.m_conveyor.convey(),
-                waitSeconds(5),
-                machinery.m_shooter.stop().withTimeout(1));
+                machinery.m_shooter.shooterFullspeed()).withTimeout(4);
     }
 
     @Override
