@@ -11,7 +11,8 @@ import org.team100.frc2026.robot.Machinery;
 import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.subsystems.se2.commands.DriveWithTrajectoryFunction;
@@ -23,7 +24,6 @@ import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 import org.wpilib.command2.Command;
 import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
 
 /** An example of a simple sequence */
 public class RightBumpHalfSweepAuton implements AnnotatedCommand {
@@ -71,16 +71,16 @@ public class RightBumpHalfSweepAuton implements AnnotatedCommand {
     }
 
     TrajectorySE2 t1(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose,
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(new WindingPose2d(startingPose),
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(7.75, 2, Rotation2d.CW_90DEG),
+                new WindingWaypointSE2(new WindingPose2d(7.75, 2, -Math.PI / 2),
                         new DirectionSE2(0, 1, 0), 1),
-                new WaypointSE2(new Pose2d(7.75, 4, Rotation2d.CW_90DEG),
+                new WindingWaypointSE2(new WindingPose2d(7.75, 4, -Math.PI / 2),
                         new DirectionSE2(-1, -1, 0), 1),
-                new WaypointSE2(StartingPositions.RIGHT_TRENCH,
+                new WindingWaypointSE2(StartingPositions.RIGHT_TRENCH,
                         new DirectionSE2(-1, 0, 0), 1),
-                new WaypointSE2(AutonPositions.SHOOT_RIGHT,
+                new WindingWaypointSE2(AutonPositions.SHOOT_RIGHT,
                         new DirectionSE2(-1, 1, 0), 1));
         return planner.restToRest(waypoints);
     }
@@ -92,7 +92,7 @@ public class RightBumpHalfSweepAuton implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return StartingPositions.RIGHT_TRENCH;
+        return StartingPositions.RIGHT_TRENCH.pose2d();
     }
 
     @Override

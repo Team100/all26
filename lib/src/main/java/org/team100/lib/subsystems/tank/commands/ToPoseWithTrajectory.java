@@ -6,7 +6,8 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.ChassisAcceleration;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.subsystems.tank.TankDrive;
@@ -18,11 +19,10 @@ import org.team100.lib.trajectory.se2.TrajectorySE2Point;
 import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.visualization.TrajectoryVisualization;
-
+import org.wpilib.command2.Command;
 import org.wpilib.math.controller.LTVUnicycleController;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.kinematics.ChassisVelocities;
-import org.wpilib.command2.Command;
 
 /** Given a goal pose, create a trajectory at initialization and follow it. */
 public class ToPoseWithTrajectory extends Command {
@@ -55,8 +55,8 @@ public class ToPoseWithTrajectory extends Command {
         m_startTimeS = Takt.get();
         // may return null
         m_trajectory = m_planner.restToRest(List.of(
-                WaypointSE2.tank(m_drive.getPose()),
-                WaypointSE2.tank(m_goal)));
+                WindingWaypointSE2.tank(m_drive.getPose()),
+                WindingWaypointSE2.tank(m_goal)));
         m_viz.setViz(m_trajectory);
     }
 
@@ -71,7 +71,7 @@ public class ToPoseWithTrajectory extends Command {
             // next for feedforward (and selecting K)
             TrajectorySE2Entry next = m_trajectory.sample(t + TimedRobot100.LOOP_PERIOD_S);
             Pose2d currentPose = m_drive.getPose();
-            Pose2d poseReference = current.point().point().waypoint().pose();
+            WindingPose2d poseReference = current.point().point().waypoint().pose();
             // feedforward velocity
             TrajectorySE2Point nextPoint = next.point();
             ControlSE2 nextControl = nextPoint.control();
@@ -83,7 +83,7 @@ public class ToPoseWithTrajectory extends Command {
             // It might be more correct to include the change in controller output in the
             // acceleration term.
             ChassisVelocities speeds = m_controller.calculate(
-                    currentPose, poseReference, velocityReference, omegaReference);
+                    currentPose, poseReference.pose2d(), velocityReference, omegaReference);
             // accel feedforward
             AccelerationSE2 fieldRelativeAccel = nextControl.acceleration();
             ChassisAcceleration accel = ChassisAcceleration.fromFieldRelative(

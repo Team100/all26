@@ -11,7 +11,7 @@ import org.team100.frc2025.field.FieldConstants2025.ReefPoint;
 import org.team100.lib.commands.MoveAndHold;
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
 import org.team100.lib.controller.se2.FullStateControllerSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.subsystems.se2.commands.DriveToPoseWithProfile;
@@ -49,8 +49,8 @@ public class LolipopAuto {
         DriveWithTrajectoryFunction toReefTrajectory = new DriveWithTrajectoryFunction(
                 m_log, m_machinery.m_drive, m_autoController, m_machinery.m_trajectoryViz,
                 (p) -> m_planner.restToRest(List.of(
-                        WaypointSE2.irrotational(m_machinery.m_drive.getState().pose(), Math.PI, 1.2),
-                        WaypointSE2.irrotational(
+                        WindingWaypointSE2.irrotational(m_machinery.m_drive.getState().pose(), Math.PI, 1.2),
+                        WindingWaypointSE2.irrotational(
                                 new Pose2d(3, 5, new Rotation2d(0)), -2, 1.2))));
 
         DriveToPoseWithProfile toReefA = new DriveToPoseWithProfile(

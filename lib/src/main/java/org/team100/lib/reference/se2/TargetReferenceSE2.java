@@ -4,15 +4,14 @@ import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 import org.team100.frc2026.field.FieldConstants2026;
-import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.geometry.r2.StateR2;
+import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.state.StateR1;
 import org.team100.lib.state.StateSE2;
 import org.team100.lib.targeting.Solution;
 import org.team100.lib.targeting.Solver;
-
 import org.wpilib.math.geometry.Translation2d;
 
 /** Use a delegate for cartesian reference, and a target for rotation. */
@@ -49,6 +48,10 @@ public class TargetReferenceSE2 implements ReferenceSE2 {
 
     public StateSE2 goal() {
         return m_delegate.goal();
+    }
+
+    public double toGo() {
+        return m_delegate.toGo();
     }
 
     private StateSE2 override(StateSE2 state) {

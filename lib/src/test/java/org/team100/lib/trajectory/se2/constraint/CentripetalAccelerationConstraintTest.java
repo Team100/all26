@@ -3,7 +3,7 @@ package org.team100.lib.trajectory.se2.constraint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
@@ -25,7 +25,7 @@ class CentripetalAccelerationConstraintTest implements Timeless {
                 SwerveKinodynamicsFactory.forTest(),
                 CENTRIPETAL_SCALE);
         PathSE2Point p = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 1));
         // motionless, so 100% of the capsize accel is available
@@ -43,7 +43,7 @@ class CentripetalAccelerationConstraintTest implements Timeless {
                 SwerveKinodynamicsFactory.forTest(),
                 CENTRIPETAL_SCALE);
         PathSE2Point p = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 1));
         // moving, only some of the capsize accel is available
@@ -61,7 +61,7 @@ class CentripetalAccelerationConstraintTest implements Timeless {
                 SwerveKinodynamicsFactory.forTest(),
                 CENTRIPETAL_SCALE);
         PathSE2Point p = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 1));
         // above the velocity limit
@@ -78,7 +78,7 @@ class CentripetalAccelerationConstraintTest implements Timeless {
                 SwerveKinodynamicsFactory.forTest2(),
                 CENTRIPETAL_SCALE);
         PathSE2Point p = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 1));
         assertEquals(-4.083, c.maxDecel(p, 0), DELTA);
@@ -94,7 +94,7 @@ class CentripetalAccelerationConstraintTest implements Timeless {
                 SwerveKinodynamicsFactory.forTest2(),
                 CENTRIPETAL_SCALE);
         PathSE2Point p = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 0));
         assertEquals(-4.083, c.maxDecel(p, 0), DELTA);

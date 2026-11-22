@@ -3,6 +3,7 @@ package org.team100.lib.profile.se2;
 import org.team100.lib.profile.r1.DualProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.profile.r1.WPITrapezoidProfileR1;
+import org.team100.lib.profile.se2_universal_cover.WindingHolonomicProfile;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 
 public class HolonomicProfileFactory {
@@ -147,5 +148,18 @@ public class HolonomicProfileFactory {
                 new TrapezoidProfileR1(maxXYVel, maxXYAccel, xyTolerance),
                 new TrapezoidProfileR1(maxOmega, maxAlpha, angularTolerance),
                 false);
+    }
+
+    public static WindingHolonomicProfile windingTrapezoidal(
+            double maxXYVel,
+            double maxXYAccel,
+            double xyTolerance,
+            double maxOmega,
+            double maxAlpha,
+            double angularTolerance) {
+        return new WindingHolonomicProfile(
+                new TrapezoidProfileR1(maxXYVel, maxXYAccel, xyTolerance),
+                new TrapezoidProfileR1(maxXYVel, maxXYAccel, xyTolerance),
+                new TrapezoidProfileR1(maxOmega, maxAlpha, angularTolerance));
     }
 }

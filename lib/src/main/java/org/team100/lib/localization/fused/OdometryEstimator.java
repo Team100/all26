@@ -1,6 +1,6 @@
 package org.team100.lib.localization.fused;
 
-import java.util.function.UnaryOperator;
+import java.util.function.Function;
 
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
@@ -9,7 +9,7 @@ import org.team100.lib.fusion.Fusor;
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.localization.LocalizerEstimate;
 import org.team100.lib.localization.OdoGyroMeasurement;
-import org.team100.lib.localization.simulation.AddOdometryNoise;
+import org.team100.lib.localization.simulation.AddAnisotropicOdometryNoise;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.IsotropicNoiseSE2Logger;
@@ -21,7 +21,6 @@ import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.OdometryNoise;
 import org.team100.lib.uncertainty.VariableR1;
 import org.team100.lib.util.StrUtil;
-
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Twist2d;
@@ -38,9 +37,8 @@ public class OdometryEstimator {
     private final double m_gyroWhiteNoise;
     /**
      * Noise source for simulation.
-     * For a real robot, use UnaryOperator.identity().
      */
-    private final UnaryOperator<Twist2d> m_noise;
+    private final Function<SwerveModuleDeltas, Twist2d> m_noise;
     /**
      * Use the module positions all the time: for ground truth.
      */
@@ -66,7 +64,11 @@ public class OdometryEstimator {
         LoggerFactory log = parent.type(this);
         m_kinodynamics = kinodynamics;
         m_gyroWhiteNoise = whiteNoise;
-        m_noise = noisy ? new AddOdometryNoise() : UnaryOperator.identity();
+        // non-noisy is just fwd kinematics
+        m_noise = noisy //
+                // ? new AddOdometryNoise(m_kinodynamics.getKinematics()) //
+                ? new AddAnisotropicOdometryNoise(m_kinodynamics.getKinematics()) //
+                : (d) -> m_kinodynamics.getKinematics().forward(d);
         m_alwaysUpdate = alwaysUpdate;
         m_gyroBiasFusor = new CovarianceInflation(0.02, biasNoise);
         m_rotationFusor = new CovarianceInflation(0.02, 0.003);
@@ -75,7 +77,7 @@ public class OdometryEstimator {
         m_log_newNoise = log.isotropicNoiseSE2Logger(Level.TRACE, "new noise");
     }
 
-    ////////////////////////////////////////////////////
+    ///////////////////////////////////////////
 
     /**
      * Estimate at the specified time, based on the measured
@@ -215,9 +217,8 @@ public class OdometryEstimator {
         if (DEBUG) {
             System.out.printf("OdometryEstimator modulePositionDelta %s\n", modulePositionDelta);
         }
-        Twist2d twist = m_kinodynamics.getKinematics().forward(modulePositionDelta);
         // Add noise, if in simulation (otherwise, this is a no-op).
-        twist = m_noise.apply(twist);
+        Twist2d twist = m_noise.apply(modulePositionDelta);
         if (DEBUG) {
             System.out.printf("OdometryEstimator twist %s\n", StrUtil.twistStr(twist));
         }

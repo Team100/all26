@@ -29,14 +29,14 @@ public class SetupMech implements Runnable {
         // These bindings are remembered by the trigger event loop, so we don't need to
         // retain them.
         // button 1, "z" in the sim
-        whileTrue(controller::getSouthFaceButton,
+        whileTrue(controller::getFaceDownButton,
                 m_discus.home());
         // button 2, "x" in the sim
-        whileTrue(controller::getEastFaceButton,
+        whileTrue(controller::getFaceRightButton,
                 m_discus.zero());
-        whileTrue(controller::getWestFaceButton,
+        whileTrue(controller::getFaceLeftButton,
                 m_discus.position(() -> 2));
-        whileTrue(controller::getNorthFaceButton,
+        whileTrue(controller::getFaceUpButton,
                 m_discus.position(() -> -2));
 
         // set voltage directly to tune friction.

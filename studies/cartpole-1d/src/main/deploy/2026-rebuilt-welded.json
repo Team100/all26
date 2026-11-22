@@ -1,5 +1,20 @@
 {
-  "tags": [
+  "name": "2026 FRC Rebuilt Welded",
+  "season": "2026",
+  "game": "Rebuilt",
+  "field-image": {
+    "path": "2026-rebuilt.png",
+    "top": 121,
+    "left": 254,
+    "bottom": 1917,
+    "right": 3951
+  },
+  "field-dimensions": {
+    "length": 16.541,
+    "width": 8.069
+  },
+  "program": "frc",
+  "field-tags": [
     {
       "ID": 1,
       "pose": {
@@ -576,9 +591,5 @@
         }
       }
     }
-  ],
-  "field": {
-    "length": 16.541,
-    "width": 8.069
-  }
+  ]
 }

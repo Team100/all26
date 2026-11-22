@@ -34,6 +34,8 @@ public interface RRRArm extends PositionSubsystemSE2, PositionSubsystemRn<N3> {
     /**
      * Choose the feasible config closest to the current config.
      * 
+     * TODO: use the universal cover here.
+     * 
      * @param p tool center point pose
      */
     RRRConfig config(Pose2d p);

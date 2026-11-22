@@ -3,7 +3,9 @@ package org.team100.lib.reference.se2;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.state.StateSE2;
 
-/** Always returns the same reference. */
+/**
+ * Always returns the goal.
+ */
 public class ConstantReferenceSE2 implements ReferenceSE2 {
     private final StateSE2 m_goal;
 
@@ -26,6 +28,7 @@ public class ConstantReferenceSE2 implements ReferenceSE2 {
         return m_goal.control();
     }
 
+    /** TODO: this looks wrong, should be true? */
     @Override
     public boolean done() {
         return false;
@@ -34,6 +37,12 @@ public class ConstantReferenceSE2 implements ReferenceSE2 {
     @Override
     public StateSE2 goal() {
         return m_goal;
+    }
+
+    /** This reference is always at the goal. */
+    @Override
+    public double toGo() {
+        return 0.0;
     }
 
 }

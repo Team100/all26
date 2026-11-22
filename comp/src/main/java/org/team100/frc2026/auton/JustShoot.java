@@ -35,7 +35,7 @@ public class JustShoot implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return StartingPositions.CENTER;
+        return StartingPositions.CENTER.pose2d();
     }
 
     @Override

@@ -6,6 +6,7 @@ import static org.team100.lib.util.TriggerUtil.whileTrue;
 import org.team100.lib.commands.MoveAndHold;
 import org.team100.lib.geometry.rrr.RRRConfig;
 import org.team100.lib.geometry.se2.VelocitySE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.profile.r1.ProfileR1;
@@ -49,7 +50,8 @@ public class Binder {
                 () -> m_machinery.m_viz.setT(manual::getT))
                 .andThen(manual));
         // Right bumper (button 6, "n" in sim) is "joint" mode.
-        // This mode moves the three motors independently as shoulder, elbow, or hand joint
+        // This mode moves the three motors independently as shoulder, elbow, or hand
+        // joint
         whileTrue(m_driver::rightBumper, Commands.runOnce(
                 () -> m_machinery.m_viz.setT(null))
                 .andThen(joints));
@@ -63,9 +65,9 @@ public class Binder {
                 new MoveToConfigWithProfile(
                         m_machinery.m_arm, profile, new RRRConfig(0, 0, 0)));
 
-        // Force the encoder values to zero.  Move the apparatus to
+        // Force the encoder values to zero. Move the apparatus to
         // fully extended before running this, if you want the zero
-        // to be in the right place.  :-) (button 7, "m" in sim)
+        // to be in the right place. :-) (button 7, "m" in sim)
         onTrue(m_driver::back,
                 m_machinery.m_arm.run(m_machinery.m_arm::setZero));
 
@@ -119,16 +121,16 @@ public class Binder {
         // trajectories in workspace make straight lines in workspace
         MoveAndHold move1t = new MoveWithTrajectorySE2(
                 log, m_machinery.m_arm,
-                new Pose2d(0.45, 0.25, new Rotation2d(0)), 1);
+                new WindingPose2d(0.45, 0.25, 0), 1);
         MoveAndHold move2t = new MoveWithTrajectorySE2(
                 log, m_machinery.m_arm,
-                new Pose2d(0.6, 0.25, new Rotation2d(0)), 1);
+                new WindingPose2d(0.6, 0.25, 0), 1);
         MoveAndHold move3t = new MoveWithTrajectorySE2(
                 log, m_machinery.m_arm,
-                new Pose2d(0.6, -0.25, new Rotation2d(0)), 1);
+                new WindingPose2d(0.6, -0.25, 0), 1);
         MoveAndHold move4t = new MoveWithTrajectorySE2(
                 log, m_machinery.m_arm,
-                new Pose2d(0.45, -0.25, new Rotation2d(0)), 1);
+                new WindingPose2d(0.45, -0.25, 0), 1);
         whileTrue(m_driver::y,
                 move1t.until(move1t::isDone)
                         .andThen(move2t.until(move2t::isDone))

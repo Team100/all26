@@ -2,7 +2,7 @@
 
 import cv2
 from cv2.typing import MatLike
-from robotpy_apriltag import AprilTagDetection
+from app.util.detections_protocol import AprilTagDetection
 from wpimath.geometry import Transform3d
 
 FONT = cv2.FONT_HERSHEY_PLAIN
@@ -46,15 +46,16 @@ class DisplayUtil:
         :pose: of the tag, to print, transformed to x-forward (!)"""
         for i in range(4):
             j = (i + 1) % 4
-            point1 = (int(tag.getCorner(i).x), int(tag.getCorner(i).y))
-            point2 = (int(tag.getCorner(j).x), int(tag.getCorner(j).y))
+            point1 = (int(tag.get_corner(i).x), int(tag.get_corner(i).y))
+            point2 = (int(tag.get_corner(j).x), int(tag.get_corner(j).y))
             cv2.line(image, point1, point2, WHITE, 2)
-        c_x, c_y = (int(tag.getCenter().x), int(tag.getCenter().y))
+        c_x, c_y = (int(tag.get_center().x), int(tag.get_center().y))
         cv2.circle(image, (c_x, c_y), 10, WHITE, -1)
         t = pose.translation()
         DisplayUtil.text(image, f"X: {t.z:5.2f}", (c_x, c_y), 0)
         DisplayUtil.text(image, f"Y: {-t.x:5.2f}", (c_x, c_y), 1)
         DisplayUtil.text(image, f"Z: {-t.y:5.2f}", (c_x, c_y), 2)
+        DisplayUtil.text(image, f"ID: {tag.get_id()}", (c_x, c_y), 3)
 
     @staticmethod
     def rectangle(

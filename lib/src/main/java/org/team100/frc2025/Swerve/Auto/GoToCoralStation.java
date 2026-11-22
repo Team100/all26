@@ -8,7 +8,8 @@ import java.util.function.Function;
 import org.team100.frc2025.field.FieldConstants2025;
 import org.team100.frc2025.field.FieldConstants2025.CoralStation;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.trajectory.se2.TrajectorySE2;
@@ -43,7 +44,7 @@ public class GoToCoralStation implements Function<Pose2d, TrajectorySE2> {
 
     @Override
     public TrajectorySE2 apply(Pose2d currentPose) {
-        Pose2d goal = m_station.pose();
+        WindingPose2d goal = m_station.pose();
         double scaleAdjust = switch (m_station) {
             case LEFT -> m_scale;
             case RIGHT -> -1.0 * m_scale;
@@ -56,9 +57,9 @@ public class GoToCoralStation implements Function<Pose2d, TrajectorySE2> {
         Optional<Rotation2d> newInitialSpline = FieldConstants2025.calculateDeltaSpline(
                 courseToGoal.get(), courseToGoal.get().rotateBy(Rotation2d.fromDegrees(-90)), scaleAdjust);
 
-        List<WaypointSE2> waypoints = new ArrayList<>();
-        waypoints.add(new WaypointSE2(currentPose, DirectionSE2.irrotational(newInitialSpline.get()), 1));
-        waypoints.add(new WaypointSE2(goal, DirectionSE2.irrotational(courseToGoal.get()), 1));
+        List<WindingWaypointSE2> waypoints = new ArrayList<>();
+        waypoints.add(new WindingWaypointSE2(new WindingPose2d(currentPose), DirectionSE2.irrotational(newInitialSpline.get()), 1));
+        waypoints.add(new WindingWaypointSE2(goal, DirectionSE2.irrotational(courseToGoal.get()), 1));
 
         return m_planner.restToRest(waypoints);
     }

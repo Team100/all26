@@ -15,7 +15,8 @@ import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.DeltaSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.localization.LocalizerEstimate;
 import org.team100.lib.localization.network.Blip;
 import org.team100.lib.logging.primitive.PrimitiveLogger;
@@ -24,8 +25,10 @@ import org.team100.lib.reference.r1.SetpointsR1;
 import org.team100.lib.reference.r1.VelocitySetpointsR1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
+import org.team100.lib.state.WindingControlSE2;
 import org.team100.lib.state.StateR1;
 import org.team100.lib.state.StateSE2;
+import org.team100.lib.state.WindingStateSE2;
 import org.team100.lib.state.VelocityControlR1;
 import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
@@ -109,7 +112,7 @@ public class LoggerFactory {
         return a + "/" + b;
     }
 
-    //////////////////////////////////////////
+    ////////////////////////////////////
 
     private boolean allow(Level level) {
         Level allowed = m_level.get();
@@ -120,7 +123,7 @@ public class LoggerFactory {
         return allowed.admit(level);
     }
 
-    /////////////////////////////////////////
+    ///////////////////////////////////
     //
     // logger inner classes
     //
@@ -346,6 +349,30 @@ public class LoggerFactory {
         return new Pose2dLogger(level, leaf);
     }
 
+    public class WindingPose2dLogger {
+        private final Level m_level;
+        private final Translation2dLogger m_translation2dLogger;
+        private final DoubleLogger m_rotation2dLogger;
+
+        WindingPose2dLogger(Level level, String leaf) {
+            m_level = level;
+            m_translation2dLogger = translation2dLogger(level, join(leaf, "translation"));
+            m_rotation2dLogger = doubleLogger(level, join(leaf, "rotation"));
+        }
+
+        public void log(Supplier<WindingPose2d> vals) {
+            if (!allow(m_level))
+                return;
+            WindingPose2d val = vals.get();
+            m_translation2dLogger.log(val::getTranslation);
+            m_rotation2dLogger.log(val::getRotation);
+        }
+    }
+
+    public WindingPose2dLogger WindingPose2dLogger(Level level, String leaf) {
+        return new WindingPose2dLogger(level, leaf);
+    }
+
     public class Transform3dLogger {
         private final Level m_level;
         private final Translation3dLogger m_translation3dLogger;
@@ -510,19 +537,19 @@ public class LoggerFactory {
 
     public class PathSE2PointLogger {
         private final Level m_level;
-        private final Pose2dLogger m_pose2dLogger;
+        private final WindingPose2dLogger m_pose2dLogger;
         private final Rotation2dLogger m_rotation2dLogger;
 
         PathSE2PointLogger(Level level, String leaf) {
             m_level = level;
-            m_pose2dLogger = pose2dLogger(level, join(leaf, "pose"));
+            m_pose2dLogger = WindingPose2dLogger(level, join(leaf, "pose"));
             m_rotation2dLogger = rotation2dLogger(level, join(leaf, "course"));
         }
 
         public void log(Supplier<PathSE2Point> vals) {
             if (!allow(m_level))
                 return;
-            WaypointSE2 val = vals.get().waypoint();
+            WindingWaypointSE2 val = vals.get().waypoint();
             m_pose2dLogger.log(val::pose);
             m_rotation2dLogger.log(() -> val.course().toRotation());
         }
@@ -868,6 +895,33 @@ public class LoggerFactory {
         return new ControlSE2Logger(level, leaf);
     }
 
+    public class WindingControlSE2Logger {
+        private final Level m_level;
+        private final ControlR1Logger m_xLogger;
+        private final ControlR1Logger m_yLogger;
+        private final ControlR1Logger m_thetaLogger;
+
+        WindingControlSE2Logger(Level level, String leaf) {
+            m_level = level;
+            m_xLogger = ControlR1Logger(level, join(leaf, "x"));
+            m_yLogger = ControlR1Logger(level, join(leaf, "y"));
+            m_thetaLogger = ControlR1Logger(level, join(leaf, "theta"));
+        }
+
+        public void log(Supplier<WindingControlSE2> vals) {
+            if (!allow(m_level))
+                return;
+            WindingControlSE2 val = vals.get();
+            m_xLogger.log(val::x);
+            m_yLogger.log(val::y);
+            m_thetaLogger.log(val::theta);
+        }
+    }
+
+    public WindingControlSE2Logger WindingControlSE2Logger(Level level, String leaf) {
+        return new WindingControlSE2Logger(level, leaf);
+    }
+
     public class VelocityControlSE2Logger {
         private final Level m_level;
         private final VelocityControlR1Logger m_xLogger;
@@ -924,6 +978,33 @@ public class LoggerFactory {
 
     public StateSE2Logger StateSE2Logger(Level level, String leaf) {
         return new StateSE2Logger(level, leaf);
+    }
+
+    public class WindingStateSE2Logger {
+        private final Level m_level;
+        private final StateR1Logger m_xLogger;
+        private final StateR1Logger m_yLogger;
+        private final StateR1Logger m_thetaLogger;
+
+        WindingStateSE2Logger(Level level, String leaf) {
+            m_level = level;
+            m_xLogger = StateR1Logger(level, join(leaf, "x"));
+            m_yLogger = StateR1Logger(level, join(leaf, "y"));
+            m_thetaLogger = StateR1Logger(level, join(leaf, "theta"));
+        }
+
+        public void log(Supplier<WindingStateSE2> vals) {
+            if (!allow(m_level))
+                return;
+            WindingStateSE2 val = vals.get();
+            m_xLogger.log(val::x);
+            m_yLogger.log(val::y);
+            m_thetaLogger.log(val::theta);
+        }
+    }
+
+    public WindingStateSE2Logger WindingStateSE2Logger(Level level, String leaf) {
+        return new WindingStateSE2Logger(level, leaf);
     }
 
     public class SwerveModulePosition100Logger {

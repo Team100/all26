@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.team100.lib.config.AnnotatedCommand;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.StructArrayLogger;
@@ -57,13 +58,13 @@ public class AutonVisualization {
         for (Function<Pose2d, TrajectorySE2> tfn : tfns) {
             TrajectorySE2 t = tfn.apply(startPose);
             // Use startPose here so that the next trajectory starts in the right place.
-            startPose = t.getLastPoint().point().point().waypoint().pose();
+            startPose = t.getLastPoint().point().point().waypoint().pose().pose2d();
             poseSamples.add(startPose);
 
             // Sample the path at 4 Hz.
             for (double time = 0; time < t.duration(); time += 0.25) {
-                Pose2d pose = t.sample(time).point().point().waypoint().pose();
-                poseSamples.add(pose);
+                WindingPose2d pose = t.sample(time).point().point().waypoint().pose();
+                poseSamples.add(pose.pose2d());
                 if (DEBUG)
                     System.out.printf("AutonVisualization: sample %f %s\n", time, pose);
             }
@@ -71,7 +72,7 @@ public class AutonVisualization {
             // All the points along the trajectory.
             List<TrajectorySE2Entry> e = t.getPoints();
             for (TrajectorySE2Entry ee : e) {
-                pointList.add(ee.point().point().waypoint().pose());
+                pointList.add(ee.point().point().waypoint().pose().pose2d());
             }
         }
 

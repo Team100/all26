@@ -1,5 +1,9 @@
 package org.team100.lib.geometry;
 
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingTwist2d;
+import org.team100.lib.state.StateSE2;
+import org.team100.lib.state.WindingStateSE2;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Transform3d;
@@ -41,6 +45,10 @@ public class Metrics {
         return a.getTranslation().getDistance(b.getTranslation());
     }
 
+    public static double translationalDistance(WindingPose2d a, WindingPose2d b) {
+        return a.getTranslation().getDistance(b.getTranslation());
+    }
+
     public static double translationalDistance(Pose3d a, Pose3d b) {
         return a.getTranslation().getDistance(b.getTranslation());
     }
@@ -72,6 +80,10 @@ public class Metrics {
      * length of the little arc.
      */
     public static double translationalNorm(Twist2d a) {
+        return Math.hypot(a.dx, a.dy);
+    }
+
+    public static double translationalNorm(WindingTwist2d a) {
         return Math.hypot(a.dx, a.dy);
     }
 
@@ -111,6 +123,22 @@ public class Metrics {
         return Math.sqrt(a.dx * a.dx + a.dy * a.dy + a.dtheta * a.dtheta);
     }
 
+    public static double l2Norm(WindingTwist2d a) {
+        return Math.sqrt(a.dx * a.dx + a.dy * a.dy + a.dtheta * a.dtheta);
+    }
+
+    public static double l2Norm(WindingStateSE2 s) {
+        return Math.sqrt(s.x().x() * s.x().x()
+                + s.y().x() * s.y().x()
+                + s.theta().x() * s.theta().x());
+    }
+
+    public static double l2Norm(StateSE2 s) {
+        return Math.sqrt(s.x().x() * s.x().x()
+                + s.y().x() * s.y().x()
+                + s.theta().x() * s.theta().x());
+    }
+
     /**
      * L2 norm of all components of the twist.
      * 
@@ -143,6 +171,15 @@ public class Metrics {
         Translation2d tDiff = a.getTranslation().minus(b.getTranslation());
         double tSqDist = GeometryUtil.dot(tDiff, tDiff);
         double aDiff = a.getRotation().minus(b.getRotation()).getRadians();
+        if (GeometryUtil.DEBUG)
+            System.out.printf("double geodesic distance t %f a %f\n", tSqDist, aDiff * aDiff);
+        return Math.sqrt(aDiff * aDiff + tSqDist);
+    }
+
+    public static double doubleGeodesicDistance(WindingPose2d a, WindingPose2d b) {
+        Translation2d tDiff = a.getTranslation().minus(b.getTranslation());
+        double tSqDist = GeometryUtil.dot(tDiff, tDiff);
+        double aDiff = a.getRotation() - b.getRotation();
         if (GeometryUtil.DEBUG)
             System.out.printf("double geodesic distance t %f a %f\n", tSqDist, aDiff * aDiff);
         return Math.sqrt(aDiff * aDiff + tSqDist);

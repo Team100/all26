@@ -2,7 +2,7 @@ package org.team100.lib.state;
 
 import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 
@@ -135,11 +135,11 @@ public class StateSE2 implements Interpolatable<StateSE2> {
 
     /** Point and pathwise velocity => StateSE2 */
     public static StateSE2 fromMovingPathPointSE2(PathSE2Point point, double velocityM_s) {
-        WaypointSE2 pose = point.waypoint();
+        WindingWaypointSE2 pose = point.waypoint();
         Translation2d translation = pose.pose().getTranslation();
         double xx = translation.getX();
         double yx = translation.getY();
-        double thetax = pose.pose().getRotation().getRadians();
+        double thetax = pose.pose().getRotation();
         Rotation2d course = point.waypoint().course().toRotation();
         double xv = course.getCos() * velocityM_s;
         double yv = course.getSin() * velocityM_s;

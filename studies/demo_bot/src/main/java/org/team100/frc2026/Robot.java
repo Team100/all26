@@ -25,7 +25,6 @@ import org.team100.lib.subsystems.shooter.ShooterIndexer;
 import org.team100.lib.subsystems.tank.TankDrive;
 import org.team100.lib.subsystems.tank.TankDriveFactory;
 import org.team100.lib.subsystems.tank.commands.TankManual;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
 import org.team100.lib.util.Startup;
@@ -33,6 +32,7 @@ import org.wpilib.command2.Command;
 import org.wpilib.command2.CommandScheduler;
 import org.wpilib.command2.Commands;
 import org.wpilib.command2.button.Trigger;
+import org.wpilib.hardware.bus.CANPort;
 import org.wpilib.networktables.NetworkTableInstance;
 import org.wpilib.util.Color;
 
@@ -97,7 +97,7 @@ public class Robot extends TimedRobot100 {
                 new CurrentLimit(15, 15),
                 new CanId(3),
                 new CanId(2),
-                new CanBusId(0),
+                CANPort.CAN_S0,
                 TRACK_WIDTH,
                 MAX_SPEED_M_S,
                 DRIVE_GEAR_RATIO,
@@ -121,7 +121,7 @@ public class Robot extends TimedRobot100 {
                 new CurrentLimit(20, 20),
                 new CanId(39),
                 new CanId(8),
-                new CanBusId(0),
+                CANPort.CAN_S0,
                 SHOOTER_GEAR_RATIO,
                 SHOOTER_WHEEL_DIA_M,
                 false,
@@ -138,7 +138,7 @@ public class Robot extends TimedRobot100 {
                 MAX_INDEXER_VELOCITY_M_S,
                 new CurrentLimit(30, 30),
                 new CanId(7),
-                new CanBusId(0),
+                CANPort.CAN_S0,
                 INDEXER_GEAR_RATIO,
                 INDEXER_WHEEL_DIAMETER,
                 true,
@@ -150,7 +150,7 @@ public class Robot extends TimedRobot100 {
                 logger,
                 m_currentLog,
                 new CurrentLimit(20, 20),
-                new CanId(5), new CanBusId(0));
+                new CanId(5), CANPort.CAN_S0);
         m_pivot.setDefaultCommand(m_pivot.stop());
         // m_pivot.setDefaultCommand(
         // new PivotDefault(

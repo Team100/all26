@@ -1,7 +1,6 @@
 package org.team100.lib.util;
 
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.linalg.Vector;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation2d;
@@ -10,6 +9,8 @@ import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.math.geometry.Translation3d;
 import org.wpilib.math.geometry.Twist2d;
 import org.wpilib.math.geometry.Twist3d;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.Vector;
 
 /**
  * Replacements for WPILib geometry toString methods.
@@ -19,6 +20,11 @@ public class StrUtil {
     public static String poseStr(Pose2d p) {
         return String.format("%6.3f, %6.3f, %6.3f",
                 p.getX(), p.getY(), p.getRotation().getRadians());
+    }
+
+    public static String poseStr(WindingPose2d p) {
+        return String.format("%6.3f, %6.3f, %6.3f",
+                p.getX(), p.getY(), p.getRotation());
     }
 
     /** Lots of decimal places. */

@@ -77,7 +77,8 @@ public class Sync implements Runnable {
                 }
 
                 long org = request.org();
-                long now = RobotController.getMonotonicTime();
+                // Sync protocol is in microseconds
+                long now = RobotController.getMonotonicTime() / 1000l;
                 StructPublisher<SyncReply> p = m_pubmap.computeIfAbsent(
                         cameraId,
                         x -> inst.getStructTopic(

@@ -10,7 +10,8 @@ import org.team100.frc2026.robot.Machinery;
 import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.subsystems.se2.commands.DriveWithTrajectoryFunction;
@@ -24,7 +25,6 @@ import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
 import org.wpilib.command2.Command;
 import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
 
 public class MajorDisruptLBump implements AnnotatedCommand {
     private final LoggerFactory log;
@@ -63,7 +63,7 @@ public class MajorDisruptLBump implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return StartingPositions.LEFT_BUMP;
+        return StartingPositions.LEFT_BUMP.pose2d();
     }
 
     @Override
@@ -102,12 +102,12 @@ public class MajorDisruptLBump implements AnnotatedCommand {
     }
 
     TrajectorySE2 t1(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose, new DirectionSE2(1, 0, 0), 1),
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(new WindingPose2d(startingPose), new DirectionSE2(1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(8, 5.4, new Rotation2d(165 * (Math.PI / 180))), new DirectionSE2(1, 0, 0),
+                new WindingWaypointSE2(new WindingPose2d(8, 5.4, Math.toRadians(165)), new DirectionSE2(1, 0, 0),
                         1),
-                new WaypointSE2(new Pose2d(8.1, 1, new Rotation2d(165 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1)
+                new WindingWaypointSE2(new WindingPose2d(8.1, 1, Math.toRadians(165)), new DirectionSE2(1, 0, 0), 1)
 
         //
         );

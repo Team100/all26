@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.se2.PathSE2;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.spline.se2.SplineSE2;
@@ -27,10 +27,10 @@ public class TrajectoryVelocityProfileTest implements Timeless {
     private static final boolean DEBUG = false;
 
     // A five-meter straight line.
-    static WaypointSE2 w0 = WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2);
-    static WaypointSE2 w1 = WaypointSE2.irrotational(new Pose2d(2.5, 0, new Rotation2d(0)), 0, 1.2);
-    static WaypointSE2 w2 = WaypointSE2.irrotational(new Pose2d(5, 0, new Rotation2d(0)), 0, 1.2);
-    private static final List<WaypointSE2> waypoints = List.of(w0, w1, w2);
+    static WindingWaypointSE2 w0 = WindingWaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2);
+    static WindingWaypointSE2 w1 = WindingWaypointSE2.irrotational(new Pose2d(2.5, 0, new Rotation2d(0)), 0, 1.2);
+    static WindingWaypointSE2 w2 = WindingWaypointSE2.irrotational(new Pose2d(5, 0, new Rotation2d(0)), 0, 1.2);
+    private static final List<WindingWaypointSE2> waypoints = List.of(w0, w1, w2);
     static List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
 
     private static PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.1, 0.1);

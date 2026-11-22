@@ -12,6 +12,8 @@ import time
 from datetime import datetime
 from threading import Event, Thread
 
+import wpilib
+
 from app.camera.camera_factory import CameraFactory
 from app.camera.camera_loop import CameraLoop
 from app.camera.camera_protocol import Camera
@@ -29,6 +31,7 @@ from app.util.timestamps import Timestamps
 def main() -> None:
     print_banner()
     print(f"[{datetime.now()}] " + "*** Starting main.py")
+    print(f"[{datetime.now()}] *** WPILib Version: {wpilib.__version__}")
     identity: Identity = Identity.get()
     done: Event = Event()  # to shut down all threads
     thread: Thread | None = None
