@@ -25,7 +25,7 @@
 # X-Env-Var-supervisor_conf-Valid: string
 # X-Env-Var-supervisor_conf-Set: y
 #
-# X-Env-Var-pip_packages: numpy opencv-python robotpy robotpy-apriltag robotpy-cscore ultralytics==8.4.187 ncnn pnnx==20260526
+# X-Env-Var-pip_packages: numpy opencv-python robotpy robotpy-apriltag napa-vision robotpy-cscore ultralytics==8.4.187 ncnn pnnx==20260526
 # X-Env-Var-pip_packages-Desc: Space-separated packages to pip install into
 #  the venv at /home/<user1>/env.  ncnn and pnnx let `yolo export
 #  format=ncnn` work on a Pi without internet.  Each ultralytics release
