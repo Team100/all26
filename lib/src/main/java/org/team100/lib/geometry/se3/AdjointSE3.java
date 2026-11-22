@@ -46,7 +46,7 @@ public class AdjointSE3 {
      * of the pose returns the twist in the pose frame.
      */
     public static Matrix<N6, N6> adInv(Pose3d p) {
-        return ad(Pose3d.kZero.relativeTo(p));
+        return ad(Pose3d.ZERO.relativeTo(p));
     }
 
 }

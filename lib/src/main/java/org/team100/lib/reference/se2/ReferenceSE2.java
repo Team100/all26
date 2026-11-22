@@ -34,7 +34,12 @@ public interface ReferenceSE2 {
     boolean done();
 
     /**
-     * For reference sources that have endpoints, what is the endpoint?
+     * For a reference source that has an endpoint, what is it?
      */
     StateSE2 goal();
+
+    /**
+     * For a reference source that has an endpoint, how far to the endpoint?
+     */
+    double toGo();
 }

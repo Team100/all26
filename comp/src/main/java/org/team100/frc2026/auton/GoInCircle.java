@@ -7,7 +7,9 @@ import org.team100.frc2026.robot.Machinery;
 import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingTransform2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.subsystems.se2.commands.DriveWithTrajectoryFunction;
@@ -19,7 +21,6 @@ import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 import org.wpilib.command2.Command;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Transform2d;
 
 /**
  * Makes a large circle shape
@@ -52,20 +53,23 @@ public class GoInCircle implements AnnotatedCommand {
     }
 
     TrajectorySE2 t1(Pose2d p1) {
-        // code from UTurnWithRotation
+        // start in the direction we're facing, and rotate counterclockwise
         DirectionSE2 d1 = DirectionSE2.fromDirections(p1.getRotation(), 1);
-        DirectionSE2 d2 = DirectionSE2.fromDirections(p1.getRotation().plus(Rotation2d.kPi), 1);
-        WaypointSE2 w1 = new WaypointSE2(p1, d1, 2.5);
-        Transform2d t1 = new Transform2d(0, 2, Rotation2d.kPi);
-        Pose2d p2 = p1.plus(t1);
-        WaypointSE2 w2 = new WaypointSE2(p2, d2, 2.5);
-        // new code
-        DirectionSE2 d3 = DirectionSE2.fromDirections(p2.getRotation().plus(Rotation2d.kPi), 1);
-        Transform2d t2 = new Transform2d(0, 2, Rotation2d.kPi);
-        Pose2d p3 = p2.plus(t2);
-        WaypointSE2 w3 = new WaypointSE2(p3, d3, 2.5);
+        WindingWaypointSE2 w1 = new WindingWaypointSE2(new WindingPose2d(p1), d1, 2.5);
 
-        List<WaypointSE2> waypoints = List.of(w1, w2, w3);
+        // endpoint is 2r to the left
+        WindingTransform2d t1 = new WindingTransform2d(0, 2, Math.PI);
+        WindingPose2d p2 = new WindingPose2d(p1).plus(t1);
+        DirectionSE2 d2 = DirectionSE2.fromDirections(p1.getRotation().plus(Rotation2d.PI), 1);
+        WindingWaypointSE2 w2 = new WindingWaypointSE2(p2, d2, 2.5);
+
+        // keep going
+        WindingTransform2d t2 = new WindingTransform2d(0, 2, Math.PI);
+        WindingPose2d p3 = p2.plus(t2);
+        DirectionSE2 d3 = DirectionSE2.fromDirections(p2.getRotation() + Math.PI, 1);
+        WindingWaypointSE2 w3 = new WindingWaypointSE2(p3, d3, 2.5);
+
+        List<WindingWaypointSE2> waypoints = List.of(w1, w2, w3);
         return planner.restToRest(waypoints);
     }
 

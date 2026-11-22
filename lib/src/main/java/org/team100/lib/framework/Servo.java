@@ -1,7 +1,6 @@
 package org.team100.lib.framework;
 
 import org.wpilib.hardware.discrete.PWM;
-import org.wpilib.util.sendable.SendableBuilder;
 
 /** We use Servo.java. */
 public class Servo extends PWM {
@@ -63,9 +62,9 @@ public class Servo extends PWM {
         return 0;
     }
 
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("Servo");
-        builder.addDoubleProperty("Value", this::get, this::set);
-    }
+    // @Override
+    // public void initSendable(SendableBuilder builder) {
+    //     builder.setSmartDashboardType("Servo");
+    //     builder.addDoubleProperty("Value", this::get, this::set);
+    // }
 }

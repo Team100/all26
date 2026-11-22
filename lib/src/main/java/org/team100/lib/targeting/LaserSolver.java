@@ -39,12 +39,14 @@ public class LaserSolver implements Solver {
         FiringParameters params = oParams.get();
 
         // Does not include target velocity in solution velocity.
-        Rotation2d absoluteBearing = TargetUtil.absoluteBearing(
+        Optional<Rotation2d> absoluteBearing = TargetUtil.absoluteBearing(
                 robotPosition, targetPosition);
+        if (absoluteBearing.isEmpty())
+            return Optional.empty();
         double azimuthVelocity = TargetUtil.targetMotion(
                 state, targetPosition);
         return Optional.of(new Solution(
-                absoluteBearing,
+                absoluteBearing.get(),
                 azimuthVelocity,
                 params));
     }

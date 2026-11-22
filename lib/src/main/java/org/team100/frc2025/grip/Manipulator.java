@@ -20,11 +20,11 @@ import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.music.Music;
 import org.team100.lib.music.Player;
 import org.team100.lib.sensor.distance.LaserCan100;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 /**
  * The manipulator from the Calgames robot in 2025
@@ -56,19 +56,19 @@ public class Manipulator extends SubsystemBase implements Music {
         if (RobotBase.isReal()) {
             // Set specific parameters for the competition robot
             KrakenX60Motor leftMotor = new KrakenX60Motor(
-                    leftMotorLog, currentLog, new CanId(19), new CanBusId(0),
+                    leftMotorLog, currentLog, new CanId(19), CANPort.CAN_S0,
                     NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(40, 40),
                     new Friction(0.900, 0.900, 0.0, 0.5),
                     PIDConstants.zero());
             KrakenX60Motor rightMotor = new KrakenX60Motor(
-                    rightMotorLog, currentLog, new CanId(20), new CanBusId(0),
+                    rightMotorLog, currentLog, new CanId(20), CANPort.CAN_S0,
                     NeutralMode100.COAST, MotorPhase.REVERSE,
                     new CurrentLimit(40, 40),
                     new Friction(0.900, 0.900, 0.0, 0.5),
                     PIDConstants.zero());
             KrakenX60Motor algaeMotor = new KrakenX60Motor(
-                    algaeMotorLog, currentLog, new CanId(21), new CanBusId(0),
+                    algaeMotorLog, currentLog, new CanId(21), CANPort.CAN_S0,
                     NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(120, 120),
                     new Friction(0.900, 0.900, 0.0, 0.5),

@@ -4,16 +4,15 @@ import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDelta;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDeltas;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleState100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
-
-import org.wpilib.math.linalg.MatBuilder;
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.util.Nat;
-import org.wpilib.math.linalg.VecBuilder;
-import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.math.geometry.Twist2d;
+import org.wpilib.math.linalg.MatBuilder;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.numbers.N3;
 import org.wpilib.math.numbers.N8;
+import org.wpilib.math.util.Nat;
 
 /**
  * The Jacobians of the swerve kinematics, relating velocities of the
@@ -133,6 +132,10 @@ public class SwerveDriveKinematics100 {
         m_J = new Matrix<>(m_Jinv.getStorage().pseudoInverse());
     }
 
+    public Matrix<N3, N8> J() {
+        return m_J;
+    }
+
     public DiscreteSpeed forward(SwerveModuleStates states, double dt) {
         return speed(new Vector<>(m_J.times(qdot(states))), dt);
     }
@@ -149,7 +152,7 @@ public class SwerveDriveKinematics100 {
         return deltas(new Vector<>(m_Jinv.times(dx(twist))));
     }
 
-    ///////////////////////////////////////
+    //////////////////////////////////////
 
     private static Vector<N8> qdot(SwerveModuleStates states) {
         return VecBuilder.fill(

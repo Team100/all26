@@ -18,11 +18,11 @@ import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
 import org.team100.lib.servo.LinearPositionServo;
 import org.team100.lib.servo.OutboardLinearPositionServo;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 public class ClimberExtension extends SubsystemBase {
     private final LinearPositionServo m_servo;
@@ -44,7 +44,7 @@ public class ClimberExtension extends SubsystemBase {
                     log,
                     currentLog,
                     new CanId(2),
-                    new CanBusId(0),
+                    CANPort.CAN_S0,
                     NeutralMode100.BRAKE,
                     MotorPhase.FORWARD,
                     limit,

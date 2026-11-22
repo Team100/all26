@@ -4,12 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.trajectory.se2.TrajectorySE2Point;
-
 import org.wpilib.math.linalg.VecBuilder;
-import org.wpilib.math.geometry.Pose2d;
 
 public class ControlSE2Test {
     /** Centrifugal force */
@@ -18,7 +17,7 @@ public class ControlSE2Test {
         // moving +x
         // positive curvature
         PathSE2Point point = new PathSE2Point(
-                new WaypointSE2(new Pose2d(),
+                new WindingWaypointSE2(new WindingPose2d(),
                         new DirectionSE2(1, 0, 0), 1),
                 VecBuilder.fill(0, 1));
         // moving at 1 m/s
@@ -35,7 +34,7 @@ public class ControlSE2Test {
         // moving +x
         // negative curvature
         PathSE2Point point = new PathSE2Point(
-                new WaypointSE2(new Pose2d(), new DirectionSE2(1, 0, 0), 1),
+                new WindingWaypointSE2(new WindingPose2d(), new DirectionSE2(1, 0, 0), 1),
                 VecBuilder.fill(0, -1));
         // moving at 1 m/s
         TrajectorySE2Point pp = new TrajectorySE2Point(point, 0, 1, 0);

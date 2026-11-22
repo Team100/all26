@@ -98,7 +98,7 @@ public class OffsetDrivetrainWithBoost implements VelocitySubsystemSE2 {
      */
     private Pose2d toolpointPose() {
         return m_delegate.getState().pose().transformBy(
-                new Transform2d(m_offset, Rotation2d.kZero));
+                new Transform2d(m_offset, Rotation2d.ZERO));
     }
 
     /**

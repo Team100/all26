@@ -13,11 +13,11 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.CommandScheduler;
 import org.wpilib.framework.TimedRobot;
+import org.wpilib.hardware.bus.CANPort;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -51,10 +51,12 @@ public class Robot extends TimedRobot {
         // new CurrentLimit(1, 1),
         // new Friction(0, 0, 0, 0),
         // PIDConstants.makeVelocityPID(1), 0, 0);
-        left = new KrakenX60Motor(rootLogger, currentLog, new CanId(6), new CanBusId(0), NeutralMode100.BRAKE, MotorPhase.FORWARD,
+        left = new KrakenX60Motor(rootLogger, currentLog, new CanId(6), CANPort.CAN_S0, NeutralMode100.BRAKE,
+                MotorPhase.FORWARD,
                 new CurrentLimit(1, 1), new Friction(0, 0, 0, 0), PIDConstants.zero());
-    //     right = new KrakenX60Motor(rootLogger, currentLog, new CanId(7), NeutralMode100.BRAKE, MotorPhase.FORWARD,
-    //             new CurrentLimit(1, 1), new Friction(0, 0, 0, 0), PIDConstants.zero());
+        // right = new KrakenX60Motor(rootLogger, currentLog, new CanId(7),
+        // NeutralMode100.BRAKE, MotorPhase.FORWARD,
+        // new CurrentLimit(1, 1), new Friction(0, 0, 0, 0), PIDConstants.zero());
     }
 
     @Override

@@ -14,11 +14,11 @@ import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.Neo550CANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.position.incremental.IncrementalEncoder;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 /**
  * An example of a shooter pivot.
@@ -34,7 +34,7 @@ public class PivotSubsystem extends SubsystemBase {
             TotalCurrentLog currentLog,
             CurrentLimit limit,
             CanId canId,
-            CanBusId busId) {
+            CANPort busId) {
         LoggerFactory logger = parent.type(this);
         m_log_angle = logger.doubleLogger(Level.TRACE, "Angle (rad)");
         if (RobotBase.isReal()) {

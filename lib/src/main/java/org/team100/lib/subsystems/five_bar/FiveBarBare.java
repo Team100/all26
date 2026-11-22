@@ -18,11 +18,11 @@ import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 /**
  * Simplest possible control of the five-bar: duty cycle only, no position
@@ -54,8 +54,8 @@ public class FiveBarBare extends SubsystemBase {
         m_kinematics = new FiveBarKinematics(logger);
 
         if (RobotBase.isReal()) {
-            m_motorP1 = makeMotor(loggerP1, currentLog, new CanId(1), new CanBusId(0));
-            m_motorP5 = makeMotor(loggerP5, currentLog, new CanId(5), new CanBusId(0));
+            m_motorP1 = makeMotor(loggerP1, currentLog, new CanId(1), CANPort.CAN_S0);
+            m_motorP5 = makeMotor(loggerP5, currentLog, new CanId(5), CANPort.CAN_S0);
         } else {
             m_motorP1 = new SimulatedMotor(loggerP1, 600);
             m_motorP5 = new SimulatedMotor(loggerP5, 600);
@@ -76,14 +76,14 @@ public class FiveBarBare extends SubsystemBase {
 
     private Motor makeMotor(LoggerFactory logger,
             TotalCurrentLog currentLog,
-            CanId canId, CanBusId busId) {
+            CanId canId, CANPort canPort) {
         Friction friction = new Friction(0, 0, 0, 0);
         PIDConstants pid = PIDConstants.makePositionPID(2.0);
         return new Falcon500Motor(
                 logger,
                 currentLog,
                 canId,
-                busId,
+                canPort,
                 NeutralMode100.COAST,
                 MotorPhase.REVERSE,
                 new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),

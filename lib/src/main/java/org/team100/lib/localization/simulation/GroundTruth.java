@@ -56,7 +56,7 @@ public class GroundTruth {
 
         // History of ground-truth poses is based only on odometry.
         SwerveModulePositions initialMeasurement = m_modules.positions();
-        StateSE2 initialEstimate = new StateSE2(Pose2d.kZero, VelocitySE2.ZERO);
+        StateSE2 initialEstimate = new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO);
         m_estimates = new TimeInterpolatableBuffer100<>(
                 0.2, Takt.get(), initialEstimate);
 

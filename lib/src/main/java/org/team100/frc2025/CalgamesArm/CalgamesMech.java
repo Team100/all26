@@ -19,7 +19,7 @@ import org.team100.lib.geometry.prr.PRRVelocity;
 import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.DirectionSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.kinematics.prr.PRRKinematics;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
@@ -52,13 +52,13 @@ import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.prr.SubsystemPRR;
 import org.team100.lib.subsystems.prr.commands.FollowJointProfiles;
 import org.team100.lib.subsystems.se2.PositionSubsystemSE2;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
 import org.team100.lib.util.StrUtil;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 
@@ -183,7 +183,7 @@ public class CalgamesMech extends SubsystemBase
             elevatorFrontMotor = new KrakenX60Motor(
                     elevatorfrontLog, currentLog,
                     new CanId(11),
-                    new CanBusId(0),
+                    CANPort.CAN_S0,
                     NeutralMode100.BRAKE, MotorPhase.REVERSE,
                     new CurrentLimit(100, 100),
                     new Friction(0.100, 0.100, 0.005, 0.5),
@@ -191,7 +191,7 @@ public class CalgamesMech extends SubsystemBase
             elevatorBackMotor = new KrakenX60Motor(
                     elevatorbackLog, currentLog,
                     new CanId(12),
-                    new CanBusId(0),
+                    CANPort.CAN_S0,
                     NeutralMode100.BRAKE, MotorPhase.FORWARD,
                     new CurrentLimit(100, 100),
                     new Friction(0.100, 0.100, 0.005, 0.5),
@@ -202,7 +202,7 @@ public class CalgamesMech extends SubsystemBase
             shoulderMotor = new KrakenX60Motor(
                     shoulderLog, currentLog,
                     new CanId(24),
-                    new CanBusId(0),
+                    CANPort.CAN_S0,
                     NeutralMode100.BRAKE, MotorPhase.REVERSE,
                     new CurrentLimit(100, 100),
                     new Friction(0.100, 0.100, 0.005, 0.5),
@@ -226,7 +226,7 @@ public class CalgamesMech extends SubsystemBase
             wristMotor = new KrakenX60Motor(
                     wristLog, currentLog,
                     new CanId(22),
-                    new CanBusId(0),
+                    CANPort.CAN_S0,
                     NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(40, 60),
                     new Friction(0.100, 0.100, 0.005, 0.5),
@@ -487,86 +487,86 @@ public class CalgamesMech extends SubsystemBase
     public MoveAndHold homeToL1() {
         return m_transit.endless("homeToL1",
                 DirectionSE2.irrotational(-1.5),
-                WaypointSE2.irrotational(L2, -1.7, 1.2));
+                WindingWaypointSE2.irrotational(L2, -1.7, 1.2));
     }
 
     // NEVER CALL
     public Command l1ToHome() {
         return m_transit.terminal("l1ToHome",
                 DirectionSE2.irrotational(1.3),
-                WaypointSE2.irrotational(m_home, 1.5, 1.2));
+                WindingWaypointSE2.irrotational(m_home, 1.5, 1.2));
     }
 
     public MoveAndHold homeToL2() {
         return m_transit.endless("homeToL2",
                 DirectionSE2.irrotational(1.5),
-                WaypointSE2.irrotational(L2, 1.5, 1.2));
+                WindingWaypointSE2.irrotational(L2, 1.5, 1.2));
     }
 
     public Command l2ToHome() {
         return m_transit.terminal("l2ToHome",
                 DirectionSE2.irrotational(-1.5),
-                WaypointSE2.irrotational(m_home, -1.5, 1.2));
+                WindingWaypointSE2.irrotational(m_home, -1.5, 1.2));
     }
 
     public MoveAndHold homeToL3() {
         return m_transit.endless("homeToL3",
                 DirectionSE2.irrotational(0.8),
-                WaypointSE2.irrotational(L3, 1.5, 1.2));
+                WindingWaypointSE2.irrotational(L3, 1.5, 1.2));
     }
 
     public Command l3ToHome() {
         return m_transit.terminal("l3ToHome",
                 DirectionSE2.irrotational(-1.5),
-                WaypointSE2.irrotational(m_home, -2.3, 1.2));
+                WindingWaypointSE2.irrotational(m_home, -2.3, 1.2));
     }
 
     public MoveAndHold homeToL4() {
         return m_transit.endless("homeToL4",
                 DirectionSE2.irrotational(0.1),
-                WaypointSE2.irrotational(L4, 1.5, 1.2));
+                WindingWaypointSE2.irrotational(L4, 1.5, 1.2));
     }
 
     public MoveAndHold homeToL4Back() {
         return m_transit.endless("homeToL4",
                 DirectionSE2.irrotational(0.1),
-                WaypointSE2.irrotational(L4_BACK, -1.5, 1.2));
+                WindingWaypointSE2.irrotational(L4_BACK, -1.5, 1.2));
     }
 
     public Command l4ToHome() {
         return m_transit.terminal("l4ToHome",
                 DirectionSE2.irrotational(-1.5),
-                WaypointSE2.irrotational(m_home, -3, 1.2));
+                WindingWaypointSE2.irrotational(m_home, -3, 1.2));
     }
 
     public Command l4BackToHome() {
         return m_transit.terminal("l4ToHome",
                 DirectionSE2.irrotational(1.5),
-                WaypointSE2.irrotational(m_home, -3, 1.2));
+                WindingWaypointSE2.irrotational(m_home, -3, 1.2));
     }
 
     public Command homeToAlgaeL2() {
         return m_transit.endless("homeToAlgaeL2",
                 DirectionSE2.irrotational(1.5),
-                WaypointSE2.irrotational(ALGAE_L2, 1.5, 1.2));
+                WindingWaypointSE2.irrotational(ALGAE_L2, 1.5, 1.2));
     }
 
     public Command homeToAlgaeL3() {
         return m_transit.endless("homeToAlgaeL3",
                 DirectionSE2.irrotational(0),
-                WaypointSE2.irrotational(ALGAE_L3, 1.5, 1.2));
+                WindingWaypointSE2.irrotational(ALGAE_L3, 1.5, 1.2));
     }
 
     public Command algaeL2ToHome() {
         return m_transit.terminal("homeToAlgaeL2",
                 DirectionSE2.irrotational(-1.0),
-                WaypointSE2.irrotational(m_home, Math.PI, 1.2));
+                WindingWaypointSE2.irrotational(m_home, Math.PI, 1.2));
     }
 
     public Command algaeL3ToHome() {
         return m_transit.terminal("homeToAlgaeL3",
                 DirectionSE2.irrotational(-1.0),
-                WaypointSE2.irrotational(m_home, Math.PI, 1.2));
+                WindingWaypointSE2.irrotational(m_home, Math.PI, 1.2));
     }
 
     /**
@@ -595,13 +595,13 @@ public class CalgamesMech extends SubsystemBase
     public MoveAndHold homeToBarge() {
         return m_transit.endless("homeToBarge",
                 DirectionSE2.irrotational(0),
-                WaypointSE2.irrotational(BARGE, -1, 1.2));
+                WindingWaypointSE2.irrotational(BARGE, -1, 1.2));
     }
 
     public MoveAndHold bargeToHome() {
         return m_transit.endless("bargeToHome",
                 DirectionSE2.irrotational(2.5),
-                WaypointSE2.irrotational(m_home, Math.PI, 1.2));
+                WindingWaypointSE2.irrotational(m_home, Math.PI, 1.2));
 
     }
 

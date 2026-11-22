@@ -11,7 +11,7 @@ public class CalibratorSetup implements Runnable {
 
     public CalibratorSetup(Gamepad m_controller, DemoLED m_led) {
         m_calibrator = new AxisCalibrator(5);
-        onTrue(m_controller::getWestFaceButton,
+        onTrue(m_controller::getFaceLeftButton,
                 m_calibrator.step());
         m_led.setDefaultCommand(m_led.indicateCalibration(m_calibrator));
     }

@@ -18,7 +18,7 @@ public class NoEstimate implements StateEstimator {
 
     public NoEstimate() {
         LocalizerEstimate initialEstimate = new LocalizerEstimate(
-                new StateSE2(Pose2d.kZero, VelocitySE2.ZERO), IsotropicNoiseSE2.high(),
+                new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO), IsotropicNoiseSE2.high(),
                 VariableR1.fromVariance(0, 1));
         m_estimates = new TimeInterpolatableBuffer100<>(
                 0.2, 0, initialEstimate);

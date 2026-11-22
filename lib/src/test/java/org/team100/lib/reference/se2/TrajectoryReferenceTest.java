@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.coherence.Cache;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
@@ -22,9 +23,6 @@ import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.se2.examples.TrajectoryExamples;
 
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-
 public class TrajectoryReferenceTest implements Timeless {
     private static final double DELTA = 0.001;
     private static final LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());
@@ -40,9 +38,9 @@ public class TrajectoryReferenceTest implements Timeless {
         Cache.clear();
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         TrajectorySE2 t = ex.restToRest(
-                new Pose2d(0, 0, Rotation2d.kZero),
-                new Pose2d(1, 0, Rotation2d.kZero));
-                TrajectoryReferenceSE2 r = new TrajectoryReferenceSE2(logger, t);
+                new WindingPose2d(0, 0, 0),
+                new WindingPose2d(1, 0, 0));
+        TrajectoryReferenceSE2 r = new TrajectoryReferenceSE2(logger, t);
         // measurement is irrelevant
         r.initialize(new StateSE2());
         {

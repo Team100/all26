@@ -6,10 +6,10 @@ import java.util.List;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.se2.DirectionSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingTransform2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingTwist2d;
 import org.team100.lib.spline.se2.ISplineSE2;
-
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Transform2d;
 import org.wpilib.math.geometry.Twist2d;
 
 public class PathSE2Factory {
@@ -82,8 +82,8 @@ public class PathSE2Factory {
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
-    ///
-    ///
+    /// 
+    /// 
 
     /**
      * Recursive bisection to find a series of secant lines close to the real curve,
@@ -99,18 +99,18 @@ public class PathSE2Factory {
             double s0,
             double s1) {
         double shalf = (s0 + s1) / 2;
-        Pose2d p0 = spline.pose(s0);
-        Pose2d phalf = spline.pose(shalf);
-        Pose2d p1 = spline.pose(s1);
+        WindingPose2d p0 = spline.pose(s0);
+        WindingPose2d phalf = spline.pose(shalf);
+        WindingPose2d p1 = spline.pose(s1);
 
         // twist from p0 to p1
-        Twist2d twist_full = p1.minus(p0).log();
+        WindingTwist2d twist_full = p1.minus(p0).log();
         // twist halfway from p0 to p1
-        Twist2d twist_half = GeometryUtil.scale(twist_full, 0.5);
+        WindingTwist2d twist_half = GeometryUtil.scale(twist_full, 0.5);
         // point halfway from p0 to p1
-        Pose2d phalf_predicted = p0.plus(twist_half.exp());
+        WindingPose2d phalf_predicted = p0.plus(twist_half.exp());
         // difference between twist and sample
-        Transform2d error = phalf_predicted.minus(phalf);
+        WindingTransform2d error = phalf_predicted.minus(phalf);
 
         // also prohibit large changes in direction between points
         DirectionSE2 course0 = spline.waypoint(s0).course();
@@ -121,7 +121,7 @@ public class PathSE2Factory {
         // checks both translational and l2 norms
         // also checks change in course
         if (Math.abs(error.getTranslation().getNorm()) > m_maxDx
-                || Math.abs(error.getRotation().getRadians()) > m_maxDTheta
+                || Math.abs(error.getRotation()) > m_maxDTheta
                 || Metrics.translationalNorm(twist_full) > m_maxNorm
                 || Metrics.l2Norm(twist_full) > m_maxNorm
                 || Metrics.l2Norm(courseChange) > m_maxNorm) {

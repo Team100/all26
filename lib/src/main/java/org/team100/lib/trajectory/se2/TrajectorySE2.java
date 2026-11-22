@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.team100.lib.framework.TimedRobot100;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.trajectory.TrajectoryUtil;
-import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Translation2d;
 
 /**
@@ -146,8 +146,8 @@ public class TrajectorySE2 {
             TrajectorySE2Entry ts = getPoint(i);
             TrajectorySE2Point point = ts.point();
             PathSE2Point pwm = point.point();
-            WaypointSE2 w = pwm.waypoint();
-            Pose2d p = w.pose();
+            WindingWaypointSE2 w = pwm.waypoint();
+            WindingPose2d p = w.pose();
             System.out.printf("%d, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f\n",
                     i, point.time(), point.velocity(), point.accel(), pwm.K().norm(),
                     p.getX(), p.getY());
@@ -160,8 +160,8 @@ public class TrajectorySE2 {
         for (double t = 0; t < duration(); t += 0.02) {
             TrajectorySE2Entry ts = sample(t);
             PathSE2Point pwm = ts.point().point();
-            WaypointSE2 w = pwm.waypoint();
-            Pose2d p = w.pose();
+            WindingWaypointSE2 w = pwm.waypoint();
+            WindingPose2d p = w.pose();
             System.out.printf("%5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f\n",
                     ts.point().time(), ts.point().velocity(), ts.point().accel(), pwm.K().norm(), p.getX(),
                     p.getY());

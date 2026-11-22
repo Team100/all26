@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.state.StateSE2;
 
@@ -29,7 +29,7 @@ class StateSE2Test {
     @Test
     void testTimedState() {
         PathSE2Point p = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 0));
         StateSE2 s = StateSE2.fromMovingPathPointSE2(p, 0);
@@ -44,7 +44,7 @@ class StateSE2Test {
     @Test
     void testTimedState2() {
         PathSE2Point p = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 0));
         StateSE2 s = StateSE2.fromMovingPathPointSE2(p, 0);
@@ -59,7 +59,7 @@ class StateSE2Test {
     @Test
     void testTimedState3() {
         PathSE2Point p = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 0));
         StateSE2 s = StateSE2.fromMovingPathPointSE2(p, 1);
@@ -75,7 +75,7 @@ class StateSE2Test {
     @Test
     void testTimedState4() {
         PathSE2Point p = new PathSE2Point(
-                WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
+                WindingWaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 1));
         StateSE2 s = StateSE2.fromMovingPathPointSE2(p, 1);
         assertEquals(0, s.x().x(), DELTA);
@@ -89,7 +89,7 @@ class StateSE2Test {
     @Test
     void testChassisVelocities0() {
         StateSE2 state = new StateSE2(
-                new Pose2d(new Translation2d(0, 0), Rotation2d.kPi),
+                new Pose2d(new Translation2d(0, 0), Rotation2d.PI),
                 new VelocitySE2(1, 0, 0));
         ChassisVelocities speeds = state.ChassisVelocities();
         assertEquals(-1, speeds.vx, DELTA);
@@ -100,7 +100,7 @@ class StateSE2Test {
     @Test
     void testChassisSpeeds1() {
         StateSE2 state = new StateSE2(
-                new Pose2d(new Translation2d(0, 0), Rotation2d.kCCW_Pi_2),
+                new Pose2d(new Translation2d(0, 0), Rotation2d.CCW_PI_2),
                 new VelocitySE2(1, 0, 1));
         ChassisVelocities speeds = state.ChassisVelocities();
         assertEquals(0, speeds.vx, DELTA);

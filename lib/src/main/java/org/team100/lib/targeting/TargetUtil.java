@@ -1,9 +1,11 @@
 package org.team100.lib.targeting;
 
+import java.util.Optional;
+import java.util.OptionalDouble;
+
 import org.team100.lib.geometry.se2.VelocitySE2;
 import org.team100.lib.state.StateSE2;
 import org.team100.lib.util.Math100;
-
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -25,7 +27,7 @@ public class TargetUtil {
      * @param target field-relative target translation
      * @return absolute bearing from robot to target
      */
-    public static Rotation2d absoluteBearing(Translation2d robot, Translation2d target) {
+    public static Optional<Rotation2d> absoluteBearing(Translation2d robot, Translation2d target) {
         return target.minus(robot).getAngle();
     }
 
@@ -33,11 +35,13 @@ public class TargetUtil {
      * Absolute bearing close to the robot's current pose, might be outside
      * [-pi,pi].
      */
-    public static double unwrappedAbsoluteBearing(Pose2d robot, Translation2d target) {
+    public static OptionalDouble unwrappedAbsoluteBearing(Pose2d robot, Translation2d target) {
         Translation2d currentTranslation = robot.getTranslation();
-        Rotation2d absoluteBearing = TargetUtil.absoluteBearing(currentTranslation, target);
+        Optional<Rotation2d> absoluteBearing = TargetUtil.absoluteBearing(currentTranslation, target);
+        if (absoluteBearing.isEmpty())
+            return OptionalDouble.empty();
         double yaw = robot.getRotation().getRadians();
-        return Math100.getMinDistance(yaw, absoluteBearing.getRadians());
+        return OptionalDouble.of(Math100.getMinDistance(yaw, absoluteBearing.get().getRadians()));
     }
 
     /**
@@ -45,7 +49,7 @@ public class TargetUtil {
      * 
      * This is useful for feedforward, to track the apparent movement.
      * 
-     * @param state  current robot state.  Avoid noise here.
+     * @param state  current robot state. Avoid noise here.
      * @param target field-relative target position
      * @return apparent rotation of the target around the robot, rad/s
      */
@@ -60,8 +64,10 @@ public class TargetUtil {
         Rotation2d course = velocity.angle().get();
         double speedM_S = velocity.norm();
         double rangeM = robotToTarget.getNorm();
-        Rotation2d absoluteBearing = absoluteBearing(robot, target);
-        return targetMotion(course, speedM_S, rangeM, absoluteBearing);
+        Optional<Rotation2d> absoluteBearing = absoluteBearing(robot, target);
+        if (absoluteBearing.isEmpty())
+            return 0;
+        return targetMotion(course, speedM_S, rangeM, absoluteBearing.get());
     }
 
     /**

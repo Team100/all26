@@ -1,7 +1,6 @@
 package org.team100.lib.trajectory.se2.constraint;
 
 import org.team100.lib.path.se2.PathSE2Point;
-
 import org.wpilib.math.geometry.Rotation2d;
 
 /**
@@ -32,7 +31,7 @@ public class DiamondConstraint implements TimingConstraint {
     @Override
     public double maxV(PathSE2Point point) {
         Rotation2d course = point.waypoint().course().toRotation();
-        Rotation2d heading = point.waypoint().pose().getRotation();
+        Rotation2d heading = new Rotation2d(point.waypoint().pose().getRotation());
         Rotation2d strafe = course.minus(heading);
         // a rhombus is a superellipse with exponent 1
         // https://en.wikipedia.org/wiki/Superellipse

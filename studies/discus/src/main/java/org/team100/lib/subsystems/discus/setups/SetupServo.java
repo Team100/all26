@@ -31,17 +31,17 @@ public class SetupServo implements Runnable {
         // m_discus.home());
         // onTrue(controller::getBButton,
         // m_discus.zero());
-        whileTrue(controller::getWestFaceButton,
+        whileTrue(controller::getFaceLeftButton,
                 m_discus.position(() -> 3));
-        whileTrue(controller::getNorthFaceButton,
+        whileTrue(controller::getFaceUpButton,
                 m_discus.position(() -> -8));
         whileTrue(controller::getRightBumperButton,
                 m_discus.position(() -> 12));
         whileTrue(controller::getLeftBumperButton,
                 m_discus.position(() -> -12));
-        whileTrue(controller::getSouthFaceButton,
+        whileTrue(controller::getFaceDownButton,
                 m_discus.position(() -> 20));
-        whileTrue(controller::getEastFaceButton,
+        whileTrue(controller::getFaceRightButton,
                 m_discus.position(() -> -20));
     }
 

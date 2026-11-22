@@ -203,7 +203,7 @@ public class Machinery {
     public Command zeroRotation() {
         return Commands.runOnce(() -> {
             Translation2d t = m_drive.getState().pose().getTranslation();
-            Pose2d p = new Pose2d(t, Rotation2d.kZero);
+            Pose2d p = new Pose2d(t, Rotation2d.ZERO);
             // no influence over cartesian variance
             // a strong claim about rotation variance
             IsotropicNoiseSE2 noise = IsotropicNoiseSE2.fromStdDev(10, 0.001);

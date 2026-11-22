@@ -193,6 +193,7 @@ public class SwerveDriveSubsystem extends SubsystemBase
 
     public void close() {
         m_swerveLocal.close();
+        m_estimate.close();
     }
 
 }

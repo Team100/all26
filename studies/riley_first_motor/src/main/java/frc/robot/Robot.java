@@ -7,12 +7,16 @@ package frc.robot;
 //import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import org.team100.lib.coherence.Cache;
+import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.hid.DriverXboxControl;
+import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.RobotLog;
@@ -20,8 +24,10 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
+import org.team100.lib.motor.rev.MinionSparkMotor;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.Startup;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -38,8 +44,12 @@ public class Robot extends TimedRobot100 {
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
-private final Falcon500Motor m_motor;
-private double m_dutyCycle = 0;
+private final MinionSparkMotor m_drumA;
+private final MinionSparkMotor m_drumB;
+private final MinionSparkMotor m_indexer;
+private double m_velocity1 = 0;
+private double m_velocity2 = 0;
+private double m_dutyCycle3 = 0;
 private DriverXboxControl m_controller;
 
 
@@ -53,15 +63,39 @@ public Robot() {
 
 
     System.out.println("Initializing motor");
-    m_motor = new Falcon500Motor(
-            log.name("motor"),
+    m_drumA = new MinionSparkMotor(
+            log.name("drum A"),
             currentLog,
-            new CanId(2), // YOUR CAN ID, not 7!
-            NeutralMode100.COAST,
+            new CanId(39), 
+            NeutralMode100.BRAKE,
+            MotorPhase.REVERSE,
+            new CurrentLimit(10, 10),
+            new Friction(0, 0, 0, 0),
+            PIDConstants.zero(),
+            0,
+            0);
+    m_drumB = new MinionSparkMotor(
+            log.name("drum B"),
+            currentLog,
+            new CanId(8), 
+            NeutralMode100.BRAKE,
             MotorPhase.FORWARD,
             new CurrentLimit(10, 10),
             new Friction(0, 0, 0, 0),
-            PIDConstants.zero());
+            PIDConstants.zero(),
+            0,
+            0);
+    m_indexer = new MinionSparkMotor(
+            log.name("indexer"),
+            currentLog,
+            new CanId(7), 
+            NeutralMode100.BRAKE,
+            MotorPhase.REVERSE,
+            new CurrentLimit(10, 10),
+            new Friction(0, 0, 0, 0),
+            PIDConstants.zero(),
+            0,
+            0);
     System.out.println("Motor initialized");
 
 }
@@ -77,6 +111,11 @@ public Robot() {
    */
   @Override
   public void robotPeriodic() {
+            Takt.update();
+        Cache.refresh();
+        CommandScheduler.getInstance().run();
+
+        LogPoller.log();
   }
 
   /**
@@ -117,19 +156,33 @@ public Robot() {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    double m_speed = m_motor.encoder().getVelocityRad_S();
-    System.out.printf("m_speed %.2f%n", m_speed);
+    double m_speed = m_drumA.encoder().getVelocityRad_S();
+    System.out.printf("drum a %.2f%n", m_speed);
+
+    double m_speed2 = m_drumB.encoder().getVelocityRad_S();
+    System.out.printf("drum b %.2f%n", m_speed2);
 
     // Slowly speeds up
     // if(m_dutyCycle < 0.3){
     //   m_dutyCycle += 0.001;
     // }
     // m_motor.setDutyCycle(m_dutyCycle);
-    System.out.println("duty cycle: " + m_dutyCycle);
     // controlled by controller
-    // m_dutyCycle = 8.leftY() / 10.0;
-    m_dutyCycle = 0.1;
-    m_motor.setDutyCycle(m_dutyCycle);
+    // m_dutyCycle = m_controller.leftY() / 10.0;
+
+    m_velocity1 = 115;
+    m_velocity2 = 115;
+    m_drumA.setVelocity(m_velocity1, 0);
+    m_drumB.setVelocity(m_velocity2, 0);
+
+
+    if(Math.abs(m_speed) > 111 && Math.abs(m_speed2) > 111){
+      m_dutyCycle3 = 0.2;
+      m_indexer.setDutyCycle(m_dutyCycle3);
+    }else{
+      m_dutyCycle3 = 0;
+      m_indexer.setDutyCycle(m_dutyCycle3);
+    }
 
   }
 

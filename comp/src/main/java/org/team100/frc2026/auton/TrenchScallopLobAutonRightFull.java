@@ -13,7 +13,8 @@ import org.team100.frc2026.robot.Machinery;
 import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.subsystems.se2.commands.DriveWithTrajectoryFunction;
@@ -26,7 +27,6 @@ import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.wpilib.command2.Command;
 import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
 
 public class TrenchScallopLobAutonRightFull implements AnnotatedCommand {
     private final LoggerFactory log;
@@ -82,7 +82,7 @@ public class TrenchScallopLobAutonRightFull implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return StartingPositions.RIGHT_TRENCH;
+        return StartingPositions.RIGHT_TRENCH.pose2d();
     }
 
     @Override
@@ -101,55 +101,56 @@ public class TrenchScallopLobAutonRightFull implements AnnotatedCommand {
     }
 
     TrajectorySE2 t1(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                // new WaypointSE2(startingPose, new DirectionSE2(1, 0, 0), 1),
-                // new WaypointSE2(new Pose2d(7, 6, new Rotation2d(180 * (Math.PI / 180))), new
+        List<WindingWaypointSE2> waypoints = List.of(
+                // new WindingWaypointSE2(new WindingPose2d(startingPose), new DirectionSE2(1,
+                // 0, 0), 1),
+                // new WindingWaypointSE2(new WindingPose2d(7, 6, Math.toRadians(180)), new
                 // DirectionSE2(1, 0, 0), 1),
-                // new WaypointSE2(new Pose2d(8.3, 6, new Rotation2d(180 * (Math.PI / 180))),
+                // new WindingWaypointSE2(new WindingPose2d(8.3, 6, Math.toRadians(180)),
                 // new DirectionSE2(1, 0, 0), 1),
 
-                // new WaypointSE2(new Pose2d(7, 6.5, new Rotation2d(180 * (Math.PI / 180))),
+                // new WindingWaypointSE2(new WindingPose2d(7, 6.5, Math.toRadians(180)),
                 // new DirectionSE2(-1, 0, 0), 1),
 
-                // new WaypointSE2(new Pose2d(7, 5, new Rotation2d(180 * (Math.PI / 180))), new
+                // new WindingWaypointSE2(new WindingPose2d(7, 5, Math.toRadians(180)), new
                 // DirectionSE2(1, 0, 0), 1),
-                // new WaypointSE2(new Pose2d(8.3, 5, new Rotation2d(180 * (Math.PI / 180))),
+                // new WindingWaypointSE2(new WindingPose2d(8.3, 5, Math.toRadians(180)),
                 // new DirectionSE2(1, 0, 0), 1),
 
-                // new WaypointSE2(new Pose2d(7, 5.5, new Rotation2d(180 * (Math.PI / 180))),
+                // new WindingWaypointSE2(new WindingPose2d(7, 5.5, Math.toRadians(180)),
                 // new DirectionSE2(-1, 0, 0), 1),
-                new WaypointSE2(startingPose, new DirectionSE2(1, 0.35, 0), 1),
+                new WindingWaypointSE2(new WindingPose2d(startingPose), new DirectionSE2(1, 0.35, 0), 1),
 
-                new WaypointSE2(new Pose2d(7, 1.3, new Rotation2d(195 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0),
-                        1),
-
-                new WaypointSE2(new Pose2d(9, 2, new Rotation2d(195 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0),
-                        1),
-                new WaypointSE2(new Pose2d(7, 2.1, new Rotation2d(195 * (Math.PI / 180))), new DirectionSE2(1, 0, 0),
+                new WindingWaypointSE2(new WindingPose2d(7, 1.3, Math.toRadians(195)), new DirectionSE2(1, 0.5, 0),
                         1),
 
-                new WaypointSE2(new Pose2d(9, 3.2, new Rotation2d(205 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0),
+                new WindingWaypointSE2(new WindingPose2d(9, 2, Math.toRadians(195)), new DirectionSE2(1, 0.5, 0),
+                        1),
+                new WindingWaypointSE2(new WindingPose2d(7, 2.1, Math.toRadians(195)), new DirectionSE2(1, 0, 0),
                         1),
 
-                new WaypointSE2(new Pose2d(7, 3.3, new Rotation2d(205 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0),
-                        1),
-                new WaypointSE2(new Pose2d(9, 3.9, new Rotation2d(205 * (Math.PI / 180))), new DirectionSE2(1, 0, 0),
+                new WindingWaypointSE2(new WindingPose2d(9, 3.2, Math.toRadians(205)), new DirectionSE2(1, 0.5, 0),
                         1),
 
-                new WaypointSE2(new Pose2d(7, 4, new Rotation2d(210 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0),
+                new WindingWaypointSE2(new WindingPose2d(7, 3.3, Math.toRadians(205)), new DirectionSE2(1, 0.5, 0),
+                        1),
+                new WindingWaypointSE2(new WindingPose2d(9, 3.9, Math.toRadians(205)), new DirectionSE2(1, 0, 0),
                         1),
 
-                new WaypointSE2(new Pose2d(9, 5.2, new Rotation2d(170 * (Math.PI / 180))), new DirectionSE2(1, 0, 0),
-                        1),
-                new WaypointSE2(new Pose2d(7, 6, new Rotation2d(170 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0),
+                new WindingWaypointSE2(new WindingPose2d(7, 4, Math.toRadians(210)), new DirectionSE2(1, 0.5, 0),
                         1),
 
-                new WaypointSE2(new Pose2d(9, 5.8, new Rotation2d(170 * (Math.PI / 180))), new DirectionSE2(1, 0, 0),
+                new WindingWaypointSE2(new WindingPose2d(9, 5.2, Math.toRadians(170)), new DirectionSE2(1, 0, 0),
+                        1),
+                new WindingWaypointSE2(new WindingPose2d(7, 6, Math.toRadians(170)), new DirectionSE2(1, 0.5, 0),
                         1),
 
-                new WaypointSE2(new Pose2d(7, 6.4,
-                        new Rotation2d(170 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(9, 6.7, new Rotation2d(170 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1)
+                new WindingWaypointSE2(new WindingPose2d(9, 5.8, Math.toRadians(170)), new DirectionSE2(1, 0, 0),
+                        1),
+
+                new WindingWaypointSE2(new WindingPose2d(7, 6.4,
+                        Math.toRadians(170)), new DirectionSE2(1, 0, 0), 1),
+                new WindingWaypointSE2(new WindingPose2d(9, 6.7, Math.toRadians(170)), new DirectionSE2(1, 0, 0), 1)
 
         //
         );

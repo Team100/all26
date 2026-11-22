@@ -18,11 +18,11 @@ import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 /**
  * Control at the "mechanism" level, which in this case means sending position
@@ -62,8 +62,8 @@ public class FiveBarMech extends SubsystemBase {
         m_kinematics = new FiveBarKinematics(logger);
 
         if (RobotBase.isReal()) {
-            Falcon500Motor motorP1 = makeMotor(loggerP1, currentLog, new CanId(1), new CanBusId(0));
-            Falcon500Motor motorP5 = makeMotor(loggerP5, currentLog, new CanId(5), new CanBusId(0));
+            Falcon500Motor motorP1 = makeMotor(loggerP1, currentLog, new CanId(1), CANPort.CAN_S0);
+            Falcon500Motor motorP5 = makeMotor(loggerP5, currentLog, new CanId(5), CANPort.CAN_S0);
 
             m_sensorP1 = new ProxyRotaryPositionSensor(motorP1.encoder(), 1.0);
             m_sensorP5 = new ProxyRotaryPositionSensor(motorP5.encoder(), 1.0);
@@ -164,10 +164,10 @@ public class FiveBarMech extends SubsystemBase {
         return true;
     }
 
-    /////////////////
+    ////////////////
 
     private Falcon500Motor makeMotor(LoggerFactory logger,
-            TotalCurrentLog currentLog, CanId canId, CanBusId busId) {
+            TotalCurrentLog currentLog, CanId canId, CANPort canPort) {
         /** Units of positional PID are volts per revolution. */
         PIDConstants pid = PIDConstants.makePositionPID(2.0);
         Friction friction = new Friction(0, 0, 0, 0);
@@ -175,7 +175,7 @@ public class FiveBarMech extends SubsystemBase {
                 logger,
                 currentLog,
                 canId,
-                busId,
+                canPort,
                 NeutralMode100.COAST,
                 MotorPhase.REVERSE,
                 new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
@@ -198,7 +198,7 @@ public class FiveBarMech extends SubsystemBase {
         m_mechP1.setUnwrappedEncoderPositionRad(Q5_MIN);
     }
 
-    //////////////////
+    /////////////////
     //
     // Commands
 

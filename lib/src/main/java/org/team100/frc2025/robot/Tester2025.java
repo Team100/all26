@@ -6,7 +6,7 @@ import static org.wpilib.command2.Commands.runOnce;
 import static org.wpilib.command2.Commands.sequence;
 
 import org.wpilib.command2.Command;
-import org.wpilib.driverstation.Alert;
+import org.wpilib.util.Alert;
 
 /** Run pre- and post-match test sequences automatically. */
 public class Tester2025 {
@@ -16,7 +16,7 @@ public class Tester2025 {
 
     public Tester2025(Machinery2025 machinery) {
         m_machinery = machinery;
-        m_alert = new Alert(text("waiting"), Alert.Level.LOW);
+        m_alert = new Alert("tester", text("waiting"), Alert.Level.LOW);
         m_alert.set(true);
     }
 

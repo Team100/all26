@@ -1,6 +1,7 @@
 package org.team100.lib.subsystems.se2.commands.helper;
 
 import org.team100.lib.controller.se2.ControllerSE2;
+import org.team100.lib.geometry.Metrics;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
@@ -94,11 +95,14 @@ public class VelocityReferenceControllerSE2 {
      * 
      * Use this to start, or finish, parallel commands while this one is still
      * running, e.g. "start doing X if Y is near the goal."
+     * 
+     * TODO: extract a reference controller base class.
      */
     public double toGo() {
-        StateSE2 goal = m_reference.goal();
+        double refToGo = m_reference.toGo();
         StateSE2 measurement = m_subsystem.getState();
-        double togo = goal.minus(measurement).translation().getNorm();
+        double measurementToGo = Metrics.l2Norm(m_reference.goal().minus(measurement));
+        double togo = Math.max(refToGo, measurementToGo);
         m_logToGo.log(() -> togo);
         return togo;
     }

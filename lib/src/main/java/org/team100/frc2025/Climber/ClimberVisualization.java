@@ -3,11 +3,10 @@ package org.team100.frc2025.Climber;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
 import org.team100.lib.logging.Logging;
-
 import org.wpilib.smartdashboard.Mechanism2d;
 import org.wpilib.smartdashboard.MechanismLigament2d;
 import org.wpilib.smartdashboard.MechanismRoot2d;
-import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.telemetry.Telemetry;
 import org.wpilib.util.Color;
 import org.wpilib.util.Color8Bit;
 
@@ -32,7 +31,6 @@ public class ClimberVisualization {
         m_strut.append(m_arm);
         m_wheels = new MechanismLigament2d("wheels", 10, 0);
         m_arm.append(m_wheels);
-        SmartDashboard.putData("Climber", m_view);
         LogPoller.register(this::run);
     }
 
@@ -42,6 +40,7 @@ public class ClimberVisualization {
             m_wheels.setColor(m_intake.isIn()
                     ? new Color8Bit(Color.RED)
                     : new Color8Bit(Color.GREEN));
+            Telemetry.log("Climber", m_view);
         }
     }
 }

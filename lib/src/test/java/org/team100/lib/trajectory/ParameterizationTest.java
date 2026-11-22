@@ -9,7 +9,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.spline.se2.SplineSE2;
 import org.team100.lib.spline.se2.SplineSE2ToVectorSeries;
@@ -21,9 +22,6 @@ import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.YawRateConstraint;
 import org.team100.lib.util.ChartUtil;
-
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
 
 /** To visualize the different ways to parameterize a spline. */
@@ -33,11 +31,11 @@ public class ParameterizationTest {
     @Test
     void testSplineStraight() {
         SplineSE2 spline = new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(0, 0), new Rotation2d(0)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(0, 0), 0),
                         new DirectionSE2(1, 0, 0), 0.001),
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(1, 0), new Rotation2d(0)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 0), 0),
                         new DirectionSE2(1, 0, 0), 0.001));
         SplineSE2ToVectorSeries splineConverter = new SplineSE2ToVectorSeries(0.1);
         List<VectorSeries> series = splineConverter.convert(List.of(spline));
@@ -56,11 +54,11 @@ public class ParameterizationTest {
     @Test
     void testSplineCurved() {
         SplineSE2 spline = new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(0, 0), new Rotation2d(0)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(0, 0), 0),
                         new DirectionSE2(0, 1, 0), 1),
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(1, 0), new Rotation2d(0)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 0), 0),
                         new DirectionSE2(0, 1, 0), 1));
 
         List<VectorSeries> series = new SplineSE2ToVectorSeries(0.1).convert(List.of(spline));
@@ -89,12 +87,12 @@ public class ParameterizationTest {
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(c);
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner p = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(0, 0), new Rotation2d(0)),
+        List<WindingWaypointSE2> waypoints = List.of(
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(0, 0), 0),
                         new DirectionSE2(0, 1, 0), 1),
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(1, 0), new Rotation2d(0)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 0), 0),
                         new DirectionSE2(0, 1, 0), 1));
         TrajectorySE2 trajectory = p.generateTrajectory(waypoints, 0, 0);
 

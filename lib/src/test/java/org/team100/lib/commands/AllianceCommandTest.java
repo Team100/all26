@@ -17,7 +17,7 @@ class AllianceCommandTest {
 
     @BeforeEach
     void init() {
-        HAL.initialize(500, 0);
+        HAL.initialize();
     }
 
     @Test

@@ -2,9 +2,6 @@ package org.team100.lib.config;
 
 import org.team100.lib.util.NamedChooser;
 
-import org.wpilib.smartdashboard.SendableChooser;
-import org.wpilib.smartdashboard.SmartDashboard;
-
 /**
  * Driver skill level is used to limit speed.  Advanced drivers get full
  * speed; beginner and intermediate drivers get less.
@@ -29,14 +26,13 @@ public class DriverSkill {
         }
     }
 
-    private static final SendableChooser<Level> m_skillChooser = new NamedChooser<>("Driver Skill Level");
+    private static final NamedChooser<Level> m_skillChooser = new NamedChooser<>("Driver Skill Level");
 
     static {
         for (Level level : Level.values()) {
-            m_skillChooser.addOption(level.name(), level);
+            m_skillChooser.add(level.name(), level);
         }
-        m_skillChooser.setDefaultOption(Level.ADVANCED.name(), Level.ADVANCED);
-        SmartDashboard.putData(m_skillChooser);
+        m_skillChooser.addDefault(Level.ADVANCED.name(), Level.ADVANCED);
     }
 
     public static Level level() {

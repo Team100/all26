@@ -40,7 +40,7 @@ public class TracksToEvents {
 
                 Note note = Note.get(key);
 
-                double tSec = tick / 1000;
+                double tSec = (double)tick / 1000;
 
                 int velocity = sm.getData2();
                 if (velocity > 0) {

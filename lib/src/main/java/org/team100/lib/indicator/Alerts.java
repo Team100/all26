@@ -3,7 +3,7 @@ package org.team100.lib.indicator;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.wpilib.driverstation.Alert;
+import org.wpilib.util.Alert;
 
 
 
@@ -19,7 +19,7 @@ public class Alerts {
     }
 
     public Alert add(String text, Alert.Level type) {
-        Alert alert = new Alert(text, type);
+        Alert alert = new Alert("alert", text, type);
         m_alerts.add(alert);
         return alert;
     }

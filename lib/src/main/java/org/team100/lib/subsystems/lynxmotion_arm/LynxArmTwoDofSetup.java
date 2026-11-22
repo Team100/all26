@@ -16,13 +16,13 @@ public class LynxArmTwoDofSetup implements Runnable {
         m_viz = new LynxArmVisualizer(m_arm::getPose);
 
         MoveCommandTwoDof move1 = m_arm.moveTo(new Translation2d(0.2, 0.1));
-        whileTrue(m_controller::getSouthFaceButton,
+        whileTrue(m_controller::getFaceDownButton,
                 move1);
         MoveCommandTwoDof move2 = m_arm.moveTo(new Translation2d(0.2, 0));
-        whileTrue(m_controller::getEastFaceButton,
+        whileTrue(m_controller::getFaceRightButton,
                 move2);
         MoveCommandTwoDof move3 = m_arm.moveTo(new Translation2d(0.3, 0.1));
-        whileTrue(m_controller::getWestFaceButton,
+        whileTrue(m_controller::getFaceLeftButton,
                 move3);
 
         MoveCommandTwoDof move4 = m_arm.moveTo(new Translation2d(0.2, 0.05));
@@ -31,7 +31,7 @@ public class LynxArmTwoDofSetup implements Runnable {
         MoveCommandTwoDof move7 = m_arm.moveTo(new Translation2d(0.4, 0.05));
         MoveCommandTwoDof move8 = m_arm.moveTo(new Translation2d(0.4, 0.0));
         MoveCommandTwoDof move9 = m_arm.moveTo(new Translation2d(0.4, 0.05));
-        whileTrue(m_controller::getNorthFaceButton,
+        whileTrue(m_controller::getFaceUpButton,
                 Commands.sequence(
                         move4.until(move4::done),
                         move5.until(move5::done),

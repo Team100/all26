@@ -12,6 +12,7 @@ import org.team100.lib.geometry.prr.PRRConfig;
 import org.team100.lib.geometry.prr.PRRVelocity;
 import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.optimization.NumericalJacobian100;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.state.ControlSE2;
@@ -81,7 +82,7 @@ public class PRRKinematicsTest {
     void testInverse0() {
         // should be straight up
         PRRKinematics k = new PRRKinematics(2, 1, PRRKinematics.Solver.ANALYTIC);
-        Pose2d p = new Pose2d(4, 0, Rotation2d.kZero);
+        Pose2d p = new Pose2d(4, 0, Rotation2d.ZERO);
         List<PRRConfig> cs = k.inverse(p);
         // pose at 4, total is 3 long, so shoulder at 1
         assertEquals(1, cs.get(0).q1(), FINE);
@@ -93,7 +94,7 @@ public class PRRKinematicsTest {
     void testInverseDownArm45Triangle() {
         // built for a 45 45 90 triangle for
         PRRKinematics k = new PRRKinematics((2 * Math.sqrt(2)), 1, PRRKinematics.Solver.ANALYTIC);
-        Pose2d p = new Pose2d(0.1, 3, Rotation2d.kCCW_90deg);
+        Pose2d p = new Pose2d(0.1, 3, Rotation2d.CCW_90DEG);
         List<PRRConfig> cs = k.inverse(p);
 
         assertEquals(-1.9, cs.get(0).q1(), 0.001);
@@ -104,7 +105,7 @@ public class PRRKinematicsTest {
     @Test
     void testInverseDownArm() {
         PRRKinematics k = new PRRKinematics(2, 1, PRRKinematics.Solver.ANALYTIC);
-        Pose2d p = new Pose2d(0.1, 2, Rotation2d.kCCW_90deg);
+        Pose2d p = new Pose2d(0.1, 2, Rotation2d.CCW_90DEG);
         List<PRRConfig> cs = k.inverse(p);
 
         assertEquals(0.1 - Math.sqrt(3), cs.get(0).q1(), 0.001);
@@ -116,7 +117,7 @@ public class PRRKinematicsTest {
     void testInverse1() {
         // arm up, wrist to the side
         PRRKinematics k = new PRRKinematics(2, 1, PRRKinematics.Solver.ANALYTIC);
-        Pose2d p = new Pose2d(3, 1, Rotation2d.kCCW_90deg);
+        Pose2d p = new Pose2d(3, 1, Rotation2d.CCW_90DEG);
         List<PRRConfig> cs = k.inverse(p);
         // arm length is 2, wrist location is at 3
         assertEquals(1, cs.get(0).q1(), FINE);
@@ -389,8 +390,8 @@ public class PRRKinematicsTest {
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
-        Pose2d start = new Pose2d(1, -1, Rotation2d.kZero);
-        Pose2d end = new Pose2d(2, 1, Rotation2d.k180deg);
+        WindingPose2d start = new WindingPose2d(1, -1, 0);
+        WindingPose2d end = new WindingPose2d(2, 1, Math.PI);
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         TrajectorySE2 t = ex.restToRest(start, end);
         double d = t.duration();
@@ -554,7 +555,7 @@ public class PRRKinematicsTest {
         for (double x = 4; x >= 0; x -= 0.2) {
             for (double y = -2; y <= 2; y += 0.2) {
                 // for now, end-effector rotation is always zero (i.e. facing up)
-                Pose2d p = new Pose2d(x, y, Rotation2d.kZero);
+                Pose2d p = new Pose2d(x, y, Rotation2d.ZERO);
                 Matrix<N3, N3> j = NumericalJacobian100.numericalJacobian(
                         Nat.N3(),
                         Nat.N3(),
@@ -577,7 +578,7 @@ public class PRRKinematicsTest {
         Function<Vector<N3>, Vector<N3>> f = //
                 q -> GeometryUtil.toVec(k.forward(PRRConfig.fromVector(q)));
 
-        Pose2d start = new Pose2d(1, -1, Rotation2d.kZero);
+        Pose2d start = new Pose2d(1, -1, Rotation2d.ZERO);
         Pose2d end = new Pose2d(2, 1, Rotation2d.k180deg);
         double stepSize = 0.1;
         Pose2d prev = start;
@@ -615,8 +616,8 @@ public class PRRKinematicsTest {
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathSE2Factory pathFactory = new PathSE2Factory();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
-        Pose2d start = new Pose2d(1, -1, Rotation2d.kZero);
-        Pose2d end = new Pose2d(2, 1, Rotation2d.k180deg);
+        WindingPose2d start = new WindingPose2d(1, -1, 0);
+        WindingPose2d end = new WindingPose2d(2, 1, Math.PI);
         TrajectoryExamples ex = new TrajectoryExamples(planner);
         TrajectorySE2 t = ex.restToRest(start, end);
         double d = t.duration();

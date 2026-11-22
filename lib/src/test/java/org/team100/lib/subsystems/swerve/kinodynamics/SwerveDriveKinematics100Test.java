@@ -71,7 +71,7 @@ class SwerveDriveKinematics100Test {
         assertEquals(0, twist.dtheta, DELTA);
 
         // it transforms the starting pose correctly
-        Pose2d pStart = new Pose2d(0.5, 0.5, Rotation2d.kZero);
+        Pose2d pStart = new Pose2d(0.5, 0.5, Rotation2d.ZERO);
         Pose2d pEnd = pStart.plus(twist.exp());
         assertEquals(-0.5, pEnd.getX(), DELTA);
         assertEquals(0.5, pEnd.getY(), DELTA);
@@ -87,8 +87,8 @@ class SwerveDriveKinematics100Test {
                 new Translation2d(-0.5, 0.5),
                 new Translation2d(-0.5, -0.5));
 
-        Pose2d pStart = new Pose2d(0.5, 0.5, Rotation2d.kZero);
-        Pose2d pEnd = new Pose2d(-0.5, 1.5, Rotation2d.kZero);
+        Pose2d pStart = new Pose2d(0.5, 0.5, Rotation2d.ZERO);
+        Pose2d pEnd = new Pose2d(-0.5, 1.5, Rotation2d.ZERO);
         Twist2d t = pEnd.minus(pStart).log();
         assertEquals(-1, t.dx, DELTA);
         assertEquals(1, t.dy, DELTA);
@@ -214,7 +214,7 @@ class SwerveDriveKinematics100Test {
                 Math.PI / 2);
 
         // check that the exp is correct
-        Pose2d pStart = new Pose2d(0.5, 0.5, Rotation2d.kZero);
+        Pose2d pStart = new Pose2d(0.5, 0.5, Rotation2d.ZERO);
         Pose2d pEnd = pStart.plus(t.exp());
         assertEquals(-0.5, pEnd.getX(), DELTA);
         assertEquals(0.5, pEnd.getY(), DELTA);

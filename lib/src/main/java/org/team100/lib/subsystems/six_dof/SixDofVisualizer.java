@@ -26,7 +26,7 @@ public class SixDofVisualizer {
     List<Pose3d> poses() {
         SixDofPose p = m_arm.get();
         List<Pose3d> pList = List.of(
-                Pose3d.kZero,
+                Pose3d.ZERO,
                 p.p1(),
                 p.p2(),
                 p.p3(),

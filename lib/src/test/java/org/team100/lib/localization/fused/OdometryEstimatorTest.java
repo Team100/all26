@@ -100,10 +100,10 @@ public class OdometryEstimatorTest {
         // 0.1m ahead (this is max speed)
         Rotation2d gyroYaw = new Rotation2d();
         positions = new SwerveModulePositions(
-                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.kZero)));
+                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.ZERO)));
 
         // result shouldn't be 0.1 ahead
         // high speed means considerable added variance
@@ -142,10 +142,10 @@ public class OdometryEstimatorTest {
         // this is 0.02 rad in 0.02 s so the bias is 1 rad/s
         Rotation2d gyroYaw = new Rotation2d(0.02);
         positions = new SwerveModulePositions(
-                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.kZero)));
+                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.ZERO)));
 
         double timestamp = 0;
         OdoGyroMeasurement newMeasurement = new OdoGyroMeasurement(gyroYaw, positions);
@@ -206,10 +206,10 @@ public class OdometryEstimatorTest {
         // much slower, so odometry is more trustworthy.
         Rotation2d gyroYaw = new Rotation2d(0.02);
         positions = new SwerveModulePositions(
-                new SwerveModulePosition100(0.01, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.01, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.01, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.01, Optional.of(Rotation2d.kZero)));
+                new SwerveModulePosition100(0.01, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.01, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.01, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.01, Optional.of(Rotation2d.ZERO)));
 
         LocalizerEstimate estimate = ou.estimate(0,
                 estimate1, measurement1,

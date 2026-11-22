@@ -5,6 +5,7 @@ import static org.team100.lib.hid.ControlUtil.deadband;
 import static org.team100.lib.hid.ControlUtil.expo;
 
 import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.driverstation.DriverStation;
 import org.wpilib.driverstation.GenericHID;
 
 /**
@@ -23,7 +24,7 @@ public abstract class JoystickControl {
     private final GenericHID m_controller;
 
     protected JoystickControl() {
-        m_controller = new GenericHID(0);
+        m_controller = DriverStation.getGenericHID(0);
     }
 
     public boolean test() {
@@ -66,7 +67,7 @@ public abstract class JoystickControl {
 
     public Rotation2d desiredRotation() {
         // TODO: fix for 2027
-        return Rotation2d.kZero;
+        return Rotation2d.ZERO;
         // double desiredAngleDegrees = m_controller.getPOV();
         // if (desiredAngleDegrees < 0) {
         //     return null;

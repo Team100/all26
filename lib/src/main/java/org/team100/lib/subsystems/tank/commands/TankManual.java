@@ -11,7 +11,7 @@ import org.team100.lib.subsystems.tank.TankDrive;
 import org.wpilib.command2.Command;
 import org.wpilib.math.kinematics.ChassisVelocities;
 import org.wpilib.math.util.MathUtil;
-import org.wpilib.math.util.Pair;
+import org.wpilib.util.Pair;
 
 /**
  * Manual tank-drive control using a single joystick (if using an

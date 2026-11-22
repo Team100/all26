@@ -1,5 +1,8 @@
 package org.team100.lib.logging.primitive;
 
+import org.team100.lib.logging.LoggerFactory;
+import org.wpilib.util.struct.Struct;
+
 /**
  * This should not be used by client code. Use {@link LoggerFactory} instead.
  */
@@ -48,4 +51,18 @@ public interface PrimitiveLogger {
     }
 
     PrimitiveStringLogger stringLogger(String label);
+
+    @FunctionalInterface
+    interface PrimitiveStructLogger<T> {
+        void log(T val);
+    }
+
+    <T> PrimitiveStructLogger<T> structLogger(String label, Struct<T> struct);
+
+    @FunctionalInterface
+    interface PrimitiveStructArrayLogger<T> {
+        void log(T[] val);
+    }
+
+    <T> PrimitiveStructArrayLogger<T> structArrayLogger(String label, Struct<T> struct);
 }

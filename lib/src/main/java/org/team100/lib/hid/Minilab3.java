@@ -1,5 +1,6 @@
 package org.team100.lib.hid;
 
+import org.wpilib.driverstation.DriverStation;
 import org.wpilib.driverstation.GenericHID;
 
 /**
@@ -11,7 +12,7 @@ public class Minilab3 {
     private final GenericHID m_controller;
 
     public Minilab3(int port) {
-        m_controller = new GenericHID(port);
+        m_controller = DriverStation.getGenericHID(port);
     }
 
     public boolean c3() {

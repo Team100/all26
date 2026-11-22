@@ -39,7 +39,7 @@ public class FloorPickSequence {
             if (t.isEmpty())
                 return t;
             Translation2d goal = t.get();
-            Rotation2d course = goal.minus(drive.getState().pose().getTranslation()).getAngle();
+            Rotation2d course = goal.minus(drive.getState().pose().getTranslation()).getAngle().get();
             Translation2d landing = goal.minus(new Translation2d(DISTANCE, course));
             return Optional.of(landing);
         };

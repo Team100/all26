@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jfree.data.xy.VectorSeries;
 import org.jfree.data.xy.XYSeries;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.state.ControlSE2;
 
 import org.wpilib.math.geometry.Rotation2d;
@@ -34,10 +34,10 @@ public class TrajectorySE2ToVectorSeries {
         double dt = duration / POINTS;
         for (double time = 0; time < duration; time += dt) {
             TrajectorySE2Entry p = t.sample(time);
-            WaypointSE2 pp = p.point().point().waypoint();
+            WindingWaypointSE2 pp = p.point().point().waypoint();
             double x = pp.pose().getTranslation().getX();
             double y = pp.pose().getTranslation().getY();
-            Rotation2d heading = pp.pose().getRotation();
+            Rotation2d heading = new Rotation2d(pp.pose().getRotation());
             double dx = m_scale * heading.getCos();
             double dy = m_scale * heading.getSin();
             s.add(x, y, dx, dy);
@@ -74,7 +74,7 @@ public class TrajectorySE2ToVectorSeries {
         double dt = duration / POINTS;
         for (double t = 0; t <= duration + 0.0001; t += dt) {
             TrajectorySE2Entry p = trajectory.sample(t);
-            WaypointSE2 pp = p.point().point().waypoint();
+            WindingWaypointSE2 pp = p.point().point().waypoint();
             double x = pp.pose().getTranslation().getX();
             series.add(t, x);
         }
@@ -93,7 +93,7 @@ public class TrajectorySE2ToVectorSeries {
         for (double t = 0; t <= duration + 0.0001; t += dt) {
             TrajectorySE2Entry p = trajectory.sample(t);
             TrajectorySE2Point pp = p.point();
-            WaypointSE2 waypoint = pp.point().waypoint();
+            WindingWaypointSE2 waypoint = pp.point().waypoint();
             Rotation2d course = waypoint.course().toRotation();
             double velocityM_s = pp.velocity();
             double xv = course.getCos() * velocityM_s;
@@ -118,7 +118,7 @@ public class TrajectorySE2ToVectorSeries {
             TrajectorySE2Point pp = p.point();
             Rotation2d course = pp.point().waypoint().course().toRotation();
             double velocityM_s = pp.velocity();
-            WaypointSE2 waypoint = pp.point().waypoint();
+            WindingWaypointSE2 waypoint = pp.point().waypoint();
             double x = waypoint.pose().getTranslation().getX();
             double xv = course.getCos() * velocityM_s;
             if (DEBUG)

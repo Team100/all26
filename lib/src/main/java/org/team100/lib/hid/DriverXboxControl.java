@@ -115,7 +115,7 @@ public class DriverXboxControl {
      * TODO: fix for 2027
      */
     public Rotation2d pov() {
-        return Rotation2d.kZero;
+        return Rotation2d.ZERO;
         // return ControlUtil.pov(m_controller::getPOV);
     }
 
@@ -124,7 +124,7 @@ public class DriverXboxControl {
         Rotation2d pov = pov();
         if (pov == null)
             return false;
-        return pov.equals(Rotation2d.kZero);
+        return pov.equals(Rotation2d.ZERO);
     }
 
     /** POV switch pressed on the bottom */
@@ -132,7 +132,7 @@ public class DriverXboxControl {
         Rotation2d pov = pov();
         if (pov == null)
             return false;
-        return pov.equals(Rotation2d.kPi);
+        return pov.equals(Rotation2d.PI);
     }
 
     /** Button 4 */
@@ -147,12 +147,12 @@ public class DriverXboxControl {
 
     /** Left trigger (axis 4) is all the way in */
     public boolean leftTrigger() {
-        return m_controller.getLeftTriggerAxis() > 0.9;
+        return m_controller.getLeftTrigger() > 0.9;
     }
 
     /** Right trigger (axis 5) is all the way in. */
     public boolean rightTrigger() {
-        return m_controller.getRightTriggerAxis() > 0.9;
+        return m_controller.getRightTrigger() > 0.9;
     }
 
     /** Button 9 */
@@ -167,22 +167,22 @@ public class DriverXboxControl {
 
     /** Button 0 */
     public boolean a() {
-        return m_controller.getSouthFaceButton();
+        return m_controller.getFaceDownButton();
     }
 
     /** Button 1 */
     public boolean b() {
-        return m_controller.getEastFaceButton();
+        return m_controller.getFaceRightButton();
     }
 
     /** Button 2 */
     public boolean x() {
-        return m_controller.getWestFaceButton();
+        return m_controller.getFaceLeftButton();
     }
 
     /** Button 3 */
     public boolean y() {
-        return m_controller.getNorthFaceButton();
+        return m_controller.getFaceUpButton();
     }
 
     /** Axis 1 */
@@ -192,11 +192,11 @@ public class DriverXboxControl {
 
     /** Axis 5 */
     public double RightTriggerAxis() {
-        return m_controller.getRightTriggerAxis();
+        return m_controller.getRightTrigger();
     }
 
     /** Axis 4 */
     public double LeftTriggerAxis() {
-        return m_controller.getLeftTriggerAxis();
+        return m_controller.getLeftTrigger();
     }
 }

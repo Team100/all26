@@ -108,7 +108,7 @@ public class AnalyticLynxArmKinematicsTest {
         Translation2d translation = p.toPose2d().getTranslation();
         Rotation3d endRotation = p.getRotation();
 
-        Rotation2d swingAngle = translation.getAngle();
+        Rotation2d swingAngle = translation.getAngle().get();
         if (DEBUG)
             System.out.printf("swing angle rad %f\n", swingAngle.getRadians());
         Rotation3d swing3d = new Rotation3d(swingAngle);

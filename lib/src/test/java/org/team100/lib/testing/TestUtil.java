@@ -20,6 +20,7 @@ import org.team100.lib.geometry.rrr.RRRConfig;
 import org.team100.lib.geometry.rrr.RRRVelocity;
 import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.geometry.se3.AccelerationSE3;
 import org.team100.lib.geometry.se3.VelocitySE3;
 import org.team100.lib.geometry.six_dof.SixDofAcceleration;
@@ -35,6 +36,7 @@ import org.wpilib.math.geometry.Rotation3d;
 import org.wpilib.math.geometry.Transform2d;
 import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation3d;
 import org.wpilib.math.geometry.Twist2d;
 import org.wpilib.math.geometry.Twist3d;
 import org.wpilib.math.linalg.Matrix;
@@ -64,12 +66,24 @@ public class TestUtil {
         assertEquals(expected.getY(), actual.getY(), 1e-3, "y");
     }
 
+    public static void verify(Translation3d expected, Translation3d actual) {
+        assertEquals(expected.getX(), actual.getX(), 1e-3, "x");
+        assertEquals(expected.getY(), actual.getY(), 1e-3, "y");
+        assertEquals(expected.getZ(), actual.getZ(), 1e-3, "z");
+    }
+
     public static void verify(Pose2d expected, Pose2d actual) {
         if (DEBUG)
             System.out.printf("expected %s actual %s\n", StrUtil.poseStr(expected), StrUtil.poseStr(actual));
         assertEquals(expected.getX(), actual.getX(), 1e-3, "x");
         assertEquals(expected.getY(), actual.getY(), 1e-3, "y");
         assertEquals(expected.getRotation().getRadians(), actual.getRotation().getRadians(), 1e-3, "r");
+    }
+
+    public static void verify(WindingPose2d expected, WindingPose2d actual) {
+        assertEquals(expected.getX(), actual.getX(), 1e-3, "x");
+        assertEquals(expected.getY(), actual.getY(), 1e-3, "y");
+        assertEquals(expected.getRotation(), actual.getRotation(), 1e-3, "r");
     }
 
     public static void verify(IsotropicNoiseSE2 expected, IsotropicNoiseSE2 actual) {

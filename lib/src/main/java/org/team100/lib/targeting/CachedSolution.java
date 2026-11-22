@@ -7,13 +7,14 @@ import java.util.function.Supplier;
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.ObjectCache;
 import org.team100.lib.framework.TimedRobot100;
-import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.geometry.r2.StateR2;
+import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
+import org.team100.lib.logging.LoggerFactory.StructLogger;
 import org.team100.lib.state.StateSE2;
-
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
 
 /**
@@ -25,7 +26,7 @@ public class CachedSolution {
     private final Supplier<Optional<Translation2d>> m_target;
     private final Solver m_solver;
     private final ObjectCache<Optional<Solution>> m_cache;
-    private final DoubleArrayLogger m_log_target;
+    private final StructLogger<Pose2d> m_log_target;
 
     /**
      * @param fieldLogger publish the target to glass
@@ -42,7 +43,7 @@ public class CachedSolution {
         m_target = target;
         m_solver = solver;
         m_cache = Cache.of(this::solve);
-        m_log_target = fieldLogger.doubleArrayLogger(Level.TRACE, "target");
+        m_log_target = fieldLogger.structLogger(Level.TRACE, "target", Pose2d.struct);
     }
 
     /** Complete solution */
@@ -82,10 +83,7 @@ public class CachedSolution {
 
         Translation2d targetPosition = oTargetPosition.get();
 
-        m_log_target.log(() -> new double[] {
-                targetPosition.getX(),
-                targetPosition.getY(),
-                0 });
+        m_log_target.log(() -> new Pose2d(targetPosition, Rotation2d.ZERO));
 
         return m_solver.solve(
                 state,

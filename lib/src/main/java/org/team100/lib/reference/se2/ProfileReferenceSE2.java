@@ -2,10 +2,12 @@ package org.team100.lib.reference.se2;
 
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.ObjectCache;
+import org.team100.lib.geometry.Metrics;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.ControlSE2Logger;
+import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.StateSE2Logger;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.state.ControlSE2;
@@ -34,8 +36,6 @@ public class ProfileReferenceSE2 implements ReferenceSE2 {
     private record References(StateSE2 m_current, ControlSE2 m_next) {
     }
 
-    private final LoggerFactory m_log;
-
     private final ProfileSE2 m_profile;
     /** The name is for debugging. */
     private final String m_name;
@@ -44,6 +44,7 @@ public class ProfileReferenceSE2 implements ReferenceSE2 {
     private final ControlSE2Logger m_log_next;
     private final BooleanLogger m_log_done;
     private final StateSE2Logger m_log_goal;
+    private final DoubleLogger m_logToGo;
 
     private StateSE2 m_goal;
     private boolean m_done;
@@ -58,16 +59,17 @@ public class ProfileReferenceSE2 implements ReferenceSE2 {
             LoggerFactory parent,
             ProfileSE2 profile,
             String name) {
-        m_log = parent.type(this);
+        LoggerFactory log = parent.type(this);
         m_profile = profile;
         m_name = name;
         // this will keep polling until we stop it.
         m_references = Cache.of(() -> refresh(m_next == null ? null : m_next.state()));
 
-        m_log_current = m_log.StateSE2Logger(Level.TRACE, "current");
-        m_log_next = m_log.controlSE2Logger(Level.TRACE, "next");
-        m_log_done = m_log.booleanLogger(Level.TRACE, "done");
-        m_log_goal = m_log.StateSE2Logger(Level.TRACE, "goal");
+        m_log_current = log.StateSE2Logger(Level.TRACE, "current");
+        m_log_next = log.controlSE2Logger(Level.TRACE, "next");
+        m_log_done = log.booleanLogger(Level.TRACE, "done");
+        m_log_goal = log.StateSE2Logger(Level.TRACE, "goal");
+        m_logToGo = log.doubleLogger(Level.TRACE, "to go");
     }
 
     /**
@@ -114,6 +116,13 @@ public class ProfileReferenceSE2 implements ReferenceSE2 {
         return m_goal;
     }
 
+    @Override
+    public double toGo() {
+        double l2 = Metrics.l2Norm(m_goal.minus(m_references.get().m_current));
+        m_logToGo.log(() -> l2);
+        return l2;
+    }
+
     /**
      * Stop updating the references. There's no way to restart the updates, so you
      * should discard this object once you call end().
@@ -122,7 +131,7 @@ public class ProfileReferenceSE2 implements ReferenceSE2 {
         m_references.end();
     }
 
-    ////////////////////////////////////
+    ////////////////////////////////
 
     private References refresh(StateSE2 newCurrent) {
         m_next = makeNext(newCurrent);

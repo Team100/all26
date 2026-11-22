@@ -10,7 +10,7 @@ import org.team100.lib.kinematics.five_bar.Scenario;
 import org.wpilib.smartdashboard.Mechanism2d;
 import org.wpilib.smartdashboard.MechanismLigament2d;
 import org.wpilib.smartdashboard.MechanismRoot2d;
-import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.telemetry.Telemetry;
 import org.wpilib.util.Color;
 import org.wpilib.util.Color8Bit;
 
@@ -68,7 +68,6 @@ public class FiveBarVisualization {
         m_a2.append(m_a3);
         m_a4 = new MechanismLigament2d("a4", 0, 0, WIDTH, ORANGE);
         m_a3.append(m_a4);
-        SmartDashboard.putData("View", m_view);
     }
 
     public void periodic() {
@@ -94,6 +93,7 @@ public class FiveBarVisualization {
         m_a2.setAngle(Math.toDegrees(p.get(1).angle().orElseThrow()));
         m_a3.setAngle(Math.toDegrees(p.get(2).angle().orElseThrow()));
         m_a4.setAngle(Math.toDegrees(p.get(3).angle().orElseThrow()));
+        Telemetry.log("View", m_view);
     }
 
     static List<Point> links(JointPositions q) {

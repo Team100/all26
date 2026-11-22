@@ -7,14 +7,13 @@ import org.team100.lib.commands.MoveAndHold;
 import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
+import org.team100.lib.logging.LoggerFactory.StructLogger;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.reference.se2.ProfileReferenceSE2;
 import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.se2.commands.helper.VelocityReferenceControllerSE2;
 import org.team100.lib.targeting.TargetUtil;
-
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Transform2d;
@@ -47,8 +46,8 @@ public class Pushbroom extends MoveAndHold {
      */
     private static final double LATERAL_TOLERANCE = 0.1;
     private final LoggerFactory m_log;
-    private final DoubleArrayLogger m_log_field_goal;
-    private final DoubleArrayLogger m_log_field_target;
+    private final StructLogger<Pose2d> m_log_field_goal;
+    private final StructLogger<Pose2d> m_log_field_target;
     private final Supplier<Optional<Translation2d>> m_target;
     private final VelocitySubsystemSE2 m_drive;
     private final ControllerSE2 m_controller;
@@ -70,8 +69,8 @@ public class Pushbroom extends MoveAndHold {
             ProfileSE2 profile,
             Transform2d endEffector) {
         m_log = parent.type(this);
-        m_log_field_goal = field.doubleArrayLogger(Level.COMP, "goal");
-        m_log_field_target = field.doubleArrayLogger(Level.COMP, "target");
+        m_log_field_goal = field.structLogger(Level.COMP, "goal", Pose2d.struct);
+        m_log_field_target = field.structLogger(Level.COMP, "target", Pose2d.struct);
         m_target = target;
         m_drive = drive;
         m_controller = controller;
@@ -102,14 +101,8 @@ public class Pushbroom extends MoveAndHold {
             return;
         m_reference.setGoal(new StateSE2(m_goal));
         m_referenceController.execute();
-        m_log_field_goal.log(() -> new double[] {
-                m_goal.getX(),
-                m_goal.getY(),
-                m_goal.getRotation().getDegrees() });
-        m_log_field_target.log(() -> new double[] {
-                target.getX(),
-                target.getY(),
-                0 });
+        m_log_field_goal.log(() -> m_goal);
+        m_log_field_target.log(() -> new Pose2d(target, Rotation2d.ZERO));
     }
 
     @Override
@@ -149,15 +142,18 @@ public class Pushbroom extends MoveAndHold {
         Translation2d endEffectorTranslation = endEffectorPose.getTranslation();
         Rotation2d endEffectorRotation = endEffectorPose.getRotation();
         double endEffectorToTargetRange = targetTranslation.getDistance(endEffectorTranslation);
-        Rotation2d endEffectorBearingToTarget = TargetUtil.absoluteBearing(endEffectorTranslation, targetTranslation);
-        Rotation2d endEffectorToGo = endEffectorBearingToTarget.minus(endEffectorRotation);
+        Optional<Rotation2d> endEffectorBearingToTarget = TargetUtil.absoluteBearing(endEffectorTranslation,
+                targetTranslation);
+        Rotation2d endEffectorToGo = endEffectorBearingToTarget.orElse(Rotation2d.ZERO).minus(endEffectorRotation);
         double lateral = endEffectorToTargetRange * endEffectorToGo.getSin();
         if (endEffectorToGo.getCos() > 0 && Math.abs(lateral) < LATERAL_TOLERANCE) {
             // stop steering, use the previous
             // cos restriction prevents going backwards.
-            endEffectorBearingToTarget = endEffectorPose.getRotation();
+            endEffectorBearingToTarget = Optional.of(endEffectorPose.getRotation());
         }
-        Pose2d targetEndEffectorPose = new Pose2d(targetTranslation, endEffectorBearingToTarget);
+        // TODO: this default seems wrong
+        Pose2d targetEndEffectorPose = new Pose2d(targetTranslation,
+                endEffectorBearingToTarget.orElse(Rotation2d.ZERO));
         Pose2d targetRobotPose = targetEndEffectorPose.plus(endEffectorOffset.inverse());
         return targetRobotPose;
     }

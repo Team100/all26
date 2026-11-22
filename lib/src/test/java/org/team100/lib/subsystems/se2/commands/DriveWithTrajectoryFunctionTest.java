@@ -5,7 +5,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.controller.se2.ControllerFactorySE2;
 import org.team100.lib.controller.se2.FullStateControllerSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
@@ -52,8 +52,8 @@ public class DriveWithTrajectoryFunctionTest implements Timeless {
     TrajectorySE2 makeTrajectory(Pose2d startingPose) {
         return planner.restToRest(
                 List.of(
-                        WaypointSE2.irrotational(startingPose, 0, 1.2),
-                        WaypointSE2.irrotational(
+                        WindingWaypointSE2.irrotational(startingPose, 0, 1.2),
+                        WindingWaypointSE2.irrotational(
                                 new Pose2d(1, 2, new Rotation2d(Math.PI / 2)), Math.PI / 2, 1.2)));
     }
 

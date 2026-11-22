@@ -25,10 +25,10 @@ import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.subsystems.r1.SingleAngularSubsystem;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.Startup;
 import org.wpilib.command2.CommandScheduler;
+import org.wpilib.hardware.bus.CANPort;
 import org.wpilib.networktables.NetworkTableInstance;
 
 public class Robot extends TimedRobot100 {
@@ -46,7 +46,7 @@ public class Robot extends TimedRobot100 {
         // CONFIGURATION
 
         CanId canId1 = new CanId(1);
-        CanBusId busId = new CanBusId(0);
+        CANPort busId = CANPort.CAN_S0;
         NeutralMode100 neutral = NeutralMode100.COAST;
         MotorPhase phase1 = MotorPhase.FORWARD;
         CurrentLimit limit = new CurrentLimit(1, 1);

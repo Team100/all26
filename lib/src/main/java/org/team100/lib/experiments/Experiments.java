@@ -4,9 +4,6 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.wpilib.smartdashboard.SendableChooser;
-import org.wpilib.smartdashboard.SmartDashboard;
-
 /**
  * Controls Experiment enablement.
  * 
@@ -43,21 +40,20 @@ public class Experiments {
         System.out.println("===============================================================");
         System.out.println("== EXPERIMENTS");
         for (Experiment e : Experiment.values()) {
-            SendableChooser<Boolean> widget = ExperimentChooser.get(e.name());
+            ExperimentChooser widget = ExperimentChooser.get(e.name());
             System.out.printf("== %s (%s): ", e.name(), e.description);
             if (m_defaults.contains(e)) {
-                widget.setDefaultOption(on(e), true);
-                widget.addOption(off(e), false);
+                widget.addDefault(on(e), true);
+                widget.add(off(e), false);
                 m_enabled.put(e, true);
                 System.out.println("ON");
             } else {
-                widget.addOption(on(e), true);
-                widget.setDefaultOption(off(e), false);
+                widget.add(on(e), true);
+                widget.addDefault(off(e), false);
                 m_enabled.put(e, false);
                 System.out.println("OFF");
             }
             widget.onChange(selected -> m_enabled.put(e, selected));
-            SmartDashboard.putData(widget);
         }
         System.out.println("===============================================================");
     }

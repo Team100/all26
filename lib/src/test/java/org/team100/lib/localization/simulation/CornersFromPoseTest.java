@@ -13,7 +13,7 @@ public class CornersFromPoseTest {
     @Test
     void test0() {
         Camera camera = Camera.SIM0;
-        CornersFromPose c = new CornersFromPose();
+        CornersFromPose c = new CornersFromPose(() -> 0.0);
         double[] pts = c.corners(
                 camera, new Transform3d(0, 0, 1, new Rotation3d(0, 1, 0)));
         assertArrayEquals(new double[] {
@@ -33,10 +33,10 @@ public class CornersFromPoseTest {
         // but in this case those axes are not in the usual wpi orientation.
         // so rotating around y is "yaw"
         Transform3d tag = new Transform3d(0, 0, 1, new Rotation3d(0, 1, 0));
-        Transform3d corner0 = new Transform3d(-h, h, 0, Rotation3d.kZero);
-        Transform3d corner1 = new Transform3d(h, h, 0, Rotation3d.kZero);
-        Transform3d corner2 = new Transform3d(h, -h, 0, Rotation3d.kZero);
-        Transform3d corner3 = new Transform3d(-h, -h, 0, Rotation3d.kZero);
+        Transform3d corner0 = new Transform3d(-h, h, 0, Rotation3d.ZERO);
+        Transform3d corner1 = new Transform3d(h, h, 0, Rotation3d.ZERO);
+        Transform3d corner2 = new Transform3d(h, -h, 0, Rotation3d.ZERO);
+        Transform3d corner3 = new Transform3d(-h, -h, 0, Rotation3d.ZERO);
         Transform3d c0 = tag.plus(corner0);
         Transform3d c1 = tag.plus(corner1);
         Transform3d c2 = tag.plus(corner2);

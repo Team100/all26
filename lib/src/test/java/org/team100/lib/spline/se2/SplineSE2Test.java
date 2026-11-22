@@ -13,7 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.path.se2.PathSE2;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.path.se2.PathSE2Point;
@@ -29,12 +30,12 @@ import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.util.ChartUtil;
 import org.team100.lib.util.Math100;
 import org.team100.lib.util.StrUtil;
-
-import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.numbers.N2;
+import org.wpilib.math.util.MathUtil;
 
 class SplineSE2Test implements Timeless {
     private static final boolean DEBUG = false;
@@ -44,29 +45,21 @@ class SplineSE2Test implements Timeless {
     void testCurvature() {
         // straight line, zero curvature.
         SplineSE2 s = new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(), 0),
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 0),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 0), 0),
                         new DirectionSE2(1, 0, 0), 1));
         assertEquals(0, s.entry(0.5).point().k(), DELTA);
 
         // left turn
         s = new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(), 0),
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 1),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 1), 0),
                         new DirectionSE2(0, 1, 0), 1));
         assertEquals(0.950, s.entry(0.5).point().k(), DELTA);
 
@@ -83,15 +76,11 @@ class SplineSE2Test implements Timeless {
     @Test
     void testLinear() {
         SplineSE2 s = new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(), 0),
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 0),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 0), 0),
                         new DirectionSE2(1, 0, 0), 1));
 
         SplineSE2ToVectorSeries splineConverter = new SplineSE2ToVectorSeries(0.1);
@@ -104,26 +93,26 @@ class SplineSE2Test implements Timeless {
         assertEquals(1, t.getX(), DELTA);
         PathSE2Point p = s.entry(0).point();
         assertEquals(0, p.waypoint().pose().getTranslation().getX(), DELTA);
-        assertEquals(0, p.waypoint().pose().getRotation().getRadians(), DELTA);
+        assertEquals(0, p.waypoint().pose().getRotation(), DELTA);
         assertEquals(0, p.waypoint().course().headingRate(), DELTA);
         p = s.entry(1).point();
         assertEquals(1, p.waypoint().pose().getTranslation().getX(), DELTA);
-        assertEquals(0, p.waypoint().pose().getRotation().getRadians(), DELTA);
+        assertEquals(0, p.waypoint().pose().getRotation(), DELTA);
         assertEquals(0, p.waypoint().course().headingRate(), DELTA);
     }
 
     @Test
     void testLinear2() {
         SplineSE2 s = new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(
+                new WindingWaypointSE2(
+                        new WindingPose2d(
                                 new Translation2d(),
-                                new Rotation2d()),
+                                0),
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(
-                        new Pose2d(
+                new WindingWaypointSE2(
+                        new WindingPose2d(
                                 new Translation2d(2, 0),
-                                new Rotation2d()),
+                                0),
                         new DirectionSE2(1, 0, 0), 1));
 
         SplineSE2ToVectorSeries splineConverter = new SplineSE2ToVectorSeries(0.1);
@@ -136,11 +125,11 @@ class SplineSE2Test implements Timeless {
         assertEquals(2, t.getX(), DELTA);
         PathSE2Point p = s.entry(0).point();
         assertEquals(0, p.waypoint().pose().getTranslation().getX(), DELTA);
-        assertEquals(0, p.waypoint().pose().getRotation().getRadians(), DELTA);
+        assertEquals(0, p.waypoint().pose().getRotation(), DELTA);
         assertEquals(0, p.waypoint().course().headingRate(), DELTA);
         p = s.entry(1).point();
         assertEquals(2, p.waypoint().pose().getTranslation().getX(), DELTA);
-        assertEquals(0, p.waypoint().pose().getRotation().getRadians(), DELTA);
+        assertEquals(0, p.waypoint().pose().getRotation(), DELTA);
         assertEquals(0, p.waypoint().course().headingRate(), DELTA);
     }
 
@@ -150,15 +139,11 @@ class SplineSE2Test implements Timeless {
         // this has no rotation at the ends.
         // the rotation rate is zero at the ends and much higher in the middle.
         SplineSE2 s = new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(), 0),
                         new DirectionSE2(1, 0, 0), 1.2),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 0),
-                                new Rotation2d(1)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 0), 1),
                         new DirectionSE2(1, 0, 0), 1.2));
 
         SplineSE2ToVectorSeries splineConverter = new SplineSE2ToVectorSeries(0.1);
@@ -174,19 +159,19 @@ class SplineSE2Test implements Timeless {
 
         PathSE2Point p = s.entry(0).point();
         assertEquals(0, p.waypoint().pose().getTranslation().getX(), DELTA);
-        assertEquals(0, p.waypoint().pose().getRotation().getRadians(), DELTA);
+        assertEquals(0, p.waypoint().pose().getRotation(), DELTA);
         // initial rotation rate is zero
         assertEquals(0, p.waypoint().course().headingRate(), DELTA);
 
         p = s.entry(0.5).point();
         assertEquals(0.5, p.waypoint().pose().getTranslation().getX(), DELTA);
-        assertEquals(0.5, p.waypoint().pose().getRotation().getRadians(), DELTA);
+        assertEquals(0.5, p.waypoint().pose().getRotation(), DELTA);
         // high rotation rate in the middle
         assertEquals(2.273, p.waypoint().course().headingRate(), DELTA);
 
         p = s.entry(1).point();
         assertEquals(1, p.waypoint().pose().getTranslation().getX(), DELTA);
-        assertEquals(1, p.waypoint().pose().getRotation().getRadians(), DELTA);
+        assertEquals(1, p.waypoint().pose().getRotation(), DELTA);
         // rotation rate is zero at the end
         assertEquals(0, p.waypoint().course().headingRate(), DELTA);
 
@@ -199,15 +184,11 @@ class SplineSE2Test implements Timeless {
         // the "spatial" rotation rate is constant, i.e.
         // rotation and translation speed are proportional.
         SplineSE2 s = new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(), 0),
                         new DirectionSE2(1, 0, 1), 1),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 0),
-                                new Rotation2d(1)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 0), 1),
                         new DirectionSE2(1, 0, 1), 1));
 
         SplineSE2ToVectorSeries splineConverter = new SplineSE2ToVectorSeries(0.1);
@@ -223,17 +204,17 @@ class SplineSE2Test implements Timeless {
 
         PathSE2Point p = s.entry(0).point();
         assertEquals(0, p.waypoint().pose().getTranslation().getX(), DELTA);
-        assertEquals(0, p.waypoint().pose().getRotation().getRadians(), DELTA);
+        assertEquals(0, p.waypoint().pose().getRotation(), DELTA);
         assertEquals(1, p.waypoint().course().headingRate(), DELTA);
 
         p = s.entry(0.5).point();
         assertEquals(0.5, p.waypoint().pose().getTranslation().getX(), DELTA);
-        assertEquals(0.5, p.waypoint().pose().getRotation().getRadians(), DELTA);
+        assertEquals(0.5, p.waypoint().pose().getRotation(), DELTA);
         assertEquals(1, p.waypoint().course().headingRate(), DELTA);
 
         p = s.entry(1).point();
         assertEquals(1, p.waypoint().pose().getTranslation().getX(), DELTA);
-        assertEquals(1, p.waypoint().pose().getRotation().getRadians(), DELTA);
+        assertEquals(1, p.waypoint().pose().getRotation(), DELTA);
         assertEquals(1, p.waypoint().course().headingRate(), DELTA);
     }
 
@@ -241,15 +222,11 @@ class SplineSE2Test implements Timeless {
     void testRotation2() {
         // Make sure the rotation goes over +/- pi
         SplineSE2 s = new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                new Rotation2d(2.5)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(), 2.5),
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 0),
-                                new Rotation2d(-2.5)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 0), -2.5),
                         new DirectionSE2(1, 0, 0), 1));
 
         SplineSE2ToVectorSeries splineConverter = new SplineSE2ToVectorSeries(0.1);
@@ -262,15 +239,11 @@ class SplineSE2Test implements Timeless {
     void spin() {
         double scale = 0.9;
         assertThrows(IllegalArgumentException.class, () -> new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(0, 0),
-                                Rotation2d.kZero),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(0, 0), 0),
                         new DirectionSE2(0, 0, 1), scale),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(0, 0),
-                                Rotation2d.kCCW_90deg),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(0, 0), Math.PI / 2),
                         new DirectionSE2(0, 0, 1), scale)));
     }
 
@@ -286,22 +259,26 @@ class SplineSE2Test implements Timeless {
     @Test
     void testCircle() {
         double scale = 1.3;
-        WaypointSE2 p0 = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), Rotation2d.k180deg),
+        // note the winding past pi, always in the positive direction.
+        WindingWaypointSE2 p0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 0), Math.PI),
                 new DirectionSE2(0, 1, 1), scale);
-        WaypointSE2 p1 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 1), Rotation2d.kCW_90deg),
+        WindingWaypointSE2 p1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 1), 3 * Math.PI / 2),
                 new DirectionSE2(-1, 0, 1), scale);
-        WaypointSE2 p2 = new WaypointSE2(
-                new Pose2d(new Translation2d(-1, 0), Rotation2d.kZero),
+        WindingWaypointSE2 p2 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(-1, 0), 2 * Math.PI),
                 new DirectionSE2(0, -1, 1), scale);
-        WaypointSE2 p3 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, -1), Rotation2d.kCCW_90deg),
+        WindingWaypointSE2 p3 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, -1), 5 * Math.PI / 2),
                 new DirectionSE2(1, 0, 1), scale);
+        WindingWaypointSE2 p4 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 0), 3 * Math.PI),
+                new DirectionSE2(0, 1, 1), scale);
         SplineSE2 s0 = new SplineSE2(p0, p1);
         SplineSE2 s1 = new SplineSE2(p1, p2);
         SplineSE2 s2 = new SplineSE2(p2, p3);
-        SplineSE2 s3 = new SplineSE2(p3, p0);
+        SplineSE2 s3 = new SplineSE2(p3, p4);
         List<SplineSE2> splines = List.of(s0, s1, s2, s3);
         checkCircle(splines, 0.008, 0.006);
         List<VectorSeries> series = new SplineSE2ToVectorSeries(0.1).convert(splines);
@@ -312,11 +289,11 @@ class SplineSE2Test implements Timeless {
     void testDheading() {
         // does the spline-derived dheading match the post-hoc one?
         double scale = 0.9;
-        WaypointSE2 w0 = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), Rotation2d.k180deg),
+        WindingWaypointSE2 w0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 0), Math.PI),
                 new DirectionSE2(0, 1, 1), scale);
-        WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 1), Rotation2d.kCW_90deg),
+        WindingWaypointSE2 w1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 1), -Math.PI / 2),
                 new DirectionSE2(-1, 0, 1), scale);
         SplineSE2 spline = new SplineSE2(w0, w1);
         PathSE2Point p0 = spline.entry(0.0).point();
@@ -326,9 +303,9 @@ class SplineSE2Test implements Timeless {
         for (double s = 0.01; s <= 1.0; s += 0.01) {
             PathSE2Point p1 = spline.entry(s).point();
             double cartesianDistance = p1.distanceCartesian(p0);
-            Rotation2d heading0 = p0.waypoint().pose().getRotation();
-            Rotation2d heading1 = p1.waypoint().pose().getRotation();
-            double dheading = heading1.minus(heading0).getRadians();
+            double heading0 = p0.waypoint().pose().getRotation();
+            double heading1 = p1.waypoint().pose().getRotation();
+            double dheading = heading1 - heading0;
             DirectionSE2 course0 = p0.waypoint().course();
             DirectionSE2 course1 = p1.waypoint().course();
             double curve = Metrics.translationalNorm(course1.minus(course0));
@@ -351,25 +328,26 @@ class SplineSE2Test implements Timeless {
         double actualRangeError = 0;
         double actualAzimuthError = 0;
         if (DEBUG)
-            System.out.println("s, x, y, k, dh");
+            System.out.println("     s,      x,      y,      r,  range,  error,      k,     dh");
         for (SplineSE2 spline : splines) {
             for (double s = 0; s < 0.99; s += 0.01) {
-                Pose2d p = spline.entry(s).point().waypoint().pose();
+                WindingPose2d p = spline.entry(s).point().waypoint().pose();
                 // the position should be on the circle
                 double range = p.getTranslation().getNorm();
                 actualRangeError = Math.max(actualRangeError, Math.abs(1.0 - range));
 
                 // the heading should point to the origin all the time.
-                Rotation2d angleFromOrigin = p.getTranslation().unaryMinus().getAngle();
-                Rotation2d error = angleFromOrigin.minus(p.getRotation());
+                Rotation2d angleFromOrigin = p.getTranslation().unaryMinus().getAngle().get();
+                double error = MathUtil.angleModulus(angleFromOrigin.getRadians() - p.getRotation());
                 // there's about 2 degrees of error here because the spline is not quite a
                 // circle.
                 // 3/10/25 i made generation coarser so it's less accurate.
-                actualAzimuthError = Math.max(actualAzimuthError, Math.abs(error.getRadians()));
+                actualAzimuthError = Math.max(actualAzimuthError, Math.abs(error));
                 double k = spline.entry(s).point().k();
                 double dh = spline.entry(s).point().waypoint().course().headingRate();
                 if (DEBUG)
-                    System.out.printf("%f, %f, %f, %f, %f\n", s, p.getX(), p.getY(), k, dh);
+                    System.out.printf("%6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %6.3f\n",
+                            s, p.getX(), p.getY(), p.getRotation(), range, error, k, dh);
             }
         }
         assertEquals(0, actualRangeError, rangeError,
@@ -381,14 +359,14 @@ class SplineSE2Test implements Timeless {
 
     @Test
     void testLine() {
-        WaypointSE2 w0 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 0), Rotation2d.kZero),
+        WindingWaypointSE2 w0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 0), 0),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), new Rotation2d(1)),
+        WindingWaypointSE2 w1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 0), 1),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 w2 = new WaypointSE2(
-                new Pose2d(new Translation2d(2, 0), Rotation2d.k180deg),
+        WindingWaypointSE2 w2 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(2, 0), Math.PI),
                 new DirectionSE2(1, 0, 0), 1);
         // turn a bit to the left
         SplineSE2 s0 = new SplineSE2(w0, w1);
@@ -410,14 +388,14 @@ class SplineSE2Test implements Timeless {
     @Test
     void testPath0() {
         double scale = 0.7;
-        WaypointSE2 p0 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 0), new Rotation2d(-1, 0)),
+        WindingWaypointSE2 p0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 0), Math.PI),
                 new DirectionSE2(1, 0, 0), scale);
-        WaypointSE2 p1 = new WaypointSE2(
-                new Pose2d(new Translation2d(0.707, 0.293), new Rotation2d(-1, 1)),
+        WindingWaypointSE2 p1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0.707, 0.293), 3 * Math.PI / 4),
                 new DirectionSE2(1, 1, -1), scale);
-        WaypointSE2 p2 = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 1), new Rotation2d(0, 1)),
+        WindingWaypointSE2 p2 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 1), Math.PI / 2),
                 new DirectionSE2(0, 1, 0), scale);
         if (DEBUG)
             System.out.println("s01");
@@ -437,20 +415,20 @@ class SplineSE2Test implements Timeless {
 
         // this goes straight ahead to (1,0)
         // derivatives point straight ahead
-        WaypointSE2 w0 = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 0), Rotation2d.kZero),
+        WindingWaypointSE2 w0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 0), 0),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), Rotation2d.kZero),
+        WindingWaypointSE2 w1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 0), 0),
                 new DirectionSE2(1, 0, 0), 1);
         SplineSE2 s0 = new SplineSE2(w0, w1);
         // this is a sharp turn to the left
         // derivatives point to the left
-        WaypointSE2 w2 = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), Rotation2d.kZero),
+        WindingWaypointSE2 w2 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 0), 0),
                 new DirectionSE2(0, 1, 0), 1);
-        WaypointSE2 w3 = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 1), Rotation2d.kZero),
+        WindingWaypointSE2 w3 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 1), 0),
                 new DirectionSE2(0, 1, 0), 1);
         SplineSE2 s1 = new SplineSE2(w2, w3);
         List<SplineSE2> splines = List.of(s0, s1);
@@ -481,15 +459,15 @@ class SplineSE2Test implements Timeless {
 
         // radius is 1 m.
         SplineSE2 s0 = new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(0, -1), Rotation2d.kZero),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(0, -1), 0),
                         new DirectionSE2(1, 0, 0), 1.2),
-                new WaypointSE2(
-                        new Pose2d(new Translation2d(1, 0), Rotation2d.kZero),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 0), 0),
                         new DirectionSE2(0, 1, 0), 1.2));
         if (DEBUG) {
             for (double s = 0; s < 1; s += 0.03) {
-                Pose2d pose = s0.entry(s).point().waypoint().pose();
+                WindingPose2d pose = s0.entry(s).point().waypoint().pose();
                 System.out.printf("%5.3f %5.3f\n", pose.getX(), pose.getY());
             }
         }
@@ -542,21 +520,17 @@ class SplineSE2Test implements Timeless {
     void testHeadingRate() {
         // note spline rotation rate is not constant, to make it more interesting
         SplineSE2 spline = new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(), 0),
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 0),
-                                new Rotation2d(1)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 0), 1),
                         new DirectionSE2(1, 0, 1), 1));
 
         double splineHR = spline.entry(0.5).point().waypoint().course().headingRate();
         assertEquals(1.388, splineHR, DELTA);
-        Pose2d p0 = spline.entry(0.49).point().waypoint().pose();
-        Pose2d p1 = spline.entry(0.51).point().waypoint().pose();
+        WindingPose2d p0 = spline.entry(0.49).point().waypoint().pose();
+        WindingPose2d p1 = spline.entry(0.51).point().waypoint().pose();
         double discreteHR = GeometryUtil.headingRatio(p0, p1);
         assertEquals(0.811, discreteHR, DELTA);
     }
@@ -564,23 +538,19 @@ class SplineSE2Test implements Timeless {
     @Test
     void testCurvature1() {
         SplineSE2 spline = new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(), 0),
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 1),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 1), 0),
                         new DirectionSE2(0, 1, 0), 1));
         // verify one point
         {
             double splineCurvature = spline.entry(0.5).point().k();
             assertEquals(0.950, splineCurvature, DELTA);
-            Pose2d p0 = spline.entry(0.49).point().waypoint().pose();
-            Pose2d p1 = spline.entry(0.50).point().waypoint().pose();
-            Pose2d p2 = spline.entry(0.51).point().waypoint().pose();
+            WindingPose2d p0 = spline.entry(0.49).point().waypoint().pose();
+            WindingPose2d p1 = spline.entry(0.50).point().waypoint().pose();
+            WindingPose2d p2 = spline.entry(0.51).point().waypoint().pose();
             double mengerCurvature = GeometryUtil.mengerCurvature(
                     p0.getTranslation(), p1.getTranslation(), p2.getTranslation());
             assertEquals(0.950, mengerCurvature, DELTA);
@@ -589,9 +559,9 @@ class SplineSE2Test implements Timeless {
         double DS = 0.01;
         for (double s = DS; s <= 1 - DS; s += DS) {
             double splineCurvature = spline.entry(s).point().k();
-            Pose2d p0 = spline.entry(s - DS).point().waypoint().pose();
-            Pose2d p1 = spline.entry(s).point().waypoint().pose();
-            Pose2d p2 = spline.entry(s + DS).point().waypoint().pose();
+            WindingPose2d p0 = spline.entry(s - DS).point().waypoint().pose();
+            WindingPose2d p1 = spline.entry(s).point().waypoint().pose();
+            WindingPose2d p2 = spline.entry(s + DS).point().waypoint().pose();
             double mengerCurvature = GeometryUtil.mengerCurvature(
                     p0.getTranslation(), p1.getTranslation(), p2.getTranslation());
             if (DEBUG)
@@ -606,21 +576,17 @@ class SplineSE2Test implements Timeless {
     void testCurvature2() {
         // no curve
         SplineSE2 spline = new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(), 0),
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 0),
-                                new Rotation2d()),
+                new WindingWaypointSE2(
+                        new WindingPose2d(new Translation2d(1, 0), 0),
                         new DirectionSE2(1, 0, 0), 1));
         double splineCurvature = spline.entry(0.5).point().k();
         assertEquals(0, splineCurvature, DELTA);
-        Pose2d p0 = spline.entry(0.49).point().waypoint().pose();
-        Pose2d p1 = spline.entry(0.50).point().waypoint().pose();
-        Pose2d p2 = spline.entry(0.51).point().waypoint().pose();
+        WindingPose2d p0 = spline.entry(0.49).point().waypoint().pose();
+        WindingPose2d p1 = spline.entry(0.50).point().waypoint().pose();
+        WindingPose2d p2 = spline.entry(0.51).point().waypoint().pose();
         double mengerCurvature = GeometryUtil.mengerCurvature(
                 p0.getTranslation(), p1.getTranslation(), p2.getTranslation());
         assertEquals(0, mengerCurvature, DELTA);
@@ -629,25 +595,25 @@ class SplineSE2Test implements Timeless {
     @Test
     void testCurvature3() {
         // turn in place
-        WaypointSE2 w0 = new WaypointSE2(
-                new Pose2d(new Translation2d(), new Rotation2d()),
+        WindingWaypointSE2 w0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(), 0),
                 new DirectionSE2(0, 0, 1), 1);
-        WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(), new Rotation2d(1)),
+        WindingWaypointSE2 w1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(), 1),
                 new DirectionSE2(0, 0, 1), 1);
         assertThrows(IllegalArgumentException.class, () -> new SplineSE2(w0, w1));
     }
 
     @Test
     void testMulti0() {
-        WaypointSE2 a = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 2), new Rotation2d()),
+        WindingWaypointSE2 a = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 2), 0),
                 new DirectionSE2(0, -1, 0), 1);
-        WaypointSE2 b = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), new Rotation2d()),
+        WindingWaypointSE2 b = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 0), 0),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 c = new WaypointSE2(
-                new Pose2d(new Translation2d(2, 2), new Rotation2d()),
+        WindingWaypointSE2 c = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(2, 2), 0),
                 new DirectionSE2(0, 1, 0), 1);
 
         List<SplineSE2> splines = new ArrayList<>();
@@ -665,17 +631,17 @@ class SplineSE2Test implements Timeless {
 
     @Test
     void testMulti1() {
-        WaypointSE2 d = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 0), new Rotation2d()),
+        WindingWaypointSE2 d = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 0), 0),
                 new DirectionSE2(0, 1, 0), 1);
-        WaypointSE2 e = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 1), new Rotation2d()),
+        WindingWaypointSE2 e = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 1), 0),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 f = new WaypointSE2(
-                new Pose2d(new Translation2d(2, 1), new Rotation2d()),
+        WindingWaypointSE2 f = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(2, 1), 0),
                 new DirectionSE2(0, -1, 0), 1);
-        WaypointSE2 g = new WaypointSE2(
-                new Pose2d(new Translation2d(2, 0), new Rotation2d()),
+        WindingWaypointSE2 g = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(2, 0), 0),
                 new DirectionSE2(-1, 0, 0), 1);
 
         List<SplineSE2> splines = new ArrayList<>();
@@ -693,20 +659,20 @@ class SplineSE2Test implements Timeless {
 
     @Test
     void testMulti2() {
-        WaypointSE2 h = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 0), new Rotation2d()),
+        WindingWaypointSE2 h = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 0), 0),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 i = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), new Rotation2d()),
+        WindingWaypointSE2 i = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 0), 0),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 j = new WaypointSE2(
-                new Pose2d(new Translation2d(2, 1), new Rotation2d()),
+        WindingWaypointSE2 j = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(2, 1), 0),
                 new DirectionSE2(1, 1, 0), 1.3);
-        WaypointSE2 k = new WaypointSE2(
-                new Pose2d(new Translation2d(3, 0), new Rotation2d()),
+        WindingWaypointSE2 k = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(3, 0), 0),
                 new DirectionSE2(0, -1, 0), 1.3);
-        WaypointSE2 l = new WaypointSE2(
-                new Pose2d(new Translation2d(3, -1), new Rotation2d()),
+        WindingWaypointSE2 l = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(3, -1), 0),
                 new DirectionSE2(0, -1, 0), 1);
 
         List<SplineSE2> splines = new ArrayList<>();
@@ -725,14 +691,14 @@ class SplineSE2Test implements Timeless {
 
     @Test
     void testMulti3() {
-        WaypointSE2 a = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 2), new Rotation2d()),
+        WindingWaypointSE2 a = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 2), 0),
                 new DirectionSE2(0, -1, 0), 1);
-        WaypointSE2 b = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), new Rotation2d(Math.PI / 2)),
+        WindingWaypointSE2 b = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 0), Math.PI / 2),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 c = new WaypointSE2(
-                new Pose2d(new Translation2d(2, 2), new Rotation2d(Math.PI)),
+        WindingWaypointSE2 c = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(2, 2), Math.PI),
                 new DirectionSE2(0, 1, 0), 1);
 
         List<SplineSE2> splines = new ArrayList<>();
@@ -749,17 +715,17 @@ class SplineSE2Test implements Timeless {
 
     @Test
     void testMulti4() {
-        WaypointSE2 d = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 0), new Rotation2d()),
+        WindingWaypointSE2 d = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 0), 0),
                 new DirectionSE2(0, 1, 0), 1);
-        WaypointSE2 e = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 1), new Rotation2d(Math.PI / 2)),
+        WindingWaypointSE2 e = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 1), Math.PI / 2),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 f = new WaypointSE2(
-                new Pose2d(new Translation2d(2, 1), new Rotation2d(Math.PI)),
+        WindingWaypointSE2 f = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(2, 1), Math.PI),
                 new DirectionSE2(0, -1, 0), 1);
-        WaypointSE2 g = new WaypointSE2(
-                new Pose2d(new Translation2d(2, 0), new Rotation2d()),
+        WindingWaypointSE2 g = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(2, 0), 0),
                 new DirectionSE2(-1, 0, 0), 1);
 
         List<SplineSE2> splines = new ArrayList<>();
@@ -773,20 +739,20 @@ class SplineSE2Test implements Timeless {
 
     @Test
     void testMulti5() {
-        WaypointSE2 h = new WaypointSE2(
-                new Pose2d(new Translation2d(0, 0), new Rotation2d()),
+        WindingWaypointSE2 h = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(0, 0), 0),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 i = new WaypointSE2(
-                new Pose2d(new Translation2d(1, 0), new Rotation2d(Math.PI / 2)),
+        WindingWaypointSE2 i = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(1, 0), Math.PI / 2),
                 new DirectionSE2(1, 0, 0), 1);
-        WaypointSE2 j = new WaypointSE2(
-                new Pose2d(new Translation2d(2, 1), new Rotation2d(Math.PI)),
+        WindingWaypointSE2 j = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(2, 1), Math.PI),
                 new DirectionSE2(1, 1, 0), 1);
-        WaypointSE2 k = new WaypointSE2(
-                new Pose2d(new Translation2d(3, 0), new Rotation2d()),
+        WindingWaypointSE2 k = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(3, 0), 0),
                 new DirectionSE2(0, -1, 0), 1);
-        WaypointSE2 l = new WaypointSE2(
-                new Pose2d(new Translation2d(3, -1), new Rotation2d(Math.PI / 2)),
+        WindingWaypointSE2 l = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(3, -1), Math.PI / 2),
                 new DirectionSE2(0, -1, 0), 1);
 
         List<SplineSE2> splines = new ArrayList<>();
@@ -803,9 +769,9 @@ class SplineSE2Test implements Timeless {
     @Test
     void testCurvature4() {
         // check the sign of the curvature
-        List<WaypointSE2> waypoints = Arrays.asList(
-                WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                WaypointSE2.irrotational(new Pose2d(1, 1, new Rotation2d(0)), 0, 1.2));
+        List<WindingWaypointSE2> waypoints = Arrays.asList(
+                WindingWaypointSE2.irrotational(new Pose2d(0, 0, Rotation2d.ZERO), 0, 1.2),
+                WindingWaypointSE2.irrotational(new Pose2d(1, 1, Rotation2d.ZERO), 0, 1.2));
         List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
         SplineSE2 spline = splines.get(0);
         // path first turns left then right
@@ -816,12 +782,12 @@ class SplineSE2Test implements Timeless {
     @Test
     void testT() {
         // direction T and spline T are the same
-        List<WaypointSE2> waypoints = Arrays.asList(
-                new WaypointSE2(
-                        new Pose2d(0, 0, new Rotation2d(0)),
+        List<WindingWaypointSE2> waypoints = Arrays.asList(
+                new WindingWaypointSE2(
+                        new WindingPose2d(0, 0, 0),
                         new DirectionSE2(1, 0, 0), 1.2),
-                new WaypointSE2(
-                        new Pose2d(1, 1, new Rotation2d(2.5)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(1, 1, 2.5),
                         new DirectionSE2(0, 1, 0), 1.2));
         List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
         SplineSE2 spline = splines.get(0);
@@ -838,12 +804,12 @@ class SplineSE2Test implements Timeless {
 
     @Test
     void testHeadingRate2() {
-        List<WaypointSE2> waypoints = Arrays.asList(
-                new WaypointSE2(
-                        new Pose2d(0, 0, new Rotation2d(0)),
+        List<WindingWaypointSE2> waypoints = Arrays.asList(
+                new WindingWaypointSE2(
+                        new WindingPose2d(0, 0, 0),
                         new DirectionSE2(1, 0, 0), 1.2),
-                new WaypointSE2(
-                        new Pose2d(1, 1, new Rotation2d(2.5)),
+                new WindingWaypointSE2(
+                        new WindingPose2d(1, 1, 2.5),
                         new DirectionSE2(0, 1, 0), 1.2));
         List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
         SplineSE2 spline = splines.get(0);

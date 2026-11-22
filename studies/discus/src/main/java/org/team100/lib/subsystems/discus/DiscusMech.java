@@ -15,11 +15,11 @@ import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 /**
  * Discus version that uses the "mechanism" abstraction,
@@ -48,7 +48,7 @@ public class DiscusMech extends SubsystemBase {
                     logger,
                     currentLog,
                     new CanId(36),
-                    new CanBusId(0),
+                    CANPort.CAN_S0,
                     NeutralMode100.COAST,
                     MotorPhase.REVERSE,
                     new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
@@ -86,7 +86,7 @@ public class DiscusMech extends SubsystemBase {
         return m_mech.getWrappedPositionRad();
     }
 
-    ////////////////////
+    ///////////////////
 
     /** For homing; ignores feasibility and limits. */
     private void setDutyCycle(double p) {
@@ -101,7 +101,7 @@ public class DiscusMech extends SubsystemBase {
         m_mech.setUnwrappedEncoderPositionRad(0);
     }
 
-    /////////////////////
+    ////////////////////
     //
     // Commands
 

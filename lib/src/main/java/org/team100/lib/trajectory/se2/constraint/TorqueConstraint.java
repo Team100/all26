@@ -1,6 +1,6 @@
 package org.team100.lib.trajectory.se2.constraint;
 
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.se2.PathSE2Point;
 
 import org.wpilib.math.geometry.Rotation2d;
@@ -62,7 +62,7 @@ public class TorqueConstraint implements TimingConstraint {
     }
 
     private double getA(PathSE2Point state) {
-        WaypointSE2 pose = state.waypoint();
+        WindingWaypointSE2 pose = state.waypoint();
         Rotation2d course = pose.course().toRotation();
         // acceleration unit vector
         Translation2d u = new Translation2d(1.0, course);

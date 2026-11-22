@@ -34,11 +34,11 @@ public class FusedEstimatorTest {
 
     /** at the origin, facing +x */
     private final SwerveModulePosition100 p01 = new SwerveModulePosition100(0.1,
-            Optional.of(Rotation2d.kZero));
+            Optional.of(Rotation2d.ZERO));
     /** 0.1 m ahead */
     private final SwerveModulePositions position01 = new SwerveModulePositions(p01, p01, p01, p01);
     /** 1 meter ahead */
-    private final Pose2d visionPose = new Pose2d(1, 0, Rotation2d.kZero);
+    private final Pose2d visionPose = new Pose2d(1, 0, Rotation2d.ZERO);
 
     private static void verify(double x, double sigma, NoisyStateSE2 ns) {
         StateSE2 state = ns.state();
@@ -61,7 +61,7 @@ public class FusedEstimatorTest {
 
     @Test
     void testDump() throws IOException {
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
 
@@ -104,7 +104,7 @@ public class FusedEstimatorTest {
                 false,
                 false);
         NudgingVisionEstimator visionEstimate = new NudgingVisionEstimator(logger);
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
         FusedEstimator estimate = new FusedEstimator(
@@ -118,7 +118,7 @@ public class FusedEstimatorTest {
         estimate.reset(
                 0,
                 new NoisyStateSE2(
-                        new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                        new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.high()));
         TestUtil.verify(
                 new StateSE2(
@@ -127,38 +127,38 @@ public class FusedEstimatorTest {
                 estimate.getState(0).state());
 
         positions = new SwerveModulePositions(
-                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.kZero)));
+                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.02, Optional.of(Rotation2d.ZERO)));
         estimate.update(0.02);
         TestUtil.verify(
                 new StateSE2(
-                        new Pose2d(0.02, 0, Rotation2d.kZero),
+                        new Pose2d(0.02, 0, Rotation2d.ZERO),
                         new VelocitySE2(1.0, 0, 0)),
                 estimate.getState(0.02).state());
 
         positions = new SwerveModulePositions(
-                new SwerveModulePosition100(0.04, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.04, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.04, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.04, Optional.of(Rotation2d.kZero)));
+                new SwerveModulePosition100(0.04, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.04, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.04, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.04, Optional.of(Rotation2d.ZERO)));
         estimate.update(0.04);
         TestUtil.verify(
                 new StateSE2(
-                        new Pose2d(0.04, 0, Rotation2d.kZero),
+                        new Pose2d(0.04, 0, Rotation2d.ZERO),
                         new VelocitySE2(1.0, 0, 0)),
                 estimate.getState(0.04).state());
 
         positions = new SwerveModulePositions(
-                new SwerveModulePosition100(0.06, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.06, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.06, Optional.of(Rotation2d.kZero)),
-                new SwerveModulePosition100(0.06, Optional.of(Rotation2d.kZero)));
+                new SwerveModulePosition100(0.06, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.06, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.06, Optional.of(Rotation2d.ZERO)),
+                new SwerveModulePosition100(0.06, Optional.of(Rotation2d.ZERO)));
         estimate.update(0.06);
         TestUtil.verify(
                 new StateSE2(
-                        new Pose2d(0.06, 0, Rotation2d.kZero),
+                        new Pose2d(0.06, 0, Rotation2d.ZERO),
                         new VelocitySE2(1.0, 0, 0)),
                 estimate.getState(0.06).state());
 
@@ -193,7 +193,7 @@ public class FusedEstimatorTest {
                 false, true);
         NudgingVisionEstimator visionEstimator = new NudgingVisionEstimator(log);
 
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
 
@@ -207,7 +207,7 @@ public class FusedEstimatorTest {
         estimator.reset(
                 0,
                 new NoisyStateSE2(
-                        new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                        new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.fromStdDev(0.1, 0.1)));
 
         verify(0.000, 0.1, estimator.getState(0.00));
@@ -252,7 +252,7 @@ public class FusedEstimatorTest {
 
         NudgingVisionEstimator visionEstimator = new NudgingVisionEstimator(log);
 
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
 
@@ -266,7 +266,7 @@ public class FusedEstimatorTest {
         estimator.reset(
                 0,
                 new NoisyStateSE2(
-                        new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                        new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.fromStdDev(0.1, 0.1)));
 
         verify(0.000, 0.1, estimator.getState(0.00));
@@ -306,7 +306,7 @@ public class FusedEstimatorTest {
                 false, true);
         NudgingVisionEstimator visionEstimator = new NudgingVisionEstimator(log);
 
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
 
@@ -320,7 +320,7 @@ public class FusedEstimatorTest {
         estimator.reset(
                 0,
                 new NoisyStateSE2(
-                        new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                        new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.fromStdDev(0.1, 0.1)));
         verify(0.000, 0.1, estimator.getState(0.00));
         verifyVelocity(0.000, estimator.getState(0.00));
@@ -369,7 +369,7 @@ public class FusedEstimatorTest {
 
         NudgingVisionEstimator visionEstimator = new NudgingVisionEstimator(log);
 
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
 
@@ -383,7 +383,7 @@ public class FusedEstimatorTest {
         estimator.reset(
                 0,
                 new NoisyStateSE2(
-                        new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                        new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.fromStdDev(0.1, 0.1)));
 
         // initial pose = 0
@@ -517,7 +517,7 @@ public class FusedEstimatorTest {
 
         NudgingVisionEstimator visionEstimator = new NudgingVisionEstimator(log);
 
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
 
@@ -531,7 +531,7 @@ public class FusedEstimatorTest {
         estimator.reset(
                 0,
                 new NoisyStateSE2(
-                        new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                        new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.fromStdDev(0.1, 0.1)));
 
         // initial pose = 0
@@ -653,7 +653,7 @@ public class FusedEstimatorTest {
 
         NudgingVisionEstimator visionEstimator = new NudgingVisionEstimator(log);
 
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
 
@@ -667,7 +667,7 @@ public class FusedEstimatorTest {
         estimator.reset(
                 0,
                 new NoisyStateSE2(
-                        new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                        new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.fromStdDev(0.1, 0.1)));
 
         verify(0.000, 0.1, estimator.getState(0.00));
@@ -719,7 +719,7 @@ public class FusedEstimatorTest {
 
         NudgingVisionEstimator visionEstimator = new NudgingVisionEstimator(log);
 
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
 
@@ -733,7 +733,7 @@ public class FusedEstimatorTest {
         estimator.reset(
                 0,
                 new NoisyStateSE2(
-                        new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                        new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.fromStdDev(0.1, 0.1)));
 
         verify(0.000, 0.1, estimator.getState(0.00));
@@ -786,7 +786,7 @@ public class FusedEstimatorTest {
 
         NudgingVisionEstimator visionEstimator = new NudgingVisionEstimator(log);
 
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
 
@@ -800,7 +800,7 @@ public class FusedEstimatorTest {
         estimator.reset(
                 0,
                 new NoisyStateSE2(
-                        new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                        new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.fromStdDev(0.05, 0.05)));
 
         verify(0.000, 0.05, estimator.getState(0.00));
@@ -855,7 +855,7 @@ public class FusedEstimatorTest {
 
         NudgingVisionEstimator visionEstimator = new NudgingVisionEstimator(log);
 
-        yaw = Rotation2d.kZero;
+        yaw = Rotation2d.ZERO;
         positions = SwerveModulePositions.ZERO;
         vision = List.of();
 
@@ -869,7 +869,7 @@ public class FusedEstimatorTest {
         estimator.reset(
                 0,
                 new NoisyStateSE2(
-                        new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                        new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.fromStdDev(0.01, 0.01)));
 
         verify(0.000, 0.01, estimator.getState(0.00));

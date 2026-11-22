@@ -20,7 +20,7 @@ public class Rotation2dTest {
     // @Test
     void testPlus() {
         Rotation2d x = new Rotation2d(100);
-        Rotation2d y = x.plus(Rotation2d.kZero);
+        Rotation2d y = x.plus(Rotation2d.ZERO);
         assertEquals(x.getRadians(), y.getRadians(), 1e-9);
     }
 

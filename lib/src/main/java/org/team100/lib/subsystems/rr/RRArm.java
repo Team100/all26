@@ -11,6 +11,7 @@ import org.team100.lib.geometry.r2.VelocityR2;
 import org.team100.lib.geometry.rr.RRAcceleration;
 import org.team100.lib.geometry.rr.RRConfig;
 import org.team100.lib.geometry.rr.RRVelocity;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.kinematics.rr.RRFeasibility;
 import org.team100.lib.kinematics.rr.RRKinematics;
 import org.team100.lib.logging.LoggerFactory;
@@ -29,7 +30,6 @@ import org.team100.lib.subsystems.rr.commands.MoveWithSpline;
 import org.team100.lib.subsystems.rr.commands.MoveWithTrajectoryR2;
 import org.team100.lib.util.StrUtil;
 import org.wpilib.command2.SubsystemBase;
-import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.math.numbers.N2;
 
@@ -142,7 +142,7 @@ public class RRArm extends SubsystemBase
         return new MoveWithProfile(this, profile, goal);
     }
 
-    public MoveAndHold moveTrajSE2(Pose2d goal, double speed) {
+    public MoveAndHold moveTrajSE2(WindingPose2d goal, double speed) {
         return new MoveWithTrajectoryR2(m_log, this, goal, speed);
     }
 

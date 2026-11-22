@@ -7,14 +7,13 @@ import org.team100.lib.commands.MoveAndHold;
 import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
+import org.team100.lib.logging.LoggerFactory.StructLogger;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.reference.se2.ProfileReferenceSE2;
 import org.team100.lib.state.StateSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.se2.commands.helper.VelocityReferenceControllerSE2;
 import org.team100.lib.targeting.TargetUtil;
-
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -30,7 +29,7 @@ public class DriveToTranslationWithRelativeBearing extends MoveAndHold {
     /** verrrrrry loose. */
     private static final double THETA_TOLERANCE = 0.1;
     private final LoggerFactory m_log;
-    private final DoubleArrayLogger m_log_field_ball;
+    private final StructLogger<Pose2d> m_log_field_ball;
     private final Supplier<Optional<Translation2d>> m_targets;
     private final VelocitySubsystemSE2 m_drive;
     private final ControllerSE2 m_controller;
@@ -53,7 +52,7 @@ public class DriveToTranslationWithRelativeBearing extends MoveAndHold {
             Rotation2d relativeBearing,
             Translation2d relativeTranslation) {
         m_log = parent.type(this);
-        m_log_field_ball = field.doubleArrayLogger(Level.COMP, "ball");
+        m_log_field_ball = field.structLogger(Level.COMP, "ball", Pose2d.struct);
         m_targets = targetes;
         m_drive = drive;
         m_controller = controller;
@@ -80,10 +79,7 @@ public class DriveToTranslationWithRelativeBearing extends MoveAndHold {
             return;
         m_reference.setGoal(new StateSE2(m_goal));
         m_referenceController.execute();
-        m_log_field_ball.log(() -> new double[] {
-                m_goal.getX(),
-                m_goal.getY(),
-                m_goal.getRotation().getRadians() });
+        m_log_field_ball.log(() -> m_goal);
     }
 
     @Override
@@ -119,17 +115,22 @@ public class DriveToTranslationWithRelativeBearing extends MoveAndHold {
         m_targets.get().ifPresent(
                 (target) -> {
                     // m_translation = target;
-                    Rotation2d heading = heading(target);
+                    Optional<Rotation2d> heading = heading(target);
+                    if (heading.isEmpty())
+                        return;
                     m_goal = new Pose2d(
                             target.minus(m_relativeTranslation.rotateBy(m_drive.getState().pose().getRotation())),
-                            heading);
+                            heading.get());
                 });
     }
 
     /** Robot heading to achieve the desired relative bearing to the target. */
-    private Rotation2d heading(Translation2d target) {
-        return TargetUtil.absoluteBearing(
+    private Optional<Rotation2d> heading(Translation2d target) {
+        Optional<Rotation2d> absoluteBearing = TargetUtil.absoluteBearing(
                 m_drive.getState().pose().getTranslation(),
-                target).minus(m_relativeBearing);
+                target);
+        if (absoluteBearing.isEmpty())
+            return Optional.empty();
+        return Optional.of(absoluteBearing.get().minus(m_relativeBearing));
     }
 }

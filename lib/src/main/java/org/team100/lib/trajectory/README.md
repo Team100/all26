@@ -13,7 +13,7 @@ Very often our trajectories have only two waypoints: the start and end.
 
 The process of constructing a trajectory has four stages.
 
-1. First, make a list of `WaypointSE2`.  These describe points in the SE(2) manifold that
+1. First, make a list of `WindingWaypointSE2`.  These describe points in the SE(2) manifold that
 you want to travel through.  A waypoint includes
 
    * a _translation_ in the (x,y) plane
@@ -29,7 +29,7 @@ In our implementation, the curvature at each knot is zero.
 connecting the points ("secant lines") don't deviate too much from the true spline, and aren't
 too far apart from each other. (This uses recursive bisection.)  These points will
 be close together where the curvature is high, and far apart along straighter sections
-of the spline.  Each point is a `WaypointSE2` and also the spatial rate of heading and course
+of the spline.  Each point is a `WindingWaypointSE2` and also the spatial rate of heading and course
 along the path.  These steps are performed by `PathFactory`, producing `PathSE2`.
 
 4. Using a list of kinodynamic constraints (implementations of `TimingConstraint`),

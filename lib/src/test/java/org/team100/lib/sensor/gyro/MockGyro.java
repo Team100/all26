@@ -3,7 +3,7 @@ package org.team100.lib.sensor.gyro;
 import org.wpilib.math.geometry.Rotation2d;
 
 public class MockGyro implements Gyro {
-    public Rotation2d rotation = Rotation2d.kZero;
+    public Rotation2d rotation = Rotation2d.ZERO;
     public double rate = 0;
 
     @Override
@@ -28,11 +28,11 @@ public class MockGyro implements Gyro {
 
     @Override
     public Rotation2d getPitchNWU() {
-        return Rotation2d.kZero;
+        return Rotation2d.ZERO;
     }
 
     @Override
     public Rotation2d getRollNWU() {
-        return Rotation2d.kZero;
+        return Rotation2d.ZERO;
     }
 }

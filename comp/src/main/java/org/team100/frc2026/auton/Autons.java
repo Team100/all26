@@ -10,8 +10,6 @@ import org.team100.lib.controller.se2.FullStateControllerSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.wpilib.command2.Command;
 
-
-
 /**
  * Populates the Auton chooser with all available autons.
  * 
@@ -89,6 +87,16 @@ public class Autons implements AutoCloseable {
                 controller,
                 machinery,
                 6 * Math.PI));
+        m_autonChooser.add(new LoopingStraightLine(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+        m_autonChooser.add(new TurnLeftWhileSpinningRight(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
 
         // The following were from CVE in 2026
         m_autonChooser.add(new ScallopLobAuton(
@@ -166,7 +174,7 @@ public class Autons implements AutoCloseable {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-         m_autonChooser.add(new CenterHalfSweepAuton(
+        m_autonChooser.add(new CenterHalfSweepAuton(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
@@ -186,12 +194,12 @@ public class Autons implements AutoCloseable {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-         m_autonChooser.add(new HStartIntakeOutake(
+        m_autonChooser.add(new HStartIntakeOutake(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-        
+
     }
 
     public Command get() {

@@ -80,7 +80,7 @@ public class Binder2025 {
         //
         // Reset pose estimator so the current gyro rotation corresponds to zero.
         // onTrue(driver::back,
-        // new SetRotation(m_machinery.m_drive, Rotation2d.kZero));
+        // new SetRotation(m_machinery.m_drive, Rotation2d.ZERO));
 
         // // Reset pose estimator so the current gyro rotation corresponds to 180.
         // onTrue(driver::start,

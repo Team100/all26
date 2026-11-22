@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.team100.lib.commands.MoveAndHold;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.kinematics.prr.PRRKinematics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.path.se2.PathSE2Factory;
@@ -51,14 +51,14 @@ public class MechTrajectories extends Command {
     }
 
     /** A command that goes from the start to the end and then finishes. */
-    public Command terminal(String name, DirectionSE2 startCourse, WaypointSE2 end) {
+    public Command terminal(String name, DirectionSE2 startCourse, WindingWaypointSE2 end) {
         MoveAndHold f = new GoToPosePosition(
                 m_log, m_subsystem, startCourse, end, m_planner);
         return f.until(f::isDone).withName(name);
     }
 
     /** A command that goes from the start to the end and then waits forever. */
-    public MoveAndHold endless(String name, DirectionSE2 startCourse, WaypointSE2 end) {
+    public MoveAndHold endless(String name, DirectionSE2 startCourse, WindingWaypointSE2 end) {
         GoToPosePosition c = new GoToPosePosition(
                 m_log, m_subsystem, startCourse, end, m_planner);
         c.setName(name);

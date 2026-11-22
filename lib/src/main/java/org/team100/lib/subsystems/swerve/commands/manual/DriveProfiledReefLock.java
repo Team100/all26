@@ -175,7 +175,7 @@ public class DriveProfiledReefLock extends Command {
         // take the short path
         Rotation2d m_goal = Math100.getMinDistance(
                 yawMeasurement,
-                FieldConstants2025.angleToReefCenter(m_robotLocation.get()));
+                FieldConstants2025.angleToReefCenter(m_robotLocation.get()).get());
 
         // use the modulus closest to the measurement
         m_thetaSetpoint = new ControlR1(
