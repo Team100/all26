@@ -25,10 +25,10 @@ public class RRRKinematicsPoETest {
         RRRKinematicsPoE k = new RRRKinematicsPoE(1, 1, 1);
         RRRConfig q = new RRRConfig(0, 0, 0);
         RRRPose x = k.forward(q);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), x.p1());
-        TestUtil.verify(new Pose2d(1, 0, Rotation2d.kZero), x.p2());
-        TestUtil.verify(new Pose2d(2, 0, Rotation2d.kZero), x.p3());
-        TestUtil.verify(new Pose2d(3, 0, Rotation2d.kZero), x.p4());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), x.p1());
+        TestUtil.verify(new Pose2d(1, 0, Rotation2d.ZERO), x.p2());
+        TestUtil.verify(new Pose2d(2, 0, Rotation2d.ZERO), x.p3());
+        TestUtil.verify(new Pose2d(3, 0, Rotation2d.ZERO), x.p4());
     }
 
     @Test
@@ -36,10 +36,10 @@ public class RRRKinematicsPoETest {
         RRRKinematicsPoE k = new RRRKinematicsPoE(1, 1, 1);
         RRRConfig q = new RRRConfig(Math.PI / 2, -Math.PI / 2, Math.PI / 2);
         RRRPose x = k.forward(q);
-        TestUtil.verify(new Pose2d(0, 0, Rotation2d.kZero), x.p1());
-        TestUtil.verify(new Pose2d(0, 1, Rotation2d.kCCW_Pi_2), x.p2());
-        TestUtil.verify(new Pose2d(1, 1, Rotation2d.kZero), x.p3());
-        TestUtil.verify(new Pose2d(1, 2, Rotation2d.kCCW_Pi_2), x.p4());
+        TestUtil.verify(new Pose2d(0, 0, Rotation2d.ZERO), x.p1());
+        TestUtil.verify(new Pose2d(0, 1, Rotation2d.CCW_PI_2), x.p2());
+        TestUtil.verify(new Pose2d(1, 1, Rotation2d.ZERO), x.p3());
+        TestUtil.verify(new Pose2d(1, 2, Rotation2d.CCW_PI_2), x.p4());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class RRRKinematicsPoETest {
     void test3b() {
         // indeterminate q1.
         RRRKinematicsPoE k = new RRRKinematicsPoE(1, 1, 1);
-        Pose2d x = new Pose2d(1, 0, Rotation2d.kZero);
+        Pose2d x = new Pose2d(1, 0, Rotation2d.ZERO);
         List<RRRConfig> q = k.inverse(x, 1.0);
         assertEquals(1, q.size());
         TestUtil.verify(new RRRConfig(1.0, 3.141, 2.141), q.get(0));
@@ -95,7 +95,7 @@ public class RRRKinematicsPoETest {
     @Test
     void test3c() {
         RRRKinematicsPoE k = new RRRKinematicsPoE(1, 1, 1);
-        Pose2d x = new Pose2d(1, 0, Rotation2d.kCW_Pi_2);
+        Pose2d x = new Pose2d(1, 0, Rotation2d.CW_PI_2);
         List<RRRConfig> q = k.inverse(x, null);
         assertEquals(2, q.size());
         TestUtil.verify(new RRRConfig(Math.PI / 2, -Math.PI / 2, -Math.PI / 2), q.get(0));

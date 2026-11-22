@@ -7,7 +7,8 @@ import java.util.List;
 import org.jfree.data.xy.VectorSeries;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.util.ChartUtil;
 
 import org.wpilib.math.linalg.Vector;
@@ -41,11 +42,11 @@ public class SplineSE2UtilTest {
         // so the offset (shown here with the vector) makes a quarter cyloid
         // velocity is +x the whole time
         // heading rate is -1 the whole time
-        WaypointSE2 w0 = new WaypointSE2(
-                new Pose2d(new Translation2d(), new Rotation2d(Math.PI / 2)),
+        WindingWaypointSE2 w0 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(), Math.PI / 2),
                 new DirectionSE2(1, 0, -1), 1);
-        WaypointSE2 w1 = new WaypointSE2(
-                new Pose2d(new Translation2d(Math.PI / 2, 0), new Rotation2d(0)),
+        WindingWaypointSE2 w1 = new WindingWaypointSE2(
+                new WindingPose2d(new Translation2d(Math.PI / 2, 0), 0),
                 new DirectionSE2(1, 0, -1), 1);
         SplineSE2 toolpoint = new SplineSE2(w0, w1);
 
@@ -99,11 +100,11 @@ public class SplineSE2UtilTest {
     @Test
     void testTransform() {
         // Pose2d.transformBy() applies the transform in the pose frame.
-        Pose2d p = new Pose2d(0, 0, Rotation2d.kCCW_Pi_2);
+        Pose2d p = new Pose2d(0, 0, Rotation2d.CCW_PI_2);
         Pose2d p2 = p.transformBy(new Transform2d(1, 0, new Rotation2d()));
         assertEquals(0, p2.getX(), DELTA);
         assertEquals(1, p2.getY(), DELTA);
-        assertEquals(Rotation2d.kCCW_Pi_2.getRadians(), p2.getRotation().getRadians(), DELTA);
+        assertEquals(Rotation2d.CCW_PI_2.getRadians(), p2.getRotation().getRadians(), DELTA);
     }
 
 }

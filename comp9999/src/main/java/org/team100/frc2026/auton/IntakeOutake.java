@@ -7,7 +7,9 @@ import org.team100.frc2026.robot.Machinery;
 import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingTransform2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.profile.se2.HolonomicProfile;
@@ -24,8 +26,7 @@ import org.wpilib.command2.Command;
 import org.wpilib.command2.Commands;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Transform2d;
-import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.telemetry.Telemetry;
 
 public class IntakeOutake implements AnnotatedCommand {
     private final LoggerFactory m_log;
@@ -72,19 +73,19 @@ public class IntakeOutake implements AnnotatedCommand {
         DriveToPoseWithProfile turnBackCommand = new DriveToPoseWithProfile(
                 m_log, m_machinery.m_drive, m_controller, turnProfile,
                 this::leftOriginalGoal);
-        return Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving"))
+        return Commands.runOnce(() -> Telemetry.log("Auton Step", "Driving"))
                 .andThen(driveCommand.until(driveCommand::isDone))
-                .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Turning Left")))
+                .andThen(Commands.runOnce(() -> Telemetry.log("Auton Step", "Turning Left")))
                 .andThen(turnCommand.until(turnCommand::isDone).withTimeout(3))
-                .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving Forward After")))
+                .andThen(Commands.runOnce(() -> Telemetry.log("Auton Step", "Driving Forward After")))
                 .andThen(driveCommandAfter.until(driveCommandAfter::isDone))
-                .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Intake")))
+                .andThen(Commands.runOnce(() -> Telemetry.log("Auton Step", "Intake")))
                 .andThen(m_machinery.m_subsystem.velocity(1).withTimeout(3))
-                .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Turning Back")))
+                .andThen(Commands.runOnce(() -> Telemetry.log("Auton Step", "Turning Back")))
                 .andThen(turnBackCommand.until(turnBackCommand::isDone).withTimeout(3))
-                .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving Back")))
+                .andThen(Commands.runOnce(() -> Telemetry.log("Auton Step", "Driving Back")))
                 .andThen(driveBack.until(driveBack::isDone))
-                .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Finished")));
+                .andThen(Commands.runOnce(() -> Telemetry.log("Auton Step", "Finished")));
     }
 
     public String name() {
@@ -93,16 +94,16 @@ public class IntakeOutake implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return new Pose2d(3.5, 0.7, Rotation2d.kZero);
+        return new Pose2d(3.5, 0.7, Rotation2d.ZERO);
     }
 
     TrajectorySE2 drivingForward(Pose2d startingPose) {
         DirectionSE2 course = DirectionSE2.irrotational(startingPose.getRotation());
-        WaypointSE2 start = new WaypointSE2(startingPose, course, 1);
-        Transform2d forwardFourMeters = new Transform2d(4, 0, Rotation2d.kZero);
-        Pose2d endingPose = startingPose.plus(forwardFourMeters);
-        WaypointSE2 end = new WaypointSE2(endingPose, course, 1);
-        List<WaypointSE2> waypoints = List.of(start, end);
+        WindingWaypointSE2 start = new WindingWaypointSE2(new WindingPose2d(startingPose), course, 1);
+        WindingTransform2d forwardFourMeters = new WindingTransform2d(4, 0, 0);
+        WindingPose2d endingPose = new WindingPose2d(startingPose).plus(forwardFourMeters);
+        WindingWaypointSE2 end = new WindingWaypointSE2(endingPose, course, 1);
+        List<WindingWaypointSE2> waypoints = List.of(start, end);
         return m_planner.restToRest(waypoints);
     }
 
@@ -114,11 +115,11 @@ public class IntakeOutake implements AnnotatedCommand {
 
     TrajectorySE2 drivingForwardAfter(Pose2d startingPose) {
         DirectionSE2 course = DirectionSE2.irrotational(startingPose.getRotation());
-        WaypointSE2 start = new WaypointSE2(startingPose, course, 1);
-        Transform2d forwardTwoMeters = new Transform2d(2, 0, Rotation2d.kZero);
-        Pose2d endingPose = startingPose.plus(forwardTwoMeters);
-        WaypointSE2 end = new WaypointSE2(endingPose, course, 1);
-        List<WaypointSE2> waypoints = List.of(start, end);
+        WindingWaypointSE2 start = new WindingWaypointSE2(new WindingPose2d(startingPose), course, 1);
+        WindingTransform2d forwardTwoMeters = new WindingTransform2d(2, 0, 0);
+        WindingPose2d endingPose = new WindingPose2d(startingPose).plus(forwardTwoMeters);
+        WindingWaypointSE2 end = new WindingWaypointSE2(endingPose, course, 1);
+        List<WindingWaypointSE2> waypoints = List.of(start, end);
         return m_planner.restToRest(waypoints);
     }
 
@@ -130,11 +131,11 @@ public class IntakeOutake implements AnnotatedCommand {
 
     TrajectorySE2 drivingBack(Pose2d startingPose) {
         DirectionSE2 course = DirectionSE2.irrotational(startingPose.getRotation());
-        WaypointSE2 start = new WaypointSE2(startingPose, course, 1);
-        Transform2d forwardFourMeters = new Transform2d(2, 0, Rotation2d.kZero);
-        Pose2d endingPose = startingPose.plus(forwardFourMeters);
-        WaypointSE2 end = new WaypointSE2(endingPose, course, 1);
-        List<WaypointSE2> waypoints = List.of(start, end);
+        WindingWaypointSE2 start = new WindingWaypointSE2(new WindingPose2d(startingPose), course, 1);
+        WindingTransform2d forwardFourMeters = new WindingTransform2d(2, 0, 0);
+        WindingPose2d endingPose = new WindingPose2d(startingPose).plus(forwardFourMeters);
+        WindingWaypointSE2 end = new WindingWaypointSE2(endingPose, course, 1);
+        List<WindingWaypointSE2> waypoints = List.of(start, end);
         return m_planner.restToRest(waypoints);
     }
 }

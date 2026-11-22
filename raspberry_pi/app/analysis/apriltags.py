@@ -1,23 +1,21 @@
+# pylint: disable=C0114,E0401,E1101,R0903
 from datetime import datetime
-# pylint: disable=E1101,R0903
-
 from typing import Any, override
+
 import cv2
 import numpy as np
-
 from cv2.typing import MatLike
 from numpy.typing import NDArray
-
 from robotpy_apriltag import AprilTagDetection, AprilTagDetector, AprilTagPoseEstimator
-
 from wpimath.geometry._geometry import Transform3d
 
+from app.analysis.analysis_protocol import MonoAnalysis
 from app.camera.camera_protocol import Camera
 from app.config.identity import Identity
 from app.dashboard.display_util import DisplayUtil
-from app.analysis.analysis_protocol import MonoAnalysis
 from app.network.network_protocol import Network
 from app.network.structs import Blip, BlipWithCorners
+from app.util.robotpy_detections import RobotPyTagDetection
 
 # Tag corners for computing homography.
 SRC_POINTS = np.array([[-1, 1], [1, 1], [1, -1], [-1, -1]])
@@ -82,7 +80,7 @@ class AprilTags(MonoAnalysis):
             # Extract raw (x,y) corners from the tag.
             raw_corners: tuple[
                 float, float, float, float, float, float, float, float
-            ] = AprilTags._raw_corners(tag)
+            ] = RobotPyTagDetection.raw_corners(tag)
 
             # Undistort the corners.
             undistorted_corners: tuple[
@@ -103,7 +101,7 @@ class AprilTags(MonoAnalysis):
                 BlipWithCorners.make(int(servertime), tag.getId(), raw_corners, pose)
             )
             if img_display is not None:
-                DisplayUtil.tag(img_display, tag, pose)
+                DisplayUtil.tag(img_display, RobotPyTagDetection(tag), pose)
 
         self._blips.send(blips)
         self._blips_with_corners.send(blips_with_corners)
@@ -151,20 +149,16 @@ class AprilTags(MonoAnalysis):
         return at_detector
 
     @staticmethod
-    def _get_estimator(tag_size: float, mtx: NDArray[np.float32]) -> AprilTagPoseEstimator:
+    def _get_estimator(
+        tag_size: float, mtx: NDArray[np.float32]
+    ) -> AprilTagPoseEstimator:
         return AprilTagPoseEstimator(
             AprilTagPoseEstimator.Config(
                 tag_size, mtx[0, 0], mtx[1, 1], mtx[0, 2], mtx[1, 2]
             )
         )
 
-    @staticmethod
-    def _raw_corners(
-        result_item: AprilTagDetection,
-    ) -> tuple[float, float, float, float, float, float, float, float]:
-        """Return corners from a detection as a tuple.
-        The order is: lower left, lower right, upper right, upper left."""
-        return result_item.getCorners((0, 0, 0, 0, 0, 0, 0, 0))
+
 
     @staticmethod
     def _undistorted_corners(

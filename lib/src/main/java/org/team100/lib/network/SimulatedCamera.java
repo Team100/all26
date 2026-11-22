@@ -46,7 +46,7 @@ public class SimulatedCamera implements Runnable {
 
         // Camera coordinates are z-forward so roll axis appears there.
         Transform3d t = new Transform3d(
-                Translation3d.kZero,
+                Translation3d.ZERO,
                 new Rotation3d(0, 0, pastValue.getRadians()));
         // Past time in microseconds.
         long pastUs = (long) (past * 1000000.0);

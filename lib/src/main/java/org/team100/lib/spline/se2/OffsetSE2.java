@@ -1,15 +1,13 @@
 package org.team100.lib.spline.se2;
 
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.PathUtil;
 import org.team100.lib.path.se2.PathSE2Entry;
 import org.team100.lib.path.se2.PathSE2Parameter;
 import org.team100.lib.path.se2.PathSE2Point;
-
 import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.numbers.N2;
 
 /**
@@ -40,20 +38,20 @@ public class OffsetSE2 implements ISplineSE2 {
     }
 
     @Override
-    public WaypointSE2 waypoint(double s) {
-        return new WaypointSE2(pose(s), course(s), DEFAULT_SCALE);
+    public WindingWaypointSE2 waypoint(double s) {
+        return new WindingWaypointSE2(pose(s), course(s), DEFAULT_SCALE);
     }
 
     @Override
-    public Pose2d pose(double s) {
+    public WindingPose2d pose(double s) {
         Vector<N2> p = SplineSE2Util.offsetR(m_toolpoint, m_length, s);
         double x = p.get(0);
         double y = p.get(1);
-        Rotation2d heading = heading(s);
-        return new Pose2d(x, y, heading);
+        double heading = heading(s);
+        return new WindingPose2d(x, y, heading);
     }
 
-    private Rotation2d heading(double s) {
+    private double heading(double s) {
         return m_toolpoint.pose(s).getRotation();
     }
 

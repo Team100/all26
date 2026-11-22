@@ -6,8 +6,8 @@ import org.team100.lib.coherence.Cache;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
+import org.wpilib.hardware.bus.CANPort;
 import org.wpilib.math.util.MathUtil;
 
 import com.reduxrobotics.sensors.canandmag.Canandmag;
@@ -31,11 +31,11 @@ public class ReduxPositionSensor implements RotaryPositionSensor {
     public ReduxPositionSensor(
             LoggerFactory parent,
             CanId id,
-            CanBusId busId,
+            CANPort canPort,
             double inputOffsetTurns,
             EncoderDrive drive) {
         LoggerFactory log = parent.type(this);
-        encoder = new Canandmag(id.id, busId.id);
+        encoder = new Canandmag(id.id, canPort);
         m_positionOffsetTurns = inputOffsetTurns;
         m_drive = drive;
 

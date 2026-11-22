@@ -4,15 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
-
-import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.linalg.VecBuilder;
 
 class SwerveDriveDynamicsConstraintTest implements Timeless {
     private static final double DELTA = 0.001;
@@ -24,14 +24,14 @@ class SwerveDriveDynamicsConstraintTest implements Timeless {
 
         // motionless
         double maxV = c.maxV(new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 0)));
         assertEquals(5, maxV, DELTA);
 
         // moving in +x, no curvature, no rotation
         maxV = c.maxV(new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 0)));
         // max allowed velocity is full speed
@@ -39,7 +39,7 @@ class SwerveDriveDynamicsConstraintTest implements Timeless {
 
         // moving in +x, 5 rad/meter
         maxV = c.maxV(new PathSE2Point(
-                new WaypointSE2(new Pose2d(0, 0, new Rotation2d(0)),
+                new WindingWaypointSE2(new WindingPose2d(0, 0, 0),
                         new DirectionSE2(1, 0, 5), 1.2),
                 VecBuilder.fill(0, 0)));
         // at 5 rad/m with 0.5m sides the fastest you can go is 1.55 m/s.
@@ -51,7 +51,7 @@ class SwerveDriveDynamicsConstraintTest implements Timeless {
         // traveling 1 m/s, there are 4 m/s available for the fastest wheel
         // which means 11.314 rad/s, and also 11.314 rad/m since we're going 1 m/s.
         PathSE2Point state = new PathSE2Point(
-                new WaypointSE2(new Pose2d(0, 0, new Rotation2d(0)),
+                new WindingWaypointSE2(new WindingPose2d(0, 0, 0),
                         new DirectionSE2(1, 0, 11.31708), 1.2),
                 VecBuilder.fill(0, 0));
         maxV = c.maxV(state);
@@ -69,7 +69,7 @@ class SwerveDriveDynamicsConstraintTest implements Timeless {
         // this is constant
         Pose2d p = new Pose2d(0, 0, new Rotation2d(0));
         PathSE2Point p2 = new PathSE2Point(
-                WaypointSE2.irrotational(p, 0, 1.2), VecBuilder.fill(0, 0));
+                WindingWaypointSE2.irrotational(p, 0, 1.2), VecBuilder.fill(0, 0));
         assertEquals(-20, c.maxDecel(p2, 0), DELTA);
         assertEquals(10, c.maxAccel(p2, 0), DELTA);
     }

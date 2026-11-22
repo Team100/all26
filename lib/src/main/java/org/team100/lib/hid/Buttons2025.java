@@ -2,14 +2,14 @@ package org.team100.lib.hid;
 
 import org.team100.frc2025.field.FieldConstants2025.ReefPoint;
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
-
+import org.wpilib.driverstation.DriverStation;
 import org.wpilib.driverstation.GenericHID;
 
 public class Buttons2025 {
     private final GenericHID m_controller;
 
     public Buttons2025(int port) {
-        m_controller = new GenericHID(port);
+        m_controller = DriverStation.getGenericHID(port);
     }
 
     /** Coral Scoring Levels */

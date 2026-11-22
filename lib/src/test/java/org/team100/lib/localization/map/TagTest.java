@@ -7,10 +7,10 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 import org.wpilib.driverstation.Alliance;
+import org.wpilib.fields.Field;
+import org.wpilib.fields.Field.OriginPosition;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.system.Filesystem;
-import org.wpilib.vision.apriltag.AprilTagFieldLayout;
-import org.wpilib.vision.apriltag.AprilTagFieldLayout.OriginPosition;
 
 /**
  * Remind myself what's in the JSON file.
@@ -59,9 +59,9 @@ class TagTest {
     @Test
     void testRaw() throws IOException {
         Path path = Filesystem.getDeployDirectory().toPath().resolve("2025-reefscape.json");
-        AprilTagFieldLayout layout = new AprilTagFieldLayout(path);
+        Field layout = Field.loadFromFile(path);
         // blue side, tag seven
-        layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+        layout.setOrigin(OriginPosition.BLUE_ALLIANCE_WALL_RIGHT_SIDE);
         Pose3d tag7Pose = layout.getTagPose(7).get();
 
         // on our side, x is ~zero.

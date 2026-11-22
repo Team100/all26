@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.team100.lib.music.Note;
+import org.wpilib.driverstation.DriverStation;
 import org.wpilib.driverstation.GenericHID;
 
 /**
@@ -43,7 +44,7 @@ public class Minilab3Keys {
     private final GenericHID m_controller;
 
     public Minilab3Keys(int port) {
-        m_controller = new GenericHID(port);
+        m_controller = DriverStation.getGenericHID(port);
     }
 
     public List<Note> notes() {

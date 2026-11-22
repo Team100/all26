@@ -51,7 +51,6 @@ import org.team100.lib.targeting.Targets;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.uncertainty.NoisyStateSE2;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.visualization.RobotPoseVisualization;
 import org.team100.lib.visualization.TrajectoryVisualization;
@@ -59,6 +58,7 @@ import org.wpilib.command2.Command;
 import org.wpilib.command2.Commands;
 import org.wpilib.driverstation.MatchState;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -85,7 +85,7 @@ public class Machinery {
     public Machinery(LoggerFactory logger, LoggerFactory fieldLogger, TotalCurrentLog currentLog) {
         LoggerFactory driveLog = logger.name("Drive");
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // DRIVETRAIN
         //
@@ -132,7 +132,7 @@ public class Machinery {
         new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState(), "robot");
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // TARGETING
         //
@@ -154,13 +154,13 @@ public class Machinery {
 
         m_targets = new Targets(driveLog, fieldLogger, 0.2, t -> m_drive.getState(t).state());
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // SUBSYSTEMS
         //
         CanId canId1 = new CanId(17);
         CanId canId2 = new CanId(42);
-        CanBusId busId = new CanBusId(0);
+        CANPort busId = CANPort.CAN_S0;
         NeutralMode100 neutral = NeutralMode100.COAST;
         MotorPhase phase1 = MotorPhase.FORWARD;
         MotorPhase phase2 = MotorPhase.REVERSE;
@@ -181,13 +181,13 @@ public class Machinery {
                 driveLog, currentLog, canId1, canId2, busId, neutral, phase1, phase2, limit,
                 friction, pid, gearRatio, wheelDiameterM, dynamics, ref, 0.01, true);
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // VISUALIZATIONS
         //
         m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
-        ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
         //
         // INDICATOR
         //
@@ -253,7 +253,7 @@ public class Machinery {
     public Command zeroRotation() {
         return Commands.runOnce(() -> {
             Translation2d t = m_drive.getState().pose().getTranslation();
-            Pose2d p = new Pose2d(t, Rotation2d.kZero);
+            Pose2d p = new Pose2d(t, Rotation2d.ZERO);
             // no influence over cartesian variance
             // a strong claim about rotation variance
             IsotropicNoiseSE2 noise = IsotropicNoiseSE2.fromStdDev(10, 0.001);

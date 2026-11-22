@@ -1,13 +1,13 @@
 package org.team100.lib.subsystems.se2.commands.test;
 
 import org.team100.lib.commands.MoveAndHold;
+import org.team100.lib.geometry.Metrics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.reference.se2.ProfileReferenceSE2;
 import org.team100.lib.state.StateSE2;
 import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
-
 import org.wpilib.math.geometry.Pose2d;
 
 /**
@@ -63,10 +63,16 @@ public class VelocityFeedforwardOnly extends MoveAndHold {
         return m_reference.done();
     }
 
+    /**
+     * Uses the max of the "reference" idea of
+     * "togo" and the "measurement" idea of "togo", to accommodate
+     * wrapping.
+     */
     @Override
     public double toGo() {
-        StateSE2 goal = m_reference.goal();
+        double refToGo = m_reference.toGo();
         StateSE2 measurement = m_drive.getState();
-        return goal.minus(measurement).translation().getNorm();
+        double measurementToGo = Metrics.l2Norm(m_reference.goal().minus(measurement));
+        return Math.max(refToGo, measurementToGo);
     }
 }

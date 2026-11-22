@@ -1,12 +1,14 @@
+# pylint: disable=C0114,C0115,C0116,E0401,R0902
 from datetime import datetime
-# pylint: disable=E0401,R0902
-
 from pprint import pprint
-from typing import Any
-from typing import override
+import subprocess
+import time
+from typing import Any, override
+
 import numpy as np
 from numpy.typing import NDArray
 from picamera2 import CompletedRequest, Picamera2  # type: ignore
+
 from app.camera.camera_protocol import Camera, Request
 from app.camera.capture_timestamp import CaptureTimestamp
 from app.camera.config.config_factory import ConfigFactory
@@ -44,16 +46,18 @@ class RealCamera(Camera):
         print(f"[{datetime.now()}] " + "*** GLOBAL CAMERA INFO")
         pprint(Picamera2.global_camera_info())  # type: ignore
 
+        self._capture_error: bool = False
+
         self._cam: Picamera2 = Picamera2()  # type: ignore
 
         print(f"[{datetime.now()}] " + "*** SENSOR MODES AVAILABLE")
-        pprint(self._cam.sensor_modes)  # type:ignore
+        pprint(self._cam.sensor_modes)  # type: ignore
 
         print(f"[{datetime.now()}] " + "*** CAMERA CONTROLS")
-        pprint(self._cam.camera_controls)  # type:ignore
+        pprint(self._cam.camera_controls)  # type: ignore
 
         print(f"[{datetime.now()}] " + "*** RAW MODES")
-        pprint(self._cam._raw_modes)  # type:ignore
+        pprint(self._cam._raw_modes)  # type: ignore
 
         self._mtx: Intrinsic = Intrinsic(identity)
         self._dist: Distortion = Distortion(identity)
@@ -74,33 +78,41 @@ class RealCamera(Camera):
         pprint(self._camera_config)
 
         # optimal alignment makes the ISP a little faster
-        self._cam.align_configuration(self._camera_config, optimal=True)  # type:ignore
+        self._cam.align_configuration(self._camera_config, optimal=True)  # type: ignore
         print(f"[{datetime.now()}] " + "*** ALIGNED CONFIG")
         pprint(self._camera_config)
 
-        self._cam.configure(self._camera_config)  # type:ignore
+        self._cam.configure(self._camera_config)  # type: ignore
         self._check_config(config)
 
-        self._cam.start()  # type:ignore
+        self._cam.start()  # type: ignore
         # Controls need to be set *after* the camera starts,
         # or AeEnable doesn't do anything!
-        self._cam.set_controls(config.controls())  # type:ignore
+        self._cam.set_controls(config.controls())  # type: ignore
         self._frame_time = Timer.time_ns()
         print(f"[{datetime.now()}] " + "*** Camera setup complete")
 
     @override
     def capture_request(self) -> Request:
         capture_start: int = Timer.time_ns()
-        # TODO test this line for bugs
-        req: CompletedRequest = self._cam.capture_request()  # type:ignore 
-        total_time_ms = (capture_start - self._frame_time) / 1000000
-        self._frame_time = capture_start
-        fps = 1000 / total_time_ms
-        return RealRequest(req, fps, self._decoder, self._timestamp)  # type: ignore
+        try:
+            req: CompletedRequest = self._cam.capture_request(wait=2.0)  # type: ignore
+            total_time_ms = (capture_start - self._frame_time) / 1000000
+            self._frame_time = capture_start
+            fps = 1000 / total_time_ms
+            return RealRequest(req, fps, self._decoder, self._timestamp)  # type: ignore
+        except Exception as e:
+            print(f"[{datetime.now()}] " + f"*** Camera capture request error: {e!r}")
+            self._capture_error = True
+            self._power_cycle_usb()
+            raise
 
     @override
     def stop(self) -> None:
-        self._cam.stop()  # type: ignore
+        # _cam.stop() can block after a USB disconnect, so we skip it
+        # if a capture request errored out
+        if not self._capture_error:
+            self._cam.stop()  # type: ignore
         print(f"[{datetime.now()}] " + "*** Camera stop")
 
     @override
@@ -131,13 +143,13 @@ class RealCamera(Camera):
         controls = conf.controls()
         print(f"[{datetime.now()}] " + "*** REQUESTED CONTROLS:")
         pprint(controls)
-        return cam.create_still_configuration(  # type:ignore
+        return cam.create_still_configuration(  # type: ignore
             buffer_count=conf.buffer_count(),
             queue=conf.queue(),
             sensor=conf.sensor(),
             main=conf.main(),
             raw=conf.raw(),
-            transform=conf.transform(identity),  # type:ignore
+            transform=conf.transform(identity),  # type: ignore
             controls=controls,
         )
 
@@ -145,8 +157,23 @@ class RealCamera(Camera):
         """Verify the requested config matches the camera config."""
         print(f"[{datetime.now()}] " + "*** CONFIG CHECK")
         pprint(self._camera_config)
-        pprint(self._cam.camera_config)  # type:ignore
-        if not config.ok(self._camera_config, self._cam.camera_config):  # type:ignore
+        pprint(self._cam.camera_config)  # type: ignore
+        if not config.ok(self._camera_config, self._cam.camera_config):  # type: ignore
             raise ValueError("Config check fail")
-        else:
-            print(f"[{datetime.now()}] " + "CONFIG CHECK GOOD")
+        print(f"[{datetime.now()}] " + "CONFIG CHECK GOOD")
+
+    def _power_cycle_usb(self) -> None:
+        """Cut power to all USB ports. On the Pi 5 the ports share one power
+        switch, so turning off just the camera's port leaves 5 V on and
+        doesn't reset a wedged camera."""
+        print(f"[{datetime.now()}] *** USB power cycle")
+        try:
+          for hub in ("1", "2", "3", "4"):
+              subprocess.run(["/usr/sbin/uhubctl", "-l", hub, "-a", "off"],
+                             capture_output=True, timeout=10, check=False)
+          time.sleep(3)
+          for hub in ("1", "2", "3", "4"):
+              subprocess.run(["/usr/sbin/uhubctl", "-l", hub, "-a", "on"],
+                             capture_output=True, timeout=10, check=False)
+        except (OSError, subprocess.SubprocessError) as e:
+          print(f"[{datetime.now()}] *** USB power cycle failed: {e!r}")

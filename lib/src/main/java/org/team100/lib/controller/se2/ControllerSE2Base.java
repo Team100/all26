@@ -125,7 +125,7 @@ public abstract class ControllerSE2Base implements ControllerSE2 {
     boolean velocityOK(VelocitySE2 velocityError) {
         double cartesian = velocityError.norm();
         m_log_cartesianVelocityError.log(() -> cartesian);
-        double rotation = Math.abs(velocityError.angle().orElse(Rotation2d.kZero).getRadians());
+        double rotation = Math.abs(velocityError.angle().orElse(Rotation2d.ZERO).getRadians());
         boolean withinTolerance = cartesian < m_xDotTolerance && rotation < m_omegaTolerance;
         m_log_atVelocityReference.log(() -> withinTolerance);
         return withinTolerance;

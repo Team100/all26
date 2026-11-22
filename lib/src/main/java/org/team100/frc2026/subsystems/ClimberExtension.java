@@ -17,11 +17,11 @@ import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.LinearPositionServo;
 import org.team100.lib.servo.OutboardLinearPositionServo;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 public class ClimberExtension extends SubsystemBase {
     public static final double WHEEL_DIAMETER_M = 0.001275;
@@ -43,7 +43,7 @@ public class ClimberExtension extends SubsystemBase {
             Friction friction = new Friction(0, 0, 0, 0);
             PIDConstants pid = new PIDConstants(1, 0, 0, 0, 0, 0);
             motor = new NeoVortexCANSparkMotor(
-                    log, currentLog, new CanId(2), new CanBusId(0),
+                    log, currentLog, new CanId(2), CANPort.CAN_S0,
                     NeutralMode100.BRAKE, MotorPhase.FORWARD,
                     limit, friction, pid, 0, 0);
         } else {

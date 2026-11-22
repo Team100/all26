@@ -14,7 +14,8 @@ import org.team100.frc2025.field.FieldConstants2025.CoralStation;
 import org.team100.frc2025.field.FieldConstants2025.ReefPoint;
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.kinematics.prr.PRRKinematics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
@@ -67,22 +68,22 @@ public class TrajectoryGallery {
     void testCalgames() {
         List<VectorSeries> homeToL2 = series(
                 DirectionSE2.irrotational(1.5),
-                WaypointSE2.irrotational(CalgamesMech.L2, 1.5, 1.2));
+                WindingWaypointSE2.irrotational(CalgamesMech.L2, 1.5, 1.2));
         List<VectorSeries> homeToL3 = series(
                 DirectionSE2.irrotational(0.8),
-                WaypointSE2.irrotational(CalgamesMech.L3, 1.5, 1.2));
+                WindingWaypointSE2.irrotational(CalgamesMech.L3, 1.5, 1.2));
         List<VectorSeries> homeToL4 = series(
                 DirectionSE2.irrotational(0.1),
-                WaypointSE2.irrotational(CalgamesMech.L4, 1.5, 1.2));
+                WindingWaypointSE2.irrotational(CalgamesMech.L4, 1.5, 1.2));
         List<VectorSeries> homeToAlgaeL2 = series(
                 DirectionSE2.irrotational(1.5),
-                WaypointSE2.irrotational(CalgamesMech.ALGAE_L2, 1.5, 1.2));
+                WindingWaypointSE2.irrotational(CalgamesMech.ALGAE_L2, 1.5, 1.2));
         List<VectorSeries> homeToAlgaeL3 = series(
                 DirectionSE2.irrotational(0),
-                WaypointSE2.irrotational(CalgamesMech.ALGAE_L3, 1.5, 1.2));
+                WindingWaypointSE2.irrotational(CalgamesMech.ALGAE_L3, 1.5, 1.2));
         List<VectorSeries> homeToBarge = series(
                 DirectionSE2.irrotational(0),
-                WaypointSE2.irrotational(CalgamesMech.BARGE, -1, 1.2));
+                WindingWaypointSE2.irrotational(CalgamesMech.BARGE, -1, 1.2));
 
         ChartUtil.plotOverlay(Stream.of(
                 homeToL2, homeToL3, homeToL4, homeToAlgaeL2, homeToAlgaeL3, homeToBarge)
@@ -90,7 +91,7 @@ public class TrajectoryGallery {
 
     }
 
-    private List<VectorSeries> series(DirectionSE2 m_course, WaypointSE2 m_goal) {
+    private List<VectorSeries> series(DirectionSE2 m_course, WindingWaypointSE2 m_goal) {
         // homeToL2
         List<TimingConstraint> c = new ArrayList<>();
         // These are known to work, but suboptimal.
@@ -104,7 +105,7 @@ public class TrajectoryGallery {
 
         PRRKinematics m_kinematics = new PRRKinematics(0.5, 0.343, PRRKinematics.Solver.ANALYTIC);
         Pose2d m_home = m_kinematics.forward(CalgamesMech.HOME);
-        WaypointSE2 start = new WaypointSE2(m_home, m_course, 1);
+        WindingWaypointSE2 start = new WindingWaypointSE2(new WindingPose2d(m_home), m_course, 1);
         TrajectorySE2 m_trajectory = m_planner.restToRest(List.of(start, m_goal));
         List<VectorSeries> series = new TrajectorySE2ToVectorSeries(0.1).convert(m_trajectory);
         return series;

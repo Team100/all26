@@ -1,13 +1,12 @@
 package org.team100.lib.trajectory.se2;
 
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.util.Math100;
-
-import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 
 public class TrajectorySE2Point {
@@ -95,14 +94,14 @@ public class TrajectorySE2Point {
      * Correctly computes centripetal acceleration.
      */
     public ControlSE2 control() {
-        WaypointSE2 waypoint = m_point.waypoint();
-        Pose2d pose = waypoint.pose();
+        WindingWaypointSE2 waypoint = m_point.waypoint();
+        WindingPose2d pose = waypoint.pose();
         DirectionSE2 course = waypoint.course();
 
         // Pose.
         double pX = pose.getTranslation().getX();
         double pY = pose.getTranslation().getY();
-        double pTheta = pose.getRotation().getRadians();
+        double pTheta = pose.getRotation();
 
         // Velocity.
         Rotation2d R = course.toRotation();

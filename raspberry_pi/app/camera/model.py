@@ -1,6 +1,5 @@
+# pylint: disable=C0114,C0115,C0116,E0401
 from datetime import datetime
-# pylint: disable=E0401
-
 from enum import Enum, unique
 from typing import Any
 
@@ -20,9 +19,9 @@ class Model(Enum):
         return Model.UNKNOWN
 
     @staticmethod
-    def get(camera_properties: dict[str, str]) -> "Model":  # type:ignore
+    def get(camera_properties: dict[str, str]) -> "Model":  # type: ignore
         """Use the properties to avoid import errors in tests."""
-        model_str: str = camera_properties["Model"]  # type:ignore
+        model_str: str = camera_properties["Model"]  # type: ignore
         print(f"[{datetime.now()}] " + "*** Camera model string:", model_str)
         model: Model = Model(model_str)
         print(f"[{datetime.now()}] " + "*** Camera model:", model)

@@ -25,11 +25,11 @@ import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.subsystems.r1.DualRollerSubsystem;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.Startup;
 import org.wpilib.command2.CommandScheduler;
 import org.wpilib.command2.Commands;
+import org.wpilib.hardware.bus.CANPort;
 import org.wpilib.networktables.NetworkTableInstance;
 
 public class Robot extends TimedRobot100 {
@@ -55,7 +55,7 @@ public class Robot extends TimedRobot100 {
         CanId canId16 = new CanId(16);
         CanId canId17 = new CanId(17);
         CanId canId18 = new CanId(18);
-        CanBusId busId = new CanBusId(0);
+        CANPort busId = CANPort.CAN_S0;
         NeutralMode100 neutral = NeutralMode100.COAST;
         MotorPhase phase1 = MotorPhase.FORWARD;
         MotorPhase phase2 = MotorPhase.REVERSE;

@@ -3,7 +3,7 @@ package org.team100.lib.trajectory.se2.constraint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.testing.Timeless;
 
@@ -19,19 +19,19 @@ public class DiamondConstraintTest implements Timeless {
         // here the two speeds are the same
         DiamondConstraint c = new DiamondConstraint(1, 1, 4);
         PathSE2Point state = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                  VecBuilder.fill(0, 0));
         // moving purely in x, get the x number
         assertEquals(1, c.maxV(state), DELTA);
         state = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), Math.PI / 2, 1.2),
                  VecBuilder.fill(0, 0));
         // moving purely in y, get the y number
         assertEquals(1, c.maxV(state), DELTA);
         state = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), Math.PI / 4, 1.2),
                  VecBuilder.fill(0, 0));
         // moving diagonally, get less.
@@ -42,19 +42,19 @@ public class DiamondConstraintTest implements Timeless {
     void testVelocity() {
         DiamondConstraint c = new DiamondConstraint(2, 3, 4);
         PathSE2Point state = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                  VecBuilder.fill(0, 0));
         // moving purely in x, get the x number
         assertEquals(2, c.maxV(state), DELTA);
         state = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), Math.PI / 2, 1.2),
                  VecBuilder.fill(0, 0));
         // moving purely in y, get the y number
         assertEquals(3, c.maxV(state), DELTA);
         state = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), Math.PI / 4, 1.2),
                  VecBuilder.fill(0, 0));
         // moving diagonally, get less.

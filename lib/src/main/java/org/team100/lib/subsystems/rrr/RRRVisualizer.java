@@ -7,7 +7,7 @@ import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.smartdashboard.Mechanism2d;
 import org.wpilib.smartdashboard.MechanismLigament2d;
 import org.wpilib.smartdashboard.MechanismRoot2d;
-import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.telemetry.Telemetry;
 import org.wpilib.util.Color;
 import org.wpilib.util.Color8Bit;
 
@@ -23,6 +23,7 @@ public class RRRVisualizer {
     private static final double SCALE = 150;
 
     private final RRRArm m_arm;
+    private final Mechanism2d m_view;
     private final MechanismLigament2d m_l1;
     private final MechanismLigament2d m_l2;
     private final MechanismLigament2d m_l3;
@@ -32,8 +33,8 @@ public class RRRVisualizer {
 
     public RRRVisualizer(RRRArm arm) {
         m_arm = arm;
-        Mechanism2d view = new Mechanism2d(200, 150);
-        MechanismRoot2d root = view.getRoot("root", 100, 25);
+        m_view = new Mechanism2d(200, 150);
+        MechanismRoot2d root = m_view.getRoot("root", 100, 25);
         m_l1 = new MechanismLigament2d(
                 "l1", SCALE * m_arm.kinematics().l1, 90, WIDTH, COLOR);
         m_l2 = new MechanismLigament2d(
@@ -43,13 +44,11 @@ public class RRRVisualizer {
         root.append(m_l1);
         m_l1.append(m_l2);
         m_l2.append(m_l3);
-        m_cross = view.getRoot("pose", 100, 25);
+        m_cross = m_view.getRoot("pose", 100, 25);
         m_cross.append(new MechanismLigament2d("cross1", 10, 0, 1, COLOR2));
         m_cross.append(new MechanismLigament2d("cross2", 10, 90, 1, COLOR2));
         m_cross.append(new MechanismLigament2d("cross3", 10, 180, 1, COLOR2));
         m_cross.append(new MechanismLigament2d("cross4", 10, 270, 1, COLOR2));
-
-        SmartDashboard.putData("View", view);
     }
 
     public void setT(Supplier<Translation2d> t) {
@@ -67,5 +66,6 @@ public class RRRVisualizer {
             if (t != null)
                 m_cross.setPosition(100 - SCALE * t.getY(), 25 + SCALE * t.getX());
         }
+        Telemetry.log("View", m_view);
     }
 }

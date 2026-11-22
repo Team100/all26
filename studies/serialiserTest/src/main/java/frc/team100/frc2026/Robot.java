@@ -7,6 +7,7 @@ package frc.team100.frc2026;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.CommandScheduler;
 import org.wpilib.framework.TimedRobot;
+import org.wpilib.hardware.bus.CANPort;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -24,8 +25,8 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         // first = new TalonFX(9, new CANBus());
-        flex = new SparkFlex(0, 14, MotorType.kBrushless);
-        flexs = new SparkFlex(0, 1, MotorType.kBrushless);
+        flex = new SparkFlex(CANPort.CAN_S0, 14, MotorType.kBrushless);
+        flexs = new SparkFlex(CANPort.CAN_S0, 1, MotorType.kBrushless);
         second = new TalonFX(4, new CANBus());
     }
 

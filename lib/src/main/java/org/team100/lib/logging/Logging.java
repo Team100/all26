@@ -7,9 +7,6 @@ import org.team100.lib.util.NamedChooser;
 import com.ctre.phoenix6.SignalLogger;
 import com.revrobotics.util.StatusLogger;
 
-import org.wpilib.smartdashboard.SendableChooser;
-import org.wpilib.smartdashboard.SmartDashboard;
-
 /**
  * Logging singleton.
  * 
@@ -20,7 +17,7 @@ public class Logging {
     private static final Logging instance = new Logging();
 
     // Required because SmartDashboard keeps only a weak reference.
-    private final SendableChooser<Level> m_LevelChooser;
+    private final NamedChooser<Level> m_LevelChooser;
     private final PrimitiveLogger ntLogger;
     /** Root is "field", with .type = Field2d as required by glass. */
     private final LoggerFactory fieldLogger;
@@ -35,19 +32,19 @@ public class Logging {
     private Logging() {
         m_LevelChooser = new NamedChooser<>("Log Level");
         for (Level level : Level.values()) {
-            m_LevelChooser.addOption(level.name(), level);
+            m_LevelChooser.add(level.name(), level);
         }
-        m_LevelChooser.setDefaultOption(DEFAULT_LEVEL.name(), DEFAULT_LEVEL);
+        m_LevelChooser.addDefault(DEFAULT_LEVEL.name(), DEFAULT_LEVEL);
         m_selectedLevel = DEFAULT_LEVEL;
         ntLogger = new NTPrimitiveLogger();
-        fieldLogger = new LoggerFactory(this::getLevel, "field", ntLogger);
+        // alpha7 glass uses a different key for field objects
+        fieldLogger = new LoggerFactory(this::getLevel, "Telemetry/Field", ntLogger);
         fieldLogger.stringLogger(Level.COMP, ".type").log(() -> "Field2d");
         rootLogger = new LoggerFactory(this::getLevel, "log", ntLogger);
         // Turn off the CTRE log we never use.
         SignalLogger.enableAutoLogging(false);
         // Disable the REV log we never use.
         StatusLogger.disableAutoLogging();
-        SmartDashboard.putData(m_LevelChooser);
         m_LevelChooser.onChange(this::update);
     }
 

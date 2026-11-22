@@ -8,10 +8,11 @@ import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
+import org.team100.lib.motor.VictorSP;
 import org.team100.lib.state.StateR1;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
-import org.wpilib.hardware.motor.VictorSP;
+import org.wpilib.hardware.bus.CANPort;
 import org.wpilib.hardware.power.PowerDistribution;
 import org.wpilib.hardware.power.PowerDistribution.ModuleType;
 import org.wpilib.simulation.RoboRioSim;
@@ -60,8 +61,8 @@ public class BatteryTester extends SubsystemBase implements AutoCloseable {
 
     public BatteryTester(LoggerFactory parent) {
         LoggerFactory log = parent.type(this);
-        m_pdh = new PowerDistribution(0, 1, ModuleType.REV);
-        m_controllers = List.of(        
+        m_pdh = new PowerDistribution(CANPort.CAN_S0, 1, ModuleType.REV);
+        m_controllers = List.of(
                 new VictorSP(0),
                 new VictorSP(1),
                 new VictorSP(2),

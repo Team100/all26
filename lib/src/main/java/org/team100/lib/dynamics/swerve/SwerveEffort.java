@@ -34,7 +34,7 @@ public record SwerveEffort(
      */
     public record ModuleEffort(double f, Optional<Rotation2d> angle) {
         static ModuleEffort ZERO = new ModuleEffort(
-                0, Optional.of(Rotation2d.kZero));
+                0, Optional.of(Rotation2d.ZERO));
 
     }
 }

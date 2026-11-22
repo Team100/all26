@@ -1,10 +1,10 @@
 package org.team100.lib.spline.se2;
 
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingTransform2d;
+import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Transform2d;
 import org.wpilib.math.numbers.N2;
 
 public class SplineSE2Util {
@@ -14,9 +14,10 @@ public class SplineSE2Util {
      * The offset is a fixed length behind the toolpoint.
      */
     public static Vector<N2> offsetR(SplineSE2 spline, double l, double s) {
-        Pose2d pose = spline.pose(s);
+        WindingPose2d pose = spline.pose(s);
         // negative length here because the offset is "behind" the toolpoint.
-        Pose2d p2 = pose.transformBy(new Transform2d(-l, 0, new Rotation2d()));
+        WindingPose2d p2 = pose.transformBy(
+                new WindingTransform2d(-l, 0, 0));
         return VecBuilder.fill(p2.getX(), p2.getY());
     }
 
@@ -27,9 +28,9 @@ public class SplineSE2Util {
      * heading rate.
      */
     public static Vector<N2> offsetRprime(SplineSE2 spline, double l, double s) {
-        Pose2d pose = spline.pose(s);
-        Rotation2d radial = pose.getRotation().plus(Rotation2d.k180deg);
-        Rotation2d tangential = radial.plus(Rotation2d.kCCW_Pi_2);
+        WindingPose2d pose = spline.pose(s);
+        Rotation2d radial = new Rotation2d(pose.getRotation()).plus(Rotation2d.k180deg);
+        Rotation2d tangential = radial.plus(Rotation2d.CCW_PI_2);
         // dtheta/ds
         double headingRate = spline.dheading(s);
         // dx/ds = dtheta/ds * x/theta
@@ -43,9 +44,9 @@ public class SplineSE2Util {
      * The offset point acceleration has two components: tangential and centripetal.
      */
     public static Vector<N2> offsetRprimeprime(SplineSE2 spline, double l, double s) {
-        Pose2d pose = spline.pose(s);
-        Rotation2d radial = pose.getRotation().plus(Rotation2d.k180deg);
-        Rotation2d tangential = radial.plus(Rotation2d.kCCW_Pi_2);
+        WindingPose2d pose = spline.pose(s);
+        Rotation2d radial = new Rotation2d(pose.getRotation()).plus(Rotation2d.k180deg);
+        Rotation2d tangential = radial.plus(Rotation2d.CCW_PI_2);
 
         // centripetal a = r omega^2
         // dtheta/ds

@@ -7,7 +7,9 @@ import org.team100.frc2026.robot.Machinery;
 import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingTransform2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.subsystems.se2.commands.DriveWithTrajectoryFunction;
@@ -19,7 +21,6 @@ import org.team100.lib.trajectory.se2.constraint.TimingConstraintFactory;
 import org.wpilib.command2.Command;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Transform2d;
 
 /**
  * Make a large U shape, ahead and to the left, while rotating
@@ -55,15 +56,15 @@ public class UTurnWithRotation implements AnnotatedCommand {
         // cartesian is robot-relative +x, also rotate CCW.
         DirectionSE2 d1 = DirectionSE2.fromDirections(p1.getRotation(), 1);
         // the end is the opposite direction.
-        DirectionSE2 d2 = DirectionSE2.fromDirections(p1.getRotation().plus(Rotation2d.kPi), 1);
+        DirectionSE2 d2 = DirectionSE2.fromDirections(p1.getRotation().plus(Rotation2d.PI), 1);
         // making a big U means using a large scale factor
-        WaypointSE2 w1 = new WaypointSE2(p1, d1, 2.5);
+        WindingWaypointSE2 w1 = new WindingWaypointSE2(new WindingPose2d(p1), d1, 2.5);
         // end point is to the left
-        Transform2d t1 = new Transform2d(0, 2, Rotation2d.kPi);
-        Pose2d p2 = p1.plus(t1);
+        WindingTransform2d t1 = new WindingTransform2d(0, 2, Math.PI);
+        WindingPose2d p2 = new WindingPose2d(p1).plus(t1);
         // making a big U means using a large scale factor
-        WaypointSE2 w2 = new WaypointSE2(p2, d2, 2.5);
-        List<WaypointSE2> waypoints = List.of(w1, w2);
+        WindingWaypointSE2 w2 = new WindingWaypointSE2(p2, d2, 2.5);
+        List<WindingWaypointSE2> waypoints = List.of(w1, w2);
         return planner.restToRest(waypoints);
     }
 

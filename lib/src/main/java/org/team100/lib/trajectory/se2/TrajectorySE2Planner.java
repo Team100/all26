@@ -2,7 +2,7 @@ package org.team100.lib.trajectory.se2;
 
 import java.util.List;
 
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.se2.PathSE2;
 import org.team100.lib.path.se2.PathSE2Factory;
 import org.team100.lib.spline.se2.SplineSE2;
@@ -34,7 +34,7 @@ public class TrajectorySE2Planner {
      * Makes a trajectory through the supplied waypoints, starting and ending
      * motionless.
      */
-    public TrajectorySE2 restToRest(List<WaypointSE2> waypoints) {
+    public TrajectorySE2 restToRest(List<WindingWaypointSE2> waypoints) {
         return generateTrajectory(waypoints, 0.0, 0.0);
     }
 
@@ -49,7 +49,7 @@ public class TrajectorySE2Planner {
      * velocities.
      */
     public TrajectorySE2 generateTrajectory(
-            List<WaypointSE2> waypoints, double start_vel, double end_vel) {
+            List<WindingWaypointSE2> waypoints, double start_vel, double end_vel) {
         try {
             // Create splines from waypoints.
             List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);

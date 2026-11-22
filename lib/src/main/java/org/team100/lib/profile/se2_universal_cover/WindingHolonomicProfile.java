@@ -1,0 +1,100 @@
+package org.team100.lib.profile.se2_universal_cover;
+
+import org.team100.lib.framework.TimedRobot100;
+import org.team100.lib.profile.r1.ProfileR1;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.WindingControlSE2;
+import org.team100.lib.state.WindingStateSE2;
+
+/**
+ * Coordinates three axes so that their profiles complete at about the same
+ * time, by adjusting the maximum allowed acceleration.
+ * 
+ * Note that because acceleration is adjusted, but not cruise velocity, the
+ * resulting paths will not be straight, for rest-to-rest profiles.
+ */
+public class WindingHolonomicProfile implements WindingProfileSE2 {
+
+    /** For testing */
+    private static final boolean DEBUG = false;
+    /** Solver accuracy is low, in the interest of speed. */
+    private static final double ETA_TOLERANCE = 0.1;
+    /** Simulation for ETA is coarse, in the interest of speed. */
+    private static final double SOLVE_DT = 0.1;
+    private static final double DT = TimedRobot100.LOOP_PERIOD_S;
+
+    private final ProfileR1 px;
+    private final ProfileR1 py;
+    private final ProfileR1 ptheta;
+
+    // package-private for testing
+    ProfileR1 ppx;
+    ProfileR1 ppy;
+    ProfileR1 pptheta;
+    // for testing only
+    double sx;
+    double sy;
+    double stheta;
+
+    public WindingHolonomicProfile(
+            ProfileR1 px,
+            ProfileR1 py,
+            ProfileR1 ptheta) {
+        this.px = px;
+        this.py = py;
+        this.ptheta = ptheta;
+        ppx = px;
+        ppy = py;
+        pptheta = ptheta;
+    }
+
+    /**
+     * This is a fairly coarse optimization, i.e. ETA within 0.1 sec or so.
+     */
+    @Override
+    public void solve(WindingStateSE2 i, WindingStateSE2 g) {
+        // first find the max ETA
+        if (DEBUG) {
+            System.out.printf("i %s g %s\n", i, g);
+        }
+        // note coarser DT
+        double xETA = px.simulateForETA(SOLVE_DT, i.x().control(), g.x());
+        double yETA = py.simulateForETA(SOLVE_DT, i.y().control(), g.y());
+        double thetaETA = ptheta.simulateForETA(SOLVE_DT, i.theta().control(), g.theta());
+
+        if (DEBUG) {
+            System.out.printf("ETAs: %f %f %f\n", xETA, yETA, thetaETA);
+        }
+        double slowETA = xETA;
+        slowETA = Math.max(slowETA, yETA);
+        slowETA = Math.max(slowETA, thetaETA);
+
+        sx = px.solve(SOLVE_DT, i.x().control(), g.x(), slowETA, ETA_TOLERANCE);
+        sy = py.solve(SOLVE_DT, i.y().control(), g.y(), slowETA, ETA_TOLERANCE);
+        stheta = ptheta.solve(SOLVE_DT, i.theta().control(), g.theta(), slowETA, ETA_TOLERANCE);
+
+        if (DEBUG) {
+            System.out.printf("sx %.3f sy %.3f stheta %.3f\n", sx, sy, stheta);
+        }
+
+        ppx = px.scale(sx);
+        ppy = py.scale(sy);
+        pptheta = ptheta.scale(stheta);
+    }
+
+    @Override
+    public WindingControlSE2 calculate(WindingStateSE2 i, WindingStateSE2 g) {
+        if (i == null || g == null) {
+            // this can happen on startup when the initial state hasn't yet been defined,
+            // but the cache refresher is trying to update the references.
+            return WindingControlSE2.zero();
+        }
+        if (DEBUG) {
+            System.out.printf("initial %s goal %s\n", i, g);
+        }
+        ControlR1 stateX = ppx.calculate(DT, i.x().control(), g.x());
+        ControlR1 stateY = ppy.calculate(DT, i.y().control(), g.y());
+        ControlR1 stateTheta = pptheta.calculate(DT, i.theta().control(), g.theta());
+        return new WindingControlSE2(stateX, stateY, stateTheta);
+    }
+}

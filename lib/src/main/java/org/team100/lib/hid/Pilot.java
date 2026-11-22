@@ -5,6 +5,7 @@ import static org.team100.lib.hid.ControlUtil.deadband;
 import static org.team100.lib.hid.ControlUtil.expo;
 
 import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.driverstation.DriverStation;
 import org.wpilib.driverstation.GenericHID;
 
 /**
@@ -22,7 +23,7 @@ public class Pilot {
     private final GenericHID m_controller;
 
     public Pilot() {
-        m_controller = new GenericHID(0);
+        m_controller = DriverStation.getGenericHID(0);
     }
     
     public boolean resetRotation0() {

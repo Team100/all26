@@ -57,9 +57,9 @@ public class RRKinematicsPoE {
         S2 = Poe.S(new Translation2d(l1, 0));
         if (DEBUG)
             System.out.printf("S2 %s\n", StrUtil.twistStr(S2));
-        M1 = new Pose2d(0, 0, Rotation2d.kZero);
-        M2 = new Pose2d(l1, 0, Rotation2d.kZero);
-        M3 = new Pose2d(l1 + l2, 0, Rotation2d.kZero);
+        M1 = new Pose2d(0, 0, Rotation2d.ZERO);
+        M2 = new Pose2d(l1, 0, Rotation2d.ZERO);
+        M3 = new Pose2d(l1 + l2, 0, Rotation2d.ZERO);
     }
 
     /**

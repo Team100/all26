@@ -5,9 +5,8 @@ import java.util.List;
 
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.se2.DirectionSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.team100.lib.path.PathUtil;
-
-import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Twist2d;
 
 /**
@@ -46,8 +45,8 @@ public class PathSE2 {
     }
 
     private double getDist(int i0, int i1) {
-        Pose2d p0 = getEntry(i0).point().waypoint().pose();
-        Pose2d p1 = getEntry(i1).point().waypoint().pose();
+        WindingPose2d p0 = getEntry(i0).point().waypoint().pose();
+        WindingPose2d p1 = getEntry(i1).point().waypoint().pose();
         return Metrics.translationalDistance(p0, p1);
     }
 

@@ -5,8 +5,12 @@ import java.util.Optional;
 import org.team100.lib.geometry.se2.AccelerationSE2;
 import org.team100.lib.geometry.se2.DirectionSE2;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingTransform2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingTwist2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.state.VelocityControlSE2;
+import org.team100.lib.util.Math100;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Quaternion;
@@ -118,18 +122,22 @@ public class GeometryUtil {
         return new Twist2d(t.dx * s, t.dy * s, t.dtheta * s);
     }
 
+    public static WindingTwist2d scale(WindingTwist2d t, double s) {
+        return new WindingTwist2d(t.dx * s, t.dy * s, t.dtheta * s);
+    }
+
     public static Twist3d scale(Twist3d t, double s) {
         return new Twist3d(t.dx * s, t.dy * s, t.dz * s, t.rx * s, t.ry * s, t.rz * s);
     }
 
     /** Exponential at zero of the twist, scaled by q. */
     public static Pose2d exp(Twist2d t, double q) {
-        return Pose2d.kZero.plus(scale(t, q).exp());
+        return Pose2d.ZERO.plus(scale(t, q).exp());
     }
 
     /** Exponential at zero of the twist, scaled by q. */
     public static Pose3d exp(Twist3d t, double q) {
-        return Pose3d.kZero.plus(scale(t, q).exp());
+        return Pose3d.ZERO.plus(scale(t, q).exp());
     }
 
     /**
@@ -138,7 +146,7 @@ public class GeometryUtil {
      * In affine matrix form this is p0 * p1.
      */
     public static Pose2d compose(Pose2d p0, Pose2d p1) {
-        // return p0.transformBy(new Transform2d(Pose2d.kZero, p1));
+        // return p0.transformBy(new Transform2d(Pose2d.ZERO, p1));
         return new Pose2d(p0.toMatrix().times(p1.toMatrix()));
     }
 
@@ -148,7 +156,7 @@ public class GeometryUtil {
      * In affine matrix form this is p0 * p1.
      */
     public static Pose3d compose(Pose3d p0, Pose3d p1) {
-        // return p0.transformBy(new Transform3d(Pose3d.kZero, p1));
+        // return p0.transformBy(new Transform3d(Pose3d.ZERO, p1));
         return new Pose3d(p0.toMatrix().times(p1.toMatrix()));
     }
 
@@ -167,21 +175,35 @@ public class GeometryUtil {
         return a.transformBy(new Transform2d(b.getTranslation(), b.getRotation()));
     }
 
+    public static WindingPose2d transformBy(WindingPose2d a, WindingPose2d b) {
+        return a.transformBy(new WindingTransform2d(b.getTranslation(), b.getRotation()));
+    }
+
     public static Pose2d inverse(Pose2d a) {
         Rotation2d rotation_inverted = a.getRotation().unaryMinus();
         return new Pose2d(a.getTranslation().unaryMinus().rotateBy(rotation_inverted), rotation_inverted);
     }
 
+    public static WindingPose2d inverse(WindingPose2d a) {
+        double rotation_inverted = -1.0 * a.getRotation();
+        return new WindingPose2d(a.getTranslation().unaryMinus().rotateBy(new Rotation2d(rotation_inverted)),
+                rotation_inverted);
+    }
+
     public static Twist2d slog(final Pose2d p) {
-        return p.minus(Pose2d.kZero).log();
+        return p.minus(Pose2d.ZERO).log();
+    }
+
+    public static WindingTwist2d slog(final WindingPose2d p) {
+        return p.minus(WindingPose2d.ZERO).log();
     }
 
     public static Twist3d slog(final Pose3d p) {
-        return p.minus(Pose3d.kZero).log();
+        return p.minus(Pose3d.ZERO).log();
     }
 
     public static Pose2d sexp(final Twist2d delta) {
-        return Pose2d.kZero.plus(delta.exp());
+        return Pose2d.ZERO.plus(delta.exp());
     }
 
     public static Pose2d fromRotation(final Rotation2d rotation) {
@@ -189,15 +211,7 @@ public class GeometryUtil {
     }
 
     public static Pose2d fromTranslation(final Translation2d translation) {
-        return new Pose2d(translation, Rotation2d.kZero);
-    }
-
-    public static Rotation2d fromRadians(double angle_radians) {
-        return new Rotation2d(angle_radians);
-    }
-
-    public static Rotation2d fromDegrees(double angle_degrees) {
-        return fromRadians(Math.toRadians(angle_degrees));
+        return new Pose2d(translation, Rotation2d.ZERO);
     }
 
     public static double WrapRadians(double radians) {
@@ -259,6 +273,23 @@ public class GeometryUtil {
         return new Pose2d(lerpT, lerpR);
     }
 
+    public static WindingPose2d interpolate(WindingPose2d a, WindingPose2d b, double x) {
+        if (x <= 0.0) {
+            return a;
+        }
+        if (x >= 1.0) {
+            return b;
+        }
+        Translation2d aT = a.getTranslation();
+        Translation2d bT = b.getTranslation();
+        double aR = a.getRotation();
+        double bR = b.getRotation();
+        // each translation axis is interpolated separately
+        Translation2d lerpT = aT.interpolate(bT, x);
+        double lerpR = Math100.interpolate(aR, bR, x);
+        return new WindingPose2d(lerpT, lerpR);
+    }
+
     /** Linear interpolation of each component */
     public static DirectionSE2 interpolate(DirectionSE2 a, DirectionSE2 b, double x) {
         return new DirectionSE2(
@@ -268,11 +299,11 @@ public class GeometryUtil {
     }
 
     /** straight-line interpolation of pose, linear interpolation of course */
-    public static WaypointSE2 interpolate(
-            WaypointSE2 a,
-            WaypointSE2 b,
+    public static WindingWaypointSE2 interpolate(
+            WindingWaypointSE2 a,
+            WindingWaypointSE2 b,
             double x) {
-        return new WaypointSE2(
+        return new WindingWaypointSE2(
                 interpolate(a.pose(), b.pose(), x),
                 interpolate(a.course(), b.course(), x),
                 MathUtil.lerp(a.scale(), b.scale(), x));
@@ -431,6 +462,10 @@ public class GeometryUtil {
         return VecBuilder.fill(twist.dx, twist.dy, twist.dtheta);
     }
 
+    public static Twist2d fromVec(Vector<N3> v) {
+        return new Twist2d(v.get(0), v.get(1), v.get(2));
+    }
+
     public static Vector<N6> toVec(Twist3d t) {
         return VecBuilder.fill(t.dx, t.dy, t.dz, t.rx, t.ry, t.rz);
     }
@@ -537,5 +572,14 @@ public class GeometryUtil {
         if (Math.abs(d) < 1e-6)
             return 0;
         return h1.minus(h0).getRadians() / d;
+    }
+
+    public static double headingRatio(WindingPose2d p0, WindingPose2d p1) {
+        double h0 = p0.getRotation();
+        double h1 = p1.getRotation();
+        double d = Metrics.doubleGeodesicDistance(p0, p1);
+        if (Math.abs(d) < 1e-6)
+            return 0;
+        return (h1 - h0) / d;
     }
 }

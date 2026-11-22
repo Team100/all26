@@ -1,13 +1,13 @@
 package org.team100.lib.localization.gtsam;
 
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.localization.OdoGyroMeasurement;
-import org.team100.lib.localization.simulation.AddOdometryNoise;
+import org.team100.lib.localization.simulation.AddAnisotropicOdometryNoise;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveDriveKinematics100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDeltas;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
@@ -34,17 +34,21 @@ public class Odometry {
 
     /**
      * Noise source for simulation.
-     * For a real robot, use UnaryOperator.identity().
      */
-    private final UnaryOperator<Twist2d> m_noise;
+    private final Function<SwerveModuleDeltas, Twist2d> m_noise;
     private final Supplier<Rotation2d> m_gyro;
     private final Supplier<SwerveModulePositions> m_positions;
 
-    public Odometry(SwerveDriveKinematics100 kinematics, boolean noisy,
+    public Odometry(
+            SwerveDriveKinematics100 kinematics,
+            boolean noisy,
             Supplier<Rotation2d> gyro,
             Supplier<SwerveModulePositions> positions) {
         m_kinematics = kinematics;
-        m_noise = noisy ? new AddOdometryNoise() : UnaryOperator.identity();
+        // non-noisy is just fwd kinematics
+        m_noise = noisy //
+                ? new AddAnisotropicOdometryNoise(kinematics) //
+                : (d) -> kinematics.forward(d);
         m_gyro = gyro;
         m_positions = positions;
     }
@@ -56,9 +60,8 @@ public class Odometry {
             SwerveModulePositions m0,
             SwerveModulePositions m1) {
         SwerveModuleDeltas deltas = SwerveModuleDeltas.modulePositionDelta(m0, m1);
-        Twist2d twist = m_kinematics.forward(deltas);
         // Add noise if in sim
-        twist = m_noise.apply(twist);
+        Twist2d twist = m_noise.apply(deltas);
         Vector3 twistVector = new Vector3(twist.dx, twist.dy, twist.dtheta);
         Pose2 measurement = new Pose2().expmap(twistVector);
         return BetweenFactorPose2.newBetweenFactorPose2(
@@ -67,6 +70,7 @@ public class Odometry {
 
     /** Speed-dependent noise. */
     static shared_ptr<Diagonal> noise(Vector3 twist) {
+        // TODO: use the anisotropic noise matrix here, not diagonal (isotropic) noise.
         double distance = twist.norm();
         return Diagonal.Sigmas(
                 new Vector3(

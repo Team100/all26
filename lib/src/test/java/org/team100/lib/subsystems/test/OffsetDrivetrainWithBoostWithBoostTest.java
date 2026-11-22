@@ -25,7 +25,7 @@ public class OffsetDrivetrainWithBoostWithBoostTest {
     @Test
     void testNoOffset1() {
         // with no offset, the delegate always gets the control
-        MockSubsystemSE2 delegate = new MockSubsystemSE2(new StateSE2(new Pose2d(1, 2, Rotation2d.kCCW_Pi_2)));
+        MockSubsystemSE2 delegate = new MockSubsystemSE2(new StateSE2(new Pose2d(1, 2, Rotation2d.CCW_PI_2)));
         Translation2d offset = new Translation2d(0, 0);
         OffsetDrivetrainWithBoost od = new OffsetDrivetrainWithBoost(delegate, offset);
         VelocityControlSE2 nextV = new VelocityControlSE2(new VelocitySE2(1, 2, 3), new AccelerationSE2(4, 5, 6));
@@ -37,7 +37,7 @@ public class OffsetDrivetrainWithBoostWithBoostTest {
     @Test
     void testLinear0() {
         // with offset, at origin, moving linearly
-        MockSubsystemSE2 delegate = new MockSubsystemSE2(new StateSE2(new Pose2d(0, 0, Rotation2d.kZero)));
+        MockSubsystemSE2 delegate = new MockSubsystemSE2(new StateSE2(new Pose2d(0, 0, Rotation2d.ZERO)));
         Translation2d offset = new Translation2d(0, 1);
         OffsetDrivetrainWithBoost od = new OffsetDrivetrainWithBoost(delegate, offset);
         VelocityControlSE2 nextV = new VelocityControlSE2(new VelocitySE2(1, 2, 0), new AccelerationSE2(4, 5, 0));
@@ -50,7 +50,7 @@ public class OffsetDrivetrainWithBoostWithBoostTest {
     @Test
     void testRotation0() {
         // offset +y, at origin, pure rotation
-        MockSubsystemSE2 delegate = new MockSubsystemSE2(new StateSE2(new Pose2d(0, 0, Rotation2d.kZero)));
+        MockSubsystemSE2 delegate = new MockSubsystemSE2(new StateSE2(new Pose2d(0, 0, Rotation2d.ZERO)));
         Translation2d offset = new Translation2d(0, 1);
         OffsetDrivetrainWithBoost od = new OffsetDrivetrainWithBoost(delegate, offset);
         // pure rotation
@@ -65,7 +65,7 @@ public class OffsetDrivetrainWithBoostWithBoostTest {
     @Test
     void testBoth0() {
         // offset +y, at origin, both motiongs
-        MockSubsystemSE2 delegate = new MockSubsystemSE2(new StateSE2(new Pose2d(0, 0, Rotation2d.kZero)));
+        MockSubsystemSE2 delegate = new MockSubsystemSE2(new StateSE2(new Pose2d(0, 0, Rotation2d.ZERO)));
         Translation2d offset = new Translation2d(0, 1);
         OffsetDrivetrainWithBoost od = new OffsetDrivetrainWithBoost(delegate, offset);
         // should leave the delegate without linear motion

@@ -19,14 +19,14 @@ public class Serial3dVisualizationTest {
         Pose3d cameraPose = new Pose3d(0, 0, -4, new Rotation3d(0, 0, 0));
         // a cube centered on the origin
         List<Pose3d> tList = List.of(
-                new Pose3d(1, 1, 1, Rotation3d.kZero),
-                new Pose3d(-1, 1, 1, Rotation3d.kZero),
-                new Pose3d(-1, -1, 1, Rotation3d.kZero),
-                new Pose3d(1, -1, 1, Rotation3d.kZero),
-                new Pose3d(1, 1, -1, Rotation3d.kZero),
-                new Pose3d(-1, 1, -1, Rotation3d.kZero),
-                new Pose3d(-1, -1, -1, Rotation3d.kZero),
-                new Pose3d(1, -1, -1, Rotation3d.kZero));
+                new Pose3d(1, 1, 1, Rotation3d.ZERO),
+                new Pose3d(-1, 1, 1, Rotation3d.ZERO),
+                new Pose3d(-1, -1, 1, Rotation3d.ZERO),
+                new Pose3d(1, -1, 1, Rotation3d.ZERO),
+                new Pose3d(1, 1, -1, Rotation3d.ZERO),
+                new Pose3d(-1, 1, -1, Rotation3d.ZERO),
+                new Pose3d(-1, -1, -1, Rotation3d.ZERO),
+                new Pose3d(1, -1, -1, Rotation3d.ZERO));
         MatOfPoint2f points = foo.project(
                 cameraPose, tList, Color.ALICE_BLUE)
                 .getFirst();

@@ -1,9 +1,9 @@
-from datetime import datetime
-# pylint: disable=R0903,W2301
-
+# pylint: disable=C0114,C0115,C0116,E0401,R0903,W2301
 from typing import Protocol
+
 import numpy as np
 from numpy.typing import NDArray
+
 from app.camera.request_protocol import Request
 from app.camera.size import Size
 

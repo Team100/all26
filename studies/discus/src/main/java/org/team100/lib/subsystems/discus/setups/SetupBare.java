@@ -24,15 +24,15 @@ public class SetupBare implements Runnable {
         // controller::getLeftX));
         m_discus.setDefaultCommand(m_discus.voltage(
                 () -> 4 * controller.getLeftX()));
-        whileTrue(controller::getWestFaceButton,
+        whileTrue(controller::getFaceLeftButton,
                 m_discus.voltage(() -> 8));
-        whileTrue(controller::getNorthFaceButton,
+        whileTrue(controller::getFaceUpButton,
                 m_discus.voltage(() -> 12));
 
         // WARNING: constant current produces constant acceleration
         // up to MAX SPEED! Don't run this for too long, and be careful
         // with high current values.
-        whileTrue(controller::getSouthFaceButton,
+        whileTrue(controller::getFaceDownButton,
                 m_discus.current(() -> 1).withTimeout(1));
 
     }

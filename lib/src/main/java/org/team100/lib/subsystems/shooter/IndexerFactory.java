@@ -20,10 +20,10 @@ import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.OutboardLinearPositionServo;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 public class IndexerFactory {
     private static final double VELOCITY = 10;
@@ -47,7 +47,7 @@ public class IndexerFactory {
     private final double fullVelocityM_S;
     private final CurrentLimit limit;
     private final CanId canId;
-    private final CanBusId busId;
+    private final CANPort busId;
     private final double gearRatio;
     private final double wheelDiaM;
     private final boolean profiled;
@@ -61,7 +61,7 @@ public class IndexerFactory {
             double fullVelocityM_S,
             CurrentLimit limit,
             CanId canId,
-            CanBusId busId,
+            CANPort busId,
             double gearRatio,
             double wheelDiaM,
             boolean profiled,
@@ -147,7 +147,7 @@ public class IndexerFactory {
             TotalCurrentLog currentLog,
             CurrentLimit limit,
             CanId canId,
-            CanBusId busId,
+            CANPort busId,
             double gearRatio,
             double wheelDiaM) {
         Friction friction = new Friction(0.02, 0.02, 0.00, 0.5);
@@ -169,7 +169,7 @@ public class IndexerFactory {
             TotalCurrentLog currentLog,
             CurrentLimit limit,
             CanId canId,
-            CanBusId busId,
+            CANPort busId,
             double gearRatio,
             double wheelDiaM) {
         Friction friction = new Friction(0.02, 0.02, 0.0, 0.5);
@@ -192,7 +192,7 @@ public class IndexerFactory {
             TotalCurrentLog currentLog,
             double freeSpeedRad_S,
             CanId canId,
-            CanBusId busId,
+            CANPort canPort,
             MotorPhase phase,
             Friction friction,
             PIDConstants pid) {
@@ -201,7 +201,7 @@ public class IndexerFactory {
         int measurementPeriod = 4;
         if (RobotBase.isReal()) {
             return new MinionSparkMotor(
-                    log, currentLog, canId, busId, NeutralMode100.BRAKE, phase,
+                    log, currentLog, canId, canPort, NeutralMode100.BRAKE, phase,
                     limit, friction, pid, averageDepth, measurementPeriod);
         } else {
             return new SimulatedMotor(log, freeSpeedRad_S);

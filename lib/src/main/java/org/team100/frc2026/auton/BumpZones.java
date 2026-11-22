@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
-import org.wpilib.math.geometry.Rectangle2d;
 import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.shape.Rectangle2d;
 
 public class BumpZones {
     public static final Rectangle2d BLUE_BUMP_LEFT = new Rectangle2d(

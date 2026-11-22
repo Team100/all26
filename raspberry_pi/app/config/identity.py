@@ -1,6 +1,5 @@
+# pylint: disable=C0103,C0114
 from datetime import datetime
-# pylint: disable=C0103
-
 from enum import Enum, unique
 from typing import Any
 
@@ -47,9 +46,9 @@ class Identity(Enum):
     #
     # Comp bot 2024
     #
-    DEV2 = "10000000a7a892c0"
-    RIGHTAMP = "10000000caeaae82"
-    LEFTAMP = "100000004e0a1fb9"
+    # DEV2 = "10000000a7a892c0"
+    # RIGHTAMP = "10000000caeaae82"
+    # LEFTAMP = "100000004e0a1fb9"
     DIST_TEST = "cf206cd348d20bdd"
 
     # Comp bot 2025
@@ -62,21 +61,25 @@ class Identity(Enum):
     CLIMB_LEFT = "82c4c3fe4f941e96"  # 34
     CLIMB_RIGHT = "364f07fb090a3bf7"  # 31
     SHOOTER = "e47055a1bcbcead0"  # 33
-    GAME_PIECE = "FILL THIS IN"  #
+    # GAME_PIECE = "FILL THIS IN"  #
 
-    SWERVE_RIGHT = "47403d5eafe002a9"  # 34
-    SWERVE_LEFT = "8132c256feeee63bbb4e"  # 33
+    # SWERVE_RIGHT = "47403d5eafe002a9"  # 34
+    # SWERVE_LEFT = "8132c256feeee63bbb4e"  # 33
 
     DEV = "test"
     FLIPPED = "flipme"  # example for per-identity config
-    JOELS_TEST = "9b297e919a0634e6"
+    # JOELS_TEST = "9b297e919a0634e6"
     SIM0 = "sim0"
     """For testing."""
     UNKNOWN = "unknown"
+    DESKTOP = "desktop"
+    """For running on desktop (not pi)"""
 
     @classmethod
     def _missing_(cls, value: object) -> Any:
-        return Identity.UNKNOWN
+        # this is only called by main(), so it can always get
+        # a real desktop display.
+        return Identity.DESKTOP
 
     @staticmethod
     def get() -> "Identity":

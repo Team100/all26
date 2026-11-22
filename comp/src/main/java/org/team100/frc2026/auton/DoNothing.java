@@ -30,7 +30,7 @@ public class DoNothing implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return StartingPositions.RIGHT_BUMP;
+        return StartingPositions.RIGHT_BUMP.pose2d();
     }
 
     @Override

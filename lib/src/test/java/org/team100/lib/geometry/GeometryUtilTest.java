@@ -76,14 +76,14 @@ class GeometryUtilTest {
     @Test
     void testSlog() {
         Twist2d twist = GeometryUtil.slog(
-                new Pose2d(1, 0, Rotation2d.kZero));
+                new Pose2d(1, 0, Rotation2d.ZERO));
         assertEquals(1, twist.dx, DELTA);
         assertEquals(0, twist.dy, DELTA);
         assertEquals(0, twist.dtheta, DELTA);
 
         // this twist represents an arc that ends up at the endpoint.
         twist = GeometryUtil.slog(
-                new Pose2d(1, 0, Rotation2d.kCCW_Pi_2));
+                new Pose2d(1, 0, Rotation2d.CCW_PI_2));
         assertEquals(0.785, twist.dx, DELTA);
         assertEquals(-0.785, twist.dy, DELTA);
         assertEquals(1.571, twist.dtheta, DELTA);
@@ -119,7 +119,7 @@ class GeometryUtilTest {
                 new Translation3d(0, 1, 0),
                 new Rotation3d(0, -Math.PI / 4, 0));
         Transform3d toZForward = new Transform3d(
-                Translation3d.kZero,
+                Translation3d.ZERO,
                 new Rotation3d(MatBuilder.fill(Nat.N3(), Nat.N3(), //
                         0, 0, 1, //
                         -1, 0, 0, //
@@ -256,25 +256,25 @@ class GeometryUtilTest {
     @Test
     void testCompose0() {
         TestUtil.verify(
-                new Pose2d(1, 0, Rotation2d.kZero),
+                new Pose2d(1, 0, Rotation2d.ZERO),
                 GeometryUtil.compose(
                         new Pose2d(),
-                        new Pose2d(1, 0, Rotation2d.kZero)));
+                        new Pose2d(1, 0, Rotation2d.ZERO)));
         TestUtil.verify(
-                new Pose2d(2, 0, Rotation2d.kZero),
+                new Pose2d(2, 0, Rotation2d.ZERO),
                 GeometryUtil.compose(
-                        new Pose2d(1, 0, Rotation2d.kZero),
-                        new Pose2d(1, 0, Rotation2d.kZero)));
+                        new Pose2d(1, 0, Rotation2d.ZERO),
+                        new Pose2d(1, 0, Rotation2d.ZERO)));
         TestUtil.verify(
-                new Pose2d(1, 1, Rotation2d.kPi),
+                new Pose2d(1, 1, Rotation2d.PI),
                 GeometryUtil.compose(
-                        new Pose2d(1, 0, Rotation2d.kCCW_Pi_2),
-                        new Pose2d(1, 0, Rotation2d.kCCW_Pi_2)));
+                        new Pose2d(1, 0, Rotation2d.CCW_PI_2),
+                        new Pose2d(1, 0, Rotation2d.CCW_PI_2)));
         TestUtil.verify(
-                new Pose2d(0, 0, Rotation2d.kZero),
+                new Pose2d(0, 0, Rotation2d.ZERO),
                 GeometryUtil.compose(
-                        new Pose2d(1, 0, Rotation2d.kCCW_Pi_2),
-                        new Pose2d(0, 1, Rotation2d.kCW_Pi_2)));
+                        new Pose2d(1, 0, Rotation2d.CCW_PI_2),
+                        new Pose2d(0, 1, Rotation2d.CW_PI_2)));
     }
 
     @Test
@@ -291,6 +291,6 @@ class GeometryUtilTest {
         TestUtil.verify(new AccelerationSE2(1, 0, 0), a);
         // constant accel for 1 sec => x is 0.5 m.
         Pose2d x1 = GeometryUtil.evolve(x0, v0, a, dt);
-        TestUtil.verify(new Pose2d(0.5, 0, Rotation2d.kZero), x1);
+        TestUtil.verify(new Pose2d(0.5, 0, Rotation2d.ZERO), x1);
     }
 }

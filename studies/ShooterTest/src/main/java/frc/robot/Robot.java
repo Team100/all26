@@ -16,11 +16,11 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.CommandScheduler;
 import org.wpilib.framework.TimedRobot;
+import org.wpilib.hardware.bus.CANPort;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
                 rootLogger.name("left"),
                 currentLog,
                 new CanId(6),
-                new CanBusId(0),
+                CANPort.CAN_S0,
                 NeutralMode100.BRAKE,
                 MotorPhase.FORWARD,
                 new CurrentLimit(50, 50),
@@ -48,7 +48,7 @@ public class Robot extends TimedRobot {
                 rootLogger.name("right"),
                 currentLog,
                 new CanId(7),
-                new CanBusId(0),
+                CANPort.CAN_S0,
                 NeutralMode100.BRAKE,
                 MotorPhase.REVERSE,
                 new CurrentLimit(50, 50),

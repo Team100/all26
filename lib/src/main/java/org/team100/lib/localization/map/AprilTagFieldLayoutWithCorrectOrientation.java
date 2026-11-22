@@ -7,13 +7,13 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.wpilib.driverstation.Alliance;
+import org.wpilib.fields.Field;
+import org.wpilib.fields.Field.OriginPosition;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation3d;
 import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.geometry.Translation3d;
 import org.wpilib.system.Filesystem;
-import org.wpilib.vision.apriltag.AprilTagFieldLayout;
-import org.wpilib.vision.apriltag.AprilTagFieldLayout.OriginPosition;
 
 /**
  * The WPILib JSON tag file, and the wrapper, AprilTagFieldLayout, define tag
@@ -51,7 +51,7 @@ public class AprilTagFieldLayoutWithCorrectOrientation {
             new Translation3d(),
             new Rotation3d(0, 0, Math.PI));
 
-    private final Map<Alliance, AprilTagFieldLayout> layouts = new EnumMap<>(Alliance.class);
+    private final Map<Alliance, Field> layouts = new EnumMap<>(Alliance.class);
 
     public AprilTagFieldLayoutWithCorrectOrientation() throws IOException {
         this(FILENAME);
@@ -70,11 +70,11 @@ public class AprilTagFieldLayoutWithCorrectOrientation {
     public AprilTagFieldLayoutWithCorrectOrientation(String filename) throws IOException {
         Path path = Filesystem.getDeployDirectory().toPath().resolve(filename);
 
-        AprilTagFieldLayout blueLayout = new AprilTagFieldLayout(path);
-        blueLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+        Field blueLayout = Field.loadFromFile(path);
+        blueLayout.setOrigin(OriginPosition.BLUE_ALLIANCE_WALL_RIGHT_SIDE);
 
-        AprilTagFieldLayout redLayout = new AprilTagFieldLayout(path);
-        redLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
+        Field redLayout = Field.loadFromFile(path);
+        redLayout.setOrigin(OriginPosition.RED_ALLIANCE_WALL_RIGHT_SIDE);
 
         layouts.put(Alliance.RED, redLayout);
         layouts.put(Alliance.BLUE, blueLayout);
@@ -84,7 +84,7 @@ public class AprilTagFieldLayoutWithCorrectOrientation {
      * @return Tag pose with correct yaw (inverted compared to json file)
      */
     public Optional<Pose3d> getTagPose(Alliance alliance, int id) {
-        AprilTagFieldLayout layout = layouts.get(alliance);
+        Field layout = layouts.get(alliance);
         Optional<Pose3d> pose = layout.getTagPose(id);
         if (pose.isEmpty()) {
             return Optional.empty();
@@ -93,7 +93,7 @@ public class AprilTagFieldLayoutWithCorrectOrientation {
     }
 
     public int size(Alliance alliance) {
-        AprilTagFieldLayout layout = layouts.get(alliance);
+        Field layout = layouts.get(alliance);
         return layout.getTags().size();
     }
 }

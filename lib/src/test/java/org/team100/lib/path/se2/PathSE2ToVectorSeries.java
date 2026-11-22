@@ -4,10 +4,8 @@ import java.util.List;
 
 import org.jfree.data.xy.VectorSeries;
 import org.jfree.data.xy.XYSeries;
-
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
 import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.numbers.N2;
 
 public class PathSE2ToVectorSeries {
@@ -28,12 +26,12 @@ public class PathSE2ToVectorSeries {
         double dl = l / POINTS;
         for (double d = 0; d < l; d += dl) {
             PathSE2Point point = path.sample(d);
-            Pose2d p = point.waypoint().pose();
+            WindingPose2d p = point.waypoint().pose();
             double x = p.getX();
             double y = p.getY();
-            Rotation2d heading = p.getRotation();
-            double dx = m_scale * heading.getCos();
-            double dy = m_scale * heading.getSin();
+            double heading = p.getRotation();
+            double dx = m_scale * Math.cos(heading);
+            double dy = m_scale * Math.sin(heading);
             if (DEBUG)
                 System.out.printf("%f %f %f %f %f\n", d, x, y, dx, dy);
             s.add(x, y, dx, dy);
@@ -47,7 +45,7 @@ public class PathSE2ToVectorSeries {
         double dl = l / POINTS;
         for (double d = 0; d < l; d += dl) {
             PathSE2Point point = path.sample(d);
-            Pose2d p = point.waypoint().pose();
+            WindingPose2d p = point.waypoint().pose();
             double x = p.getX();
             double y = p.getY();
             Vector<N2> K = point.K();

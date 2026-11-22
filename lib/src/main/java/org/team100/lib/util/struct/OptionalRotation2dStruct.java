@@ -54,7 +54,7 @@ public class OptionalRotation2dStruct implements Struct<OptionalRotation2d> {
             Rotation2d.struct.pack(bb, optional.get());
         } else {
             bb.put((byte) 0x00);
-            Rotation2d.struct.pack(bb, Rotation2d.kZero);
+            Rotation2d.struct.pack(bb, Rotation2d.ZERO);
 
         }
     }

@@ -219,18 +219,18 @@ public class NewtonsMethod<X extends Num, Y extends Num> {
      * 
      * Solves J dx = error for dx
      */
-    Vector<X> getDxWithQRDecomp(Vector<Y> error, Matrix<Y, X> J) {
-        double[] dst = new double[m_xdim.getNum()];
-        EigenJNI.solveFullPivHouseholderQr(
-                J.getData(),
-                m_ydim.getNum(),
-                m_xdim.getNum(),
-                error.getData(),
-                m_ydim.getNum(),
-                1,
-                dst);
-        return new Vector<>(new Matrix<>(m_xdim, Nat.N1(), dst));
-    }
+    // Vector<X> getDxWithQRDecomp(Vector<Y> error, Matrix<Y, X> J) {
+    //     double[] dst = new double[m_xdim.getNum()];
+    //     EigenJNI.solveFullPivHouseholderQr(
+    //             J.getData(),
+    //             m_ydim.getNum(),
+    //             m_xdim.getNum(),
+    //             error.getData(),
+    //             m_ydim.getNum(),
+    //             1,
+    //             dst);
+    //     return new Vector<>(new Matrix<>(m_xdim, Nat.N1(), dst));
+    // }
 
     /**
      * Radial distance is within tolerance.

@@ -20,7 +20,7 @@ class SwerveModulePosition100Test {
     void testStruct() {
         SwerveModulePosition100Struct s = SwerveModulePosition100.struct;
         ByteBuffer bb = ByteBuffer.allocate(s.getSize());
-        SwerveModulePosition100 p = new SwerveModulePosition100(1, Optional.of(Rotation2d.kZero));
+        SwerveModulePosition100 p = new SwerveModulePosition100(1, Optional.of(Rotation2d.ZERO));
         s.pack(bb, p);
         assertEquals(0, bb.remaining());
         // distance = 8
@@ -51,9 +51,9 @@ class SwerveModulePosition100Test {
     void testPlus() {
         {
             SwerveModulePosition100 start = new SwerveModulePosition100(
-                    0, Optional.of(Rotation2d.kZero));
+                    0, Optional.of(Rotation2d.ZERO));
             SwerveModuleDelta delta = new SwerveModuleDelta(
-                    0, Optional.of(Rotation2d.kZero));
+                    0, Optional.of(Rotation2d.ZERO));
             SwerveModulePosition100 result = start.plus(delta);
             assertEquals(0, result.distanceMeters(), DELTA);
             assertEquals(0, result.unwrappedAngle().get().getDegrees(), DELTA);

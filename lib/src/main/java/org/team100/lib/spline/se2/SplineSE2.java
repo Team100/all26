@@ -2,18 +2,16 @@ package org.team100.lib.spline.se2;
 
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.se2.DirectionSE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingPose2d;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.PathUtil;
 import org.team100.lib.path.se2.PathSE2Entry;
 import org.team100.lib.path.se2.PathSE2Parameter;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.spline.r1.SplineR1;
-
+import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.linalg.Vector;
-import org.wpilib.math.geometry.Pose2d;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.math.numbers.N2;
 
 /**
@@ -29,17 +27,8 @@ public class SplineSE2 implements ISplineSE2 {
     private final SplineR1 m_x;
     private final SplineR1 m_y;
     private final SplineR1 m_heading;
-    /**
-     * Offset for heading spline: the heading spline doesn't include the
-     * starting point in order to correctly handle wrapping.
-     */
-    private final Rotation2d m_heading0;
 
     /**
-     * Specify the magic number you want: this scales the derivatives at the
-     * endpoints, i.e. how "strongly" the derivative affects the curve. High magic
-     * number means low curvature at the endpoint.
-     * 
      * Previously, the theta endpoint derivatives were the average rate, which
      * yielded paths with a lot of rotation at the last second. Typically this isn't
      * what you want: you're approaching some target, and rotation is disruptive to
@@ -58,7 +47,7 @@ public class SplineSE2 implements ISplineSE2 {
      * @param p0 starting pose
      * @param p1 ending pose
      */
-    public SplineSE2(WaypointSE2 p0, WaypointSE2 p1) {
+    public SplineSE2(WindingWaypointSE2 p0, WindingWaypointSE2 p1) {
         // Translation distance in the xy plane.
         double distance = Metrics.translationalDistance(p0.pose(), p1.pose());
         if (distance < 1e-6)
@@ -78,9 +67,8 @@ public class SplineSE2 implements ISplineSE2 {
         double x1 = p1.pose().getTranslation().getX();
         double y0 = p0.pose().getTranslation().getY();
         double y1 = p1.pose().getTranslation().getY();
-        // To avoid 180 degrees, heading uses an offset
-        m_heading0 = p0.pose().getRotation();
-        double delta = p1.pose().getRotation().minus(p0.pose().getRotation()).getRadians();
+        double theta0 = p0.pose().getRotation();
+        double theta1 = p1.pose().getRotation();
 
         // First derivatives are the course:
         double dx0 = p0.course().x * scale0;
@@ -100,17 +88,17 @@ public class SplineSE2 implements ISplineSE2 {
 
         m_x = SplineR1.get(x0, x1, dx0, dx1, ddx0, ddx1);
         m_y = SplineR1.get(y0, y1, dy0, dy1, ddy0, ddy1);
-        m_heading = SplineR1.get(0.0, delta, dtheta0, dtheta1, ddtheta0, ddtheta1);
+        m_heading = SplineR1.get(theta0, theta1, dtheta0, dtheta1, ddtheta0, ddtheta1);
     }
 
     @Override
-    public WaypointSE2 waypoint(double s) {
-        return new WaypointSE2(pose(s), course(s), DEFAULT_SCALE);
+    public WindingWaypointSE2 waypoint(double s) {
+        return new WindingWaypointSE2(pose(s), course(s), DEFAULT_SCALE);
     }
 
     @Override
-    public Pose2d pose(double s) {
-        return new Pose2d(new Translation2d(x(s), y(s)), heading(s));
+    public WindingPose2d pose(double s) {
+        return new WindingPose2d(new Translation2d(x(s), y(s)), heading(s));
     }
 
     @Override
@@ -138,8 +126,8 @@ public class SplineSE2 implements ISplineSE2 {
         return m_y.getPosition(s);
     }
 
-    Rotation2d heading(double s) {
-        return m_heading0.rotateBy(Rotation2d.fromRadians(m_heading.getPosition(s)));
+    double heading(double s) {
+        return m_heading.getPosition(s);
     }
 
     ////////////////////////////////////////////////////////////
@@ -248,13 +236,12 @@ public class SplineSE2 implements ISplineSE2 {
         return VecBuilder.fill(ddx(s), ddy(s));
     }
 
-    ////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////
 
     @Override
     public String toString() {
-        return "HolonomicSplineSE2 [m_x=" + m_x
+        return "SplineSE2 [m_x=" + m_x
                 + ", m_y=" + m_y
-                + ", m_theta=" + m_heading
-                + ", m_r0=" + m_heading0 + "]";
+                + ", m_theta=" + m_heading + "]";
     }
 }

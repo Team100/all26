@@ -41,10 +41,10 @@ public class RRRProfileTest {
                 new RRRConfig(0, 0, 0),
                 new RRRVelocity(0, 0, 0),
                 new RRRAcceleration(0, 0, 0));
-        TestUtil.verify(new Pose2d(0.7, 0, Rotation2d.kZero), k.forward(current.q()).p4());
+        TestUtil.verify(new Pose2d(0.7, 0, Rotation2d.ZERO), k.forward(current.q()).p4());
         // goal is the same as the current position, motionless.
         ControlSE2 goal = new ControlSE2(
-                new Pose2d(0.7, 0, Rotation2d.kZero),
+                new Pose2d(0.7, 0, Rotation2d.ZERO),
                 VelocitySE2.ZERO);
         ControlRRR setpoint = p.calculate(current, goal, 0.02);
         // so there's no change
@@ -68,11 +68,11 @@ public class RRRProfileTest {
                 new RRRConfig(0, 0, 0),
                 new RRRVelocity(0, 0, 0),
                 new RRRAcceleration(0, 0, 0));
-        TestUtil.verify(new Pose2d(0.7, 0, Rotation2d.kZero), k.forward(current.q()).p4());
+        TestUtil.verify(new Pose2d(0.7, 0, Rotation2d.ZERO), k.forward(current.q()).p4());
         // goal is the same as the current position, but wants to go toward the
         // boundary, which is impossible.
         ControlSE2 goal = new ControlSE2(
-                new Pose2d(0.7, 0, Rotation2d.kZero),
+                new Pose2d(0.7, 0, Rotation2d.ZERO),
                 new VelocitySE2(1, 0, 0));
         ControlRRR setpoint = p.calculate(current, goal, 0.02);
         // the position is on the goal already
@@ -95,13 +95,13 @@ public class RRRProfileTest {
                 new RRRConfig(0, 0, 0),
                 new RRRVelocity(0, 0, 0),
                 new RRRAcceleration(0, 0, 0));
-        TestUtil.verify(new Pose2d(0.7, 0, Rotation2d.kZero), k.forward(current.q()).p4());
+        TestUtil.verify(new Pose2d(0.7, 0, Rotation2d.ZERO), k.forward(current.q()).p4());
         // goal is the same as the current position, but wants to go tangentially along
         // the boundary, which is possible in an infinitesimal sense, but it does
         // violate the
         // boundary limit.
         ControlSE2 goal = new ControlSE2(
-                new Pose2d(0.7, 0, Rotation2d.kZero),
+                new Pose2d(0.7, 0, Rotation2d.ZERO),
                 new VelocitySE2(0, 1, 0));
         ControlRRR setpoint = p.calculate(current, goal, 0.02);
         // the position is on the goal already
@@ -127,7 +127,7 @@ public class RRRProfileTest {
                 new RRRConfig(0.6, -1.2, 0.6),
                 new RRRVelocity(0, 0, 0),
                 new RRRAcceleration(0, 0, 0));
-        TestUtil.verify(new Pose2d(0.595, 0, Rotation2d.kZero), k.forward(current.q()).p4());
+        TestUtil.verify(new Pose2d(0.595, 0, Rotation2d.ZERO), k.forward(current.q()).p4());
         // rotate a bit -- less than the tolerance, so no profile here.
         ControlSE2 goal = new ControlSE2(
                 new Pose2d(0.595, 0, new Rotation2d(0.01)),
@@ -154,7 +154,7 @@ public class RRRProfileTest {
                 new RRRConfig(0.6, -1.2, 0.6),
                 new RRRVelocity(0, 0, 0),
                 new RRRAcceleration(0, 0, 0));
-        TestUtil.verify(new Pose2d(0.595, 0, Rotation2d.kZero), k.forward(current.q()).p4());
+        TestUtil.verify(new Pose2d(0.595, 0, Rotation2d.ZERO), k.forward(current.q()).p4());
         ControlSE2 goal = new ControlSE2(
                 new Pose2d(0.595, 0, new Rotation2d(0.0)),
                 new VelocitySE2(0, 0, 0));
@@ -186,7 +186,7 @@ public class RRRProfileTest {
                 new RRRConfig(0.6, -1.2, 0.6),
                 new RRRVelocity(0, 0, 0),
                 new RRRAcceleration(0, 0, 0));
-        TestUtil.verify(new Pose2d(0.595, 0, Rotation2d.kZero), k.forward(current.q()).p4());
+        TestUtil.verify(new Pose2d(0.595, 0, Rotation2d.ZERO), k.forward(current.q()).p4());
         // rotate a lot: this should use the other posture.
         ControlSE2 goal = new ControlSE2(
                 new Pose2d(0.595, 0, new Rotation2d(1.5)),
@@ -221,7 +221,7 @@ public class RRRProfileTest {
     void test7() {
         RRRKinematicsPoE k = new RRRKinematicsPoE(0.3, 0.3, 0.1);
         // bent to avoid the singularity.
-        Pose2d x0 = new Pose2d(0.55, 0.1, Rotation2d.kCCW_90deg);
+        Pose2d x0 = new Pose2d(0.55, 0.1, Rotation2d.CCW_90DEG);
         List<RRRConfig> q0list = k.inverse(x0, null);
         assertEquals(2, q0list.size());
         TestUtil.verify(new RRRConfig(0.411, -0.822, 1.981), q0list.get(0));
@@ -229,7 +229,7 @@ public class RRRProfileTest {
         RRRConfig q0 = q0list.get(0);
 
         // -0.05 along x
-        Pose2d x1 = new Pose2d(0.5, 0.1, Rotation2d.kCCW_90deg);
+        Pose2d x1 = new Pose2d(0.5, 0.1, Rotation2d.CCW_90DEG);
         List<RRRConfig> q1list = k.inverse(x1, null);
         assertEquals(2, q1list.size());
         TestUtil.verify(new RRRConfig(0.586, -1.171, 2.156), q1list.get(0));

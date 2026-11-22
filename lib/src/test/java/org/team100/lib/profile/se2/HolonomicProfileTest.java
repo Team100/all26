@@ -20,9 +20,9 @@ class HolonomicProfileTest implements Timeless {
     void testSolve() {
         HolonomicProfile hp = HolonomicProfileFactory.trapezoidal(1, 1, 0.01, 1, 1, 0.01);
         StateSE2 i = new StateSE2(
-                new Pose2d(0, 0, Rotation2d.kZero), new VelocitySE2(1, 0, 0));
+                new Pose2d(0, 0, Rotation2d.ZERO), new VelocitySE2(1, 0, 0));
         StateSE2 g = new StateSE2(
-                new Pose2d(0, 2, Rotation2d.kZero), new VelocitySE2(0, 0, 0));
+                new Pose2d(0, 2, Rotation2d.ZERO), new VelocitySE2(0, 0, 0));
         hp.solve(i, g);
         // scale factors
         assertEquals(0.8125, hp.sx, DELTA);
@@ -43,7 +43,7 @@ class HolonomicProfileTest implements Timeless {
         HolonomicProfile hp = HolonomicProfileFactory.trapezoidal(
                 1, 1, 0.01, 1, 1, 0.01);
         StateSE2 i = new StateSE2();
-        StateSE2 g = new StateSE2(new Pose2d(1, 5, Rotation2d.kZero));
+        StateSE2 g = new StateSE2(new Pose2d(1, 5, Rotation2d.ZERO));
         hp.solve(i, g);
         ControlSE2 s = i.control();
         for (double t = 0; t < 10; t += 0.02) {
@@ -61,7 +61,7 @@ class HolonomicProfileTest implements Timeless {
     void test2dExp() {
         HolonomicProfile hp = HolonomicProfileFactory.currentLimitedExponential(1, 1, 2, 1, 1, 2);
         StateSE2 i = new StateSE2();
-        StateSE2 g = new StateSE2(new Pose2d(1, 5, Rotation2d.kZero));
+        StateSE2 g = new StateSE2(new Pose2d(1, 5, Rotation2d.ZERO));
         hp.solve(i, g);
         ControlSE2 s = i.control();
         for (double t = 0; t < 10; t += 0.02) {
@@ -75,7 +75,7 @@ class HolonomicProfileTest implements Timeless {
     void test2dWithEntrySpeed() {
         HolonomicProfile hp = HolonomicProfileFactory.trapezoidal(1, 1, 0.01, 1, 1, 0.01);
         StateSE2 i = new StateSE2(new Pose2d(), new VelocitySE2(1, 0, 0));
-        StateSE2 g = new StateSE2(new Pose2d(0, 1, Rotation2d.kZero));
+        StateSE2 g = new StateSE2(new Pose2d(0, 1, Rotation2d.ZERO));
         hp.solve(i, g);
         ControlSE2 s = i.control();
         for (double t = 0; t < 10; t += 0.02) {
@@ -103,7 +103,7 @@ class HolonomicProfileTest implements Timeless {
     void testSolvePerformance() {
         HolonomicProfile hp = HolonomicProfileFactory.trapezoidal(1, 1, 0.01, 1, 1, 0.01);
         StateSE2 i = new StateSE2(new Pose2d(), new VelocitySE2(1, 0, 0));
-        StateSE2 g = new StateSE2(new Pose2d(0, 1, Rotation2d.kZero));
+        StateSE2 g = new StateSE2(new Pose2d(0, 1, Rotation2d.ZERO));
         int N = 10000;
         double t0 = Takt.actual();
         for (int ii = 0; ii < N; ++ii) {

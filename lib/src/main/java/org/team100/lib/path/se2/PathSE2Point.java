@@ -1,7 +1,7 @@
 package org.team100.lib.path.se2;
 
 import org.team100.lib.geometry.Metrics;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.PathUtil;
 import org.team100.lib.util.Math100;
 import org.team100.lib.util.StrUtil;
@@ -12,14 +12,14 @@ import org.wpilib.math.numbers.N2;
 /**
  * Represents a point on a path in SE(2) (plane with rotation).
  * 
- * Includes a WaypointSE2, heading rate, and curvature.
+ * Includes a WindingWaypointSE2, heading rate, and curvature.
  */
 public class PathSE2Point {
     static final boolean DEBUG = false;
     /**
      * Pose and course.
      */
-    private final WaypointSE2 m_waypoint;
+    private final WindingWaypointSE2 m_waypoint;
     /**
      * Curvature vector. Norm is \kappa, curvature in radians per meter, which is
      * the reciprocal of the radius.
@@ -30,12 +30,12 @@ public class PathSE2Point {
      * @param waypoint Pose and course in SE(2)
      * @param K        Curvature vector
      */
-    public PathSE2Point(WaypointSE2 waypoint, Vector<N2> K) {
+    public PathSE2Point(WindingWaypointSE2 waypoint, Vector<N2> K) {
         m_waypoint = waypoint;
         m_K = K;
     }
 
-    public WaypointSE2 waypoint() {
+    public WindingWaypointSE2 waypoint() {
         return m_waypoint;
     }
 

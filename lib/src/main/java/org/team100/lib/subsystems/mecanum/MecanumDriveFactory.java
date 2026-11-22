@@ -14,9 +14,9 @@ import org.team100.lib.motor.rev.NeoCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedMotor;
 import org.team100.lib.sensor.gyro.Gyro;
 import org.team100.lib.sensor.gyro.ReduxGyro;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 public class MecanumDriveFactory {
 
@@ -30,7 +30,7 @@ public class MecanumDriveFactory {
             CanId canFR,
             CanId canRL,
             CanId canRR,
-            CanBusId busId,
+            CANPort busId,
             double m,
             double I,
             double trackWidthM,
@@ -82,14 +82,14 @@ public class MecanumDriveFactory {
     }
 
     public static Motor getMotor(
-            LoggerFactory log, TotalCurrentLog currentLog, CanId can, CanBusId busId, MotorPhase phase,
+            LoggerFactory log, TotalCurrentLog currentLog, CanId can, CANPort canPort, MotorPhase phase,
             CurrentLimit limit, Friction friction, PIDConstants pid) {
         // parameters for velocity control
         int averageDepth = 2;
         int measurementPeriod = 4;
         if (RobotBase.isReal()) {
             return new NeoCANSparkMotor(
-                    log, currentLog, can, busId, NeutralMode100.BRAKE, phase,
+                    log, currentLog, can, canPort, NeutralMode100.BRAKE, phase,
                     limit, friction, pid, averageDepth, measurementPeriod);
         } else {
             return new SimulatedMotor(log, 600);

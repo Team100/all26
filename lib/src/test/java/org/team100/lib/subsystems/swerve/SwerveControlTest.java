@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.geometry.se2.WaypointSE2;
+import org.team100.lib.geometry.se2_universal_cover.WindingWaypointSE2;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.trajectory.se2.TrajectorySE2Point;
@@ -30,7 +30,7 @@ class SwerveControlTest {
     @Test
     void testTimedState() {
         PathSE2Point p = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 0));
         TrajectorySE2Point pp = new TrajectorySE2Point(p, 0, 0, 0);
@@ -47,7 +47,7 @@ class SwerveControlTest {
     @Test
     void testTimedState2() {
         PathSE2Point p = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 0));
         TrajectorySE2Point pp = new TrajectorySE2Point(p, 0, 0, 1);
@@ -64,7 +64,7 @@ class SwerveControlTest {
     @Test
     void testTimedState3() {
         PathSE2Point p = new PathSE2Point(
-                WaypointSE2.irrotational(
+                WindingWaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 0));
         TrajectorySE2Point pp = new TrajectorySE2Point(p, 0, 1, 0);
@@ -81,7 +81,7 @@ class SwerveControlTest {
     @Test
     void testTimedState4() {
         PathSE2Point p = new PathSE2Point(
-                WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
+                WindingWaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 1));
         TrajectorySE2Point pp = new TrajectorySE2Point(p, 0, 1, 0);
         ControlSE2 s = pp.control();
@@ -96,7 +96,7 @@ class SwerveControlTest {
     @Test
     void testChassisVelocities0() {
         ControlSE2 state = new ControlSE2(
-                new Pose2d(new Translation2d(0, 0), Rotation2d.kPi),
+                new Pose2d(new Translation2d(0, 0), Rotation2d.PI),
                 new VelocitySE2(1, 0, 0));
         ChassisVelocities speeds = state.ChassisVelocities();
         assertEquals(-1, speeds.vx, DELTA);
@@ -107,7 +107,7 @@ class SwerveControlTest {
     @Test
     void testChassisVelocities1() {
         ControlSE2 state = new ControlSE2(
-                new Pose2d(new Translation2d(0, 0), Rotation2d.kCCW_Pi_2),
+                new Pose2d(new Translation2d(0, 0), Rotation2d.CCW_PI_2),
                 new VelocitySE2(1, 0, 1));
         ChassisVelocities speeds = state.ChassisVelocities();
         assertEquals(0, speeds.vx, DELTA);

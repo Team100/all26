@@ -75,7 +75,7 @@ class SwerveDriveSubsystemTest implements Timeless {
 
         drive.reset(
                 Takt.get(),
-                new NoisyStateSE2(new StateSE2(Pose2d.kZero, VelocitySE2.ZERO),
+                new NoisyStateSE2(new StateSE2(Pose2d.ZERO, VelocitySE2.ZERO),
                         IsotropicNoiseSE2.high()));
 
         stepTime();

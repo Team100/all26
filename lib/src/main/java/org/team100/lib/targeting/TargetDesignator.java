@@ -4,11 +4,12 @@ import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.ObjectCache;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
-
-import org.wpilib.math.geometry.Translation2d;
+import org.team100.lib.logging.LoggerFactory.StructLogger;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.Commands;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
 
 /**
  * A Simulated target designator that can choose one of two targets.
@@ -20,13 +21,13 @@ public class TargetDesignator {
     public static final Translation2d A = new Translation2d(8, 4);
     /** Some other target. */
     public static final Translation2d B = new Translation2d(4, 2);
-    private final DoubleArrayLogger m_log_field_target;
+    private final StructLogger<Pose2d> m_log_field_target;
     private final ObjectCache<Translation2d> m_targetCache;
     /** Used only by update(). */
     private Translation2d m_target;
 
     public TargetDesignator(LoggerFactory fieldLogger, Translation2d initial) {
-        m_log_field_target = fieldLogger.doubleArrayLogger(Level.COMP, "target");
+        m_log_field_target = fieldLogger.structLogger(Level.COMP, "target", Pose2d.struct);
         m_target = initial;
         m_targetCache = Cache.of(this::update);
     }
@@ -44,12 +45,7 @@ public class TargetDesignator {
     }
 
     public void periodic() {
-        m_log_field_target.log(this::poseArray);
-    }
-
-    private double[] poseArray() {
-        Translation2d t = m_targetCache.get();
-        return new double[] { t.getX(), t.getY(), 0 };
+        m_log_field_target.log(() -> new Pose2d(m_targetCache.get(), Rotation2d.ZERO));
     }
 
     private Translation2d update() {

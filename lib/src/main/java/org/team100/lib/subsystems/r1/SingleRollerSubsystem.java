@@ -19,11 +19,11 @@ import org.team100.lib.music.Player;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.LinearVelocityServo;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 public class SingleRollerSubsystem extends SubsystemBase implements Music {
     private final LoggerFactory m_log1;
@@ -33,7 +33,7 @@ public class SingleRollerSubsystem extends SubsystemBase implements Music {
             LoggerFactory parent,
             TotalCurrentLog currentLog,
             CanId canId1,
-            CanBusId busId,
+            CANPort canPort,
             NeutralMode100 neutral,
             MotorPhase phase1,
             CurrentLimit limit,
@@ -50,7 +50,7 @@ public class SingleRollerSubsystem extends SubsystemBase implements Music {
         final Motor m1;
         if (enable && RobotBase.isReal()) {
             m1 = new KrakenX44Motor(
-                    m_log1, currentLog, canId1, busId, neutral, phase1, limit, friction, pid);
+                    m_log1, currentLog, canId1, canPort, neutral, phase1, limit, friction, pid);
         } else {
             m1 = new SimulatedMotor(m_log1, 600);
         }

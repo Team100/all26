@@ -1,4 +1,3 @@
-from datetime import datetime
 """
 Runs the code in the zip file (or the filesystem).
 
@@ -22,6 +21,7 @@ It would be good to run this unbuffered, i.e. python -u runapp.py
 import os
 import sys
 import traceback
+from datetime import datetime
 
 if os.path.isfile("/home/pi/app.zip"):
     print(f"[{datetime.now()}] " + "using the zip file")

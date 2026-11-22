@@ -19,11 +19,11 @@ import org.team100.lib.music.Player;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.LinearPositionServo;
 import org.team100.lib.servo.OutboardLinearPositionServo;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SubsystemBase;
 import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.bus.CANPort;
 
 public class SingleLinearSubsystem extends SubsystemBase implements Music {
     private final LoggerFactory m_log1;
@@ -33,7 +33,7 @@ public class SingleLinearSubsystem extends SubsystemBase implements Music {
             LoggerFactory parent,
             TotalCurrentLog currentLog,
             CanId canId1,
-            CanBusId busId,
+            CANPort busId,
             NeutralMode100 neutral,
             MotorPhase phase1,
             CurrentLimit limit,

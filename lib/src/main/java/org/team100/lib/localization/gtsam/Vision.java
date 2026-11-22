@@ -40,7 +40,7 @@ public class Vision {
      * direction.
      */
     static final Transform3d CAM = new Transform3d(
-            Translation3d.kZero,
+            Translation3d.ZERO,
             new Rotation3d(MatBuilder.fill(Nat.N3(), Nat.N3(), //
                     0, 0, 1, //
                     -1, 0, 0, //

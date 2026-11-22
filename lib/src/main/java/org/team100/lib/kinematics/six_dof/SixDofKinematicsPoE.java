@@ -2,6 +2,7 @@ package org.team100.lib.kinematics.six_dof;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.rr.RRConfig;
@@ -66,19 +67,19 @@ public class SixDofKinematicsPoE implements SixDofKinematics {
 
     public SixDofKinematicsPoE(double base, double boom, double stick, double tool) {
         // base
-        M1 = new Pose3d(0, 0, 0, Rotation3d.kZero);
+        M1 = new Pose3d(0, 0, 0, Rotation3d.ZERO);
         // shoulder
-        M2 = new Pose3d(0, 0, base, Rotation3d.kZero);
+        M2 = new Pose3d(0, 0, base, Rotation3d.ZERO);
         // elbow
-        M3 = new Pose3d(boom, 0, base, Rotation3d.kZero);
+        M3 = new Pose3d(boom, 0, base, Rotation3d.ZERO);
         // wrist pointing at +x
-        M4 = new Pose3d(boom + stick, 0, base, Rotation3d.kZero);
+        M4 = new Pose3d(boom + stick, 0, base, Rotation3d.ZERO);
         // wrist pointing at +x
-        M5 = new Pose3d(boom + stick, 0, base, Rotation3d.kZero);
+        M5 = new Pose3d(boom + stick, 0, base, Rotation3d.ZERO);
         // wrist pointing at +x, this is tool flange
-        M6 = new Pose3d(boom + stick, 0, base, Rotation3d.kZero);
+        M6 = new Pose3d(boom + stick, 0, base, Rotation3d.ZERO);
         // tool point, is pointing at +x, at full extension
-        M7 = new Pose3d(boom + stick + tool, 0, base, Rotation3d.kZero);
+        M7 = new Pose3d(boom + stick + tool, 0, base, Rotation3d.ZERO);
         // joint 1 (base) around z
         S1 = Poe.S(VecBuilder.fill(0, 0, 1), new Translation3d(0, 0, 0));
         // joint 2 (shoulder) around -y
@@ -404,7 +405,7 @@ public class SixDofKinematicsPoE implements SixDofKinematics {
             // in this case we don't do both alternatives, just the one default.
             return List.of(q1Default);
         }
-        double radians = w.getAngle().getRadians();
+        double radians = w.getAngle().get().getRadians();
         return List.of(radians, MathUtil.angleModulus(radians + Math.PI));
     }
 
@@ -417,9 +418,9 @@ public class SixDofKinematicsPoE implements SixDofKinematics {
      */
     private List<RRConfig> rrConfig(Translation3d w, double q1, Double q2Default) {
         // Is this the "inline" or the "flip" case?
-        Rotation2d rot = w.toTranslation2d().getAngle();
+        Optional<Rotation2d> opt = w.toTranslation2d().getAngle();
         double signum = 0;
-        if (MathUtil.isNear(q1, rot.getRadians(), 1e-3))
+        if (opt.isEmpty() || MathUtil.isNear(q1, opt.get().getRadians(), 1e-3))
             // forward
             signum = 1;
         else

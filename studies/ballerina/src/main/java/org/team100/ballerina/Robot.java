@@ -17,7 +17,6 @@ import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.subsystems.turret.Turret;
 import org.team100.lib.util.Banner;
-import org.team100.lib.util.CanBusId;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.RoboRioChannel;
 import org.team100.lib.visualization.Ball;
@@ -25,6 +24,7 @@ import org.team100.lib.visualization.BallFactory;
 import org.wpilib.command2.CommandScheduler;
 import org.wpilib.command2.button.Trigger;
 import org.wpilib.framework.TimedRobot;
+import org.wpilib.hardware.bus.CANPort;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
         LoggerFactory rootLogger = Logging.root();
         TotalCurrentLog currentLog = new TotalCurrentLog(rootLogger);
         m_controller = new DriverXboxControl(rootLogger, 0);
-        m_pose = new ManualPose(fieldLogger, m_controller::velocity, new Pose2d(6, 4, Rotation2d.kZero));
+        m_pose = new ManualPose(fieldLogger, m_controller::velocity, new Pose2d(6, 4, Rotation2d.ZERO));
         // use the 2026 target selector
         Supplier<Optional<Translation2d>> target = () -> {
             return FieldConstants2026.TARGET(
@@ -60,7 +60,7 @@ public class Robot extends TimedRobot {
                 new CanId(0),
                 new CanId(0),
                 new CanId(0),
-                new CanBusId(0),
+                CANPort.CAN_S0,
                 targeter::forRange,
                 m_pose::getState,
                 target);

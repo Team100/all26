@@ -7,20 +7,16 @@ import org.team100.lib.geometry.r2.StateR2;
 import org.team100.lib.state.StateSE2;
 import org.team100.lib.util.NamedChooser;
 
-import org.wpilib.smartdashboard.SendableChooser;
-import org.wpilib.smartdashboard.SmartDashboard;
-
 /**
  * Provides a solver based on the dashboard widget.
  */
 public class ProxySolver implements Solver {
-    private final SendableChooser<Solver> m_chooser;
+    private final NamedChooser<Solver> m_chooser;
 
     public ProxySolver(DoubleFunction<Optional<FiringParameters>> rangeToParams) {
         m_chooser = new NamedChooser<>("Target Solver");
         addTOFRecursion(rangeToParams);
         addLaser(rangeToParams);
-        SmartDashboard.putData(m_chooser);
     }
 
     /** Keeps tests from conflicting. */
@@ -34,7 +30,7 @@ public class ProxySolver implements Solver {
      * Iterates on predicted TOF using inverse map.
      */
     private void addTOFRecursion(DoubleFunction<Optional<FiringParameters>> rangeToParams) {
-        m_chooser.addOption("TOFR", new TimeOfFlightRecursion(rangeToParams, 0.01));
+        m_chooser.add("TOFR", new TimeOfFlightRecursion(rangeToParams, 0.01));
     }
 
     /**
@@ -43,7 +39,7 @@ public class ProxySolver implements Solver {
      * For testing, using the flashlight.
      */
     private void addLaser(DoubleFunction<Optional<FiringParameters>> rangeToParams) {
-        m_chooser.setDefaultOption("Laser", new LaserSolver(rangeToParams));
+        m_chooser.addDefault("Laser", new LaserSolver(rangeToParams));
     }
 
     @Override

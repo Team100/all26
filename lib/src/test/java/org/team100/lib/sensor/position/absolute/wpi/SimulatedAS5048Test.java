@@ -18,7 +18,7 @@ public class SimulatedAS5048Test implements Timeless {
 
     @Test
     void testSquash() {
-        Rotation2d r = Rotation2d.kZero;
+        Rotation2d r = Rotation2d.ZERO;
         double dutyCycle = SimulatedAS5048.getDutyCycle(r);
         assertEquals(0.003888, dutyCycle, 0.000001);
         double turns = AS5048RotaryPositionSensor.mapSensorRange(
